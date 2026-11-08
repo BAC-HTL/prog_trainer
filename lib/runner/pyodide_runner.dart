@@ -1,15 +1,20 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter/widgets.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import 'code_runner.dart';
 
 /// Führt Python direkt am Handy aus – mit Pyodide (CPython als WebAssembly)
-/// in einer unsichtbaren WebView.
+/// in einer unsichtbaren WebView (offizielles Plugin `webview_flutter`).
 ///
 /// Der Code läuft in einem Web Worker. So kann eine Endlosschleife nach dem
 /// Zeitlimit hart abgebrochen werden. Pyodide wird beim ersten Start aus
 /// dem Internet geladen (~10 MB) und danach vom Browser-Cache genutzt.
+///
+/// Die WebView wird erst beim ersten Ausführen erzeugt und über
+/// [PythonRuntimeHost] (1×1 Pixel, unsichtbar) in den Widget-Baum gehängt.
 class PyodideRunner implements CodeRunner {
   PyodideRunner({this.timeout = const Duration(seconds: 10)});
 
@@ -17,55 +22,77 @@ class PyodideRunner implements CodeRunner {
 
   static const pyodideUrl = 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/';
 
-  HeadlessInAppWebView? _webView;
-  InAppWebViewController? _controller;
-  Completer<void>? _loaded;
+  /// Aktueller WebView-Controller (oder `null`, solange Python nie lief).
+  final ValueNotifier<WebViewController?> controller = ValueNotifier(null);
 
-  Future<InAppWebViewController> _ensureStarted() async {
-    if (_loaded == null) {
-      final loaded = _loaded = Completer<void>();
-      _webView = HeadlessInAppWebView(
-        initialData: InAppWebViewInitialData(
-          data: _html,
-          baseUrl: WebUri('https://prog-trainer.local/'),
-        ),
-        initialSettings: InAppWebViewSettings(javaScriptEnabled: true),
-        onWebViewCreated: (c) => _controller = c,
-        onLoadStop: (c, url) {
-          if (!loaded.isCompleted) loaded.complete();
-        },
-        onReceivedError: (c, request, error) {
-          if (!loaded.isCompleted) loaded.completeError(error.description);
-        },
-      );
-      await _webView!.run();
-    }
-    await _loaded!.future;
-    return _controller!;
+  Completer<void>? _ready;
+  final Map<int, Completer<Map<String, dynamic>>> _pending = {};
+  int _nextId = 0;
+
+  WebViewController _ensureController() {
+    final existing = controller.value;
+    if (existing != null) return existing;
+
+    final ready = _ready = Completer<void>();
+    final c = WebViewController();
+    c.setJavaScriptMode(JavaScriptMode.unrestricted);
+    c.addJavaScriptChannel('PyBridge', onMessageReceived: _onMessage);
+    c.setNavigationDelegate(NavigationDelegate(
+      onPageFinished: (_) {
+        if (!ready.isCompleted) ready.complete();
+      },
+      onWebResourceError: (error) {
+        if ((error.isForMainFrame ?? false) && !ready.isCompleted) {
+          ready.completeError(error.description);
+        }
+      },
+    ));
+    c.loadHtmlString(_html, baseUrl: 'https://prog-trainer.local/');
+    controller.value = c;
+    return c;
+  }
+
+  void _onMessage(JavaScriptMessage message) {
+    final data = jsonDecode(message.message) as Map<String, dynamic>;
+    _pending.remove(data['id'] as int?)?.complete(data);
+  }
+
+  void _reset() {
+    controller.value = null;
+    _ready = null;
   }
 
   @override
   Future<RunResult> run(String code, {String stdin = ''}) async {
-    final InAppWebViewController controller;
+    final c = _ensureController();
     try {
-      controller = await _ensureStarted();
+      await _ready!.future.timeout(const Duration(seconds: 30));
     } catch (e) {
-      _loaded = null;
+      _reset();
       return RunResult(error: 'Python-Umgebung konnte nicht starten: $e');
     }
 
-    final result = await controller.callAsyncJavaScript(
-      functionBody: 'return await window.runPython(code, stdin, timeoutMs);',
-      arguments: {
-        'code': code,
-        'stdin': stdin,
-        'timeoutMs': timeout.inMilliseconds,
+    final id = _nextId++;
+    final completer = _pending[id] = Completer<Map<String, dynamic>>();
+    try {
+      await c.runJavaScript(
+        'window.runPython(${jsonEncode(code)}, ${jsonEncode(stdin)}, '
+        '${timeout.inMilliseconds}).then(function (r) {'
+        ' r.id = $id; PyBridge.postMessage(JSON.stringify(r)); });',
+      );
+    } catch (e) {
+      _pending.remove(id);
+      return RunResult(error: 'Interner Fehler: $e');
+    }
+
+    // Großzügig, weil beim ersten Mal Pyodide heruntergeladen wird.
+    final value = await completer.future.timeout(
+      const Duration(minutes: 2),
+      onTimeout: () {
+        _pending.remove(id);
+        return {'error': 'Python hat nicht geantwortet (Internet?)'};
       },
     );
-    if (result == null || result.error != null) {
-      return RunResult(error: 'Interner Fehler: ${result?.error}');
-    }
-    final value = Map<String, dynamic>.from(result.value as Map);
     final error = value['error'] as String?;
     return RunResult(
       stdout: value['stdout'] as String? ?? '',
@@ -76,12 +103,6 @@ class PyodideRunner implements CodeRunner {
               ? 'Zeitlimit überschritten (Endlosschleife?)'
               : error,
     );
-  }
-
-  Future<void> dispose() async {
-    await _webView?.dispose();
-    _webView = null;
-    _loaded = null;
   }
 
   static const _html = '''
@@ -164,4 +185,32 @@ startWorker(); // Pyodide schon im Hintergrund laden
 </script>
 </body></html>
 ''';
+}
+
+/// Hängt die WebView des [PyodideRunner] unsichtbar in den Widget-Baum,
+/// damit sie auf allen Plattformen zuverlässig JavaScript ausführt.
+class PythonRuntimeHost extends StatelessWidget {
+  const PythonRuntimeHost({super.key, required this.runner});
+
+  final PyodideRunner runner;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<WebViewController?>(
+      valueListenable: runner.controller,
+      builder: (context, controller, _) {
+        if (controller == null) return const SizedBox.shrink();
+        return IgnorePointer(
+          child: Opacity(
+            opacity: 0,
+            child: SizedBox(
+              width: 1,
+              height: 1,
+              child: WebViewWidget(controller: controller),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../app_services.dart';
+import '../runner/pyodide_runner.dart';
 import 'achievements_screen.dart';
 import 'challenges_screen.dart';
 import 'home_screen.dart';
@@ -20,6 +22,7 @@ class _RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final python = AppServices.of(context).runnerFor('python');
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_tab]),
@@ -33,12 +36,20 @@ class _RootScreenState extends State<RootScreen> {
           ),
         ],
       ),
-      body: IndexedStack(
-        index: _tab,
-        children: const [
-          HomeScreen(),
-          ChallengesScreen(),
-          AchievementsScreen(),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: IndexedStack(
+              index: _tab,
+              children: const [
+                HomeScreen(),
+                ChallengesScreen(),
+                AchievementsScreen(),
+              ],
+            ),
+          ),
+          if (python is PyodideRunner)
+            Positioned(left: 0, top: 0, child: PythonRuntimeHost(runner: python)),
         ],
       ),
       bottomNavigationBar: NavigationBar(
