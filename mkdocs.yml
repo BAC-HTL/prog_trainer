@@ -1,0 +1,22 @@
+site_name: Prog Trainer
+site_description: Handy-App zum Programmierenlernen – Python, C# und mehr.
+repo_url: https://github.com/BAC-HTL/prog_trainer
+docs_dir: docs
+theme:
+  name: material
+  language: de
+  palette:
+    primary: indigo
+  features:
+    - navigation.instant
+    - content.code.copy
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - tables
+nav:
+  - Start & Download: index.md
+  - Installation: installation.md
+  - Lerninhalte schreiben: inhalte.md
+  - Entwicklung: entwicklung.md
+  - Roadmap: roadmap.md

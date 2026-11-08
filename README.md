@@ -7,9 +7,12 @@ außerdem Themen wie **Software-Architektur**, **Testing** und
 
 Gebaut mit [Flutter](https://flutter.dev) (Android & iOS).
 
+📖 **Doku & Download:** https://bac-htl.github.io/prog_trainer/  
+📦 **Aktuelle APK:** [Releases → latest](https://github.com/BAC-HTL/prog_trainer/releases/tag/latest)
+
 ## App aufs Handy bekommen (ohne eigenen Build)
 
-Bei jedem Push baut GitHub Actions automatisch eine APK:
+Am einfachsten über die Doku-Seite oben. Zusätzlich baut GitHub Actions bei jedem Push eine Test-APK:
 
 1. Im Repo auf **Actions** → den neuesten Lauf von „Flutter CI“ öffnen.
 2. Unten bei **Artifacts** `prog_trainer-apk` herunterladen und entpacken.

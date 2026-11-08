@@ -8,7 +8,10 @@
       "kind": "language",
       "lessons": [
         "python/01_erstes_programm.json",
-        "python/02_variablen.json"
+        "python/02_variablen.json",
+        "python/03_eingabe_rechnen.json",
+        "python/04_bedingungen.json",
+        "python/05_schleifen.json"
       ]
     },
     {
@@ -18,7 +21,10 @@
       "icon": "csharp",
       "kind": "language",
       "lessons": [
-        "csharp/01_erstes_programm.json"
+        "csharp/01_erstes_programm.json",
+        "csharp/02_variablen.json",
+        "csharp/03_eingabe_rechnen.json",
+        "csharp/04_bedingungen.json"
       ]
     },
     {
