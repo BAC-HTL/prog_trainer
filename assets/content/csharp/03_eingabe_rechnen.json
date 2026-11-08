@@ -1,0 +1,78 @@
+{
+  "id": "csharp-03",
+  "title": "Eingabe und Rechnen",
+  "summary": "Eingaben mit Console.ReadLine() lesen, mit int.Parse umwandeln und mit +, -, *, / und % rechnen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit Console.ReadLine() wartet dein Programm, bis jemand etwas eintippt und Enter drückt. Das Eingetippte bekommst du als string zurück:"
+    },
+    {
+      "type": "code",
+      "content": "Console.Write(\"Wie heißt du? \");\nstring name = Console.ReadLine();\nConsole.WriteLine($\"Servus, {name}!\");"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: ReadLine() liefert immer Text – auch wenn jemand 5 eintippt, bekommst du den string \"5\". Mit Text kann man nicht rechnen: \"5\" + \"3\" ergibt \"53\", weil + zwei strings einfach aneinanderhängt. Deshalb wandelst du die Eingabe mit int.Parse() in eine Zahl um (für Kommazahlen gibt es double.Parse()).\n\nTipp: Visual Studio zeigt bei ReadLine() manchmal eine gelbe Warnung an. Die kannst du vorerst ignorieren – das Programm läuft trotzdem."
+    },
+    {
+      "type": "code",
+      "content": "Console.Write(\"Gib eine Zahl ein: \");\nint zahl = int.Parse(Console.ReadLine());\nConsole.WriteLine($\"Das Doppelte ist {zahl * 2}.\");\n// Eingabe: 21\n// Ausgabe: Das Doppelte ist 42."
+    },
+    {
+      "type": "text",
+      "content": "Die Rechenoperatoren in C#:\n• + Addition, - Subtraktion, * Multiplikation\n• / Division\n• % Rest einer Division (Modulo)\n\nGanz wichtig: Teilst du zwei int-Werte, ist das Ergebnis wieder ein int. Die Nachkommastellen werden einfach abgeschnitten – es wird nicht gerundet!"
+    },
+    {
+      "type": "code",
+      "content": "int a = 17;\nint b = 5;\nConsole.WriteLine(a + b);   // 22\nConsole.WriteLine(a - b);   // 12\nConsole.WriteLine(a * b);   // 85\nConsole.WriteLine(a / b);   // 3  (nicht 3.4!)\nConsole.WriteLine(a % b);   // 2  (17 = 3 * 5 + 2)\nConsole.WriteLine(17.0 / 5); // 3.4"
+    },
+    {
+      "type": "text",
+      "content": "Sobald eine der beiden Zahlen ein double ist (z. B. 17.0), rechnet C# mit Kommastellen. Auf einem deutschsprachigen Windows wird das Ergebnis übrigens mit Beistrich angezeigt, also 3,4.\n\nDer Rest-Operator % ist praktischer, als er aussieht: zahl % 2 ist 0, wenn die Zahl gerade ist, und 1, wenn sie ungerade ist."
+    },
+    {
+      "type": "text",
+      "content": "Für weitere Mathe-Funktionen gibt es die Klasse Math. Die wichtigsten:"
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(Math.Sqrt(16));    // 4  (Wurzel)\nConsole.WriteLine(Math.Pow(2, 3));   // 8  (2 hoch 3)\nConsole.WriteLine(Math.Round(2.6));  // 3  (runden)\nConsole.WriteLine(Math.Abs(-5));     // 5  (Betrag)\nConsole.WriteLine(Math.Max(3, 8));   // 8  (größere Zahl)"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.WriteLine(17 / 5);",
+      "options": ["3.4", "4", "3", "2"],
+      "correctIndex": 2,
+      "explanation": "17 und 5 sind beide int, also ist auch das Ergebnis ein int. Die Kommastellen von 3.4 werden abgeschnitten, übrig bleibt 3."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.WriteLine(17 % 5);",
+      "options": ["2", "3", "3.4", "5"],
+      "correctIndex": 0,
+      "explanation": "% liefert den Rest der Division: 17 = 3 * 5 + 2, also bleibt 2 übrig."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Console.Write(\"Wie alt bist du? \");\nint alter = Console.ReadLine();",
+      "options": [
+        "Console.Write muss Console.WriteLine heißen",
+        "Die Variable darf nicht alter heißen",
+        "In den Klammern von ReadLine() fehlt die Frage",
+        "ReadLine() liefert einen string – er muss erst mit int.Parse() umgewandelt werden"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eingaben kommen immer als Text an. Ein string passt nicht in eine int-Variable. Richtig wäre: int alter = int.Parse(Console.ReadLine());"
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 7;\ndouble y = x / 2;\nConsole.WriteLine(y);",
+      "options": ["3.5", "3", "4", "Fehler beim Kompilieren"],
+      "correctIndex": 1,
+      "explanation": "Fies! x / 2 ist eine Division von zwei int-Werten und ergibt deshalb 3. Erst danach wird die 3 in der double-Variable y gespeichert. Für 3.5 müsstest du x / 2.0 schreiben."
+    }
+  ]
+}
