@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e5_02_parameter_rueckgabe",
+  "title": "Parameter und Rückgabewerte",
+  "summary": "Methoden mit Parametern Werte übergeben und mit return ein Ergebnis zurückliefern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Methode wird viel nützlicher, wenn du ihr Werte mitgeben kannst. Diese Werte heißen Parameter. Du schreibst sie mit Typ und Namen in die runden Klammern. Beim Aufruf gibst du die konkreten Werte an – man nennt sie Argumente."
+    },
+    {
+      "type": "code",
+      "content": "Gruesse(\"Lena\");\nGruesse(\"Jonas\");\nSterne(5);\n\nvoid Gruesse(string name)\n{\n    Console.WriteLine($\"Servus, {name}!\");\n}\n\nvoid Sterne(int anzahl)\n{\n    for (int i = 0; i < anzahl; i++)\n    {\n        Console.Write(\"*\");\n    }\n    Console.WriteLine();\n}\n// Ausgabe:\n// Servus, Lena!\n// Servus, Jonas!\n// *****"
+    },
+    {
+      "type": "text",
+      "content": "Mehrere Parameter trennst du mit Beistrichen. Beim Aufruf zählen Anzahl, Reihenfolge und Typ: Das erste Argument landet im ersten Parameter, das zweite im zweiten usw.\n\nSoll die Methode ein Ergebnis liefern, schreibst du statt void den Typ des Ergebnisses vor den Namen. Mit return gibst du den Wert zurück. Den Aufruf kannst du dann wie einen Wert verwenden: speichern, ausgeben oder weiterrechnen."
+    },
+    {
+      "type": "code",
+      "content": "int flaeche = Rechteck(4, 5);\nConsole.WriteLine(flaeche);                    // 20\nConsole.WriteLine(Rechteck(2, 3) + 10);        // 16\nConsole.WriteLine(Rechteck(Rechteck(1, 2), 3)); // 6\n\nint Rechteck(int laenge, int breite)\n{\n    return laenge * breite;\n}"
+    },
+    {
+      "type": "text",
+      "content": "return beendet die Methode sofort – Code danach wird nicht mehr ausgeführt. Deshalb darfst du return auch mitten in der Methode verwenden, z. B. in einem if. Bei Methoden mit Rückgabetyp muss aber jeder mögliche Weg durch die Methode bei einem return enden. Sonst meldet der Compiler „nicht alle Codepfade geben einen Wert zurück“.\n\nMethoden, die true oder false liefern, machen Bedingungen gut lesbar:"
+    },
+    {
+      "type": "code",
+      "content": "for (int zahl = 1; zahl <= 6; zahl++)\n{\n    if (IstGerade(zahl))\n    {\n        Console.WriteLine($\"{zahl} ist gerade\");\n    }\n}\nConsole.WriteLine(Note(83));\n\nbool IstGerade(int n)\n{\n    return n % 2 == 0;\n}\n\nstring Note(int prozent)\n{\n    if (prozent >= 90) return \"Sehr gut\";\n    if (prozent >= 80) return \"Gut\";\n    if (prozent >= 65) return \"Befriedigend\";\n    if (prozent >= 50) return \"Genügend\";\n    return \"Nicht genügend\";   // für alle anderen Fälle\n}\n// Ausgabe:\n// 2 ist gerade\n// 4 ist gerade\n// 6 ist gerade\n// Gut"
+    },
+    {
+      "type": "text",
+      "content": "Auch Arrays kannst du als Parameter übergeben. So schreibst du eine Methode einmal und kannst sie für beliebige Arrays verwenden:"
+    },
+    {
+      "type": "code",
+      "content": "int[] klasse1 = { 12, 18, 7, 20 };\nint[] klasse2 = { 15, 3 };\n\nConsole.WriteLine(Maximum(klasse1));   // 20\nConsole.WriteLine(Maximum(klasse2));   // 15\n\nint Maximum(int[] zahlen)\n{\n    int max = zahlen[0];\n    foreach (int z in zahlen)\n    {\n        if (z > max)\n        {\n            max = z;\n        }\n    }\n    return max;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig zu verstehen: Ein Parameter wie int n ist eine Kopie des übergebenen Werts. Änderst du den Parameter in der Methode, bleibt die Variable beim Aufrufer unverändert. Willst du ein Ergebnis nach außen bringen, verwende return."
+    },
+    {
+      "type": "code",
+      "content": "int punkte = 10;\nBonus(punkte);\nConsole.WriteLine(punkte);          // 10 – unverändert!\n\npunkte = MitBonus(punkte);\nConsole.WriteLine(punkte);          // 15\n\nvoid Bonus(int p)\n{\n    p = p + 5;   // ändert nur die Kopie\n}\n\nint MitBonus(int p)\n{\n    return p + 5;\n}"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.WriteLine(Rechne(3, 4) + Rechne(1, 0));\n\nint Rechne(int a, int b)\n{\n    return a * 2 + b;\n}",
+      "options": [
+        "10",
+        "12",
+        "14",
+        "7"
+      ],
+      "correctIndex": 1,
+      "explanation": "Rechne(3, 4) ergibt 3 * 2 + 4 = 10, Rechne(1, 0) ergibt 1 * 2 + 0 = 2. Zusammen 12."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Console.WriteLine(Bewertung(70));\n\nstring Bewertung(int punkte)\n{\n    if (punkte >= 50)\n    {\n        return \"bestanden\";\n    }\n}",
+      "options": [
+        "Eine Methode darf kein if enthalten",
+        "Der Rückgabetyp muss void sein, weil Text zurückgegeben wird",
+        "Bei weniger als 50 Punkten erreicht die Methode kein return",
+        "return darf nur in der letzten Zeile einer Methode stehen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ist punkte kleiner als 50, wird das if übersprungen und die Methode endet ohne return. Bei einer Methode mit Rückgabetyp string muss aber jeder Weg einen Wert liefern. Lösung: nach dem if z. B. return \"nicht bestanden\"; ergänzen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 5;\nVerdopple(x);\nConsole.WriteLine(x);\n\nvoid Verdopple(int zahl)\n{\n    zahl = zahl * 2;\n}",
+      "options": [
+        "10",
+        "Der Compiler meldet einen Fehler",
+        "0",
+        "5"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Methode bekommt eine Kopie von x. zahl wird zwar verdoppelt, aber x bleibt 5. Damit x sich ändert, müsste die Methode das Ergebnis mit return liefern: x = Verdopple(x);"
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.WriteLine(Test(20) + Test(7) + Test(0));\n\nint Test(int n)\n{\n    if (n > 10) return 1;\n    if (n > 5) return 2;\n    return 3;\n}",
+      "options": [
+        "6",
+        "3",
+        "1",
+        "4"
+      ],
+      "correctIndex": 0,
+      "explanation": "return beendet die Methode sofort. Test(20) liefert 1 (erstes if), Test(7) liefert 2 (zweites if), Test(0) erreicht das letzte return und liefert 3. 1 + 2 + 3 = 6."
+    }
+  ]
+}

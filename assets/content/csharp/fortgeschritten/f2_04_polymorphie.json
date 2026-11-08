@@ -1,0 +1,97 @@
+{
+  "id": "csharp-f2_04_polymorphie",
+  "title": "Polymorphie mit virtual und override",
+  "summary": "Methoden der Basisklasse mit virtual überschreibbar machen, mit override anpassen und mit base die Originalversion aufrufen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Polymorphie heißt „Vielgestaltigkeit“: Derselbe Methodenaufruf verhält sich je nach Objekt unterschiedlich. Bei abstrakten Methoden hast du das schon gesehen. Oft will die Basisklasse aber eine sinnvolle Standard-Version mitliefern, die Unterklassen nur bei Bedarf ändern.\n\nDafür markierst du die Methode in der Basisklasse mit virtual („darf überschrieben werden“). Eine Unterklasse kann sie dann mit override durch eine eigene Version ersetzen – muss aber nicht."
+    },
+    {
+      "type": "code",
+      "content": "Tier[] zoo = { new Hund(), new Katze(), new Fisch() };\n\nforeach (Tier t in zoo)\n{\n    t.Laut();\n}\n// Ausgabe:\n// Wuff!\n// Miau!\n// ...\n\nclass Tier\n{\n    public virtual void Laut()\n    {\n        Console.WriteLine(\"...\");\n    }\n}\n\nclass Hund : Tier\n{\n    public override void Laut()\n    {\n        Console.WriteLine(\"Wuff!\");\n    }\n}\n\nclass Katze : Tier\n{\n    public override void Laut()\n    {\n        Console.WriteLine(\"Miau!\");\n    }\n}\n\nclass Fisch : Tier\n{\n    // kein override – der Fisch verwendet die Standard-Version\n}"
+    },
+    {
+      "type": "text",
+      "content": "Das Entscheidende: Die Variable t hat den Typ Tier. Trotzdem wird bei t.Laut() die Methode des echten Objekts ausgeführt – beim Hund „Wuff!“, bei der Katze „Miau!“. C# entscheidet erst zur Laufzeit, welche Version passt.\n\nVergleich mit abstract:\n• abstract – keine Standard-Version, jede Unterklasse muss überschreiben\n• virtual – es gibt eine Standard-Version, Unterklassen dürfen überschreiben\n• Ohne virtual oder abstract darf eine Methode gar nicht überschrieben werden."
+    },
+    {
+      "type": "text",
+      "content": "Manchmal willst du die Version der Basisklasse nicht ersetzen, sondern erweitern. Mit base.Methode() rufst du innerhalb von override die Originalversion auf und ergänzt danach dein eigenes Verhalten:"
+    },
+    {
+      "type": "code",
+      "content": "Mitarbeiter m = new Mitarbeiter(\"Eva\", 2000);\nMitarbeiter c = new Chef(\"Karl\", 3000);\n\nConsole.WriteLine($\"{m.Name}: {m.Gehalt()} Euro\");\nConsole.WriteLine($\"{c.Name}: {c.Gehalt()} Euro\");\n// Ausgabe:\n// Eva: 2000 Euro\n// Karl: 3500 Euro\n\nclass Mitarbeiter\n{\n    public string Name { get; }\n    protected int grundgehalt;\n\n    public Mitarbeiter(string name, int grundgehalt)\n    {\n        Name = name;\n        this.grundgehalt = grundgehalt;\n    }\n\n    public virtual int Gehalt()\n    {\n        return grundgehalt;\n    }\n}\n\nclass Chef : Mitarbeiter\n{\n    public Chef(string name, int grundgehalt) : base(name, grundgehalt) { }\n\n    public override int Gehalt()\n    {\n        return base.Gehalt() + 500;   // Original plus Zulage\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Jede Klasse erbt von object – und object hat die virtuelle Methode ToString(). Sie wird automatisch aufgerufen, wenn du ein Objekt mit Console.WriteLine ausgibst oder in einen $-String einbaust. Standardmäßig liefert sie nur den Klassennamen. Überschreibst du sie, bekommst du eine schöne Ausgabe:"
+    },
+    {
+      "type": "code",
+      "content": "Punkt p = new Punkt(3, 7);\nConsole.WriteLine(p);\nConsole.WriteLine($\"Start bei {p}\");\n// Ausgabe:\n// (3|7)\n// Start bei (3|7)\n\nclass Punkt\n{\n    public int X { get; }\n    public int Y { get; }\n\n    public Punkt(int x, int y)\n    {\n        X = x;\n        Y = y;\n    }\n\n    public override string ToString()\n    {\n        return $\"({X}|{Y})\";\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Der häufigste Fehler: override vergessen. Schreibst du in der Unterklasse nur public void Laut(), überschreibst du nichts, sondern versteckst die Basismethode bloß. Der Compiler warnt dich davor. Über eine Variable vom Basistyp wird dann weiterhin die alte Version aufgerufen:"
+    },
+    {
+      "type": "code",
+      "content": "Tier t = new Kuh();\nt.Laut();\n// Ausgabe: ...\n// (nicht Muh! – Kuh.Laut() ist kein override)\n\nclass Tier\n{\n    public virtual void Laut()\n    {\n        Console.WriteLine(\"...\");\n    }\n}\n\nclass Kuh : Tier\n{\n    public void Laut()   // Warnung: verbirgt Tier.Laut()\n    {\n        Console.WriteLine(\"Muh!\");\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Mit dem Operator is prüfst du, welcher Typ wirklich hinter einer Variable steckt. Das brauchst du, wenn eine Unterklasse zusätzliche Methoden hat: if (t is Hund h) prüft, ob t ein Hund ist, und stellt ihn dir gleich als Variable h vom Typ Hund zur Verfügung.\n\nMerke:\n• virtual in der Basisklasse + override in der Unterklasse = Polymorphie\n• Welche Methode läuft, entscheidet das echte Objekt, nicht der Variablentyp\n• base.Methode() ruft die Version der Basisklasse auf\n• ToString() überschreiben macht Objekte lesbar"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Fahrzeug f = new Auto();\nConsole.WriteLine(f.Beschreibung());\n\nclass Fahrzeug\n{\n    public virtual string Beschreibung() => \"Fahrzeug\";\n}\n\nclass Auto : Fahrzeug\n{\n    public override string Beschreibung() => \"Auto\";\n}",
+      "options": [
+        "Fahrzeug",
+        "Fahrzeug Auto",
+        "Auto Fahrzeug",
+        "Auto"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Variable hat zwar den Typ Fahrzeug, das Objekt ist aber ein Auto. Weil Beschreibung() virtual ist und Auto sie mit override ersetzt, läuft die Version von Auto."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Aufgabe a = new Bonus();\nConsole.WriteLine(a.Punkte());\n\nclass Aufgabe\n{\n    public virtual int Punkte() => 10;\n}\n\nclass Bonus : Aufgabe\n{\n    public override int Punkte() => base.Punkte() * 2;\n}",
+      "options": [
+        "10",
+        "15",
+        "20",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bonus.Punkte() ruft mit base.Punkte() die Version der Basisklasse auf (10) und verdoppelt das Ergebnis: 20."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Form f = new Kreis();\nf.Zeichnen();\n\nclass Form\n{\n    public void Zeichnen()\n    {\n        Console.WriteLine(\"Form\");\n    }\n}\n\nclass Kreis : Form\n{\n    public override void Zeichnen()\n    {\n        Console.WriteLine(\"Kreis\");\n    }\n}",
+      "options": [
+        "override darf nur in abstrakten Klassen stehen",
+        "Kreis muss Zeichnen() mit base.Zeichnen() aufrufen",
+        "Zeichnen() ist in Form weder virtual noch abstract und kann daher nicht überschrieben werden",
+        "Die Klasse Form braucht einen Konstruktor"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur Methoden, die als virtual, abstract oder selbst schon als override markiert sind, dürfen überschrieben werden. In Form fehlt virtual vor void Zeichnen()."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Schueler s = new Schueler(\"Lena\", 2);\nConsole.WriteLine(s);\n\nclass Schueler\n{\n    private string name;\n    private int note;\n\n    public Schueler(string name, int note)\n    {\n        this.name = name;\n        this.note = note;\n    }\n\n    public override string ToString() => $\"{name} ({note})\";\n}",
+      "options": [
+        "Lena (2)",
+        "Schueler",
+        "Lena",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 0,
+      "explanation": "Console.WriteLine ruft beim Ausgeben eines Objekts automatisch ToString() auf. Da Schueler diese Methode überschreibt, kommt Lena (2) heraus."
+    }
+  ]
+}

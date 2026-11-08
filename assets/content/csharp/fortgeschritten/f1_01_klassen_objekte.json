@@ -1,0 +1,88 @@
+{
+  "id": "csharp-f1_01_klassen_objekte",
+  "title": "Klassen und Objekte",
+  "summary": "Mit class eigene Datentypen bauen, mit new Objekte davon erzeugen und Felder sowie Methoden verwenden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher hast du mit fertigen Datentypen wie int, string oder Arrays gearbeitet. Oft gehören aber mehrere Werte zusammen: Ein Schüler hat einen Namen, eine Klasse und eine Note. Statt drei lose Variablen zu verwalten, baust du dir mit einer Klasse einen eigenen Datentyp.\n\nEine Klasse ist wie ein Bauplan. Ein Objekt ist ein konkretes Ding, das nach diesem Bauplan gebaut wurde. Aus dem Bauplan „Schueler“ kannst du beliebig viele Schüler-Objekte erzeugen – jedes mit eigenen Werten."
+    },
+    {
+      "type": "code",
+      "content": "Schueler s1 = new Schueler();\ns1.Name = \"Lena\";\ns1.Note = 2;\n\nSchueler s2 = new Schueler();\ns2.Name = \"Jonas\";\ns2.Note = 4;\n\nConsole.WriteLine($\"{s1.Name} hat einen {s1.Note}er.\");\nConsole.WriteLine($\"{s2.Name} hat einen {s2.Note}er.\");\n// Ausgabe:\n// Lena hat einen 2er.\n// Jonas hat einen 4er.\n\nclass Schueler\n{\n    public string Name = \"\";\n    public int Note;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Was passiert hier?\n• class Schueler { ... } definiert den Bauplan. Die Variablen darin (Name, Note) heißen Felder. Jedes Objekt bekommt seine eigenen Felder.\n• new Schueler() erzeugt ein neues Objekt. Ohne new gibt es kein Objekt!\n• Mit dem Punkt greifst du auf die Felder eines Objekts zu: s1.Name.\n• public bedeutet: Dieses Feld darf man von außerhalb der Klasse benutzen. Lässt du public weg, ist das Feld privat und nur innerhalb der Klasse sichtbar.\n\nWichtig in einem Programm mit Top-Level-Statements: Zuerst kommen die Anweisungen, ganz unten stehen die Klassen. Schreibst du Anweisungen nach einer Klasse, meldet der Compiler einen Fehler."
+    },
+    {
+      "type": "text",
+      "content": "Felder, die du nicht selbst setzt, bekommen einen Standardwert: 0 bei Zahlen, false bei bool und null bei string. null heißt „hier ist noch gar nichts“. Deshalb geben wir Name oben gleich den Startwert \"\" (leerer Text) mit.\n\nEine Klasse kann nicht nur Daten speichern, sondern auch Methoden enthalten – also Dinge, die das Objekt „kann“. Innerhalb der Methode greifst du direkt auf die eigenen Felder zu:"
+    },
+    {
+      "type": "code",
+      "content": "Konto konto = new Konto();\nkonto.Inhaber = \"Mia\";\nkonto.Einzahlen(50);\nkonto.Einzahlen(20);\nkonto.Abheben(30);\nkonto.Ausgeben();\n// Ausgabe: Mia hat 40 Euro.\n\nclass Konto\n{\n    public string Inhaber = \"\";\n    public int Guthaben;\n\n    public void Einzahlen(int betrag)\n    {\n        Guthaben = Guthaben + betrag;\n    }\n\n    public void Abheben(int betrag)\n    {\n        if (betrag <= Guthaben)\n        {\n            Guthaben = Guthaben - betrag;\n        }\n        else\n        {\n            Console.WriteLine(\"Nicht genug Geld!\");\n        }\n    }\n\n    public void Ausgeben()\n    {\n        Console.WriteLine($\"{Inhaber} hat {Guthaben} Euro.\");\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Beachte: Methoden in einer Klasse schreibst du ohne static. Sie gehören zu einem bestimmten Objekt und arbeiten mit dessen Feldern. Ruft man konto.Einzahlen(50) auf, wird das Guthaben genau dieses Kontos erhöht.\n\nKlassen sind Referenztypen. Eine Variable vom Typ Konto enthält nicht das Objekt selbst, sondern nur einen Verweis darauf – wie eine Adresse. Kopierst du die Variable, zeigen danach beide auf dasselbe Objekt:"
+    },
+    {
+      "type": "code",
+      "content": "Schueler a = new Schueler();\na.Name = \"Lena\";\n\nSchueler b = a;      // kein neues Objekt, nur ein zweiter Verweis!\nb.Name = \"Sara\";\n\nConsole.WriteLine(a.Name);\n// Ausgabe: Sara\n\nclass Schueler\n{\n    public string Name = \"\";\n}"
+    },
+    {
+      "type": "text",
+      "content": "Typische Anfängerfehler:\n• new vergessen: Schueler s; s.Name = \"Lena\"; lässt sich nicht kompilieren, weil s nie ein Objekt bekommen hat.\n• public vergessen: Dann meldet der Compiler, dass das Feld aufgrund seiner Schutzebene nicht zugänglich ist.\n• Anweisungen unter die Klasse schreiben: Bei Top-Level-Statements müssen alle Anweisungen vor den Klassen stehen.\n\nKlassennamen schreibt man in C# groß (PascalCase), z. B. Schueler, Konto oder SpielFigur. Öffentliche Felder und Methoden ebenfalls."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Hund a = new Hund();\na.Name = \"Max\";\nHund b = a;\nb.Name = \"Rex\";\nConsole.WriteLine(a.Name);\n\nclass Hund\n{\n    public string Name = \"\";\n}",
+      "options": [
+        "Max",
+        "Rex",
+        "Max und Rex",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Hund b = a; erzeugt kein neues Objekt. a und b zeigen auf denselben Hund. Ändert man über b den Namen, sieht man die Änderung auch über a."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Auto auto = new Auto();\nauto.Marke = \"Toyota\";\nConsole.WriteLine(auto.Marke);\n\nclass Auto\n{\n    string Marke = \"\";\n}",
+      "options": [
+        "Klassennamen dürfen nicht Auto heißen",
+        "Das Feld Marke ist nicht public und daher von außen nicht zugänglich",
+        "Es fehlt ein return in der Klasse",
+        "new darf nur innerhalb einer Klasse verwendet werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne Zugriffsmodifizierer ist ein Feld privat. Von außerhalb der Klasse darf man nicht darauf zugreifen. Mit public string Marke = \"\"; funktioniert es."
+    },
+    {
+      "question": "Welche Aussage über Klassen und Objekte stimmt?",
+      "options": [
+        "Aus einer Klasse kann man nur ein einziges Objekt erzeugen",
+        "Alle Objekte einer Klasse teilen sich dieselben Feldwerte",
+        "Eine Klasse ist der Bauplan, jedes Objekt hat seine eigenen Feldwerte",
+        "Objekte entstehen automatisch, sobald man eine Klasse schreibt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Klasse beschreibt, welche Felder und Methoden es gibt. Mit new erzeugst du beliebig viele Objekte, und jedes speichert seine eigenen Werte."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Spieler p = new Spieler();\nSpieler q = new Spieler();\np.Treffer();\nq.Treffer();\np.Treffer();\np.Treffer();\nConsole.WriteLine(p.Punkte);\n\nclass Spieler\n{\n    public int Punkte;\n\n    public void Treffer()\n    {\n        Punkte++;\n    }\n}",
+      "options": [
+        "3",
+        "2",
+        "1",
+        "0"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jeder Aufruf von Treffer() erhöht die Punkte genau dieses Spielers. Spieler p wird dreimal getroffen, also 3. Spieler q hat eigene Felder und beeinflusst p nicht."
+    }
+  ]
+}

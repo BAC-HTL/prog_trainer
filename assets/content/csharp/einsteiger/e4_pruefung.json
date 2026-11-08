@@ -1,0 +1,127 @@
+{
+  "id": "csharp-e4-pruefung",
+  "title": "Abschlussprüfung: Arrays & Strings",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] z = { 3, 8, 1, 9, 4 };\nint pos = 0;\nfor (int i = 1; i < z.Length; i++)\n{\n    if (z[i] < z[pos])\n    {\n        pos = i;\n    }\n}\nConsole.WriteLine(pos);",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "pos merkt sich den Index des bisher kleinsten Elements. Das kleinste Element ist 1, und es steht an Index 2. Ausgegeben wird der Index, nicht der Wert."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int[] werte = { 1, 2, 3 };\nforeach (int x in werte)\n{\n    x = x * 2;\n}",
+      "options": [
+        "foreach funktioniert nur mit strings, nicht mit int-Arrays",
+        "Die Variable x muss vor der Schleife deklariert werden",
+        "Der foreach-Variable darf man nichts zuweisen – zum Ändern braucht man for mit Index",
+        "Es fehlt die Angabe der Array-Länge"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Variable einer foreach-Schleife ist schreibgeschützt. Um die Elemente zu verdoppeln, braucht man eine for-Schleife: for (int i = 0; i < werte.Length; i++) werte[i] = werte[i] * 2;"
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] a = { 5, 2, 9, 1 };\nArray.Sort(a);\nArray.Reverse(a);\nConsole.WriteLine(a[1]);",
+      "options": [
+        "2",
+        "9",
+        "1",
+        "5"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nach Array.Sort ist die Reihenfolge 1, 2, 5, 9. Array.Reverse dreht sie um: 9, 5, 2, 1. a[1] ist das zweite Element, also 5."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string s = \"AB\";\nConsole.WriteLine(s[0] + s[1]);",
+      "options": [
+        "131",
+        "AB",
+        "A B",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "s[0] und s[1] sind char-Werte. Zwei char mit + ergeben eine Zahl, nämlich die Summe ihrer Zeichencodes: 'A' = 65 und 'B' = 66, also 131. Für Text müsste man mit einem string beginnen: \"\" + s[0] + s[1]."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string eingabe = \"  Max Mustermann \";\nConsole.WriteLine(eingabe.Trim().ToUpper().Substring(4));",
+      "options": [
+        " MUSTERMANN",
+        "MUSTERMANN",
+        "Mustermann",
+        "X MUSTERMANN"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zuerst entfernt Trim die Leerzeichen außen: „Max Mustermann“. ToUpper macht daraus „MAX MUSTERMANN“. Substring(4) liefert alles ab Index 4 – Index 3 ist das Leerzeichen, also bleibt „MUSTERMANN“."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string zeile = \"4 7 10\";\nstring[] t = zeile.Split(' ');\nint s = 0;\nforeach (string x in t)\n{\n    s += int.Parse(x);\n}\nConsole.WriteLine(s);",
+      "options": [
+        "4710",
+        "3",
+        "21",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Split(' ') liefert die strings „4“, „7“ und „10“. Jedes Teil wird mit int.Parse in eine Zahl umgewandelt und addiert: 4 + 7 + 10 = 21. Ohne int.Parse käme man gar nicht zu einem int."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string t = \"Hallo\";\nt.Replace(\"a\", \"e\");\nt = t.ToUpper();\nConsole.WriteLine(t);",
+      "options": [
+        "HELLO",
+        "Hello",
+        "Hallo",
+        "HALLO"
+      ],
+      "correctIndex": 3,
+      "explanation": "t.Replace(\"a\", \"e\") liefert einen neuen string, der aber nirgends gespeichert wird – t bleibt „Hallo“. Erst t = t.ToUpper(); speichert das Ergebnis, also „HALLO“."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[,] m =\n{\n    { 1, 2, 3 },\n    { 4, 5, 6 },\n    { 7, 8, 9 }\n};\nint s = 0;\nfor (int i = 0; i < 3; i++)\n{\n    s += m[i, i];\n}\nConsole.WriteLine(s);",
+      "options": [
+        "15",
+        "45",
+        "12",
+        "6"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Schleife addiert m[0, 0], m[1, 1] und m[2, 2] – also die Diagonale: 1 + 5 + 9 = 15."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[,] f = new int[2, 4];\nint zaehler = 0;\nfor (int z = 0; z < f.GetLength(0); z++)\n{\n    for (int s = 0; s < f.GetLength(1); s++)\n    {\n        zaehler++;\n    }\n}\nConsole.WriteLine(zaehler + f.Length);",
+      "options": [
+        "8",
+        "16",
+        "6",
+        "14"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die äußere Schleife läuft GetLength(0) = 2-mal, die innere jeweils GetLength(1) = 4-mal. zaehler ist also 8. Dazu kommt f.Length, die Anzahl aller Elemente – ebenfalls 8. Ergebnis: 16."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[][] noten =\n{\n    new int[] { 1, 2 },\n    new int[] { 3 },\n    new int[] { 2, 2, 4 }\n};\nConsole.WriteLine(noten[2][1] + noten.Length + noten[0].Length);",
+      "options": [
+        "9",
+        "6",
+        "7",
+        "Das Programm stürzt ab"
+      ],
+      "correctIndex": 2,
+      "explanation": "noten[2][1] ist im dritten Array das zweite Element, also 2. noten.Length ist die Anzahl der inneren Arrays (3), noten[0].Length ist 2. 2 + 3 + 2 = 7."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e4_01_arrays",
+  "title": "Arrays",
+  "summary": "Viele Werte gleichen Typs in einem Array speichern, über den Index darauf zugreifen und mit for und foreach durchlaufen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Stell dir vor, du willst die Noten von fünf Schularbeiten speichern. Mit fünf Variablen note1, note2, … wird das schnell mühsam – und bei 30 Noten unmöglich. Dafür gibt es Arrays: Ein Array ist wie ein Kasten mit nummerierten Fächern. Alle Fächer haben denselben Datentyp, und die Anzahl der Fächer steht fest, sobald das Array erstellt ist."
+    },
+    {
+      "type": "code",
+      "content": "int[] noten = { 2, 1, 3, 1, 4 };\n\nConsole.WriteLine(noten[0]);       // erstes Element\nConsole.WriteLine(noten[4]);       // letztes Element\nConsole.WriteLine(noten.Length);   // Anzahl der Elemente\n// Ausgabe:\n// 2\n// 4\n// 5"
+    },
+    {
+      "type": "text",
+      "content": "Die eckigen Klammern nach dem Typ (int[]) bedeuten „Array von int“. Auf ein einzelnes Element greifst du mit seinem Index zu, also der Fachnummer in eckigen Klammern.\n\nGanz wichtig: Der Index beginnt bei 0! Bei 5 Elementen gibt es also die Indizes 0 bis 4. Das letzte Element hat immer den Index Length - 1. Greifst du auf noten[5] zu, stürzt das Programm mit einer IndexOutOfRangeException ab – einer der häufigsten Anfängerfehler.\n\nKennst du die Werte am Anfang noch nicht, erstellst du ein leeres Array mit new und der gewünschten Größe. Alle Fächer bekommen dann einen Standardwert: 0 bei int und double, false bei bool. Danach kannst du die Fächer einzeln befüllen oder ändern:"
+    },
+    {
+      "type": "code",
+      "content": "int[] punkte = new int[3];   // drei Fächer, alle 0\npunkte[0] = 12;\npunkte[2] = 7;\npunkte[0] = punkte[0] + 3;   // Elemente lassen sich ändern\n\nConsole.WriteLine($\"{punkte[0]} {punkte[1]} {punkte[2]}\");\n// Ausgabe: 15 0 7\n\n// Werte direkt angeben geht auch so:\nstring[] tage = new string[] { \"Mo\", \"Di\", \"Mi\" };\nConsole.WriteLine(tage[1]);\n// Ausgabe: Di"
+    },
+    {
+      "type": "text",
+      "content": "Richtig praktisch werden Arrays mit Schleifen. Die Zählvariable einer for-Schleife ist genau der Index, den du brauchst. Verwende als Grenze immer i < noten.Length – dann passt die Schleife automatisch, wenn das Array größer oder kleiner wird."
+    },
+    {
+      "type": "code",
+      "content": "int[] noten = { 2, 1, 3, 1, 4 };\nint summe = 0;\n\nfor (int i = 0; i < noten.Length; i++)\n{\n    Console.WriteLine($\"Schularbeit {i + 1}: {noten[i]}\");\n    summe += noten[i];\n}\n\nConsole.WriteLine($\"Summe: {summe}\");\n// Ausgabe:\n// Schularbeit 1: 2\n// Schularbeit 2: 1\n// Schularbeit 3: 3\n// Schularbeit 4: 1\n// Schularbeit 5: 4\n// Summe: 11"
+    },
+    {
+      "type": "text",
+      "content": "Wenn du den Index nicht brauchst, ist foreach bequemer: Die Schleife holt sich der Reihe nach jedes Element. Aber Achtung: Die Variable von foreach ist nur zum Lesen da. Elemente ändern kannst du damit nicht – dafür brauchst du wieder eine for-Schleife mit Index."
+    },
+    {
+      "type": "code",
+      "content": "string[] einkauf = { \"Milch\", \"Brot\", \"Äpfel\" };\n\nforeach (string artikel in einkauf)\n{\n    Console.WriteLine($\"- {artikel}\");\n}\n// Ausgabe:\n// - Milch\n// - Brot\n// - Äpfel"
+    },
+    {
+      "type": "text",
+      "content": "Noch ein typischer Stolperstein: Console.WriteLine(noten) gibt nicht die Werte aus, sondern nur den Typnamen System.Int32[]. Für eine schnelle Ausgabe hilft string.Join. Außerdem kann die Klasse Array dein Array sortieren oder umdrehen:"
+    },
+    {
+      "type": "code",
+      "content": "int[] zahlen = { 42, 7, 19, 3 };\n\nConsole.WriteLine(zahlen);                    // System.Int32[]\nConsole.WriteLine(string.Join(\", \", zahlen)); // 42, 7, 19, 3\n\nArray.Sort(zahlen);      // aufsteigend sortieren\nConsole.WriteLine(string.Join(\", \", zahlen)); // 3, 7, 19, 42\n\nArray.Reverse(zahlen);   // Reihenfolge umdrehen\nConsole.WriteLine(string.Join(\", \", zahlen)); // 42, 19, 7, 3"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] z = { 4, 8, 15, 16, 23 };\nConsole.WriteLine(z[1] + z[z.Length - 1]);",
+      "options": [
+        "12",
+        "31",
+        "27",
+        "Das Programm stürzt mit einer IndexOutOfRangeException ab"
+      ],
+      "correctIndex": 1,
+      "explanation": "z[1] ist das zweite Element, also 8. z.Length ist 5, damit ist z[z.Length - 1] = z[4] das letzte Element, also 23. 8 + 23 = 31."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert bei diesem Code?",
+      "code": "int[] p = new int[3];\nfor (int i = 1; i <= 3; i++)\n{\n    p[i] = i * 10;\n}",
+      "options": [
+        "Nichts, das Array enthält danach 10, 20 und 30",
+        "Der Compiler meldet einen Fehler, weil das Array leer ist",
+        "Das erste Fach bekommt den Wert 30",
+        "Das Programm stürzt beim letzten Durchlauf mit einer IndexOutOfRangeException ab"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das Array hat 3 Fächer mit den Indizes 0, 1 und 2. Die Schleife läuft aber von 1 bis 3. Bei i = 3 gibt es kein passendes Fach, und das Programm stürzt ab. Richtig wäre: for (int i = 0; i < p.Length; i++)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] werte = { 5, 6, 7 };\nConsole.WriteLine(werte);",
+      "options": [
+        "System.Int32[]",
+        "5, 6, 7",
+        "567",
+        "5"
+      ],
+      "correctIndex": 0,
+      "explanation": "Console.WriteLine gibt bei einem Array nicht die Elemente aus, sondern nur den Typnamen. Für die Werte brauchst du eine Schleife oder string.Join(\", \", werte)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] a = new int[4];\na[2] = 7;\nint s = 0;\nforeach (int x in a)\n{\n    s += x;\n}\nConsole.WriteLine(s + a.Length);",
+      "options": [
+        "7",
+        "4",
+        "11",
+        "Fehler, weil nicht alle Fächer befüllt wurden"
+      ],
+      "correctIndex": 2,
+      "explanation": "new int[4] erzeugt vier Fächer mit dem Standardwert 0. Nur a[2] wird auf 7 gesetzt, die Summe ist also 7. Dazu kommt a.Length = 4, das ergibt 11."
+    }
+  ]
+}

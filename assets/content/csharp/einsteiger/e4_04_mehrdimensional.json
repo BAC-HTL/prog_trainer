@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e4_04_mehrdimensional",
+  "title": "Mehrdimensionale Arrays",
+  "summary": "Tabellen und Spielfelder mit zweidimensionalen Arrays speichern und mit verschachtelten Schleifen durchlaufen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Manche Daten sind eine Tabelle: ein Sitzplan, ein Tic-Tac-Toe-Feld oder die Punkte mehrerer Schüler:innen in mehreren Tests. Dafür gibt es zweidimensionale Arrays. Statt einer Fachnummer hat jedes Element zwei: Zeile und Spalte. Im Typ steht dafür ein Komma in den eckigen Klammern: int[,]"
+    },
+    {
+      "type": "code",
+      "content": "// 2 Zeilen, 3 Spalten\nint[,] tabelle =\n{\n    { 1, 2, 3 },\n    { 4, 5, 6 }\n};\n\nConsole.WriteLine(tabelle[0, 2]);   // Zeile 0, Spalte 2 -> 3\nConsole.WriteLine(tabelle[1, 0]);   // Zeile 1, Spalte 0 -> 4\n\ntabelle[1, 1] = 50;\nConsole.WriteLine(tabelle[1, 1]);   // 50"
+    },
+    {
+      "type": "text",
+      "content": "Bei der Größe musst du aufpassen:\n• Length liefert die Anzahl aller Elemente (hier 2 · 3 = 6).\n• GetLength(0) liefert die Anzahl der Zeilen.\n• GetLength(1) liefert die Anzahl der Spalten.\n\nEin leeres 2D-Array erstellst du mit new int[zeilen, spalten]. Alle Elemente sind dann wieder 0."
+    },
+    {
+      "type": "code",
+      "content": "int[,] feld = new int[3, 4];\n\nConsole.WriteLine(feld.Length);         // 12\nConsole.WriteLine(feld.GetLength(0));   // 3 Zeilen\nConsole.WriteLine(feld.GetLength(1));   // 4 Spalten"
+    },
+    {
+      "type": "text",
+      "content": "Um alle Elemente zu durchlaufen, brauchst du zwei verschachtelte for-Schleifen: Die äußere geht die Zeilen durch, die innere die Spalten. Hier speichern wir die Punkte von drei Schüler:innen in vier Tests und berechnen die Summe pro Person:"
+    },
+    {
+      "type": "code",
+      "content": "int[,] punkte =\n{\n    { 18, 20, 15, 19 },   // Ali\n    { 12, 14, 16, 10 },   // Bea\n    { 20, 19, 20, 18 }    // Cem\n};\nstring[] namen = { \"Ali\", \"Bea\", \"Cem\" };\n\nfor (int z = 0; z < punkte.GetLength(0); z++)\n{\n    int summe = 0;\n    for (int s = 0; s < punkte.GetLength(1); s++)\n    {\n        summe += punkte[z, s];\n    }\n    Console.WriteLine($\"{namen[z]}: {summe} Punkte\");\n}\n// Ausgabe:\n// Ali: 72 Punkte\n// Bea: 52 Punkte\n// Cem: 77 Punkte"
+    },
+    {
+      "type": "text",
+      "content": "Auch Spielfelder lassen sich gut als 2D-Array darstellen, z. B. mit char für Tic-Tac-Toe. Mit Console.Write (ohne Line) bleiben die Zeichen einer Zeile nebeneinander, erst nach jeder Zeile kommt ein Zeilenumbruch:"
+    },
+    {
+      "type": "code",
+      "content": "char[,] spiel =\n{\n    { 'X', 'O', '.' },\n    { '.', 'X', 'O' },\n    { '.', '.', 'X' }\n};\n\nfor (int z = 0; z < 3; z++)\n{\n    for (int s = 0; s < 3; s++)\n    {\n        Console.Write(spiel[z, s] + \" \");\n    }\n    Console.WriteLine();\n}\n// Ausgabe:\n// X O .\n// . X O\n// . . X"
+    },
+    {
+      "type": "text",
+      "content": "Es gibt noch eine zweite Art: das verzweigte Array (englisch „jagged array“), geschrieben als int[][]. Das ist ein Array, dessen Elemente selbst wieder Arrays sind – und die dürfen unterschiedlich lang sein. Praktisch, wenn z. B. jedes Fach eine andere Anzahl an Noten hat. Hier schreibst du zwei Klammerpaare: noten[1][0].\n\nTypischer Fehler: Bei einem int[,] schreibst du feld[1, 2], bei einem int[][] dagegen feld[1][2]. Verwechselst du das, meldet der Compiler einen Fehler."
+    },
+    {
+      "type": "code",
+      "content": "int[][] noten = new int[3][];\nnoten[0] = new int[] { 1, 2 };        // Mathe: 2 Noten\nnoten[1] = new int[] { 3, 2, 1 };     // Deutsch: 3 Noten\nnoten[2] = new int[] { 2 };           // Englisch: 1 Note\n\nConsole.WriteLine(noten[1][0]);        // 3\nConsole.WriteLine(noten.Length);       // 3 Fächer\nConsole.WriteLine(noten[1].Length);    // 3 Noten in Deutsch\n\nforeach (int[] fach in noten)\n{\n    Console.WriteLine(string.Join(\" \", fach));\n}\n// Ausgabe der Schleife:\n// 1 2\n// 3 2 1\n// 2"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[,] m =\n{\n    { 1, 2, 3 },\n    { 4, 5, 6 }\n};\nConsole.WriteLine(m[1, 0] + m[0, 2]);",
+      "options": [
+        "5",
+        "7",
+        "6",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "m[1, 0] ist Zeile 1, Spalte 0, also 4. m[0, 2] ist Zeile 0, Spalte 2, also 3. 4 + 3 = 7."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[,] m = new int[2, 3];\nConsole.WriteLine($\"{m.Length} {m.GetLength(0)} {m.GetLength(1)}\");",
+      "options": [
+        "2 2 3",
+        "6 3 2",
+        "6 2 3",
+        "3 2 3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Length zählt alle Elemente: 2 · 3 = 6. GetLength(0) ist die Anzahl der Zeilen (2), GetLength(1) die Anzahl der Spalten (3)."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int[,] feld = new int[3, 3];\nfeld[1][1] = 5;",
+      "options": [
+        "Bei einem int[,] schreibt man feld[1, 1] statt feld[1][1]",
+        "Ein 2D-Array muss immer gleich viele Zeilen wie Spalten haben",
+        "Der Index 1 ist bei einem 3x3-Feld außerhalb des Bereichs",
+        "Man muss das Array zuerst mit Werten befüllen"
+      ],
+      "correctIndex": 0,
+      "explanation": "feld ist ein zweidimensionales Array. Beide Indizes stehen in einem Klammerpaar, durch Komma getrennt: feld[1, 1] = 5; Die Schreibweise [1][1] gehört zu verzweigten Arrays (int[][])."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[][] j = new int[3][];\nj[0] = new int[2];\nj[1] = new int[] { 7, 8, 9 };\nj[2] = new int[1];\nConsole.WriteLine(j[1].Length + j.Length);",
+      "options": [
+        "9",
+        "5",
+        "3",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "j ist ein verzweigtes Array mit 3 Elementen, also j.Length = 3. Das Element j[1] ist ein Array mit 3 Zahlen, also j[1].Length = 3. 3 + 3 = 6."
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "id": "csharp-f4_01_exceptions",
+  "title": "Exceptions – Fehler abfangen mit try/catch",
+  "summary": "Laufzeitfehler mit try, catch und finally abfangen, gezielt auf Ausnahmetypen reagieren und selbst Exceptions werfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Manche Fehler merkt erst das laufende Programm: Jemand tippt \"zwölf\" statt 12, du teilst durch 0 oder greifst auf einen Index zu, den es nicht gibt. C# wirft dann eine Exception (Ausnahme). Fängt sie niemand auf, stürzt das Programm mit einer Fehlermeldung ab.\n\nMit try und catch kannst du darauf reagieren: Code, der schiefgehen kann, kommt in den try-Block. Tritt dort eine Exception auf, springt das Programm sofort in den catch-Block."
+    },
+    {
+      "type": "code",
+      "content": "try\n{\n    int zahl = int.Parse(\"zwölf\");\n    Console.WriteLine(\"Das wird nie ausgegeben\");\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"Das war keine gültige Zahl!\");\n}\nConsole.WriteLine(\"Programm läuft weiter\");\n// Ausgabe:\n// Das war keine gültige Zahl!\n// Programm läuft weiter"
+    },
+    {
+      "type": "text",
+      "content": "Beachte: Nach der fehlerhaften Zeile wird der restliche try-Block übersprungen. Nach dem catch geht es ganz normal weiter.\n\nIn den runden Klammern steht, welche Art von Exception du abfängst. Häufige Typen:\n• FormatException – Text lässt sich nicht umwandeln (int.Parse)\n• DivideByZeroException – ganzzahlige Division durch 0\n• IndexOutOfRangeException – falscher Array-Index\n• NullReferenceException – Zugriff auf ein Objekt, das null ist\n• KeyNotFoundException – Schlüssel fehlt im Dictionary"
+    },
+    {
+      "type": "text",
+      "content": "Du kannst mehrere catch-Blöcke hintereinander schreiben. C# prüft sie von oben nach unten und nimmt den ersten passenden. Mit einem Variablennamen wie ex bekommst du Zugriff auf das Exception-Objekt, zum Beispiel auf ex.Message. Ganz unten fängt catch (Exception ex) alles Übrige ab, denn alle Exceptions erben von der Klasse Exception."
+    },
+    {
+      "type": "code",
+      "content": "int[] noten = { 1, 2, 3 };\nstring[] eingaben = { \"1\", \"abc\", \"7\" };\n\nforeach (string e in eingaben)\n{\n    try\n    {\n        int index = int.Parse(e);\n        Console.WriteLine(\"Note: \" + noten[index]);\n    }\n    catch (FormatException)\n    {\n        Console.WriteLine(\"Keine Zahl: \" + e);\n    }\n    catch (IndexOutOfRangeException)\n    {\n        Console.WriteLine(\"Index zu groß: \" + e);\n    }\n    catch (Exception ex)\n    {\n        Console.WriteLine(\"Unerwartet: \" + ex.Message);\n    }\n}\n// Ausgabe:\n// Note: 2\n// Keine Zahl: abc\n// Index zu groß: 7"
+    },
+    {
+      "type": "text",
+      "content": "Die Reihenfolge ist wichtig: Spezielle Exceptions müssen vor allgemeinen stehen. Schreibst du catch (Exception) ganz oben, würde es alles abfangen und die Blöcke darunter wären nutzlos – deshalb meldet der Compiler dann sogar einen Fehler.\n\nMit finally hängst du Code an, der immer ausgeführt wird – egal ob ein Fehler auftritt oder nicht. Das ist praktisch zum Aufräumen, etwa um eine Datei zu schließen."
+    },
+    {
+      "type": "code",
+      "content": "static int Teile(int a, int b)\n{\n    try\n    {\n        return a / b;\n    }\n    catch (DivideByZeroException)\n    {\n        Console.WriteLine(\"Division durch 0!\");\n        return 0;\n    }\n    finally\n    {\n        Console.WriteLine(\"fertig\");\n    }\n}\n\nConsole.WriteLine(Teile(10, 2));\nConsole.WriteLine(Teile(1, 0));\n// Ausgabe:\n// fertig\n// 5\n// Division durch 0!\n// fertig\n// 0"
+    },
+    {
+      "type": "text",
+      "content": "Du kannst Exceptions auch selbst werfen – mit throw. Das ist sinnvoll, wenn eine Methode einen ungültigen Wert bekommt und nicht sinnvoll weiterarbeiten kann. Für falsche Argumente gibt es die ArgumentException. Die Exception \"wandert\" dann nach oben zum Aufrufer, bis sie jemand mit catch abfängt."
+    },
+    {
+      "type": "code",
+      "content": "static void SetzeNote(int note)\n{\n    if (note < 1 || note > 5)\n    {\n        throw new ArgumentException(\"Note muss zwischen 1 und 5 liegen\");\n    }\n    Console.WriteLine(\"Note gespeichert: \" + note);\n}\n\ntry\n{\n    SetzeNote(2);\n    SetzeNote(6);\n}\ncatch (ArgumentException ex)\n{\n    Console.WriteLine(\"Fehler: \" + ex.Message);\n}\n// Ausgabe:\n// Note gespeichert: 2\n// Fehler: Note muss zwischen 1 und 5 liegen"
+    },
+    {
+      "type": "text",
+      "content": "Zum Schluss ein Tipp: Exceptions sind für Ausnahmefälle da, nicht für normale Abläufe. Wenn du Benutzereingaben prüfen willst, ist int.TryParse oft eleganter als try/catch um int.Parse. Und fange niemals Exceptions mit einem leeren catch-Block ab, ohne etwas zu tun – dann verschwinden Fehler spurlos und du suchst stundenlang."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try\n{\n    Console.WriteLine(\"A\");\n    int x = int.Parse(\"3x\");\n    Console.WriteLine(\"B\");\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"C\");\n}\nConsole.WriteLine(\"D\");",
+      "options": [
+        "A B D",
+        "A C D",
+        "A C",
+        "C D"
+      ],
+      "correctIndex": 1,
+      "explanation": "\"A\" wird ausgegeben, dann schlägt int.Parse fehl. Der Rest des try-Blocks (\"B\") wird übersprungen, catch gibt \"C\" aus, danach läuft das Programm normal mit \"D\" weiter."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try\n{\n    int[] a = new int[2];\n    a[2] = 5;\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"Format\");\n}\ncatch (Exception)\n{\n    Console.WriteLine(\"Allgemein\");\n}\nfinally\n{\n    Console.WriteLine(\"Ende\");\n}",
+      "options": [
+        "Format Ende",
+        "Allgemein",
+        "Ende",
+        "Allgemein Ende"
+      ],
+      "correctIndex": 3,
+      "explanation": "a[2] wirft eine IndexOutOfRangeException. Das ist keine FormatException, also passt erst catch (Exception). Danach läuft finally immer."
+    },
+    {
+      "question": "Finde den Fehler: Warum meldet der Compiler hier einen Fehler?",
+      "code": "try\n{\n    int z = int.Parse(Console.ReadLine());\n}\ncatch (Exception)\n{\n    Console.WriteLine(\"Fehler\");\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"Keine Zahl\");\n}",
+      "options": [
+        "catch (Exception) fängt schon alles ab – der FormatException-Block wäre unerreichbar",
+        "Es darf nur ein catch-Block geben",
+        "Es fehlt ein finally-Block",
+        "int.Parse wirft nie eine FormatException"
+      ],
+      "correctIndex": 0,
+      "explanation": "FormatException erbt von Exception. Der erste catch-Block würde sie also schon abfangen. Der Compiler erkennt das und meldet Fehler CS0160. Spezielle Exceptions gehören nach oben."
+    },
+    {
+      "question": "Welches Schlüsselwort brauchst du, um in einer Methode selbst eine Exception auszulösen?",
+      "options": [
+        "catch",
+        "try",
+        "throw",
+        "finally"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mit throw new ArgumentException(\"...\"); wirfst du eine Exception. try und catch sind zum Abfangen da, finally für Aufräumcode."
+    }
+  ]
+}

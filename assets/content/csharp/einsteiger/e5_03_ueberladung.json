@@ -1,0 +1,93 @@
+{
+  "id": "csharp-e5_03_ueberladung",
+  "title": "Methoden überladen",
+  "summary": "Mehrere Methoden mit gleichem Namen, aber unterschiedlichen Parametern schreiben und optionale Parameter nutzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ist dir aufgefallen, dass Console.WriteLine mit int, string, double und bool funktioniert? Dahinter stecken mehrere Methoden mit demselben Namen, aber unterschiedlichen Parametern. Das nennt man Überladung. Der Compiler schaut sich beim Aufruf die Argumente an und wählt die passende Version aus."
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(42);        // Version mit int\nConsole.WriteLine(\"Text\");    // Version mit string\nConsole.WriteLine(true);      // Version mit bool\nConsole.WriteLine(Math.Max(3, 8));       // Max für int\nConsole.WriteLine(Math.Max(-2.5, -7.5)); // Max für double"
+    },
+    {
+      "type": "text",
+      "content": "Eine Einschränkung gibt es: Die Methoden, die du bisher unten in die Datei geschrieben hast (lokale Funktionen), lassen sich nicht überladen. Für Überladung brauchst du „echte“ Methoden in einer Klasse.\n\nDas geht ganz einfach: Schreib am Ende der Datei class Rechner { … } und stell vor jede Methode public static. Aufgerufen wird mit Klassenname.Methode – genau wie bei Math.Max. Was Klassen genau sind, lernst du später. Für jetzt reicht: Die Klasse ist ein Behälter für zusammengehörige Methoden."
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(Rechner.Flaeche(4));        // Quadrat: 16\nConsole.WriteLine(Rechner.Flaeche(4, 5));     // Rechteck: 20\nConsole.WriteLine(Rechner.Flaeche(2, 3, 4));  // Quader-Oberfläche: 52\n\nclass Rechner\n{\n    public static int Flaeche(int seite)\n    {\n        return seite * seite;\n    }\n\n    public static int Flaeche(int laenge, int breite)\n    {\n        return laenge * breite;\n    }\n\n    public static int Flaeche(int a, int b, int c)\n    {\n        return 2 * (a * b + a * c + b * c);\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Überladene Methoden müssen sich in ihrer Parameterliste unterscheiden:\n• in der Anzahl der Parameter oder\n• in den Typen der Parameter (bzw. deren Reihenfolge).\n\nNicht ausreichend ist ein anderer Rückgabetyp oder ein anderer Parametername. Der Compiler erkennt die Version nämlich nur an den Argumenten beim Aufruf – und da sieht man weder Rückgabetyp noch Parameternamen."
+    },
+    {
+      "type": "code",
+      "content": "Ausgabe.Zeige(7);\nAusgabe.Zeige(\"sieben\");\nAusgabe.Zeige(new int[] { 1, 2, 3 });\n\nclass Ausgabe\n{\n    public static void Zeige(int zahl)\n    {\n        Console.WriteLine($\"Zahl: {zahl}\");\n    }\n\n    public static void Zeige(string text)\n    {\n        Console.WriteLine($\"Text: {text}\");\n    }\n\n    public static void Zeige(int[] werte)\n    {\n        Console.WriteLine($\"Array: {string.Join(\", \", werte)}\");\n    }\n\n    // NICHT erlaubt – unterscheidet sich nur im Rückgabetyp:\n    // public static string Zeige(int zahl) { ... }\n}\n// Ausgabe:\n// Zahl: 7\n// Text: sieben\n// Array: 1, 2, 3"
+    },
+    {
+      "type": "text",
+      "content": "Oft brauchst du gar nicht mehrere Versionen, sondern nur einen Standardwert für einen Parameter. Dafür gibt es optionale Parameter: Du schreibst den Standardwert mit = direkt in die Parameterliste. Lässt man das Argument beim Aufruf weg, wird der Standardwert verwendet. Optionale Parameter müssen immer am Ende der Liste stehen – und sie funktionieren auch bei den Methoden unten in der Datei."
+    },
+    {
+      "type": "code",
+      "content": "Gruss(\"Mia\");\nGruss(\"Tom\", \"Hallo\");\nGruss(\"Ida\", \"Grüß Gott\", 3);\n\nvoid Gruss(string name, string wort = \"Servus\", int mal = 1)\n{\n    for (int i = 0; i < mal; i++)\n    {\n        Console.WriteLine($\"{wort}, {name}!\");\n    }\n}\n// Ausgabe:\n// Servus, Mia!\n// Hallo, Tom!\n// Grüß Gott, Ida!\n// Grüß Gott, Ida!\n// Grüß Gott, Ida!"
+    },
+    {
+      "type": "text",
+      "content": "Wann was?\n• Überladung, wenn die Methode für verschiedene Typen oder auf unterschiedliche Art arbeiten soll (z. B. Flaeche für Quadrat und Rechteck).\n• Optionale Parameter, wenn es nur um einen sinnvollen Standardwert geht (z. B. Anzahl = 1)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus (Zeile für Zeile)?",
+      "code": "Info.Zeige(5);\nInfo.Zeige(\"5\");\nInfo.Zeige(5.0);\n\nclass Info\n{\n    public static void Zeige(int x) { Console.WriteLine(\"Zahl\"); }\n    public static void Zeige(string x) { Console.WriteLine(\"Text\"); }\n    public static void Zeige(double x) { Console.WriteLine(\"Komma\"); }\n}",
+      "options": [
+        "Zahl, Zahl, Zahl",
+        "Zahl, Text, Zahl",
+        "Zahl, Text, Komma",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Compiler wählt anhand des Arguments: 5 ist ein int, \"5\" ist ein string und 5.0 ist wegen des Dezimalpunkts ein double."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Console.WriteLine(Mathe.Teile(7, 2));\n\nclass Mathe\n{\n    public static int Teile(int a, int b)\n    {\n        return a / b;\n    }\n\n    public static double Teile(int a, int b)\n    {\n        return (double)a / b;\n    }\n}",
+      "options": [
+        "Die beiden Methoden unterscheiden sich nur im Rückgabetyp – das reicht für Überladung nicht",
+        "Methoden in einer Klasse brauchen kein static",
+        "Eine Klasse darf nur eine Methode enthalten",
+        "Der Name Teile ist ein reserviertes Wort"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beide Methoden haben exakt dieselbe Parameterliste (int, int). Beim Aufruf Mathe.Teile(7, 2) könnte der Compiler nicht entscheiden, welche gemeint ist. Überladungen müssen sich in Anzahl oder Typen der Parameter unterscheiden."
+    },
+    {
+      "question": "Was gibt dieser Code aus (Zeile für Zeile)?",
+      "code": "Bestelle(\"Pizza\");\nBestelle(\"Cola\", 3);\n\nvoid Bestelle(string artikel, int menge = 1)\n{\n    Console.WriteLine($\"{menge}x {artikel}\");\n}",
+      "options": [
+        "1x Pizza, 1x Cola",
+        "Pizza, 3x Cola",
+        "Der Compiler meldet einen Fehler, weil bei Pizza ein Argument fehlt",
+        "1x Pizza, 3x Cola"
+      ],
+      "correctIndex": 3,
+      "explanation": "menge ist ein optionaler Parameter mit Standardwert 1. Beim ersten Aufruf fehlt das Argument, also wird 1 verwendet. Beim zweiten Aufruf wird 3 übergeben."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Drucke(5);\nDrucke(\"fünf\");\n\nvoid Drucke(int x)\n{\n    Console.WriteLine(x);\n}\n\nvoid Drucke(string x)\n{\n    Console.WriteLine(x);\n}",
+      "options": [
+        "Die Methoden müssen über den Aufrufen stehen",
+        "Die Methoden unten in der Datei (lokale Funktionen) kann man nicht überladen – dafür braucht man eine Klasse",
+        "Ein int-Parameter und ein string-Parameter dürfen nicht gleich heißen",
+        "void-Methoden kann man nie überladen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Lokale Funktionen dürfen keinen Namen doppelt verwenden, auch wenn die Parameter unterschiedlich sind. Für Überladung gehören die Methoden mit public static in eine Klasse, z. B. class Druck { … }, und werden mit Druck.Drucke(5) aufgerufen."
+    }
+  ]
+}

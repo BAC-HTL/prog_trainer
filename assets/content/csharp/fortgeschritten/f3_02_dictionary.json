@@ -1,0 +1,93 @@
+{
+  "id": "csharp-f3_02_dictionary",
+  "title": "Dictionary<TKey, TValue> – Nachschlagen per Schlüssel",
+  "summary": "Werte unter einem eindeutigen Schlüssel speichern, schnell wiederfinden und mit TryGetValue sicher abfragen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Stell dir ein Telefonbuch vor: Du suchst nicht nach Position 37, sondern nach einem Namen. Genau so funktioniert ein Dictionary. Es speichert Paare aus Schlüssel (Key) und Wert (Value). Bei Dictionary<string, int> sind die Schlüssel strings und die Werte ints – zum Beispiel Schülername → Punkte."
+    },
+    {
+      "type": "code",
+      "content": "var punkte = new Dictionary<string, int>();\npunkte[\"Lena\"] = 42;\npunkte[\"Ali\"] = 37;\npunkte.Add(\"Mia\", 50);\n\nConsole.WriteLine(punkte[\"Ali\"]);\nConsole.WriteLine(punkte.Count);\n// Ausgabe:\n// 37\n// 3"
+    },
+    {
+      "type": "text",
+      "content": "Jeder Schlüssel darf nur einmal vorkommen. Die Werte dürfen sich dagegen wiederholen. Beim Eintragen gibt es einen wichtigen Unterschied:\n• dict[key] = wert legt einen neuen Eintrag an oder überschreibt einen vorhandenen.\n• dict.Add(key, wert) wirft eine ArgumentException, wenn der Schlüssel schon existiert."
+    },
+    {
+      "type": "code",
+      "content": "var lager = new Dictionary<string, int>\n{\n    [\"Äpfel\"] = 10,\n    [\"Birnen\"] = 4\n};\nlager[\"Äpfel\"] = 12;          // überschreibt 10\nlager[\"Äpfel\"] += 3;          // jetzt 15\n// lager.Add(\"Birnen\", 7);    // ArgumentException: Schlüssel gibt es schon!\nConsole.WriteLine(lager[\"Äpfel\"]);\n// Ausgabe: 15"
+    },
+    {
+      "type": "text",
+      "content": "Der häufigste Anfängerfehler: Du liest einen Schlüssel, den es nicht gibt. Dann wirft C# eine KeyNotFoundException und das Programm stürzt ab. Prüfe vorher mit ContainsKey – oder noch besser mit TryGetValue. TryGetValue liefert true oder false und schreibt den gefundenen Wert in eine out-Variable."
+    },
+    {
+      "type": "code",
+      "content": "var hauptstadt = new Dictionary<string, string>\n{\n    [\"Österreich\"] = \"Wien\",\n    [\"Italien\"] = \"Rom\"\n};\n\nif (hauptstadt.TryGetValue(\"Italien\", out string stadt))\n{\n    Console.WriteLine(stadt);\n}\nif (!hauptstadt.ContainsKey(\"Spanien\"))\n{\n    Console.WriteLine(\"Spanien unbekannt\");\n}\n// Ausgabe:\n// Rom\n// Spanien unbekannt"
+    },
+    {
+      "type": "text",
+      "content": "Mit foreach durchläufst du alle Einträge. Jedes Element ist ein KeyValuePair mit den Eigenschaften Key und Value. Brauchst du nur die Schlüssel oder nur die Werte, gibt es dict.Keys und dict.Values. Mit Remove(key) löschst du einen Eintrag.\n\nEin klassisches Beispiel ist das Zählen: Wie oft kommt jedes Wort vor?"
+    },
+    {
+      "type": "code",
+      "content": "string[] woerter = { \"ja\", \"nein\", \"ja\", \"vielleicht\", \"ja\" };\nvar anzahl = new Dictionary<string, int>();\n\nforeach (string w in woerter)\n{\n    if (anzahl.ContainsKey(w))\n        anzahl[w]++;\n    else\n        anzahl[w] = 1;\n}\n\nforeach (var paar in anzahl)\n{\n    Console.WriteLine($\"{paar.Key}: {paar.Value}\");\n}\n// Ausgabe:\n// ja: 3\n// nein: 1\n// vielleicht: 1"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: Ein Dictionary garantiert keine bestimmte Reihenfolge. In der Praxis kommen die Einträge oft in der Einfügereihenfolge heraus, solange du nichts löschst – darauf verlassen solltest du dich aber nicht. Wenn die Reihenfolge wichtig ist, sortierst du beim Ausgeben (wie das elegant geht, lernst du bei LINQ)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var d = new Dictionary<string, int>();\nd[\"x\"] = 1;\nd[\"y\"] = 2;\nd[\"x\"] = 5;\nConsole.WriteLine(d.Count + d[\"x\"]);",
+      "options": [
+        "8",
+        "3",
+        "7",
+        "Eine ArgumentException"
+      ],
+      "correctIndex": 2,
+      "explanation": "d[\"x\"] = 5 überschreibt den vorhandenen Eintrag, es entsteht kein neuer. Count ist also 2, d[\"x\"] ist 5. 2 + 5 = 7."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "var alter = new Dictionary<string, int>();\nalter.Add(\"Tom\", 16);\nalter.Add(\"Tom\", 17);\nConsole.WriteLine(alter[\"Tom\"]);",
+      "options": [
+        "Es wird 17 ausgegeben",
+        "Zur Laufzeit gibt es eine ArgumentException",
+        "Es wird 16 ausgegeben",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "Add wirft eine ArgumentException, wenn der Schlüssel schon existiert. Zum Überschreiben müsstest du alter[\"Tom\"] = 17; schreiben."
+    },
+    {
+      "question": "Welche Ausnahme tritt auf, wenn du mit d[\"Zürich\"] einen Schlüssel liest, der nicht im Dictionary steht?",
+      "code": "var d = new Dictionary<string, int> { [\"Wien\"] = 1 };\nConsole.WriteLine(d[\"Zürich\"]);",
+      "options": [
+        "Keine – es wird 0 ausgegeben",
+        "NullReferenceException",
+        "IndexOutOfRangeException",
+        "KeyNotFoundException"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beim Lesen über den Indexer muss der Schlüssel existieren, sonst gibt es eine KeyNotFoundException. Mit TryGetValue oder ContainsKey kannst du das vermeiden."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var preise = new Dictionary<string, int> { [\"Cola\"] = 3, [\"Wasser\"] = 2 };\nif (preise.TryGetValue(\"Saft\", out int p))\n    Console.WriteLine(\"gefunden: \" + p);\nelse\n    Console.WriteLine(\"nicht da: \" + p);",
+      "options": [
+        "nicht da: 0",
+        "gefunden: 0",
+        "nicht da: 2",
+        "Eine KeyNotFoundException"
+      ],
+      "correctIndex": 0,
+      "explanation": "TryGetValue wirft keine Ausnahme. Gibt es den Schlüssel nicht, liefert es false und setzt die out-Variable auf den Standardwert des Typs – bei int ist das 0."
+    }
+  ]
+}

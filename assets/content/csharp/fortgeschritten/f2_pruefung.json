@@ -1,0 +1,126 @@
+{
+  "id": "csharp-f2-pruefung",
+  "title": "Abschlussprüfung: Vererbung & Interfaces",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Welpe w = new Welpe();\n\nclass Tier\n{\n    public Tier() { Console.Write(\"Tier \"); }\n}\n\nclass Hund : Tier\n{\n    public Hund() { Console.Write(\"Hund \"); }\n}\n\nclass Welpe : Hund\n{\n    public Welpe() { Console.Write(\"Welpe\"); }\n}",
+      "options": [
+        "Welpe Hund Tier",
+        "Tier Hund Welpe",
+        "Welpe",
+        "Tier Welpe"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei mehrstufiger Vererbung laufen die Konstruktoren von oben nach unten: zuerst Tier, dann Hund, zuletzt Welpe."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Neu n = new Neu();\nBasis b = n;\nConsole.WriteLine($\"{b.Text()} {n.Text()}\");\n\nclass Basis\n{\n    public virtual string Text() => \"Basis\";\n}\n\nclass Neu : Basis\n{\n    public string Text() => \"Neu\";\n}",
+      "options": [
+        "Basis Basis",
+        "Neu Neu",
+        "Basis Neu",
+        "Neu Basis"
+      ],
+      "correctIndex": 2,
+      "explanation": "Neu.Text() hat kein override und verdeckt die Basismethode nur. Über die Variable b vom Typ Basis wird deshalb Basis.Text() aufgerufen, über n vom Typ Neu dagegen Neu.Text(). Mit override käme zweimal Neu heraus."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Instrument i = new Gitarre();\ni.Spielen();\n\nabstract class Instrument\n{\n    public abstract void Spielen();\n    public abstract void Stimmen();\n}\n\nclass Gitarre : Instrument\n{\n    public override void Spielen()\n    {\n        Console.WriteLine(\"Schrumm\");\n    }\n}",
+      "options": [
+        "Abstrakte Klassen dürfen keinen Konstruktor haben",
+        "Gitarre überschreibt die abstrakte Methode Stimmen() nicht",
+        "Spielen() muss in Instrument ebenfalls abstract sein",
+        "Gitarre muss selbst eine abstrakte Klasse sein, weil sie von einer abstrakten Klasse erbt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jede nicht abstrakte Unterklasse muss alle abstrakten Methoden der Basisklasse mit override umsetzen. Gitarre implementiert Spielen(), aber Stimmen() fehlt."
+    },
+    {
+      "question": "Du programmierst ein Spiel. Gegner, Truhen und Türen haben nichts gemeinsam, sollen aber alle mit der Methode Interagieren() angesprochen werden können. Was ist die beste Lösung?",
+      "options": [
+        "Ein Interface IInteragierbar, das alle drei Klassen implementieren",
+        "Eine gemeinsame Basisklasse Gegner, von der Truhe und Tuer erben",
+        "Interagieren() in jeder Klasse als static-Methode schreiben",
+        "Alle drei Klassen in eine einzige Klasse zusammenlegen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die drei Klassen haben keine „ist ein“-Beziehung, sie teilen nur eine Fähigkeit. Genau dafür sind Interfaces gedacht. Eine Truhe ist kein Gegner – Vererbung wäre hier falsch modelliert."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Vogel[] voegel = { new Adler(), new Pinguin(), new Ente() };\nint flieger = 0;\nforeach (Vogel v in voegel)\n{\n    if (v is IFlieger)\n    {\n        flieger++;\n    }\n}\nConsole.WriteLine(flieger);\n\ninterface IFlieger\n{\n    void Fliegen();\n}\n\nclass Vogel { }\n\nclass Adler : Vogel, IFlieger\n{\n    public void Fliegen() { }\n}\n\nclass Pinguin : Vogel { }\n\nclass Ente : Vogel, IFlieger\n{\n    public void Fliegen() { }\n}",
+      "options": [
+        "1",
+        "3",
+        "0",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Ausdruck v is IFlieger prüft, ob das Objekt das Interface implementiert. Adler und Ente tun das, der Pinguin nicht. Ergebnis: 2."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "IBewertbar b = new Film();\nConsole.WriteLine(b.Bewerten());\n\ninterface IBewertbar\n{\n    int Bewerten();\n}\n\nclass Film : IBewertbar\n{\n    int Bewerten()\n    {\n        return 5;\n    }\n}",
+      "options": [
+        "Interfaces dürfen keine Methoden mit Rückgabewert haben",
+        "Bewerten() braucht das Schlüsselwort override",
+        "Die Methode Bewerten() ist in der Klasse nicht public und erfüllt den Vertrag des Interfaces daher nicht",
+        "Ein Interface darf nur von einer Klasse implementiert werden"
+      ],
+      "correctIndex": 2,
+      "explanation": "Interface-Member sind automatisch öffentlich. Die Klasse muss sie deshalb auch public umsetzen. Ohne public ist Bewerten() privat und zählt nicht als Implementierung."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Tier t = new Hund(\"Bello\");\nConsole.WriteLine(t.Beschreibung());\n\nclass Tier\n{\n    protected string name;\n\n    public Tier(string name)\n    {\n        this.name = name;\n    }\n\n    public virtual string Art() => \"Tier\";\n\n    public string Beschreibung() => $\"{Art()}: {name}\";\n}\n\nclass Hund : Tier\n{\n    public Hund(string name) : base(name) { }\n\n    public override string Art() => \"Hund\";\n}",
+      "options": [
+        "Hund: Bello",
+        "Bello",
+        "Tier: Bello",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 0,
+      "explanation": "Hund überschreibt Art() mit override. Beschreibung() steht in der Basisklasse, ruft aber Art() des echten Objekts auf – also die Version von Hund."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Person p = new Praktikant();\nConsole.WriteLine(p.Lohn());\n\nclass Person\n{\n    public virtual int Lohn() => 1000;\n}\n\nclass Angestellter : Person\n{\n    public override int Lohn() => base.Lohn() + 100;\n}\n\nclass Praktikant : Angestellter\n{\n    public override int Lohn() => base.Lohn() + 50;\n}",
+      "options": [
+        "1100",
+        "1000",
+        "1150",
+        "1050"
+      ],
+      "correctIndex": 2,
+      "explanation": "Praktikant.Lohn() ruft base.Lohn() auf. Das ist Angestellter.Lohn(), das wiederum base.Lohn() aufruft: 1000 + 100 = 1100. Dazu kommen noch 50 – insgesamt 1150."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Person[] leute = { new Lehrer(\"Mathe\"), new Person(), new Lehrer(\"Deutsch\") };\nint buchstaben = 0;\nforeach (Person p in leute)\n{\n    if (p is Lehrer l)\n    {\n        buchstaben += l.Fach.Length;\n    }\n}\nConsole.WriteLine(buchstaben);\n\nclass Person { }\n\nclass Lehrer : Person\n{\n    public string Fach { get; }\n    public Lehrer(string fach) { Fach = fach; }\n}",
+      "options": [
+        "0",
+        "12",
+        "5",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur Objekte, die wirklich vom Typ Lehrer sind, erfüllen p is Lehrer l. Über die neue Variable l kommt man an das Fach heran, das es in Person nicht gibt. Gezählt werden die Buchstaben von \"Mathe\" (5) und \"Deutsch\" (7): 12."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "E_Auto e = new E_Auto();\nConsole.WriteLine(e.Ladestand);\n\ninterface IElektrisch\n{\n    int Ladestand { get; }\n}\n\nclass Fahrzeug { }\n\nclass E_Auto : IElektrisch, Fahrzeug\n{\n    public int Ladestand { get; } = 80;\n}",
+      "options": [
+        "Eine Klasse darf nicht gleichzeitig erben und ein Interface implementieren",
+        "Die Basisklasse Fahrzeug muss in der Liste vor dem Interface IElektrisch stehen",
+        "Ladestand muss in E_Auto als override deklariert werden",
+        "Fahrzeug muss abstract sein, damit man davon erben kann"
+      ],
+      "correctIndex": 1,
+      "explanation": "In der Liste nach dem Doppelpunkt muss die Basisklasse immer an erster Stelle stehen, danach folgen die Interfaces. Richtig: class E_Auto : Fahrzeug, IElektrisch"
+    }
+  ]
+}

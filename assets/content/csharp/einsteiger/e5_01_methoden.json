@@ -1,0 +1,96 @@
+{
+  "id": "csharp-e5_01_methoden",
+  "title": "Eigene Methoden",
+  "summary": "Code mit eigenen Methoden in benannte Bausteine verpacken, aufrufen und verstehen, wo Variablen gültig sind.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Methoden verwendest du schon die ganze Zeit: Console.WriteLine, int.Parse oder Math.Max. Eine Methode ist ein Stück Code mit einem Namen. Du schreibst ihn einmal und kannst ihn danach beliebig oft aufrufen. Das spart Kopierarbeit, und wenn du etwas ändern willst, änderst du es nur an einer Stelle.\n\nJetzt schreibst du deine eigenen Methoden:"
+    },
+    {
+      "type": "code",
+      "content": "Begruessung();\nConsole.WriteLine(\"Heute lernen wir Methoden.\");\nBegruessung();\n\nvoid Begruessung()\n{\n    Console.WriteLine(\"**********************\");\n    Console.WriteLine(\"*  Servus in Info!   *\");\n    Console.WriteLine(\"**********************\");\n}"
+    },
+    {
+      "type": "text",
+      "content": "So ist eine Methode aufgebaut:\n• void – die Methode liefert kein Ergebnis zurück, sie „tut“ nur etwas (z. B. etwas ausgeben). Methoden mit Ergebnis lernst du in der nächsten Lektion.\n• Begruessung – der Name. In C# beginnen Methodennamen mit einem Großbuchstaben und beschreiben, was die Methode tut.\n• () – die runden Klammern. Hier kommen später Werte hinein, die man der Methode mitgibt.\n• { … } – der Methodenrumpf mit dem eigentlichen Code.\n\nAufgerufen wird die Methode mit ihrem Namen und runden Klammern: Begruessung(); – die Klammern darfst du nie vergessen!"
+    },
+    {
+      "type": "text",
+      "content": "Wo stehen die Methoden? In unseren Programmen schreibst du den normalen Code wie gewohnt oben hin und die Methoden darunter, ans Ende der Datei. Die Reihenfolge der Ausführung bestimmt nur der Aufruf: Das Programm läuft von oben nach unten durch deine Anweisungen und springt bei jedem Aufruf in die Methode hinein und danach wieder zurück.\n\nMethoden dürfen auch andere Methoden aufrufen:"
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(\"Start\");\nTabelle();\nConsole.WriteLine(\"Ende\");\n\nvoid Tabelle()\n{\n    Linie();\n    Console.WriteLine(\"| Fach   | Note |\");\n    Linie();\n}\n\nvoid Linie()\n{\n    Console.WriteLine(\"+--------+------+\");\n}\n// Ausgabe:\n// Start\n// +--------+------+\n// | Fach   | Note |\n// +--------+------+\n// Ende"
+    },
+    {
+      "type": "text",
+      "content": "Eine Variable, die du innerhalb einer Methode anlegst, gibt es nur in dieser Methode. Man sagt: Ihr Gültigkeitsbereich (engl. „scope“) ist der Methodenrumpf. Sobald die Methode fertig ist, ist die Variable wieder weg. Außerhalb davon kennt der Compiler sie nicht:"
+    },
+    {
+      "type": "code",
+      "content": "Wochenstunden();\n// Console.WriteLine(stunden);  // Fehler: stunden gibt es hier nicht!\n\nvoid Wochenstunden()\n{\n    int stunden = 5 * 7;\n    Console.WriteLine($\"Du hast {stunden} Stunden pro Woche.\");\n}\n// Ausgabe: Du hast 35 Stunden pro Woche."
+    },
+    {
+      "type": "text",
+      "content": "Gut zu wissen: Weil unsere Programme Top-Level-Statements verwenden (Code ohne class und Main), sind solche Methoden technisch gesehen „lokale Funktionen“. Für dich macht das jetzt keinen Unterschied.\n\nIn älteren Büchern und Vorlagen siehst du aber oft die klassische Form: Dort steht der Code in einer Methode namens Main innerhalb einer class Program, und vor jeder Methode steht das Wort static. Das Prinzip ist genau dasselbe:"
+    },
+    {
+      "type": "code",
+      "content": "class Program\n{\n    static void Main()\n    {\n        SagHallo();\n    }\n\n    static void SagHallo()\n    {\n        Console.WriteLine(\"Hallo!\");\n    }\n}\n// Ausgabe: Hallo!"
+    },
+    {
+      "type": "text",
+      "content": "Tipps für gute Methoden:\n• Eine Methode erledigt genau eine Aufgabe.\n• Der Name ist ein Verb oder beschreibt die Aufgabe: ZeigeMenue, Linie, Begruessung.\n• Wenn du merkst, dass du Code kopierst, ist das ein Zeichen: Mach eine Methode daraus!"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus (Zeile für Zeile)?",
+      "code": "Console.WriteLine(\"A\");\nGruss();\nConsole.WriteLine(\"C\");\nGruss();\n\nvoid Gruss()\n{\n    Console.WriteLine(\"B\");\n}",
+      "options": [
+        "A, C, B, B",
+        "A, B, C, B",
+        "B, A, C",
+        "A, C"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Programm läuft von oben nach unten: A wird ausgegeben, dann springt der Aufruf Gruss() in die Methode (B), danach kommt C und mit dem zweiten Aufruf noch einmal B. Dass die Methode unten steht, spielt für die Reihenfolge keine Rolle."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Linie;\n\nvoid Linie()\n{\n    Console.WriteLine(\"----------\");\n}",
+      "options": [
+        "Die Methode muss über dem Aufruf stehen",
+        "Methodennamen dürfen nicht kürzer als 6 Zeichen sein",
+        "void-Methoden dürfen nichts ausgeben",
+        "Beim Aufruf fehlen die runden Klammern: Linie();"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine Methode wird immer mit runden Klammern aufgerufen, auch wenn nichts hineinkommt. Ohne Klammern ist Linie nur der Name und keine Anweisung."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Zaehle();\nConsole.WriteLine(anzahl);\n\nvoid Zaehle()\n{\n    int anzahl = 5;\n}",
+      "options": [
+        "Die Variable anzahl gibt es nur innerhalb der Methode Zaehle",
+        "Die Methode Zaehle wird nie aufgerufen",
+        "Eine Methode darf keine Variablen anlegen",
+        "Console.WriteLine darf nicht nach einem Methodenaufruf stehen"
+      ],
+      "correctIndex": 0,
+      "explanation": "anzahl wird innerhalb von Zaehle angelegt. Ihr Gültigkeitsbereich ist nur der Methodenrumpf, außerhalb ist sie unbekannt. Wie man einen Wert aus einer Methode herausbekommt, lernst du in der nächsten Lektion (return)."
+    },
+    {
+      "question": "Was bedeutet das Wort void vor einem Methodennamen?",
+      "options": [
+        "Die Methode ist leer und enthält keinen Code",
+        "Die Methode kann nur einmal aufgerufen werden",
+        "Die Methode liefert keinen Wert zurück",
+        "Die Methode ist privat und von außen unsichtbar"
+      ],
+      "correctIndex": 2,
+      "explanation": "void heißt „nichts“: Die Methode erledigt eine Aufgabe (z. B. eine Ausgabe), gibt aber kein Ergebnis an den Aufrufer zurück."
+    }
+  ]
+}

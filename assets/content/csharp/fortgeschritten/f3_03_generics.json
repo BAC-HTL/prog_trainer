@@ -1,0 +1,96 @@
+{
+  "id": "csharp-f3_03_generics",
+  "title": "Generics – Code für beliebige Typen",
+  "summary": "Eigene generische Methoden und Klassen mit Typparameter T schreiben und mit where-Einschränkungen absichern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bei List<int> und List<string> hast du Generics schon benutzt: Es gibt nur eine einzige Klasse List<T>, und das T (für \"Typ\") wird erst beim Verwenden festgelegt. Das kannst du auch selbst. Stell dir vor, du brauchst eine Methode, die das erste Element eines Arrays liefert – einmal für int[], einmal für string[]. Statt sie doppelt zu schreiben, machst du sie generisch:"
+    },
+    {
+      "type": "code",
+      "content": "static T Erstes<T>(T[] werte)\n{\n    return werte[0];\n}\n\nint[] zahlen = { 7, 3, 9 };\nstring[] namen = { \"Lena\", \"Ali\" };\n\nConsole.WriteLine(Erstes(zahlen));\nConsole.WriteLine(Erstes<string>(namen));\n// Ausgabe:\n// 7\n// Lena"
+    },
+    {
+      "type": "text",
+      "content": "Das <T> nach dem Methodennamen ist der Typparameter. Innerhalb der Methode steht T für \"irgendeinen Typ\". Beim Aufruf kannst du den Typ ausdrücklich angeben (Erstes<string>(namen)) oder ihn weglassen – dann erkennt der Compiler ihn selbst aus dem Argument. Das Ergebnis ist trotzdem typsicher: Erstes(zahlen) liefert einen echten int, keinen \"irgendwas\"-Wert."
+    },
+    {
+      "type": "text",
+      "content": "Auch Klassen können generisch sein. Eine Box, die genau einen Gegenstand beliebigen Typs aufbewahrt, sieht so aus:"
+    },
+    {
+      "type": "code",
+      "content": "var b1 = new Box<int>(42);\nvar b2 = new Box<string>(\"Schlüssel\");\nConsole.WriteLine(b1.Inhalt + 1);\nConsole.WriteLine(b2.Inhalt.Length);\n// Ausgabe:\n// 43\n// 9\n\nclass Box<T>\n{\n    public T Inhalt { get; set; }\n\n    public Box(T inhalt)\n    {\n        Inhalt = inhalt;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Ein Typparameter reicht nicht immer. Mehrere trennst du mit Beistrich – genau wie bei Dictionary<TKey, TValue>. Eine Klasse Paar<TA, TB> könnte zum Beispiel einen Namen (string) mit einer Note (int) verbinden.\n\nNun ein Problem: Innerhalb einer generischen Methode weiß der Compiler nichts über T. Zwei T-Werte mit > zu vergleichen geht deshalb nicht – vielleicht ist T ja ein Typ, den man gar nicht vergleichen kann!"
+    },
+    {
+      "type": "code",
+      "content": "static T Groesser<T>(T a, T b)\n{\n    return a > b ? a : b;   // Fehler CS0019: > ist für T nicht definiert\n}"
+    },
+    {
+      "type": "text",
+      "content": "Die Lösung ist eine Einschränkung mit where. Mit where T : IComparable<T> versprichst du dem Compiler: T ist ein Typ, der das Interface IComparable<T> implementiert. Damit steht die Methode CompareTo zur Verfügung. Sie liefert eine Zahl größer 0, wenn das Objekt größer ist als das andere, 0 bei Gleichheit und eine Zahl kleiner 0, wenn es kleiner ist. int, double und string implementieren dieses Interface bereits."
+    },
+    {
+      "type": "code",
+      "content": "static T Groesser<T>(T a, T b) where T : IComparable<T>\n{\n    return a.CompareTo(b) > 0 ? a : b;\n}\n\nConsole.WriteLine(Groesser(4, 11));\nConsole.WriteLine(Groesser(\"Apfel\", \"Birne\"));\n// Ausgabe:\n// 11\n// Birne"
+    },
+    {
+      "type": "text",
+      "content": "Weitere häufige Einschränkungen sind where T : class (nur Referenztypen), where T : struct (nur Werttypen wie int) und where T : new() (T braucht einen parameterlosen Konstruktor). Faustregel: Schreib Code generisch, wenn er für mehrere Typen gleich funktioniert. Und schränke T nur so weit ein, wie du es wirklich brauchst."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static T Letztes<T>(List<T> liste)\n{\n    return liste[liste.Count - 1];\n}\n\nvar l = new List<string> { \"rot\", \"grün\", \"blau\" };\nConsole.WriteLine(Letztes(l).ToUpper());",
+      "options": [
+        "ROT",
+        "blau",
+        "BLAU",
+        "Fehler: ToUpper gibt es für T nicht"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Compiler erkennt aus dem Argument, dass T hier string ist. Letztes(l) liefert also einen echten string, auf dem du ToUpper aufrufen darfst."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich diese Methode nicht kompilieren?",
+      "code": "static T Summe<T>(T a, T b)\n{\n    return a + b;\n}",
+      "options": [
+        "Generische Methoden dürfen nur einen Parameter haben",
+        "Der Compiler weiß nicht, ob man zwei T-Werte mit + verknüpfen kann",
+        "Es fehlt das Schlüsselwort var",
+        "Generische Methoden müssen void zurückgeben"
+      ],
+      "correctIndex": 1,
+      "explanation": "T könnte jeder beliebige Typ sein, zum Beispiel eine eigene Klasse ohne +. Deshalb erlaubt der Compiler den Operator + für T nicht (Fehler CS0019)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var p = new Paar<string, int>(\"Mia\", 2);\nConsole.WriteLine($\"{p.Erstes} hat Note {p.Zweites}\");\n\nclass Paar<TA, TB>\n{\n    public TA Erstes;\n    public TB Zweites;\n    public Paar(TA a, TB b) { Erstes = a; Zweites = b; }\n}",
+      "options": [
+        "Mia hat Note 2",
+        "2 hat Note Mia",
+        "{p.Erstes} hat Note {p.Zweites}",
+        "Fehler: Eine Klasse darf nur einen Typparameter haben"
+      ],
+      "correctIndex": 0,
+      "explanation": "Paar hat zwei Typparameter: TA wird zu string, TB zu int. Erstes ist also \"Mia\", Zweites ist 2."
+    },
+    {
+      "question": "Wozu dient where T : IComparable<T> bei einer generischen Methode?",
+      "options": [
+        "T wird automatisch in einen string umgewandelt",
+        "Die Methode funktioniert dann nur noch mit int",
+        "Die Methode wird schneller ausgeführt",
+        "Nur Typen, die IComparable<T> implementieren, sind erlaubt – dafür darfst du CompareTo verwenden"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Einschränkung ist ein Versprechen an den Compiler. Er lässt nur passende Typen zu und erlaubt dir dafür, die Methoden des Interfaces (hier CompareTo) auf T aufzurufen."
+    }
+  ]
+}

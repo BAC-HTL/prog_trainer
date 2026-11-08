@@ -1,0 +1,84 @@
+{
+  "id": "csharp-f2_02_abstrakt",
+  "title": "Abstrakte Klassen",
+  "summary": "Mit abstract Basisklassen bauen, von denen man keine Objekte erzeugen kann, und Unterklassen zwingen, bestimmte Methoden selbst zu schreiben.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Manche Basisklassen sind so allgemein, dass es keinen Sinn ergibt, ein Objekt davon zu erzeugen. Was soll eine „Form“ sein? Es gibt Kreise, Rechtecke und Dreiecke – aber keine Form an sich. Trotzdem wissen wir: Jede Form hat eine Fläche.\n\nGenau dafür gibt es abstrakte Klassen. Mit dem Schlüsselwort abstract sagst du: Diese Klasse ist nur eine Vorlage für Unterklassen. new Form() ist dann verboten."
+    },
+    {
+      "type": "code",
+      "content": "// Form f = new Form();   // Fehler! Von abstrakten Klassen gibt es keine Objekte\n\nRechteck r = new Rechteck(4, 5);\nr.Beschreiben();\n// Ausgabe: Rechteck mit Fläche 20\n\nabstract class Form\n{\n    public string Name { get; }\n\n    public Form(string name)\n    {\n        Name = name;\n    }\n\n    // abstrakte Methode: kein Methodenkörper, nur ein ;\n    public abstract int Flaeche();\n\n    // normale Methode, die alle Formen erben\n    public void Beschreiben()\n    {\n        Console.WriteLine($\"{Name} mit Fläche {Flaeche()}\");\n    }\n}\n\nclass Rechteck : Form\n{\n    private int breite;\n    private int hoehe;\n\n    public Rechteck(int breite, int hoehe) : base(\"Rechteck\")\n    {\n        this.breite = breite;\n        this.hoehe = hoehe;\n    }\n\n    public override int Flaeche()\n    {\n        return breite * hoehe;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Eine abstrakte Methode hat keinen Körper – statt { ... } steht nur ein Strichpunkt. Die Basisklasse sagt damit: „Jede Form muss eine Flaeche() haben, aber wie man sie ausrechnet, weiß ich nicht.“\n\nJede (nicht abstrakte) Unterklasse muss diese Methode dann selbst schreiben. Dazu verwendet sie das Schlüsselwort override – damit „überschreibt“ sie die Vorlage aus der Basisklasse. Vergisst sie das, lässt sich das Programm nicht kompilieren.\n\nBeachte: Beschreiben() steht in Form und ruft Flaeche() auf, obwohl Form gar nicht weiß, wie das geht. Beim Aufruf wird automatisch die Version des echten Objekts verwendet – hier die vom Rechteck."
+    },
+    {
+      "type": "text",
+      "content": "Eine abstrakte Klasse darf ganz normale Felder, Properties, Konstruktoren und Methoden enthalten. Das ist der Unterschied zu einer reinen Vorlage: Gemeinsamen Code schreibst du einmal, nur das Unterschiedliche bleibt abstrakt.\n\nNoch spannender wird es, wenn du mehrere Unterklassen hast. Eine Variable vom Typ der Basisklasse kann jedes Objekt einer Unterklasse aufnehmen – ein Kreis ist ja eine Form. So kannst du verschiedene Formen gemeinsam in einem Array verwalten:"
+    },
+    {
+      "type": "code",
+      "content": "Form[] formen = { new Quadrat(3), new Dreieck(4, 6), new Quadrat(5) };\n\nint summe = 0;\nforeach (Form f in formen)\n{\n    Console.WriteLine($\"{f.Name}: {f.Flaeche()}\");\n    summe += f.Flaeche();\n}\nConsole.WriteLine($\"Gesamt: {summe}\");\n// Ausgabe:\n// Quadrat: 9\n// Dreieck: 12\n// Quadrat: 25\n// Gesamt: 46\n\nabstract class Form\n{\n    public abstract string Name { get; }\n    public abstract int Flaeche();\n}\n\nclass Quadrat : Form\n{\n    private int seite;\n    public Quadrat(int seite) { this.seite = seite; }\n\n    public override string Name => \"Quadrat\";\n    public override int Flaeche() => seite * seite;\n}\n\nclass Dreieck : Form\n{\n    private int grundlinie;\n    private int hoehe;\n    public Dreieck(int g, int h) { grundlinie = g; hoehe = h; }\n\n    public override string Name => \"Dreieck\";\n    public override int Flaeche() => grundlinie * hoehe / 2;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Hier siehst du auch, dass Properties abstrakt sein können (public abstract string Name { get; }). Und Methoden kann man – genau wie berechnete Properties – mit => in einer Zeile schreiben, wenn sie nur ein Ergebnis zurückgeben.\n\nTypische Fehler:\n• new mit einer abstrakten Klasse aufrufen – nicht erlaubt.\n• Eine abstrakte Methode in einer normalen (nicht abstrakten) Klasse deklarieren – abstrakte Methoden gibt es nur in abstrakten Klassen.\n• override vergessen oder die Methode in der Unterklasse gar nicht schreiben – der Compiler meldet, dass das abstrakte Member nicht implementiert wurde."
+    },
+    {
+      "type": "code",
+      "content": "// So sieht der Fehler aus, wenn eine abstrakte Methode fehlt:\n// class Kreis : Form\n// {\n//     public override string Name => \"Kreis\";\n//     // Flaeche() fehlt → Fehler CS0534:\n//     // \"Kreis\" implementiert den geerbten abstrakten Member \"Form.Flaeche()\" nicht.\n// }\n\nConsole.WriteLine(\"Merke: abstract = unvollständige Vorlage, override = Unterklasse füllt sie aus.\");"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Tier t = new Tier();\nt.Laut();\n\nabstract class Tier\n{\n    public abstract void Laut();\n}\n\nclass Katze : Tier\n{\n    public override void Laut()\n    {\n        Console.WriteLine(\"Miau\");\n    }\n}",
+      "options": [
+        "Abstrakte Klassen dürfen keine Properties haben",
+        "Katze muss mit : base() erben",
+        "Von der abstrakten Klasse Tier darf kein Objekt mit new erzeugt werden",
+        "Die Methode Laut() braucht einen Körper in Tier"
+      ],
+      "correctIndex": 2,
+      "explanation": "Tier ist abstract und damit nur eine Vorlage. new Tier() ist verboten. Erlaubt wäre Tier t = new Katze(); – eine Katze ist ja ein Tier."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Fahrzeug f = new Fahrrad();\nf.Info();\n\nabstract class Fahrzeug\n{\n    public abstract string Typ();\n    public abstract int MaxTempo();\n\n    public void Info()\n    {\n        Console.WriteLine($\"{Typ()} fährt mit {MaxTempo()} km/h\");\n    }\n}\n\nclass Fahrrad : Fahrzeug\n{\n    public override string Typ() => \"Fahrrad\";\n    public override int MaxTempo() => 25;\n}",
+      "options": [
+        "Fahrzeug fährt mit 0 km/h",
+        "Auto fährt mit 0 km/h",
+        "Fahrrad fährt mit 25 km/h",
+        "Fahrrad fährt mit 0 km/h"
+      ],
+      "correctIndex": 2,
+      "explanation": "Info() steht in der Basisklasse, ruft aber MaxTempo() auf. Weil das Objekt ein Fahrrad ist, wird die überschriebene Version von Fahrrad verwendet: 25."
+    },
+    {
+      "question": "Welche Aussage über abstrakte Klassen ist falsch?",
+      "options": [
+        "Eine abstrakte Klasse darf ganz normale Methoden mit Körper enthalten",
+        "Eine abstrakte Klasse darf einen Konstruktor haben",
+        "Eine abstrakte Methode hat keinen Methodenkörper",
+        "Eine Unterklasse darf abstrakte Methoden einfach weglassen, wenn sie sie nicht braucht"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine normale Unterklasse muss jede abstrakte Methode mit override implementieren, sonst kompiliert das Programm nicht. Alle anderen Aussagen stimmen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Medaille[] liste = { new Gold(), new Silber() };\nint summe = 0;\nforeach (Medaille m in liste)\n{\n    summe += m.Punkte();\n}\nConsole.WriteLine(summe);\n\nabstract class Medaille\n{\n    public abstract int Punkte();\n}\n\nclass Gold : Medaille\n{\n    public override int Punkte() => 5 + 3;\n}\n\nclass Silber : Medaille\n{\n    public override int Punkte() => 3;\n}",
+      "options": [
+        "8",
+        "3",
+        "11",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Schleife geht beide Objekte durch und ruft jeweils deren eigene Version von Punkte() auf: Gold liefert 5 + 3 = 8, Silber liefert 3. Zusammen 11."
+    }
+  ]
+}

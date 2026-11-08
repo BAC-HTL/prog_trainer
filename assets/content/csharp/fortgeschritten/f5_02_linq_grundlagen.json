@@ -1,0 +1,97 @@
+{
+  "id": "csharp-f5_02_linq_grundlagen",
+  "title": "LINQ-Grundlagen",
+  "summary": "Daten mit Where filtern, mit Select umwandeln, mit OrderBy sortieren, mit Count zählen und mit ToList in eine Liste verwandeln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Filtern, sortieren, zählen – das hast du bisher mit Schleifen und if-Abfragen erledigt. LINQ (Language Integrated Query) erledigt das in einer einzigen, gut lesbaren Zeile. LINQ-Methoden funktionieren mit Arrays, Listen und allen anderen Collections. Sie stecken im Namespace System.Linq, der bei .NET automatisch eingebunden ist. Und sie bekommen als Parameter – genau – Lambdas!"
+    },
+    {
+      "type": "code",
+      "content": "int[] noten = { 1, 4, 2, 5, 3, 2 };\n\n// mit Schleife\nvar gute = new List<int>();\nforeach (int n in noten)\n{\n    if (n <= 2) gute.Add(n);\n}\n\n// mit LINQ\nvar guteLinq = noten.Where(n => n <= 2).ToList();\n\nConsole.WriteLine(string.Join(\" \", gute));\nConsole.WriteLine(string.Join(\" \", guteLinq));\n// Ausgabe:\n// 1 2 2\n// 1 2 2"
+    },
+    {
+      "type": "text",
+      "content": "Where(bedingung) behält nur die Elemente, für die die Lambda true liefert. Wichtig: LINQ verändert die ursprüngliche Collection nie! Es liefert immer ein neues Ergebnis. Dieses Ergebnis ist zunächst ein IEnumerable<T> – eine Folge von Werten, die du mit foreach durchlaufen kannst. Brauchst du eine echte Liste (etwa für Add oder [index]), hängst du .ToList() an. Für ein Array gibt es .ToArray()."
+    },
+    {
+      "type": "text",
+      "content": "Select(umwandlung) macht aus jedem Element etwas Neues. Das Ergebnis hat genauso viele Elemente wie vorher, aber eventuell einen anderen Typ:"
+    },
+    {
+      "type": "code",
+      "content": "var preise = new List<int> { 10, 25, 40 };\nvar mitRabatt = preise.Select(p => p - 5).ToList();\nvar texte = preise.Select(p => $\"{p} Euro\").ToList();\n\nConsole.WriteLine(string.Join(\", \", mitRabatt));\nConsole.WriteLine(string.Join(\", \", texte));\nConsole.WriteLine(string.Join(\", \", preise));   // unverändert!\n// Ausgabe:\n// 5, 20, 35\n// 10 Euro, 25 Euro, 40 Euro\n// 10, 25, 40"
+    },
+    {
+      "type": "text",
+      "content": "Mit OrderBy sortierst du aufsteigend, mit OrderByDescending absteigend. Die Lambda gibt an, wonach sortiert wird. Das ist vor allem bei eigenen Klassen praktisch.\n\nUnd das Beste: Du kannst die Methoden hintereinanderhängen. Jede Methode arbeitet mit dem Ergebnis der vorherigen weiter. Schreib dabei jeden Schritt in eine eigene Zeile, dann bleibt es übersichtlich."
+    },
+    {
+      "type": "code",
+      "content": "var klasse = new List<Schueler>\n{\n    new Schueler(\"Lena\", 87),\n    new Schueler(\"Ali\", 45),\n    new Schueler(\"Mia\", 92),\n    new Schueler(\"Tom\", 61)\n};\n\nvar bestanden = klasse\n    .Where(s => s.Punkte >= 50)\n    .OrderByDescending(s => s.Punkte)\n    .Select(s => s.Name)\n    .ToList();\n\nConsole.WriteLine(string.Join(\", \", bestanden));\n// Ausgabe: Mia, Lena, Tom\n\nclass Schueler\n{\n    public string Name { get; }\n    public int Punkte { get; }\n    public Schueler(string name, int punkte)\n    {\n        Name = name;\n        Punkte = punkte;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Die Reihenfolge der Schritte ist wichtig! Nach .Select(s => s.Name) hast du nur noch strings. Ein .Where(s => s.Punkte >= 50) danach würde nicht mehr kompilieren, denn ein string hat keine Punkte.\n\nCount() zählt Elemente. Du kannst ihm auch direkt eine Bedingung mitgeben – dann sparst du dir das Where."
+    },
+    {
+      "type": "code",
+      "content": "int[] wuerfe = { 6, 2, 6, 4, 1, 6 };\nConsole.WriteLine(wuerfe.Count());\nConsole.WriteLine(wuerfe.Count(w => w == 6));\nConsole.WriteLine(wuerfe.Where(w => w > 3).Count());\n// Ausgabe:\n// 6\n// 3\n// 4"
+    },
+    {
+      "type": "text",
+      "content": "Verwechsle nicht: Bei einer List<T> ist Count eine Property (ohne Klammern), die LINQ-Methode Count() hat Klammern. Bei einem IEnumerable<T> gibt es nur die Methode. Wenn du Strings mit OrderBy sortierst, wird alphabetisch sortiert – OrderBy(s => s) sortiert also eine Liste von Namen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] z = { 3, 8, 1, 6 };\nvar r = z.Where(x => x > 2).Select(x => x * 10);\nConsole.WriteLine(string.Join(\" \", r));",
+      "options": [
+        "30 80 10 60",
+        "80 60",
+        "3 8 6",
+        "30 80 60"
+      ],
+      "correctIndex": 3,
+      "explanation": "Where behält 3, 8 und 6 (die 1 fällt weg). Select multipliziert jede verbleibende Zahl mit 10. Die Reihenfolge bleibt erhalten."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var namen = new List<string> { \"Zoe\", \"Ben\", \"Lia\" };\nvar sortiert = namen.OrderBy(n => n).ToList();\nConsole.WriteLine(namen[0] + \" \" + sortiert[0]);",
+      "options": [
+        "Ben Ben",
+        "Zoe Ben",
+        "Zoe Zoe",
+        "Ben Zoe"
+      ],
+      "correctIndex": 1,
+      "explanation": "OrderBy verändert die ursprüngliche Liste nicht, sondern liefert eine neue, sortierte Folge. namen[0] ist weiterhin \"Zoe\", sortiert[0] ist \"Ben\"."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "var l = new List<int> { 5, 12, 7 };\nList<int> gross = l.Where(x => x > 6);",
+      "options": [
+        "Where liefert ein IEnumerable<int>, keine List<int> – es fehlt .ToList()",
+        "In der Lambda muss es x >= 6 heißen",
+        "Where funktioniert nur mit Arrays",
+        "Die Lambda braucht ein return"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Ergebnis von Where ist eine Folge vom Typ IEnumerable<int>. Einer List<int>-Variable kann man sie nicht direkt zuweisen. Mit l.Where(x => x > 6).ToList() klappt es."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string[] woerter = { \"Haus\", \"Baum\", \"Auto\", \"Ei\" };\nint n = woerter\n    .Select(w => w.ToLower())\n    .Count(w => w.Contains(\"a\"));\nConsole.WriteLine(n);",
+      "options": [
+        "2",
+        "1",
+        "3",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nach ToLower lauten die Wörter haus, baum, auto, ei. Ein \"a\" enthalten haus, baum und auto – das sind 3. Ohne ToLower hätte \"Auto\" mit großem A nicht gezählt."
+    }
+  ]
+}

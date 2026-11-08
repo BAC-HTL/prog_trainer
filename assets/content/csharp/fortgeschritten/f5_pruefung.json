@@ -1,0 +1,125 @@
+{
+  "id": "csharp-f5-pruefung",
+  "title": "Abschlussprüfung: Delegates, Lambdas & LINQ",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int Wende(Func<int, int> f, int x, int mal)\n{\n    for (int i = 0; i < mal; i++)\n        x = f(x);\n    return x;\n}\n\nConsole.WriteLine(Wende(n => n * 2, 3, 3));",
+      "options": [
+        "18",
+        "12",
+        "24",
+        "9"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Funktion wird dreimal hintereinander angewendet: 3 → 6 → 12 → 24."
+    },
+    {
+      "question": "Welche Zuweisung lässt sich NICHT kompilieren?",
+      "options": [
+        "Func<int, bool> a = x => x > 0;",
+        "Action<string> b = s => Console.WriteLine(s);",
+        "Func<string> c = () => \"Hallo\";",
+        "Func<int> d = x => x + 1;"
+      ],
+      "correctIndex": 3,
+      "explanation": "Func<int> hat keinen Parameter, sondern nur den Rückgabetyp int. Die Lambda x => x + 1 hat aber einen Parameter x. Richtig wäre Func<int, int>."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var aktionen = new List<Action>();\nint zaehler = 0;\naktionen.Add(() => zaehler += 2);\naktionen.Add(() => zaehler *= 10);\naktionen.Add(() => zaehler -= 1);\nforeach (Action a in aktionen)\n    a();\nConsole.WriteLine(zaehler);",
+      "options": [
+        "19",
+        "1",
+        "0",
+        "21"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Lambdas greifen alle auf dieselbe Variable zaehler zu (Closure). Der Reihe nach ausgeführt: 0 + 2 = 2, 2 * 10 = 20, 20 - 1 = 19."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] z = { 7, 2, 9, 4, 6 };\nvar r = z.Where(x => x % 2 == 0)\n         .OrderByDescending(x => x)\n         .Select(x => x / 2);\nConsole.WriteLine(string.Join(\"-\", r));",
+      "options": [
+        "2-1-3",
+        "1-2-3",
+        "3-2-1",
+        "6-4-2"
+      ],
+      "correctIndex": 2,
+      "explanation": "Where behält die geraden Zahlen 2, 4, 6. OrderByDescending sortiert sie zu 6, 4, 2. Select halbiert jede Zahl: 3, 2, 1."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "var klasse = new List<Schueler> { new Schueler(\"Ida\", 2), new Schueler(\"Jan\", 4) };\nvar gute = klasse\n    .Select(s => s.Name)\n    .Where(s => s.Note <= 2)\n    .ToList();\n\nclass Schueler\n{\n    public string Name { get; }\n    public int Note { get; }\n    public Schueler(string n, int note) { Name = n; Note = note; }\n}",
+      "options": [
+        "Where muss immer vor ToList stehen",
+        "Nach Select gibt es nur noch strings – ein string hat keine Property Note",
+        "Lambdas dürfen in einer Kette nicht zweimal s heißen",
+        "ToList funktioniert nicht mit eigenen Klassen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jede Methode arbeitet mit dem Ergebnis der vorherigen. Nach Select(s => s.Name) ist s in Where ein string, und strings haben keine Note. Where muss vor Select stehen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var punkte = new List<int> { 12, 30, 8, 30, 20 };\nConsole.WriteLine(punkte.Where(p => p >= 20).Sum());\nConsole.WriteLine(punkte.Count(p => p == 30) + punkte.Max());",
+      "options": [
+        "80\n32",
+        "50\n32",
+        "80\n31",
+        "100\n32"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mindestens 20 sind 30, 30 und 20 – Summe 80. Die 30 kommt zweimal vor, das Maximum ist 30: 2 + 30 = 32."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var namen = new List<string> { \"Eva\", \"Otto\", \"Uwe\" };\nstring n1 = namen.FirstOrDefault(n => n.Length > 3);\nstring n2 = namen.FirstOrDefault(n => n.Length > 4);\nConsole.WriteLine(n1 + \"|\" + (n2 == null ? \"keiner\" : n2));",
+      "options": [
+        "Eva|keiner",
+        "Otto|Otto",
+        "Otto|keiner",
+        "Otto|"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der erste Name mit mehr als 3 Buchstaben ist \"Otto\". Kein Name hat mehr als 4 Buchstaben, deshalb liefert FirstOrDefault null. Der Bedingungsoperator ersetzt null durch \"keiner\"."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string[] klassen = { \"1A\", \"2B\", \"1C\", \"3A\", \"2A\" };\nvar r = klassen\n    .GroupBy(k => k[0])\n    .Where(g => g.Count() > 1)\n    .Select(g => g.Key);\nConsole.WriteLine(string.Join(\",\", r));",
+      "options": [
+        "1,2,3",
+        "1A,1C,2B,2A",
+        "A,B,C",
+        "1,2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Gruppiert wird nach dem ersten Zeichen (der Schulstufe): 1 → 1A, 1C; 2 → 2B, 2A; 3 → 3A. Nur die Gruppen 1 und 2 haben mehr als ein Element. Select liefert jeweils den Key."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var werte = new List<int> { 1, 2, 3 };\nvar abfrage = werte.Where(w => w > 1);\nvar liste = abfrage.ToList();\nwerte.Add(4);\nwerte.Remove(2);\nConsole.WriteLine(abfrage.Count() + \" \" + liste.Count);",
+      "options": [
+        "2 2",
+        "3 2",
+        "2 3",
+        "3 3"
+      ],
+      "correctIndex": 0,
+      "explanation": "liste wurde sofort mit ToList berechnet: 2 und 3, also 2 Elemente. abfrage wird erst bei Count() ausgeführt. Dann enthält werte 1, 3, 4 – größer als 1 sind 3 und 4, also ebenfalls 2."
+    },
+    {
+      "question": "Welche Aussage über LINQ ist richtig?",
+      "options": [
+        "Where und Select verändern die ursprüngliche Liste",
+        "Average liefert bei einer int-Liste immer einen int",
+        "All liefert true, wenn mindestens ein Element die Bedingung erfüllt",
+        "Methoden wie ToList(), Count() oder Sum() lösen die Ausführung einer verzögerten Abfrage aus"
+      ],
+      "correctIndex": 3,
+      "explanation": "LINQ verändert die Quelle nie. Average liefert immer einen double. All prüft, ob alle Elemente passen (für \"mindestens eines\" gibt es Any). Abfragen wie Where werden erst ausgeführt, wenn eine Methode wie ToList, Count oder Sum die Ergebnisse braucht."
+    }
+  ]
+}

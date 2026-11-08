@@ -1,0 +1,88 @@
+{
+  "id": "csharp-f1_04_static",
+  "title": "Statische Member",
+  "summary": "Mit static Felder und Methoden erstellen, die zur Klasse selbst gehören statt zu einem einzelnen Objekt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher hatte jedes Objekt seine eigenen Felder: Jeder Schüler hat seinen eigenen Namen, jedes Konto sein eigenes Guthaben. Manchmal gibt es aber Daten, die nur einmal für alle existieren sollen – zum Beispiel ein Zähler, wie viele Schüler insgesamt angelegt wurden.\n\nDafür gibt es static. Ein statisches Feld gehört zur Klasse selbst, nicht zu einem Objekt. Es gibt es genau einmal, egal wie viele Objekte du erzeugst. Du sprichst es über den Klassennamen an."
+    },
+    {
+      "type": "code",
+      "content": "Schueler a = new Schueler(\"Lena\");\nSchueler b = new Schueler(\"Jonas\");\nSchueler c = new Schueler(\"Ali\");\n\nConsole.WriteLine($\"Angelegte Schüler: {Schueler.Anzahl}\");\nConsole.WriteLine($\"{c.Name} hat die Nummer {c.Nummer}.\");\n// Ausgabe:\n// Angelegte Schüler: 3\n// Ali hat die Nummer 3.\n\nclass Schueler\n{\n    public static int Anzahl;      // einmal für alle\n\n    public string Name;            // pro Objekt\n    public int Nummer;             // pro Objekt\n\n    public Schueler(string name)\n    {\n        Name = name;\n        Anzahl++;\n        Nummer = Anzahl;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Bei jedem new erhöht der Konstruktor den gemeinsamen Zähler Anzahl. Jeder Schüler merkt sich in seinem eigenen Feld Nummer, welchen Stand der Zähler bei seiner Erzeugung hatte.\n\nDu kennst statische Methoden übrigens schon längst: Console.WriteLine(), Math.Max() oder int.Parse() rufst du alle direkt über den Klassennamen auf, ohne vorher mit new ein Objekt zu erzeugen. Das geht, weil diese Methoden static sind."
+    },
+    {
+      "type": "text",
+      "content": "Statische Methoden sind ideal für Hilfsfunktionen, die keine Objektdaten brauchen. Ist eine Klasse ausschließlich dafür gedacht, kannst du die ganze Klasse static machen. Von einer statischen Klasse kann man keine Objekte erzeugen – genau wie bei Math."
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(Umrechner.KmhInMs(36));\nConsole.WriteLine(Umrechner.Note(87));\nConsole.WriteLine(Umrechner.MaxPunkte);\n// Ausgabe:\n// 10\n// Gut\n// 100\n\nstatic class Umrechner\n{\n    public const int MaxPunkte = 100;\n\n    public static int KmhInMs(int kmh)\n    {\n        return kmh * 1000 / 3600;\n    }\n\n    public static string Note(int punkte)\n    {\n        if (punkte >= 90) return \"Sehr gut\";\n        if (punkte >= 80) return \"Gut\";\n        if (punkte >= 50) return \"Bestanden\";\n        return \"Nicht bestanden\";\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "const ist eine Konstante: ein Wert, der schon beim Kompilieren feststeht und sich nie ändert. Konstanten sind automatisch statisch, du schreibst also Umrechner.MaxPunkte.\n\nDie wichtigste Regel bei static: Eine statische Methode hat kein „eigenes“ Objekt. Sie kann deshalb nicht direkt auf normale (nicht-statische) Felder zugreifen – welches Objekt wäre denn gemeint? Umgekehrt dürfen normale Methoden problemlos statische Felder benutzen."
+    },
+    {
+      "type": "code",
+      "content": "Zaehler z = new Zaehler();\nz.Klick();\nZaehler.Gesamt();\n\nclass Zaehler\n{\n    public static int gesamtKlicks;\n    public int klicks;\n\n    public void Klick()\n    {\n        klicks++;          // OK: eigenes Feld\n        gesamtKlicks++;    // OK: statisches Feld\n    }\n\n    public static void Gesamt()\n    {\n        Console.WriteLine(gesamtKlicks);   // OK\n        // Console.WriteLine(klicks);      // Fehler! Welches Objekt?\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Ein Wort zu den Methoden, die du in der Einsteiger-Stufe direkt im Top-Level-Programm geschrieben hast: Das sind sogenannte lokale Funktionen. Sie gehören zu keiner Klasse, deshalb brauchst du dort weder Objekte noch einen Klassennamen.\n\nTypische Fehler:\n• Ein statisches Member über ein Objekt aufrufen (a.Anzahl statt Schueler.Anzahl) – der Compiler lehnt das ab.\n• Alles static machen, „weil es dann einfacher geht“. Dann verlierst du den Vorteil von Objekten mit eigenen Daten. static nur für Dinge, die wirklich zur ganzen Klasse gehören."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Monster a = new Monster();\nMonster b = new Monster();\nMonster c = new Monster();\na.Level++;\nConsole.WriteLine($\"{Monster.Erstellt} {a.Level}\");\n\nclass Monster\n{\n    public static int Erstellt;\n    public int Level;\n\n    public Monster()\n    {\n        Erstellt++;\n    }\n}",
+      "options": [
+        "1 1",
+        "3 1",
+        "3 3",
+        "1 3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Erstellt ist statisch und wird von allen drei Konstruktor-Aufrufen erhöht, also 3. Level ist ein normales Feld – jedes Objekt hat sein eigenes, und a.Level wurde nur einmal erhöht."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Console.WriteLine(Produkt.Beschreibung());\n\nclass Produkt\n{\n    public string Name = \"Handy\";\n\n    public static string Beschreibung()\n    {\n        return $\"Produkt: {Name}\";\n    }\n}",
+      "options": [
+        "Statische Methoden dürfen keinen Rückgabewert haben",
+        "Die statische Methode Beschreibung greift auf das nicht-statische Feld Name zu",
+        "Klassen mit statischen Methoden müssen selbst static sein",
+        "Name muss als const deklariert werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine statische Methode gehört zur Klasse, nicht zu einem Objekt. Sie weiß daher nicht, wessen Name gemeint ist. Entweder man entfernt static bei der Methode, oder man übergibt das Objekt als Parameter."
+    },
+    {
+      "question": "Warum kannst du Math.Max(3, 8) aufrufen, ohne vorher new Math() zu schreiben?",
+      "options": [
+        "Weil Max eine statische Methode ist und zur Klasse Math gehört",
+        "Weil C# das Objekt automatisch im Hintergrund erzeugt",
+        "Weil Math ein Schlüsselwort von C# ist",
+        "Weil Max eine Property ist"
+      ],
+      "correctIndex": 0,
+      "explanation": "Statische Methoden ruft man über den Klassennamen auf. Math ist sogar eine statische Klasse – man kann gar kein Objekt davon erzeugen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Kasse k1 = new Kasse();\nKasse k2 = new Kasse();\nk1.Buchen();\nk2.Buchen();\nk1.Buchen();\nConsole.WriteLine(Kasse.Bonus);\n\nclass Kasse\n{\n    public static int Bonus;\n\n    public void Buchen()\n    {\n        Bonus += 5;\n    }\n}",
+      "options": [
+        "5",
+        "10",
+        "15",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bonus ist statisch und existiert nur einmal. Über k1 und k2 wird dasselbe Feld erhöht: 5 + 5 + 5 = 15."
+    }
+  ]
+}
