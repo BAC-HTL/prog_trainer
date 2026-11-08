@@ -1,0 +1,419 @@
+{
+  "missions": [
+    {
+      "id": "m11",
+      "title": "Rechte-Hand-Regel",
+      "story": "Ein Sandsturm hat dich in ein Höhlenlabyrinth getrieben, und die Karte im Bordcomputer ist gelöscht. Ein alter Forschertrick hilft: Halte die rechte Hand immer an der Wand – so findest du garantiert den Ausgang zur Basis. Achtung: Jedes Mal sieht das Labyrinth anders aus!",
+      "concept": "while-Schleife mit Sensoren (Wandverfolgung)",
+      "energy": 55,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "#R...#.....#",
+            "###.##.###.#",
+            "#...#..#...#",
+            "#.###.##.###",
+            "#.#...#....#",
+            "#.#.###.##.#",
+            "#...#...#..#",
+            "#.#...#.#Z##",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "##########",
+            "#R.#.....#",
+            "#.##.###.#",
+            "#....#...#",
+            "####.#.###",
+            "#....#...#",
+            "#.######.#",
+            "#......#Z#",
+            "##########"
+          ],
+          "dir": "S"
+        },
+        {
+          "map": [
+            "############",
+            "#.....#...Z#",
+            "#.###.#.####",
+            "#...#...#..#",
+            "###.#####..#",
+            "#R..#......#",
+            "############"
+          ],
+          "dir": "N"
+        }
+      ],
+      "goals": [
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 31,
+        "lines": {
+          "python": 7,
+          "csharp": 7
+        }
+      },
+      "hints": [
+        "Ein Schritt nach der Rechte-Hand-Regel: zuerst rechts drehen, dann so lange links drehen, bis der Weg frei ist, dann vor.",
+        "Pack diesen Schritt in eine eigene Funktion und wiederhole ihn, bis scannen() \"basis\" meldet.",
+        "In einer Sackgasse drehst du dich mit dieser Regel automatisch um."
+      ],
+      "starter": {
+        "python": "# Rechte-Hand-Regel: Die rechte Hand bleibt immer an der Wand.\ndef schritt():\n    # TODO: rechts drehen, dann links drehen, bis der Weg frei ist\n    robot.vor()\n\nwhile robot.scannen() != \"basis\":\n    schritt()\n",
+        "csharp": "// Rechte-Hand-Regel: Die rechte Hand bleibt immer an der Wand.\nvoid Schritt()\n{\n    // TODO: rechts drehen, dann links drehen, bis der Weg frei ist\n    Robot.Vor();\n}\n\nwhile (Robot.Scannen() != \"basis\")\n    Schritt();\n"
+      },
+      "solution": {
+        "python": "# Ein Schritt nach der Rechte-Hand-Regel\ndef schritt():\n    robot.rechts()\n    while not robot.ist_frei():\n        robot.links()\n    robot.vor()\n\nwhile robot.scannen() != \"basis\":\n    schritt()\n",
+        "csharp": "// Ein Schritt nach der Rechte-Hand-Regel\nvoid Schritt()\n{\n    Robot.Rechts();\n    while (!Robot.IstFrei())\n        Robot.Links();\n    Robot.Vor();\n}\n\nwhile (Robot.Scannen() != \"basis\")\n    Schritt();\n"
+      }
+    },
+    {
+      "id": "m12",
+      "title": "Raster absuchen",
+      "story": "In einer Kristallhöhle liegen wertvolle Kristalle verstreut – aber der Scanner sieht nur das Feld direkt unter dem Roboter. Such den ganzen Raum Bahn für Bahn in Schlangenlinien ab und sammle jeden Kristall ein. Das Moos lässt du liegen.",
+      "concept": "verschachtelte Schleifen (Schlangenlinie)",
+      "energy": 90,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "#R...K....M#",
+            "#..K.......#",
+            "#......K...#",
+            "#.M........#",
+            "#.........K#",
+            "#....K.....#",
+            "#K.......M.#",
+            "#.....K....#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "#########",
+            "#R.M..K.#",
+            "#K......#",
+            "#....K..#",
+            "#.K...M.#",
+            "#......K#",
+            "#########"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "###########",
+            "#R.......K#",
+            "#...M.K...#",
+            "#K........#",
+            "#....K..M.#",
+            "###########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "alle",
+          "item": "kristall"
+        }
+      ],
+      "par": {
+        "energy": 79,
+        "lines": {
+          "python": 23,
+          "csharp": 23
+        }
+      },
+      "hints": [
+        "Schreib eine Funktion bahn(), die bis zur Wand fährt und dabei auf jedem Feld nach Kristallen schaut.",
+        "Am Ende einer Bahn: drehen, ein Feld vor, nochmal gleich drehen – abwechselnd rechts- und linksherum.",
+        "Ist nach dem ersten Drehen kein Platz mehr, bist du in der letzten Reihe angekommen."
+      ],
+      "starter": {
+        "python": "def sammle():\n    if robot.scannen() == \"kristall\":\n        robot.aufheben()\n\n# TODO: Nicht nur die erste Bahn, sondern den ganzen Raum absuchen!\nsammle()\nwhile robot.ist_frei():\n    robot.vor()\n    sammle()\n",
+        "csharp": "void Sammle()\n{\n    if (Robot.Scannen() == \"kristall\")\n        Robot.Aufheben();\n}\n\n// TODO: Nicht nur die erste Bahn, sondern den ganzen Raum absuchen!\nSammle();\nwhile (Robot.IstFrei())\n{\n    Robot.Vor();\n    Sammle();\n}\n"
+      },
+      "solution": {
+        "python": "def sammle():\n    if robot.scannen() == \"kristall\":\n        robot.aufheben()\n\n# Eine Bahn bis zur Wand abfahren\ndef bahn():\n    while robot.ist_frei():\n        robot.vor()\n        sammle()\n\ndef drehen(rechtsrum):\n    if rechtsrum:\n        robot.rechts()\n    else:\n        robot.links()\n\nrechtsrum = True\nsammle()\nbahn()\ndrehen(rechtsrum)\nwhile robot.ist_frei():\n    robot.vor()\n    sammle()\n    drehen(rechtsrum)\n    bahn()\n    rechtsrum = not rechtsrum\n    drehen(rechtsrum)\n",
+        "csharp": "void Sammle()\n{\n    if (Robot.Scannen() == \"kristall\")\n        Robot.Aufheben();\n}\n\n// Eine Bahn bis zur Wand abfahren\nvoid Bahn()\n{\n    while (Robot.IstFrei())\n    {\n        Robot.Vor();\n        Sammle();\n    }\n}\n\nvoid Drehen(bool rechts)\n{\n    if (rechts)\n        Robot.Rechts();\n    else\n        Robot.Links();\n}\n\nbool rechtsrum = true;\nSammle();\nBahn();\nDrehen(rechtsrum);\nwhile (Robot.IstFrei())\n{\n    Robot.Vor();\n    Sammle();\n    Drehen(rechtsrum);\n    Bahn();\n    rechtsrum = !rechtsrum;\n    Drehen(rechtsrum);\n}\n"
+      }
+    },
+    {
+      "id": "m13",
+      "title": "Inventar auswerten",
+      "story": "Im Ostgang liegen Kristalle, Moos und Erz bunt gemischt. Die Station braucht drei Energiezellen: Sammle alles ein, bis du drei Kristalle hast, und kehr dann zur Quelle und zum Labor hinter dir zurück. Prüf dein Inventar genau – nur Kristall und Moos lassen sich mit Wasser mischen, Erz nicht!",
+      "concept": "Listen: inventar() zählen und auswerten",
+      "energy": 20,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "#LQRMKEK.KK#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "############",
+            "#LQRKMEKK.K#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "############",
+            "#LQRE.MKMKK#",
+            "############"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "herstellen",
+          "item": "energiezelle",
+          "count": 3
+        },
+        {
+          "type": "herstellen",
+          "item": "biogel",
+          "count": 1
+        }
+      ],
+      "par": {
+        "energy": 14,
+        "lines": {
+          "python": 19,
+          "csharp": 19
+        }
+      },
+      "hints": [
+        "robot.inventar().count(\"kristall\") zählt deine Kristalle (C#: Robot.Inventar().Count(p => p == \"kristall\")).",
+        "Fahr mit einer while-Schleife, solange du weniger als 3 Kristalle hast.",
+        "Hol an der Quelle genau so oft Wasser, wie du Kristalle und Moos hast – Erz bleibt ungemischt."
+      ],
+      "starter": {
+        "python": "# Sammle unterwegs alle Proben ein.\n# TODO: Wiederhole das, bis du 3 Kristalle hast (robot.inventar() hilft!)\nrobot.vor()\nif robot.scannen() != \"boden\":\n    robot.aufheben()\n\n# TODO: zurück zur Quelle, Wasser holen, im Labor mischen\n",
+        "csharp": "// Sammle unterwegs alle Proben ein.\n// TODO: Wiederhole das, bis du 3 Kristalle hast (Robot.Inventar() hilft!)\nRobot.Vor();\nif (Robot.Scannen() != \"boden\")\n    Robot.Aufheben();\n\n// TODO: zurück zur Quelle, Wasser holen, im Labor mischen\n"
+      },
+      "solution": {
+        "python": "def anzahl(sorte):\n    return robot.inventar().count(sorte)\n\n# 1. Sammeln, bis 3 Kristalle an Bord sind\nwhile anzahl(\"kristall\") < 3:\n    robot.vor()\n    if robot.scannen() != \"boden\":\n        robot.aufheben()\n\n# 2. Umdrehen und zurück zur Quelle\nrobot.links()\nrobot.links()\nwhile robot.scannen() != \"quelle\":\n    robot.vor()\n\n# 3. Inventar auswerten: nur Kristall und Moos passen zu Wasser\nproben = []\nfor probe in robot.inventar():\n    if probe == \"kristall\" or probe == \"moos\":\n        proben.append(probe)\nfor probe in proben:\n    robot.aufheben()\n\n# 4. Im Labor alles mischen\nrobot.vor()\nfor probe in proben:\n    robot.mischen(probe, \"wasser\")\n",
+        "csharp": "int Anzahl(string sorte)\n{\n    return Robot.Inventar().Count(p => p == sorte);\n}\n\n// 1. Sammeln, bis 3 Kristalle an Bord sind\nwhile (Anzahl(\"kristall\") < 3)\n{\n    Robot.Vor();\n    if (Robot.Scannen() != \"boden\")\n        Robot.Aufheben();\n}\n\n// 2. Umdrehen und zurück zur Quelle\nRobot.Links();\nRobot.Links();\nwhile (Robot.Scannen() != \"quelle\")\n    Robot.Vor();\n\n// 3. Inventar auswerten: nur Kristall und Moos passen zu Wasser\nvar proben = new List<string>();\nforeach (string probe in Robot.Inventar())\n    if (probe == \"kristall\" || probe == \"moos\")\n        proben.Add(probe);\nforeach (string probe in proben)\n    Robot.Aufheben();\n\n// 4. Im Labor alles mischen\nRobot.Vor();\nforeach (string probe in proben)\n    Robot.Mischen(probe, \"wasser\");\n"
+      }
+    },
+    {
+      "id": "m14",
+      "title": "Rezeptbuch",
+      "story": "Die Chefalchemistin hat dir ein Rezeptbuch geschickt: Zu jeder Probe steht darin der passende Partner. Sammle im Gang alle Proben ein und lass dein Programm im Buch nachschlagen, was wozu gemischt wird. Kristalle sind diesmal nur Partner für das Erz – also nicht mit Wasser verschwenden!",
+      "concept": "Dictionary / Map (Schlüssel → Wert nachschlagen)",
+      "energy": 14,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "#REKMEK.MQL#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "############",
+            "#RM.KEMKEQL#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "############",
+            "#RMEMKMEKQL#",
+            "############"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "herstellen",
+          "item": "biogel",
+          "count": 2
+        },
+        {
+          "type": "herstellen",
+          "item": "legierung",
+          "count": 2
+        }
+      ],
+      "par": {
+        "energy": 9,
+        "lines": {
+          "python": 15,
+          "csharp": 17
+        }
+      },
+      "hints": [
+        "Mit buch[\"moos\"] bekommst du den Partner für Moos. Prüfe vorher mit `in` (C#: ContainsKey), ob die Probe überhaupt im Buch steht.",
+        "An der Quelle: Geh die Liste aus robot.inventar() durch und hol für jede Probe, deren Partner \"wasser\" ist, ein Wasser.",
+        "Im Labor: robot.mischen(probe, buch[probe]) für jede Probe aus dem Buch."
+      ],
+      "starter": {
+        "python": "# Das Rezeptbuch: Probe -> passender Partner\nbuch = {\"moos\": \"wasser\", \"erz\": \"kristall\"}\n\n# TODO: bis zur Quelle fahren und alle Proben einsammeln\n# TODO: für jede Probe, die Wasser braucht, Wasser holen\n# TODO: im Labor jede Probe mit ihrem Partner aus dem Buch mischen\nrobot.vor()\n",
+        "csharp": "// Das Rezeptbuch: Probe -> passender Partner\nvar buch = new Dictionary<string, string>\n{\n    { \"moos\", \"wasser\" },\n    { \"erz\", \"kristall\" }\n};\n\n// TODO: bis zur Quelle fahren und alle Proben einsammeln\n// TODO: für jede Probe, die Wasser braucht, Wasser holen\n// TODO: im Labor jede Probe mit ihrem Partner aus dem Buch mischen\nRobot.Vor();\n"
+      },
+      "solution": {
+        "python": "# Das Rezeptbuch: Probe -> passender Partner\nbuch = {\"moos\": \"wasser\", \"erz\": \"kristall\"}\n\n# 1. Bis zur Quelle fahren und alles einsammeln\nort = robot.scannen()\nwhile ort != \"quelle\":\n    if ort != \"boden\":\n        robot.aufheben()\n    robot.vor()\n    ort = robot.scannen()\n\n# 2. Wasser für alle Proben holen, die Wasser brauchen\nproben = robot.inventar()\nfor probe in proben:\n    if probe in buch and buch[probe] == \"wasser\":\n        robot.aufheben()\n\n# 3. Im Labor nach Rezeptbuch mischen\nrobot.vor()\nfor probe in proben:\n    if probe in buch:\n        robot.mischen(probe, buch[probe])\n",
+        "csharp": "// Das Rezeptbuch: Probe -> passender Partner\nvar buch = new Dictionary<string, string>\n{\n    { \"moos\", \"wasser\" },\n    { \"erz\", \"kristall\" }\n};\n\n// 1. Bis zur Quelle fahren und alles einsammeln\nstring ort = Robot.Scannen();\nwhile (ort != \"quelle\")\n{\n    if (ort != \"boden\")\n        Robot.Aufheben();\n    Robot.Vor();\n    ort = Robot.Scannen();\n}\n\n// 2. Wasser für alle Proben holen, die Wasser brauchen\nvar proben = Robot.Inventar();\nforeach (string probe in proben)\n    if (buch.ContainsKey(probe) && buch[probe] == \"wasser\")\n        Robot.Aufheben();\n\n// 3. Im Labor nach Rezeptbuch mischen\nRobot.Vor();\nforeach (string probe in proben)\n    if (buch.ContainsKey(probe))\n        Robot.Mischen(probe, buch[probe]);\n"
+      }
+    },
+    {
+      "id": "m15",
+      "title": "Nanobot",
+      "story": "Für die Reparatur der Basis brauchst du zwei Nanobots – das anspruchsvollste Rezept auf Xeno-7. Erz und Kristall ergeben Legierung, Moos und Wasser Biogel, und erst beides zusammen einen Nanobot. Folge dem gewundenen Gang, nutze jede Station am Weg und zerlege dein Programm sauber in Funktionen.",
+      "concept": "Funktionen: Problem in Teilaufgaben zerlegen",
+      "energy": 38,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "#R.E..K.MQL#",
+            "##########.#",
+            "#.KQ.M.E...#",
+            "#.##########",
+            "#.L.......Z#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "##########",
+            "#R.M.Q.M.#",
+            "########Q#",
+            "#.KE.KE.L#",
+            "#.########",
+            "#..L....Z#",
+            "##########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "herstellen",
+          "item": "nanobot",
+          "count": 2
+        },
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 31,
+        "lines": {
+          "python": 27,
+          "csharp": 27
+        }
+      },
+      "hints": [
+        "Eine Funktion weiter() folgt dem Gang: Ist vorne kein Platz, probier links, sonst dreh nach rechts.",
+        "Eine Funktion station(ort) entscheidet, was auf dem aktuellen Feld zu tun ist: aufheben oder im Labor mischen.",
+        "Im Labor: Misch so lange Legierung, Biogel und Nanobots, wie die Zutaten im Inventar reichen – die Reihenfolge zählt!"
+      ],
+      "starter": {
+        "python": "# Zerlege die Aufgabe in Funktionen!\ndef station(ort):\n    # TODO: Proben und Wasser aufheben, im Labor mischen\n    pass\n\ndef weiter():\n    # TODO: dem Gang auch um die Ecken folgen\n    robot.vor()\n\nort = robot.scannen()\nwhile ort != \"basis\":\n    station(ort)\n    weiter()\n    ort = robot.scannen()\n",
+        "csharp": "// Zerlege die Aufgabe in Funktionen!\nvoid Station(string ort)\n{\n    // TODO: Proben und Wasser aufheben, im Labor mischen\n}\n\nvoid Weiter()\n{\n    // TODO: dem Gang auch um die Ecken folgen\n    Robot.Vor();\n}\n\nstring ort = Robot.Scannen();\nwhile (ort != \"basis\")\n{\n    Station(ort);\n    Weiter();\n    ort = Robot.Scannen();\n}\n"
+      },
+      "solution": {
+        "python": "def kann(a, b):\n    inv = robot.inventar()\n    return a in inv and b in inv\n\n# Im Labor alles mischen, was die Zutaten hergeben\ndef mische_alles():\n    while kann(\"erz\", \"kristall\"):\n        robot.mischen(\"erz\", \"kristall\")\n    while kann(\"moos\", \"wasser\"):\n        robot.mischen(\"moos\", \"wasser\")\n    while kann(\"biogel\", \"legierung\"):\n        robot.mischen(\"biogel\", \"legierung\")\n\ndef station(ort):\n    if ort == \"labor\":\n        mische_alles()\n    elif ort != \"boden\":\n        robot.aufheben()\n\n# Dem Gang folgen, auch um Ecken\ndef weiter():\n    if not robot.ist_frei():\n        robot.links()\n        if not robot.ist_frei():\n            robot.rechts()\n            robot.rechts()\n    robot.vor()\n\nort = robot.scannen()\nwhile ort != \"basis\":\n    station(ort)\n    weiter()\n    ort = robot.scannen()\n",
+        "csharp": "bool Kann(string a, string b)\n{\n    var inv = Robot.Inventar();\n    return inv.Contains(a) && inv.Contains(b);\n}\n\n// Im Labor alles mischen, was die Zutaten hergeben\nvoid MischeAlles()\n{\n    while (Kann(\"erz\", \"kristall\"))\n        Robot.Mischen(\"erz\", \"kristall\");\n    while (Kann(\"moos\", \"wasser\"))\n        Robot.Mischen(\"moos\", \"wasser\");\n    while (Kann(\"biogel\", \"legierung\"))\n        Robot.Mischen(\"biogel\", \"legierung\");\n}\n\nvoid Station(string feld)\n{\n    if (feld == \"labor\")\n        MischeAlles();\n    else if (feld != \"boden\")\n        Robot.Aufheben();\n}\n\n// Dem Gang folgen, auch um Ecken\nvoid Weiter()\n{\n    if (!Robot.IstFrei())\n    {\n        Robot.Links();\n        if (!Robot.IstFrei())\n        {\n            Robot.Rechts();\n            Robot.Rechts();\n        }\n    }\n    Robot.Vor();\n}\n\nstring ort = Robot.Scannen();\nwhile (ort != \"basis\")\n{\n    Station(ort);\n    Weiter();\n    ort = Robot.Scannen();\n}\n"
+      }
+    },
+    {
+      "id": "m16",
+      "title": "Finale Expedition",
+      "story": "Die letzte Expedition führt dich in die Lavafelder von Xeno-7. Irgendwo zwischen den glühenden Strömen liegen Kristalle, Erz, Moos und eine Quelle – und ein verlassenes Labor. Braue einen Nanobot UND eine Energiezelle und kehr zur Basis zurück. Der Akku ist knapp, ein Schritt in die Lava ist das Ende. Zeig, was du gelernt hast!",
+      "concept": "Alles kombiniert: Schleifen, Bedingungen, Funktionen, Listen, Dictionary",
+      "energy": 50,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "#R.........#",
+            "##~~.~~#E#.#",
+            "#~~#K#~~~#.#",
+            "#~~~#Q#~~#.#",
+            "#~#K#.#M...#",
+            "#~~.~.~~~#.#",
+            "#ZL........#",
+            "#~~~~~~~~~~#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "############",
+            "#..........#",
+            "#.####.#.#.#",
+            "#...Q#.#E#.#",
+            "#.####M#~#.#",
+            "#.#####~K..#",
+            "#..K###~~#.#",
+            "#.~~~~~~~#L#",
+            "#R~~~~~~~#Z#",
+            "############"
+          ],
+          "dir": "N"
+        }
+      ],
+      "goals": [
+        {
+          "type": "herstellen",
+          "item": "nanobot",
+          "count": 1
+        },
+        {
+          "type": "herstellen",
+          "item": "energiezelle",
+          "count": 1
+        },
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 46,
+        "lines": {
+          "python": 31,
+          "csharp": 35
+        }
+      },
+      "hints": [
+        "ist_frei() meldet Lava genauso wie Fels als nicht frei – die Rechte-Hand-Regel aus m11 bringt dich also sicher durch.",
+        "Ein Dictionary als Einkaufsliste (Sorte → benötigte Anzahl) sagt dir, was du noch aufheben musst.",
+        "Misch im Labor erst, wenn alles da ist: Legierung, Biogel, Nanobot – und mit dem zweiten Kristall die Energiezelle."
+      ],
+      "starter": {
+        "python": "# Einkaufsliste: so viel brauchst du von jeder Sorte\nBEDARF = {\"kristall\": 2, \"erz\": 1, \"moos\": 1, \"wasser\": 2}\n\n# TODO: Funktionen für Bewegen (Rechte-Hand-Regel), Sammeln und Brauen\ndef schritt():\n    robot.vor()\n\nort = robot.scannen()\nwhile ort != \"basis\":\n    # TODO: sammeln, im Labor brauen\n    schritt()\n    ort = robot.scannen()\n",
+        "csharp": "// Einkaufsliste: so viel brauchst du von jeder Sorte\nvar bedarf = new Dictionary<string, int>\n{\n    { \"kristall\", 2 },\n    { \"erz\", 1 },\n    { \"moos\", 1 },\n    { \"wasser\", 2 }\n};\n\n// TODO: Funktionen für Bewegen (Rechte-Hand-Regel), Sammeln und Brauen\nvoid Schritt()\n{\n    Robot.Vor();\n}\n\nstring ort = Robot.Scannen();\nwhile (ort != \"basis\")\n{\n    // TODO: sammeln, im Labor brauen\n    Schritt();\n    ort = Robot.Scannen();\n}\n"
+      },
+      "solution": {
+        "python": "# Einkaufsliste: so viel brauchst du von jeder Sorte\nBEDARF = {\"kristall\": 2, \"erz\": 1, \"moos\": 1, \"wasser\": 2}\n\ndef anzahl(sorte):\n    return robot.inventar().count(sorte)\n\ndef alles_da():\n    for sorte in BEDARF:\n        if anzahl(sorte) < BEDARF[sorte]:\n            return False\n    return True\n\n# Nur aufheben, was noch fehlt\ndef sammle(ort):\n    if ort == \"quelle\":\n        while anzahl(\"wasser\") < BEDARF[\"wasser\"]:\n            robot.aufheben()\n    elif ort in BEDARF and anzahl(ort) < BEDARF[ort]:\n        robot.aufheben()\n\ndef brauen():\n    robot.mischen(\"erz\", \"kristall\")\n    robot.mischen(\"moos\", \"wasser\")\n    robot.mischen(\"biogel\", \"legierung\")\n    robot.mischen(\"kristall\", \"wasser\")\n\n# Rechte-Hand-Regel – Lava zählt wie eine Wand\ndef schritt():\n    robot.rechts()\n    while not robot.ist_frei():\n        robot.links()\n    robot.vor()\n\nort = robot.scannen()\nwhile ort != \"basis\":\n    sammle(ort)\n    if ort == \"labor\" and alles_da():\n        brauen()\n    schritt()\n    ort = robot.scannen()\n",
+        "csharp": "// Einkaufsliste: so viel brauchst du von jeder Sorte\nvar bedarf = new Dictionary<string, int>\n{\n    { \"kristall\", 2 },\n    { \"erz\", 1 },\n    { \"moos\", 1 },\n    { \"wasser\", 2 }\n};\n\nint Anzahl(string sorte)\n{\n    return Robot.Inventar().Count(p => p == sorte);\n}\n\nbool AllesDa()\n{\n    foreach (var eintrag in bedarf)\n        if (Anzahl(eintrag.Key) < eintrag.Value)\n            return false;\n    return true;\n}\n\n// Nur aufheben, was noch fehlt\nvoid Sammle(string feld)\n{\n    if (feld == \"quelle\")\n    {\n        while (Anzahl(\"wasser\") < bedarf[\"wasser\"])\n            Robot.Aufheben();\n    }\n    else if (bedarf.ContainsKey(feld) && Anzahl(feld) < bedarf[feld])\n        Robot.Aufheben();\n}\n\nvoid Brauen()\n{\n    Robot.Mischen(\"erz\", \"kristall\");\n    Robot.Mischen(\"moos\", \"wasser\");\n    Robot.Mischen(\"biogel\", \"legierung\");\n    Robot.Mischen(\"kristall\", \"wasser\");\n}\n\n// Rechte-Hand-Regel - Lava zählt wie eine Wand\nvoid Schritt()\n{\n    Robot.Rechts();\n    while (!Robot.IstFrei())\n        Robot.Links();\n    Robot.Vor();\n}\n\nstring ort = Robot.Scannen();\nwhile (ort != \"basis\")\n{\n    Sammle(ort);\n    if (ort == \"labor\" && AllesDa())\n        Brauen();\n    Schritt();\n    ort = Robot.Scannen();\n}\n"
+      }
+    }
+  ]
+}
