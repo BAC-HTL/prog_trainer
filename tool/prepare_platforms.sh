@@ -21,7 +21,7 @@ fi
 
 PODFILE=ios/Podfile
 if [ -f "$PODFILE" ]; then
-  # flutter_inappwebview braucht mindestens iOS 13.
+  # Plugins brauchen mindestens iOS 13.
   perl -0pi -e "s/^#?\s*platform :ios, '[0-9.]+'/platform :ios, '13.0'/m" "$PODFILE"
 fi
 PLIST=ios/Runner/Info.plist
