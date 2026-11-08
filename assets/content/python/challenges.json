@@ -1,0 +1,799 @@
+{
+  "challenges": [
+    {
+      "id": "py-001",
+      "title": "Hallo, Klasse!",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies einen Namen und eine Klasse (je eine Zeile) ein und gib eine Begrüßung aus.\n\nEingabe:\nZeile 1: Name\nZeile 2: Klasse\n\nAusgabe:\nHallo <Name>!\nWillkommen in der <Klasse>.\n\nBeispiel:\nEingabe:\nLena\n1AHIT\nAusgabe:\nHallo Lena!\nWillkommen in der 1AHIT.",
+      "starterCode": "name = input()\nklasse = input()\n\n# Gib hier die zwei Zeilen aus\n",
+      "hints": [
+        "Mit einem f-String geht das am einfachsten: f\"Hallo {name}!\"",
+        "Achte auf das Rufzeichen und den Punkt am Ende."
+      ],
+      "tests": [
+        {
+          "stdin": "Lena\n1AHIT",
+          "expected": "Hallo Lena!\nWillkommen in der 1AHIT."
+        },
+        {
+          "stdin": "Max\n3BHEL",
+          "expected": "Hallo Max!\nWillkommen in der 3BHEL."
+        },
+        {
+          "stdin": "Anna-Sophie\n5CHIF",
+          "expected": "Hallo Anna-Sophie!\nWillkommen in der 5CHIF."
+        }
+      ],
+      "solution": "name = input()\nklasse = input()\nprint(f\"Hallo {name}!\")\nprint(f\"Willkommen in der {klasse}.\")\n"
+    },
+    {
+      "id": "py-002",
+      "title": "Klassenzimmer ausmalen",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Ein Klassenzimmer ist rechteckig. Lies Länge und Breite in Metern (ganze Zahlen, je eine Zeile) ein und gib Fläche und Umfang aus.\n\nAusgabe:\nFläche: <fläche> m²\nUmfang: <umfang> m\n\nBeispiel:\nEingabe:\n8\n6\nAusgabe:\nFläche: 48 m²\nUmfang: 28 m",
+      "starterCode": "laenge = int(input())\nbreite = int(input())\n\n# Berechne Fläche und Umfang\n\n# Gib beide Werte aus\n",
+      "hints": [
+        "Fläche = Länge * Breite",
+        "Umfang = 2 * (Länge + Breite)"
+      ],
+      "tests": [
+        {
+          "stdin": "8\n6",
+          "expected": "Fläche: 48 m²\nUmfang: 28 m"
+        },
+        {
+          "stdin": "5\n5",
+          "expected": "Fläche: 25 m²\nUmfang: 20 m"
+        },
+        {
+          "stdin": "1\n100",
+          "expected": "Fläche: 100 m²\nUmfang: 202 m"
+        },
+        {
+          "stdin": "0\n7",
+          "expected": "Fläche: 0 m²\nUmfang: 14 m"
+        }
+      ],
+      "solution": "laenge = int(input())\nbreite = int(input())\nflaeche = laenge * breite\numfang = 2 * (laenge + breite)\nprint(f\"Fläche: {flaeche} m²\")\nprint(f\"Umfang: {umfang} m\")\n"
+    },
+    {
+      "id": "py-003",
+      "title": "Gerade oder ungerade?",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies eine ganze Zahl ein und gib aus, ob sie gerade oder ungerade ist.\n\nAusgabe:\n<zahl> ist gerade\noder\n<zahl> ist ungerade\n\nBeispiel:\nEingabe:\n7\nAusgabe:\n7 ist ungerade",
+      "starterCode": "zahl = int(input())\n\n# Prüfe mit if/else, ob die Zahl gerade ist\n",
+      "hints": [
+        "Der Modulo-Operator % liefert den Rest einer Division.",
+        "Eine Zahl ist gerade, wenn zahl % 2 == 0 gilt. Das klappt auch für 0 und negative Zahlen."
+      ],
+      "tests": [
+        {
+          "stdin": "7",
+          "expected": "7 ist ungerade"
+        },
+        {
+          "stdin": "10",
+          "expected": "10 ist gerade"
+        },
+        {
+          "stdin": "0",
+          "expected": "0 ist gerade"
+        },
+        {
+          "stdin": "-3",
+          "expected": "-3 ist ungerade"
+        }
+      ],
+      "solution": "zahl = int(input())\nif zahl % 2 == 0:\n    print(f\"{zahl} ist gerade\")\nelse:\n    print(f\"{zahl} ist ungerade\")\n"
+    },
+    {
+      "id": "py-004",
+      "title": "Punkte in Noten",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Bei einer Schularbeit gibt es maximal 100 Punkte. Lies die erreichten Punkte (0–100) ein und gib die Note aus:\n\n90–100: Sehr gut\n80–89: Gut\n65–79: Befriedigend\n50–64: Genügend\n0–49: Nicht genügend\n\nBeispiel:\nEingabe:\n83\nAusgabe:\nGut",
+      "starterCode": "punkte = int(input())\n\n# Verwende if / elif / else\n",
+      "hints": [
+        "Prüfe von oben nach unten: zuerst >= 90, dann >= 80 …",
+        "Die Grenzen selbst gehören zur besseren Note (90 ist noch Sehr gut)."
+      ],
+      "tests": [
+        {
+          "stdin": "83",
+          "expected": "Gut"
+        },
+        {
+          "stdin": "90",
+          "expected": "Sehr gut"
+        },
+        {
+          "stdin": "49",
+          "expected": "Nicht genügend"
+        },
+        {
+          "stdin": "65",
+          "expected": "Befriedigend"
+        },
+        {
+          "stdin": "50",
+          "expected": "Genügend"
+        }
+      ],
+      "solution": "punkte = int(input())\nif punkte >= 90:\n    print(\"Sehr gut\")\nelif punkte >= 80:\n    print(\"Gut\")\nelif punkte >= 65:\n    print(\"Befriedigend\")\nelif punkte >= 50:\n    print(\"Genügend\")\nelse:\n    print(\"Nicht genügend\")\n"
+    },
+    {
+      "id": "py-005",
+      "title": "FizzBuzz",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Der Klassiker! Lies eine Zahl n ein und gib die Zahlen von 1 bis n aus, jede in einer eigenen Zeile. Aber:\n- ist die Zahl durch 3 teilbar, gib \"Fizz\" aus,\n- ist sie durch 5 teilbar, gib \"Buzz\" aus,\n- ist sie durch 3 und 5 teilbar, gib \"FizzBuzz\" aus.\n\nBeispiel:\nEingabe:\n5\nAusgabe:\n1\n2\nFizz\n4\nBuzz",
+      "starterCode": "n = int(input())\n\nfor i in range(1, n + 1):\n    # Entscheide, was für i ausgegeben wird\n    pass\n",
+      "hints": [
+        "Prüfe zuerst, ob die Zahl durch 15 teilbar ist – sonst wird nie \"FizzBuzz\" ausgegeben.",
+        "Teilbar heißt: i % 3 == 0."
+      ],
+      "tests": [
+        {
+          "stdin": "5",
+          "expected": "1\n2\nFizz\n4\nBuzz"
+        },
+        {
+          "stdin": "15",
+          "expected": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz"
+        },
+        {
+          "stdin": "1",
+          "expected": "1"
+        },
+        {
+          "stdin": "0",
+          "expected": ""
+        }
+      ],
+      "solution": "n = int(input())\nfor i in range(1, n + 1):\n    if i % 15 == 0:\n        print(\"FizzBuzz\")\n    elif i % 3 == 0:\n        print(\"Fizz\")\n    elif i % 5 == 0:\n        print(\"Buzz\")\n    else:\n        print(i)\n"
+    },
+    {
+      "id": "py-006",
+      "title": "Schaltjahr-Detektor",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies eine Jahreszahl ein und gib \"Schaltjahr\" oder \"Kein Schaltjahr\" aus.\n\nRegeln:\n- durch 4 teilbar → Schaltjahr,\n- außer durch 100 teilbar → kein Schaltjahr,\n- außer durch 400 teilbar → doch Schaltjahr.\n\nBeispiel:\nEingabe:\n2024\nAusgabe:\nSchaltjahr",
+      "starterCode": "jahr = int(input())\n\n# Setze die drei Regeln mit Bedingungen um\n",
+      "hints": [
+        "Du kannst die Regeln mit and / or in eine einzige Bedingung packen.",
+        "jahr % 4 == 0 and (jahr % 100 != 0 or jahr % 400 == 0)"
+      ],
+      "tests": [
+        {
+          "stdin": "2024",
+          "expected": "Schaltjahr"
+        },
+        {
+          "stdin": "2023",
+          "expected": "Kein Schaltjahr"
+        },
+        {
+          "stdin": "1900",
+          "expected": "Kein Schaltjahr"
+        },
+        {
+          "stdin": "2000",
+          "expected": "Schaltjahr"
+        }
+      ],
+      "solution": "jahr = int(input())\nif jahr % 4 == 0 and (jahr % 100 != 0 or jahr % 400 == 0):\n    print(\"Schaltjahr\")\nelse:\n    print(\"Kein Schaltjahr\")\n"
+    },
+    {
+      "id": "py-007",
+      "title": "Sekunden-Umrechner",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Für eine Stoppuhr-App sollst du eine Anzahl Sekunden in Stunden, Minuten und Sekunden umrechnen. Gib das Ergebnis im Format HH:MM:SS aus (immer zweistellig mit führender Null).\n\nBeispiel:\nEingabe:\n3725\nAusgabe:\n01:02:05",
+      "starterCode": "sekunden = int(input())\n\n# Berechne stunden, minuten und rest\n\n# Gib zweistellig aus, z. B. mit f\"{wert:02d}\"\n",
+      "hints": [
+        "Ganzzahldivision // und Rest % helfen dir: 3725 // 3600 = 1 Stunde.",
+        "f\"{5:02d}\" ergibt \"05\"."
+      ],
+      "tests": [
+        {
+          "stdin": "3725",
+          "expected": "01:02:05"
+        },
+        {
+          "stdin": "0",
+          "expected": "00:00:00"
+        },
+        {
+          "stdin": "59",
+          "expected": "00:00:59"
+        },
+        {
+          "stdin": "86399",
+          "expected": "23:59:59"
+        },
+        {
+          "stdin": "3600",
+          "expected": "01:00:00"
+        }
+      ],
+      "solution": "sekunden = int(input())\nstunden = sekunden // 3600\nminuten = (sekunden % 3600) // 60\nrest = sekunden % 60\nprint(f\"{stunden:02d}:{minuten:02d}:{rest:02d}\")\n"
+    },
+    {
+      "id": "py-008",
+      "title": "Notendurchschnitt",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies zuerst die Anzahl n der Noten ein, danach n Noten (1–5, je eine Zeile). Gib den Durchschnitt mit zwei Nachkommastellen aus und darunter, ob alle Noten positiv sind (keine 5).\n\nAusgabe:\nDurchschnitt: <x.xx>\nAlle positiv: Ja   bzw.   Alle positiv: Nein\n\nBeispiel:\nEingabe:\n3\n1\n2\n2\nAusgabe:\nDurchschnitt: 1.67\nAlle positiv: Ja",
+      "starterCode": "n = int(input())\nnoten = []\n\n# Lies n Noten ein und speichere sie in der Liste\n\n# Berechne den Durchschnitt und prüfe auf eine 5\n",
+      "hints": [
+        "sum(noten) / len(noten) liefert den Durchschnitt.",
+        "Mit 5 in noten prüfst du, ob ein Fünfer dabei ist.",
+        "f\"{durchschnitt:.2f}\" rundet auf zwei Stellen."
+      ],
+      "tests": [
+        {
+          "stdin": "3\n1\n2\n2",
+          "expected": "Durchschnitt: 1.67\nAlle positiv: Ja"
+        },
+        {
+          "stdin": "4\n5\n3\n4\n2",
+          "expected": "Durchschnitt: 3.50\nAlle positiv: Nein"
+        },
+        {
+          "stdin": "1\n1",
+          "expected": "Durchschnitt: 1.00\nAlle positiv: Ja"
+        },
+        {
+          "stdin": "2\n5\n5",
+          "expected": "Durchschnitt: 5.00\nAlle positiv: Nein"
+        }
+      ],
+      "solution": "n = int(input())\nnoten = []\nfor i in range(n):\n    noten.append(int(input()))\ndurchschnitt = sum(noten) / len(noten)\nprint(f\"Durchschnitt: {durchschnitt:.2f}\")\nif 5 in noten:\n    print(\"Alle positiv: Nein\")\nelse:\n    print(\"Alle positiv: Ja\")\n"
+    },
+    {
+      "id": "py-009",
+      "title": "Sternen-Treppe",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies eine Zahl n ein und zeichne eine Treppe aus Sternen mit n Stufen. Zeile i (1 bis n) enthält i Sterne.\n\nBeispiel:\nEingabe:\n4\nAusgabe:\n*\n**\n***\n****",
+      "starterCode": "n = int(input())\n\n# Eine Schleife über die Zeilen …\n",
+      "hints": [
+        "\"*\" * 3 ergibt \"***\".",
+        "Alternativ: eine innere Schleife, die Sterne mit print(\"*\", end=\"\") ausgibt."
+      ],
+      "tests": [
+        {
+          "stdin": "4",
+          "expected": "*\n**\n***\n****"
+        },
+        {
+          "stdin": "1",
+          "expected": "*"
+        },
+        {
+          "stdin": "6",
+          "expected": "*\n**\n***\n****\n*****\n******"
+        },
+        {
+          "stdin": "0",
+          "expected": ""
+        }
+      ],
+      "solution": "n = int(input())\nfor i in range(1, n + 1):\n    print(\"*\" * i)\n"
+    },
+    {
+      "id": "py-010",
+      "title": "Palindrom-Check",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Ein Palindrom liest sich vorwärts und rückwärts gleich, z. B. \"Anna\" oder \"Reliefpfeiler\". Lies einen Text ein und prüfe, ob er ein Palindrom ist. Groß-/Kleinschreibung und Leerzeichen werden ignoriert.\n\nAusgabe: \"Palindrom\" oder \"Kein Palindrom\"\n\nBeispiel:\nEingabe:\nEin Esel lese nie\nAusgabe:\nPalindrom",
+      "starterCode": "text = input()\n\n# Bereite den Text vor (klein schreiben, Leerzeichen entfernen)\n\n# Vergleiche ihn mit seiner Umkehrung\n",
+      "hints": [
+        "text.lower() und text.replace(\" \", \"\") helfen beim Vorbereiten.",
+        "Mit Slicing text[::-1] drehst du einen String um."
+      ],
+      "tests": [
+        {
+          "stdin": "Ein Esel lese nie",
+          "expected": "Palindrom"
+        },
+        {
+          "stdin": "Anna",
+          "expected": "Palindrom"
+        },
+        {
+          "stdin": "Python",
+          "expected": "Kein Palindrom"
+        },
+        {
+          "stdin": "Reliefpfeiler",
+          "expected": "Palindrom"
+        },
+        {
+          "stdin": "ab",
+          "expected": "Kein Palindrom"
+        }
+      ],
+      "solution": "text = input()\nbereinigt = text.lower().replace(\" \", \"\")\nif bereinigt == bereinigt[::-1]:\n    print(\"Palindrom\")\nelse:\n    print(\"Kein Palindrom\")\n"
+    },
+    {
+      "id": "py-011",
+      "title": "Vokal-Zähler",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies einen Satz ein und zähle, wie viele Vokale (a, e, i, o, u – auch Großbuchstaben) er enthält. Umlaute zählen nicht.\n\nAusgabe:\nVokale: <anzahl>\n\nBeispiel:\nEingabe:\nHallo Welt\nAusgabe:\nVokale: 3",
+      "starterCode": "satz = input()\nanzahl = 0\n\n# Gehe jeden Buchstaben durch\n\nprint(f\"Vokale: {anzahl}\")\n",
+      "hints": [
+        "Mit for zeichen in satz: läufst du Zeichen für Zeichen durch.",
+        "zeichen.lower() in \"aeiou\" prüft, ob es ein Vokal ist."
+      ],
+      "tests": [
+        {
+          "stdin": "Hallo Welt",
+          "expected": "Vokale: 3"
+        },
+        {
+          "stdin": "HTL ROCKT",
+          "expected": "Vokale: 1"
+        },
+        {
+          "stdin": "rhythm",
+          "expected": "Vokale: 0"
+        },
+        {
+          "stdin": "AEIOU aeiou",
+          "expected": "Vokale: 10"
+        }
+      ],
+      "solution": "satz = input()\nanzahl = 0\nfor zeichen in satz:\n    if zeichen.lower() in \"aeiou\":\n        anzahl += 1\nprint(f\"Vokale: {anzahl}\")\n"
+    },
+    {
+      "id": "py-012",
+      "title": "Primzahl-Sieb",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Schreibe eine Funktion ist_primzahl(zahl), die True oder False zurückgibt. Lies dann eine Zahl n ein und gib alle Primzahlen von 2 bis n in einer Zeile, getrennt durch Leerzeichen, aus. Gibt es keine, gib \"Keine Primzahlen\" aus.\n\nBeispiel:\nEingabe:\n20\nAusgabe:\n2 3 5 7 11 13 17 19",
+      "starterCode": "def ist_primzahl(zahl):\n    # Gib True zurück, wenn zahl eine Primzahl ist\n    pass\n\n\nn = int(input())\n# Sammle alle Primzahlen bis n in einer Liste und gib sie aus\n",
+      "hints": [
+        "Eine Primzahl ist nur durch 1 und sich selbst teilbar – teste alle Teiler von 2 bis zahl - 1.",
+        "Zahlen kleiner als 2 sind keine Primzahlen.",
+        "\" \".join(...) braucht Strings: wandle die Zahlen mit str() um."
+      ],
+      "tests": [
+        {
+          "stdin": "20",
+          "expected": "2 3 5 7 11 13 17 19"
+        },
+        {
+          "stdin": "2",
+          "expected": "2"
+        },
+        {
+          "stdin": "1",
+          "expected": "Keine Primzahlen"
+        },
+        {
+          "stdin": "30",
+          "expected": "2 3 5 7 11 13 17 19 23 29"
+        }
+      ],
+      "solution": "def ist_primzahl(zahl):\n    if zahl < 2:\n        return False\n    for teiler in range(2, zahl):\n        if zahl % teiler == 0:\n            return False\n    return True\n\n\nn = int(input())\nprimzahlen = []\nfor i in range(2, n + 1):\n    if ist_primzahl(i):\n        primzahlen.append(str(i))\nif primzahlen:\n    print(\" \".join(primzahlen))\nelse:\n    print(\"Keine Primzahlen\")\n"
+    },
+    {
+      "id": "py-013",
+      "title": "Zweitbeste Schularbeit",
+      "level": "einsteiger",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Lies eine Zeile mit Punktezahlen (ganze Zahlen, durch Leerzeichen getrennt) ein. Gib die zweithöchste unterschiedliche Punktezahl aus. Gibt es keine (alle gleich oder nur ein Wert), gib \"Keine\" aus.\n\nVerwende dafür KEIN sorted() – eine Schleife reicht!\n\nBeispiel:\nEingabe:\n45 78 92 78 60\nAusgabe:\n78",
+      "starterCode": "werte = input().split()\npunkte = []\nfor w in werte:\n    punkte.append(int(w))\n\n# Finde in einer Schleife den höchsten und den zweithöchsten Wert\n",
+      "hints": [
+        "Merke dir zwei Variablen: beste und zweitbeste (am Anfang None).",
+        "Ist eine Zahl größer als beste, wird die alte beste zur zweitbesten.",
+        "Eine Zahl, die gleich beste ist, darf zweitbeste nicht verändern."
+      ],
+      "tests": [
+        {
+          "stdin": "45 78 92 78 60",
+          "expected": "78"
+        },
+        {
+          "stdin": "50 50 50",
+          "expected": "Keine"
+        },
+        {
+          "stdin": "17",
+          "expected": "Keine"
+        },
+        {
+          "stdin": "100 99",
+          "expected": "99"
+        },
+        {
+          "stdin": "-5 -2 -9",
+          "expected": "-5"
+        }
+      ],
+      "solution": "werte = input().split()\npunkte = []\nfor w in werte:\n    punkte.append(int(w))\n\nbeste = None\nzweitbeste = None\nfor p in punkte:\n    if beste is None or p > beste:\n        zweitbeste = beste\n        beste = p\n    elif p < beste and (zweitbeste is None or p > zweitbeste):\n        zweitbeste = p\n\nif zweitbeste is None:\n    print(\"Keine\")\nelse:\n    print(zweitbeste)\n"
+    },
+    {
+      "id": "py-014",
+      "title": "Caesar-Verschlüsselung",
+      "level": "einsteiger",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Julius Caesar verschlüsselte Nachrichten, indem er jeden Buchstaben um eine feste Anzahl Stellen im Alphabet verschob. Schreibe eine Funktion verschluesseln(text, schluessel).\n\nEingabe:\nZeile 1: Text\nZeile 2: Schlüssel (ganze Zahl, auch negativ zum Entschlüsseln)\n\nRegeln:\n- Groß- und Kleinbuchstaben (A–Z, a–z) werden verschoben, Groß bleibt groß, klein bleibt klein.\n- Nach Z geht es wieder bei A weiter.\n- Alle anderen Zeichen (Leerzeichen, Ziffern, Satzzeichen) bleiben gleich.\n\nBeispiel:\nEingabe:\nHallo Welt!\n3\nAusgabe:\nKdoor Zhow!",
+      "starterCode": "def verschluesseln(text, schluessel):\n    ergebnis = \"\"\n    # Verschiebe jeden Buchstaben\n    return ergebnis\n\n\ntext = input()\nschluessel = int(input())\n",
+      "hints": [
+        "ord(\"A\") liefert 65, chr(65) wieder \"A\".",
+        "Position im Alphabet: ord(z) - ord(\"A\"); neue Position: (pos + schluessel) % 26.",
+        "Python rechnet % auch bei negativen Zahlen richtig: -1 % 26 == 25."
+      ],
+      "tests": [
+        {
+          "stdin": "Hallo Welt!\n3",
+          "expected": "Kdoor Zhow!"
+        },
+        {
+          "stdin": "xyz ABC\n3",
+          "expected": "abc DEF"
+        },
+        {
+          "stdin": "Kdoor Zhow!\n-3",
+          "expected": "Hallo Welt!"
+        },
+        {
+          "stdin": "HTL 2025\n26",
+          "expected": "HTL 2025"
+        },
+        {
+          "stdin": "Python\n13",
+          "expected": "Clguba"
+        }
+      ],
+      "solution": "def verschluesseln(text, schluessel):\n    ergebnis = \"\"\n    for z in text:\n        if \"A\" <= z <= \"Z\":\n            ergebnis += chr((ord(z) - ord(\"A\") + schluessel) % 26 + ord(\"A\"))\n        elif \"a\" <= z <= \"z\":\n            ergebnis += chr((ord(z) - ord(\"a\") + schluessel) % 26 + ord(\"a\"))\n        else:\n            ergebnis += z\n    return ergebnis\n\n\ntext = input()\nschluessel = int(input())\nprint(verschluesseln(text, schluessel))\n"
+    },
+    {
+      "id": "py-015",
+      "title": "Wörter zählen",
+      "level": "fortgeschritten",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies einen Satz ein und zähle, wie oft jedes Wort vorkommt. Groß-/Kleinschreibung wird ignoriert (alles klein ausgeben). Wörter sind durch Leerzeichen getrennt, es gibt keine Satzzeichen.\n\nGib die Wörter alphabetisch sortiert aus, je Zeile:\n<wort>: <anzahl>\n\nBeispiel:\nEingabe:\nDer Hund und der Kater\nAusgabe:\nder: 2\nhund: 1\nkater: 1\nund: 1",
+      "starterCode": "satz = input()\nzaehler = {}\n\n# Zähle die Wörter im Dictionary\n\n# Gib sie alphabetisch sortiert aus\n",
+      "hints": [
+        "zaehler.get(wort, 0) + 1 erspart dir eine if-Abfrage.",
+        "for wort in sorted(zaehler): läuft alphabetisch über die Schlüssel."
+      ],
+      "tests": [
+        {
+          "stdin": "Der Hund und der Kater",
+          "expected": "der: 2\nhund: 1\nkater: 1\nund: 1"
+        },
+        {
+          "stdin": "python",
+          "expected": "python: 1"
+        },
+        {
+          "stdin": "a b A B a",
+          "expected": "a: 3\nb: 2"
+        },
+        {
+          "stdin": "Ich   mag  Pizza",
+          "expected": "ich: 1\nmag: 1\npizza: 1"
+        }
+      ],
+      "solution": "satz = input()\nzaehler = {}\nfor wort in satz.lower().split():\n    zaehler[wort] = zaehler.get(wort, 0) + 1\nfor wort in sorted(zaehler):\n    print(f\"{wort}: {zaehler[wort]}\")\n"
+    },
+    {
+      "id": "py-016",
+      "title": "Comprehension-Filter",
+      "level": "fortgeschritten",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies eine Zeile mit ganzen Zahlen (durch Leerzeichen getrennt) ein. Erzeuge mit List Comprehensions:\n1. die Quadrate aller geraden Zahlen,\n2. alle negativen Zahlen.\nGib beide Listen mit print() aus (normale Python-Listendarstellung).\n\nBeispiel:\nEingabe:\n1 2 -3 4 -6\nAusgabe:\n[4, 16, 36]\n[-3, -6]",
+      "starterCode": "zahlen = [int(x) for x in input().split()]\n\nquadrate = []   # ersetze durch eine Comprehension\nnegative = []   # ersetze durch eine Comprehension\n\n",
+      "hints": [
+        "[x * x for x in zahlen if x % 2 == 0]",
+        "Vergiss nicht, beide Listen auszugeben."
+      ],
+      "tests": [
+        {
+          "stdin": "1 2 -3 4 -6",
+          "expected": "[4, 16, 36]\n[-3, -6]"
+        },
+        {
+          "stdin": "1 3 5",
+          "expected": "[]\n[]"
+        },
+        {
+          "stdin": "0 -2",
+          "expected": "[0, 4]\n[-2]"
+        },
+        {
+          "stdin": "10",
+          "expected": "[100]\n[]"
+        }
+      ],
+      "solution": "zahlen = [int(x) for x in input().split()]\nquadrate = [x * x for x in zahlen if x % 2 == 0]\nnegative = [x for x in zahlen if x < 0]\nprint(quadrate)\nprint(negative)\n"
+    },
+    {
+      "id": "py-017",
+      "title": "Sicherer Taschenrechner",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies zuerst die Anzahl n der Rechnungen ein, danach n Zeilen der Form \"a b\". Teile a durch b und gib das Ergebnis mit zwei Nachkommastellen aus. Das Programm darf nie abstürzen:\n- b ist 0 → \"Fehler: Division durch 0\"\n- a oder b ist keine Zahl bzw. es fehlt ein Wert → \"Fehler: Ungültige Eingabe\"\n\nBeispiel:\nEingabe:\n3\n10 4\n5 0\nzehn 2\nAusgabe:\n2.50\nFehler: Division durch 0\nFehler: Ungültige Eingabe",
+      "starterCode": "n = int(input())\nfor i in range(n):\n    zeile = input()\n    # Verwende try / except für die Fehlerfälle\n",
+      "hints": [
+        "float(\"zehn\") wirft einen ValueError, a / 0 einen ZeroDivisionError.",
+        "Wenn die Zeile nur einen Wert hat, schlägt das Entpacken a, b = ... mit ValueError fehl.",
+        "Du kannst mehrere except-Blöcke hintereinander schreiben."
+      ],
+      "tests": [
+        {
+          "stdin": "3\n10 4\n5 0\nzehn 2",
+          "expected": "2.50\nFehler: Division durch 0\nFehler: Ungültige Eingabe"
+        },
+        {
+          "stdin": "2\n-9 3\n1.5 0.5",
+          "expected": "-3.00\n3.00"
+        },
+        {
+          "stdin": "2\n7\n0 5",
+          "expected": "Fehler: Ungültige Eingabe\n0.00"
+        },
+        {
+          "stdin": "1\n1 3",
+          "expected": "0.33"
+        }
+      ],
+      "solution": "n = int(input())\nfor i in range(n):\n    zeile = input()\n    try:\n        a, b = zeile.split()\n        ergebnis = float(a) / float(b)\n        print(f\"{ergebnis:.2f}\")\n    except ZeroDivisionError:\n        print(\"Fehler: Division durch 0\")\n    except ValueError:\n        print(\"Fehler: Ungültige Eingabe\")\n"
+    },
+    {
+      "id": "py-018",
+      "title": "Lagerverwaltung",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Du programmierst die Lagerverwaltung für das Schulbuffet. Das Lager ist ein Dictionary (Artikel → Menge). Lies Befehle zeilenweise, bis \"ende\" kommt:\n\n- \"rein <artikel> <menge>\" → Menge hinzufügen, keine Ausgabe\n- \"raus <artikel> <menge>\" → Menge entnehmen, keine Ausgabe; ist nicht genug da, gib \"Nicht genug <artikel>\" aus und ändere nichts. Fällt die Menge auf 0, wird der Artikel aus dem Lager entfernt.\n- \"zeige\" → alle Artikel alphabetisch als \"<artikel>: <menge>\" ausgeben, bei leerem Lager \"Lager leer\"\n\nBeispiel:\nEingabe:\nrein Semmel 10\nrein Apfel 5\nraus Semmel 3\nraus Apfel 9\nzeige\nende\nAusgabe:\nNicht genug Apfel\nApfel: 5\nSemmel: 7",
+      "starterCode": "lager = {}\n\nwhile True:\n    befehl = input().split()\n    if befehl[0] == \"ende\":\n        break\n    # Behandle die Befehle rein, raus und zeige\n",
+      "hints": [
+        "lager.get(artikel, 0) liefert 0, wenn der Artikel noch nicht im Lager ist.",
+        "del lager[artikel] entfernt einen Eintrag.",
+        "Ein Artikel, den es gar nicht gibt, hat Menge 0 – also ist auch dann nicht genug da."
+      ],
+      "tests": [
+        {
+          "stdin": "rein Semmel 10\nrein Apfel 5\nraus Semmel 3\nraus Apfel 9\nzeige\nende",
+          "expected": "Nicht genug Apfel\nApfel: 5\nSemmel: 7"
+        },
+        {
+          "stdin": "zeige\nende",
+          "expected": "Lager leer"
+        },
+        {
+          "stdin": "rein Saft 2\nraus Saft 2\nzeige\nraus Pizza 1\nende",
+          "expected": "Lager leer\nNicht genug Pizza"
+        },
+        {
+          "stdin": "rein Wasser 3\nrein Wasser 4\nzeige\nraus Wasser 1\nzeige\nende",
+          "expected": "Wasser: 7\nWasser: 6"
+        }
+      ],
+      "solution": "lager = {}\n\nwhile True:\n    befehl = input().split()\n    if befehl[0] == \"ende\":\n        break\n    if befehl[0] == \"rein\":\n        artikel, menge = befehl[1], int(befehl[2])\n        lager[artikel] = lager.get(artikel, 0) + menge\n    elif befehl[0] == \"raus\":\n        artikel, menge = befehl[1], int(befehl[2])\n        if lager.get(artikel, 0) < menge:\n            print(f\"Nicht genug {artikel}\")\n        else:\n            lager[artikel] -= menge\n            if lager[artikel] == 0:\n                del lager[artikel]\n    elif befehl[0] == \"zeige\":\n        if not lager:\n            print(\"Lager leer\")\n        for artikel in sorted(lager):\n            print(f\"{artikel}: {lager[artikel]}\")\n"
+    },
+    {
+      "id": "py-019",
+      "title": "Klassen-Ranking",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Nach dem Programmierwettbewerb soll ein Ranking erstellt werden. Lies die Anzahl n ein, danach n Zeilen \"<name> <punkte>\". Sortiere absteigend nach Punkten; bei Gleichstand alphabetisch nach Namen. Gib die Plätze so aus:\n\n<platz>. <name> (<punkte>)\n\nBeispiel:\nEingabe:\n3\nMia 80\nJonas 95\nAli 80\nAusgabe:\n1. Jonas (95)\n2. Ali (80)\n3. Mia (80)",
+      "starterCode": "n = int(input())\nteilnehmer = []\nfor i in range(n):\n    name, punkte = input().split()\n    teilnehmer.append((name, int(punkte)))\n\n# Sortiere mit sorted() und einem key-Lambda\n",
+      "hints": [
+        "sorted(liste, key=lambda t: ...) sortiert nach einem selbst gewählten Schlüssel.",
+        "Ein Tupel als Schlüssel sortiert nach mehreren Kriterien: (-punkte, name).",
+        "enumerate(liste, start=1) liefert dir die Platznummer gleich mit."
+      ],
+      "tests": [
+        {
+          "stdin": "3\nMia 80\nJonas 95\nAli 80",
+          "expected": "1. Jonas (95)\n2. Ali (80)\n3. Mia (80)"
+        },
+        {
+          "stdin": "1\nSolo 0",
+          "expected": "1. Solo (0)"
+        },
+        {
+          "stdin": "4\nDora 10\nBen 20\nAda 20\nCem 30",
+          "expected": "1. Cem (30)\n2. Ada (20)\n3. Ben (20)\n4. Dora (10)"
+        },
+        {
+          "stdin": "0",
+          "expected": ""
+        }
+      ],
+      "solution": "n = int(input())\nteilnehmer = []\nfor i in range(n):\n    name, punkte = input().split()\n    teilnehmer.append((name, int(punkte)))\n\nrangliste = sorted(teilnehmer, key=lambda t: (-t[1], t[0]))\nfor platz, (name, punkte) in enumerate(rangliste, start=1):\n    print(f\"{platz}. {name} ({punkte})\")\n"
+    },
+    {
+      "id": "py-020",
+      "title": "Formen-Fabrik",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Erstelle eine Basisklasse Form mit einer Methode flaeche() und zwei Unterklassen Kreis (Radius r) und Rechteck (Breite b, Höhe h). Jede Unterklasse überschreibt flaeche(). Kreisfläche: math.pi * r * r.\n\nLies zuerst n ein, danach n Zeilen \"kreis <r>\" oder \"rechteck <b> <h>\" (Kommazahlen erlaubt). Gib für jede Form \"<Klassenname>: <fläche>\" mit zwei Nachkommastellen aus und am Ende \"Gesamt: <summe>\".\n\nBeispiel:\nEingabe:\n2\nkreis 1\nrechteck 2 3\nAusgabe:\nKreis: 3.14\nRechteck: 6.00\nGesamt: 9.14",
+      "starterCode": "import math\n\n\nclass Form:\n    def flaeche(self):\n        return 0\n\n\nclass Kreis(Form):\n    pass  # __init__ und flaeche ergänzen\n\n\nclass Rechteck(Form):\n    pass  # __init__ und flaeche ergänzen\n\n\nn = int(input())\nformen = []\n# Lies die Formen ein und gib ihre Flächen aus\n",
+      "hints": [
+        "Den Klassennamen eines Objekts bekommst du mit type(obj).__name__.",
+        "Summiere die ungerundeten Flächen und runde erst bei der Ausgabe."
+      ],
+      "tests": [
+        {
+          "stdin": "2\nkreis 1\nrechteck 2 3",
+          "expected": "Kreis: 3.14\nRechteck: 6.00\nGesamt: 9.14"
+        },
+        {
+          "stdin": "1\nkreis 2.5",
+          "expected": "Kreis: 19.63\nGesamt: 19.63"
+        },
+        {
+          "stdin": "3\nrechteck 1.5 2\nrechteck 0 9\nkreis 0.5",
+          "expected": "Rechteck: 3.00\nRechteck: 0.00\nKreis: 0.79\nGesamt: 3.79"
+        },
+        {
+          "stdin": "0",
+          "expected": "Gesamt: 0.00"
+        }
+      ],
+      "solution": "import math\n\n\nclass Form:\n    def flaeche(self):\n        return 0\n\n\nclass Kreis(Form):\n    def __init__(self, r):\n        self.r = r\n\n    def flaeche(self):\n        return math.pi * self.r * self.r\n\n\nclass Rechteck(Form):\n    def __init__(self, b, h):\n        self.b = b\n        self.h = h\n\n    def flaeche(self):\n        return self.b * self.h\n\n\nn = int(input())\nformen = []\nfor i in range(n):\n    teile = input().split()\n    if teile[0] == \"kreis\":\n        formen.append(Kreis(float(teile[1])))\n    else:\n        formen.append(Rechteck(float(teile[1]), float(teile[2])))\n\ngesamt = 0\nfor f in formen:\n    print(f\"{type(f).__name__}: {f.flaeche():.2f}\")\n    gesamt += f.flaeche()\nprint(f\"Gesamt: {gesamt:.2f}\")\n"
+    },
+    {
+      "id": "py-021",
+      "title": "Collatz-Generator",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Die Collatz-Folge: Ist n gerade, ist die nächste Zahl n // 2, sonst 3 * n + 1. Die Folge endet bei 1.\n\nSchreibe eine Generator-Funktion collatz(n), die mit yield alle Zahlen der Folge (inklusive Start und 1) liefert. Lies n (≥ 1) ein und gib die Folge durch \" -> \" getrennt aus, darunter \"Schritte: <anzahl>\" (Anzahl der Übergänge).\n\nBeispiel:\nEingabe:\n6\nAusgabe:\n6 -> 3 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1\nSchritte: 8",
+      "starterCode": "def collatz(n):\n    # Liefere mit yield nacheinander alle Zahlen der Folge\n    yield n\n\n\nn = int(input())\n",
+      "hints": [
+        "Eine while-Schleife mit Bedingung n != 1 passt gut in den Generator.",
+        "list(collatz(n)) sammelt alle Werte des Generators in einer Liste.",
+        "Schritte = Länge der Folge - 1."
+      ],
+      "tests": [
+        {
+          "stdin": "6",
+          "expected": "6 -> 3 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1\nSchritte: 8"
+        },
+        {
+          "stdin": "1",
+          "expected": "1\nSchritte: 0"
+        },
+        {
+          "stdin": "8",
+          "expected": "8 -> 4 -> 2 -> 1\nSchritte: 3"
+        },
+        {
+          "stdin": "7",
+          "expected": "7 -> 22 -> 11 -> 34 -> 17 -> 52 -> 26 -> 13 -> 40 -> 20 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1\nSchritte: 16"
+        }
+      ],
+      "solution": "def collatz(n):\n    yield n\n    while n != 1:\n        if n % 2 == 0:\n            n = n // 2\n        else:\n            n = 3 * n + 1\n        yield n\n\n\nn = int(input())\nfolge = list(collatz(n))\nprint(\" -> \".join(str(x) for x in folge))\nprint(f\"Schritte: {len(folge) - 1}\")\n"
+    },
+    {
+      "id": "py-022",
+      "title": "Anagramm-Gruppen",
+      "level": "fortgeschritten",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Anagramme bestehen aus denselben Buchstaben, z. B. \"Lampe\" und \"Palme\". Lies eine Zeile mit Wörtern (durch Leerzeichen getrennt) ein und gruppiere sie nach Anagrammen (Groß-/Kleinschreibung ignorieren, Wörter klein ausgeben, doppelte Wörter nur einmal).\n\nAusgabe: Nur Gruppen mit mindestens zwei Wörtern, eine Gruppe pro Zeile, Wörter in der Gruppe alphabetisch und durch Leerzeichen getrennt. Die Gruppen alphabetisch nach ihrem ersten Wort sortieren. Gibt es keine Gruppe, gib \"Keine Anagramme\" aus.\n\nBeispiel:\nEingabe:\nLampe Regen Palme Ampel Genre Haus\nAusgabe:\nampel lampe palme\ngenre regen",
+      "starterCode": "woerter = input().lower().split()\ngruppen = {}\n\n# Schlüssel: die sortierten Buchstaben eines Wortes\n",
+      "hints": [
+        "\"\".join(sorted(\"palme\")) ergibt \"aelmp\" – für alle Anagramme gleich.",
+        "Verwende ein Dictionary mit diesem Schlüssel und einem Set als Wert.",
+        "Sortiere zum Schluss die Gruppen (als sortierte Listen) – Listen werden nach ihrem ersten Element verglichen."
+      ],
+      "tests": [
+        {
+          "stdin": "Lampe Regen Palme Ampel Genre Haus",
+          "expected": "ampel lampe palme\ngenre regen"
+        },
+        {
+          "stdin": "Hallo Welt",
+          "expected": "Keine Anagramme"
+        },
+        {
+          "stdin": "Rose Eros rose Sore",
+          "expected": "eros rose sore"
+        },
+        {
+          "stdin": "tor rot ort Leben Nebel",
+          "expected": "leben nebel\nort rot tor"
+        }
+      ],
+      "solution": "woerter = input().lower().split()\ngruppen = {}\nfor wort in woerter:\n    schluessel = \"\".join(sorted(wort))\n    gruppen.setdefault(schluessel, set()).add(wort)\n\nergebnis = sorted(sorted(g) for g in gruppen.values() if len(g) >= 2)\nif not ergebnis:\n    print(\"Keine Anagramme\")\nfor gruppe in ergebnis:\n    print(\" \".join(gruppe))\n"
+    },
+    {
+      "id": "py-023",
+      "title": "Bankkonto mit Befehlen",
+      "level": "fortgeschritten",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Programmiere eine Klasse Bankkonto mit einem privaten Kontostand (Property kontostand nur lesbar) und den Methoden einzahlen(betrag) und abheben(betrag). Definiere eine eigene Exception KontoFehler.\n\n- Beträge ≤ 0 → KontoFehler(\"Betrag muss positiv sein\")\n- Abheben über den Kontostand → KontoFehler(\"Nicht genug Guthaben\")\n\nLies Befehle bis \"ende\":\n- \"einzahlen <betrag>\" / \"abheben <betrag>\" (ganze Zahlen) → bei Erfolg keine Ausgabe, bei KontoFehler \"Fehler: <meldung>\"\n- \"stand\" → \"Kontostand: <betrag> EUR\"\n- jeder andere Befehl → \"Unbekannter Befehl\"\n\nBeispiel:\nEingabe:\neinzahlen 100\nabheben 30\nabheben 500\nstand\nende\nAusgabe:\nFehler: Nicht genug Guthaben\nKontostand: 70 EUR",
+      "starterCode": "class KontoFehler(Exception):\n    pass\n\n\nclass Bankkonto:\n    def __init__(self):\n        self._kontostand = 0\n\n    # Property kontostand, einzahlen, abheben ergänzen\n\n\nkonto = Bankkonto()\nwhile True:\n    teile = input().split()\n    if teile[0] == \"ende\":\n        break\n    # Befehle verarbeiten\n",
+      "hints": [
+        "@property über einer Methode kontostand(self) macht den Wert lesbar, aber nicht setzbar.",
+        "raise KontoFehler(\"...\") wirft deinen Fehler, except KontoFehler as e: fängt ihn – str(e) liefert die Meldung.",
+        "Prüfe den Betrag vor dem Abheben, damit der Kontostand nie negativ wird."
+      ],
+      "tests": [
+        {
+          "stdin": "einzahlen 100\nabheben 30\nabheben 500\nstand\nende",
+          "expected": "Fehler: Nicht genug Guthaben\nKontostand: 70 EUR"
+        },
+        {
+          "stdin": "stand\nende",
+          "expected": "Kontostand: 0 EUR"
+        },
+        {
+          "stdin": "einzahlen -5\nabheben 0\nueberweisen 10\nstand\nende",
+          "expected": "Fehler: Betrag muss positiv sein\nFehler: Betrag muss positiv sein\nUnbekannter Befehl\nKontostand: 0 EUR"
+        },
+        {
+          "stdin": "einzahlen 50\nabheben 50\nstand\nabheben 1\nende",
+          "expected": "Kontostand: 0 EUR\nFehler: Nicht genug Guthaben"
+        }
+      ],
+      "solution": "class KontoFehler(Exception):\n    pass\n\n\nclass Bankkonto:\n    def __init__(self):\n        self._kontostand = 0\n\n    @property\n    def kontostand(self):\n        return self._kontostand\n\n    def einzahlen(self, betrag):\n        if betrag <= 0:\n            raise KontoFehler(\"Betrag muss positiv sein\")\n        self._kontostand += betrag\n\n    def abheben(self, betrag):\n        if betrag <= 0:\n            raise KontoFehler(\"Betrag muss positiv sein\")\n        if betrag > self._kontostand:\n            raise KontoFehler(\"Nicht genug Guthaben\")\n        self._kontostand -= betrag\n\n\nkonto = Bankkonto()\nwhile True:\n    teile = input().split()\n    if teile[0] == \"ende\":\n        break\n    try:\n        if teile[0] == \"einzahlen\":\n            konto.einzahlen(int(teile[1]))\n        elif teile[0] == \"abheben\":\n            konto.abheben(int(teile[1]))\n        elif teile[0] == \"stand\":\n            print(f\"Kontostand: {konto.kontostand} EUR\")\n        else:\n            print(\"Unbekannter Befehl\")\n    except KontoFehler as e:\n        print(f\"Fehler: {e}\")\n"
+    },
+    {
+      "id": "py-024",
+      "title": "Aufrufzähler-Dekorator",
+      "level": "fortgeschritten",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Schreibe einen Dekorator zaehle_aufrufe, der mitzählt, wie oft eine Funktion aufgerufen wurde (Attribut aufrufe am Wrapper), und vor jedem Aufruf \"Aufruf <nr>: <funktionsname>(<argumente>)\" ausgibt. Die Argumente werden mit \", \" getrennt (mit repr(), damit Strings Anführungszeichen bekommen).\n\nDekoriere damit die Funktionen addiere(a, b) und gruesse(name), die ihr Ergebnis zurückgeben.\n\nLies Zeilen bis \"ende\": \"addiere <a> <b>\" (ganze Zahlen) oder \"gruesse <name>\". Gib nach der Aufrufzeile das Ergebnis aus (gruesse liefert \"Servus <name>!\"). Am Ende: \"addiere: <n>x, gruesse: <m>x\".\n\nBeispiel:\nEingabe:\naddiere 2 3\ngruesse Eva\nende\nAusgabe:\nAufruf 1: addiere(2, 3)\n5\nAufruf 1: gruesse('Eva')\nServus Eva!\naddiere: 1x, gruesse: 1x",
+      "starterCode": "def zaehle_aufrufe(funktion):\n    def wrapper(*args):\n        # Zähler erhöhen, Aufruf ausgeben, Funktion aufrufen\n        pass\n    wrapper.aufrufe = 0\n    return wrapper\n\n\n@zaehle_aufrufe\ndef addiere(a, b):\n    return a + b\n\n\n@zaehle_aufrufe\ndef gruesse(name):\n    return f\"Servus {name}!\"\n\n\n# Befehle bis \"ende\" einlesen\n",
+      "hints": [
+        "Im Wrapper erreichst du den Zähler über wrapper.aufrufe += 1.",
+        "funktion.__name__ liefert den Namen der dekorierten Funktion.",
+        "\", \".join(repr(a) for a in args) baut die Argumentliste."
+      ],
+      "tests": [
+        {
+          "stdin": "addiere 2 3\ngruesse Eva\nende",
+          "expected": "Aufruf 1: addiere(2, 3)\n5\nAufruf 1: gruesse('Eva')\nServus Eva!\naddiere: 1x, gruesse: 1x"
+        },
+        {
+          "stdin": "ende",
+          "expected": "addiere: 0x, gruesse: 0x"
+        },
+        {
+          "stdin": "addiere 1 1\naddiere -4 10\naddiere 0 0\nende",
+          "expected": "Aufruf 1: addiere(1, 1)\n2\nAufruf 2: addiere(-4, 10)\n6\nAufruf 3: addiere(0, 0)\n0\naddiere: 3x, gruesse: 0x"
+        },
+        {
+          "stdin": "gruesse Tom\ngruesse Ida\naddiere 7 8\nende",
+          "expected": "Aufruf 1: gruesse('Tom')\nServus Tom!\nAufruf 2: gruesse('Ida')\nServus Ida!\nAufruf 1: addiere(7, 8)\n15\naddiere: 1x, gruesse: 2x"
+        }
+      ],
+      "solution": "def zaehle_aufrufe(funktion):\n    def wrapper(*args):\n        wrapper.aufrufe += 1\n        argumente = \", \".join(repr(a) for a in args)\n        print(f\"Aufruf {wrapper.aufrufe}: {funktion.__name__}({argumente})\")\n        return funktion(*args)\n    wrapper.aufrufe = 0\n    return wrapper\n\n\n@zaehle_aufrufe\ndef addiere(a, b):\n    return a + b\n\n\n@zaehle_aufrufe\ndef gruesse(name):\n    return f\"Servus {name}!\"\n\n\nwhile True:\n    teile = input().split()\n    if teile[0] == \"ende\":\n        break\n    if teile[0] == \"addiere\":\n        print(addiere(int(teile[1]), int(teile[2])))\n    elif teile[0] == \"gruesse\":\n        print(gruesse(teile[1]))\nprint(f\"addiere: {addiere.aufrufe}x, gruesse: {gruesse.aufrufe}x\")\n"
+    }
+  ]
+}

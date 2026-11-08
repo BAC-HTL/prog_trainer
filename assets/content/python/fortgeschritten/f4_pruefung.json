@@ -1,0 +1,125 @@
+{
+  "id": "python-f4-pruefung",
+  "title": "Abschlussprüfung: Objektorientierung",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Spieler:\n    def __init__(self, name):\n        self.name = name\n        self.punkte = 0\n\n    def treffer(self, wert):\n        self.punkte += wert\n        return self.punkte\n\ns = Spieler(\"Lisa\")\ns.treffer(10)\nprint(s.name, s.treffer(15))",
+      "options": [
+        "Lisa 0",
+        "Lisa 15",
+        "Lisa 25",
+        "Lisa 10"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beide Aufrufe erhöhen self.punkte: 0 + 10 + 15 = 25."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Einkauf:\n    artikel = []\n\n    def dazu(self, ding):\n        self.artikel.append(ding)\n\na = Einkauf()\nb = Einkauf()\na.dazu(\"Brot\")\nb.dazu(\"Milch\")\nprint(a.artikel)",
+      "options": [
+        "['Milch']",
+        "['Brot', 'Milch']",
+        "['Brot']",
+        "[]"
+      ],
+      "correctIndex": 1,
+      "explanation": "artikel ist ein Klassenattribut, also teilen sich a und b dieselbe Liste. Beide append-Aufrufe landen darin."
+    },
+    {
+      "question": "Welche Aussage über self stimmt?",
+      "options": [
+        "self muss beim Methodenaufruf immer selbst übergeben werden: obj.methode(obj)",
+        "self ist ein globales Objekt, das alle Klassen teilen",
+        "self ist nur in __init__ nötig",
+        "self muss als erster Parameter jeder normalen Methode stehen, wird aber beim Aufruf automatisch übergeben"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jede normale Methode bekommt das Objekt als ersten Parameter. Bei obj.methode() setzt Python obj automatisch für self ein."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Geraet:\n    def einschalten(self):\n        print(\"Gerät an\")\n\nclass Handy(Geraet):\n    def einschalten(self):\n        super().einschalten()\n        print(\"Handy an\")\n\nHandy().einschalten()",
+      "options": [
+        "Gerät an",
+        "Handy an",
+        "Gerät an\nHandy an",
+        "Handy an\nGerät an"
+      ],
+      "correctIndex": 2,
+      "explanation": "Handy.einschalten ruft zuerst über super() die Version der Basisklasse auf (\"Gerät an\") und gibt danach \"Handy an\" aus."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert?",
+      "code": "class Kurs:\n    def __init__(self, fach):\n        self.fach = fach\n\nclass Schularbeit(Kurs):\n    def __init__(self, fach, note):\n        super().__init__()\n        self.note = note\n\ns = Schularbeit(\"Mathe\", 4)\nprint(s.fach, s.note)",
+      "options": [
+        "Es wird Mathe 4 ausgegeben",
+        "AttributeError, weil self.fach nie gesetzt wird",
+        "TypeError, weil super().__init__ ein Argument zu wenig bekommt",
+        "NameError, weil fach nicht definiert ist"
+      ],
+      "correctIndex": 2,
+      "explanation": "Kurs.__init__ erwartet fach. Beim Aufruf super().__init__() fehlt dieses Argument → TypeError."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Fahrzeug:\n    pass\n\nclass Auto(Fahrzeug):\n    pass\n\na = Auto()\nf = Fahrzeug()\nprint(isinstance(a, Fahrzeug), isinstance(f, Auto))",
+      "options": [
+        "True True",
+        "True False",
+        "False True",
+        "False False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Auto ist ein Fahrzeug (Vererbung), daher True. Ein Fahrzeug ist aber nicht automatisch ein Auto, daher False."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Hand:\n    def __init__(self, karten):\n        self.karten = karten\n\n    def __len__(self):\n        return len(self.karten)\n\n    def __eq__(self, other):\n        return sorted(self.karten) == sorted(other.karten)\n\nh1 = Hand([\"Ass\", \"König\", \"Dame\"])\nh2 = Hand([\"Dame\", \"Ass\", \"König\"])\nprint(len(h1), h1 == h2)",
+      "options": [
+        "3 True",
+        "3 False",
+        "2 True",
+        "TypeError"
+      ],
+      "correctIndex": 0,
+      "explanation": "len() ruft __len__ auf (3 Karten). == ruft __eq__ auf, das die Kartenlisten vergleicht – beide sind gleich → True."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Temp:\n    def __init__(self, grad):\n        self.grad = grad\n\n    def __str__(self):\n        return f\"{self.grad} °C\"\n\n    def __repr__(self):\n        return f\"Temp({self.grad})\"\n\nt = Temp(25)\nprint(t)",
+      "options": [
+        "Temp(25)",
+        "25 °C",
+        "[25 °C]",
+        "[Temp(25)]"
+      ],
+      "correctIndex": 1,
+      "explanation": "print(t) verwendet __str__. __repr__ würde nur bei der Ausgabe in einer Liste oder mit repr() verwendet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Quadrat:\n    def __init__(self, seite):\n        self.seite = seite\n\n    @property\n    def umfang(self):\n        return 4 * self.seite\n\nq = Quadrat(3)\nq.umfang = 12\nprint(q.seite)",
+      "options": [
+        "12.0",
+        "6",
+        "TypeError",
+        "AttributeError"
+      ],
+      "correctIndex": 3,
+      "explanation": "umfang ist eine Property ohne Setter und daher nur lesbar. Die Zuweisung q.umfang = 12 löst einen AttributeError aus."
+    },
+    {
+      "question": "Warum speichert ein Property-Setter den Wert meist in self._wert statt in self.wert?",
+      "options": [
+        "Weil self.wert = ... im Setter wieder den Setter aufrufen würde – eine endlose Rekursion",
+        "Weil Attributnamen ohne Unterstrich in Klassen verboten sind",
+        "Weil der Unterstrich das Attribut für andere Klassen unsichtbar macht",
+        "Weil Properties nur mit Zahlen funktionieren"
+      ],
+      "correctIndex": 0,
+      "explanation": "self.wert ist die Property selbst. Eine Zuweisung darauf ruft den Setter erneut auf → RecursionError. Der Unterstrich-Name speichert den eigentlichen Wert."
+    }
+  ]
+}

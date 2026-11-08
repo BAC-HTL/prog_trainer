@@ -1,0 +1,127 @@
+{
+  "id": "python-e1-pruefung",
+  "title": "Abschlussprüfung: Erste Schritte",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(\"3\" + \"4\")",
+      "options": [
+        "7",
+        "34",
+        "\"34\"",
+        "Eine Fehlermeldung"
+      ],
+      "correctIndex": 1,
+      "explanation": "\"3\" und \"4\" sind Strings. + hängt Strings aneinander, statt zu rechnen – heraus kommt 34."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(type(7 / 7))",
+      "options": [
+        "<class 'int'>",
+        "1",
+        "<class 'str'>",
+        "<class 'float'>"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Operator / liefert immer einen float – auch wenn das Ergebnis glatt aufgeht. 7 / 7 ist 1.0."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "a = 10\nb = 3\na = b\nb = a\nprint(a, b)",
+      "options": [
+        "3 10",
+        "10 3",
+        "3 3",
+        "10 10"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst bekommt a den Wert von b, also 3. Danach bekommt b den Wert von a – und der ist jetzt schon 3. Der alte Wert 10 ist verloren."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(20 - 2 * 3 ** 2)",
+      "options": [
+        "2",
+        "324",
+        "162",
+        "-16"
+      ],
+      "correctIndex": 0,
+      "explanation": "Potenz vor Punkt vor Strich: 3 ** 2 = 9, dann 2 * 9 = 18, zum Schluss 20 - 18 = 2."
+    },
+    {
+      "question": "Finde den Fehler: Der Benutzer gibt 15 ein, das Programm stürzt ab.",
+      "code": "alter = input(\"Alter: \")\nprint(alter + 1)",
+      "options": [
+        "print() kann keine Rechnungen ausgeben",
+        "Die Variable darf nicht alter heißen",
+        "input() liefert einen String – String + Zahl ergibt einen TypeError",
+        "Statt + muss man * schreiben"
+      ],
+      "correctIndex": 2,
+      "explanation": "alter enthält den Text \"15\". Text und Zahl kann Python nicht addieren und meldet einen TypeError. Lösung: alter = int(input(\"Alter: \"))."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "preis = 4\nmenge = 3\nprint(f\"{menge} Stück kosten {preis * menge} Euro\")",
+      "options": [
+        "{menge} Stück kosten {preis * menge} Euro",
+        "3 Stück kosten preis * menge Euro",
+        "3 Stück kosten 43 Euro",
+        "3 Stück kosten 12 Euro"
+      ],
+      "correctIndex": 3,
+      "explanation": "Im f-String wird alles in geschwungenen Klammern berechnet und eingesetzt: menge ist 3, preis * menge ist 12."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "# print(\"A\")\nprint(\"B\")  # print(\"C\")",
+      "options": [
+        "A, B und C",
+        "Nur B",
+        "B und C",
+        "Nichts"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die erste Zeile ist komplett auskommentiert. In der zweiten Zeile beginnt nach print(\"B\") ein Kommentar – print(\"C\") wird also auch ignoriert."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "x = 17\nx = x % 5\nx = x * 3\nprint(x)",
+      "options": [
+        "6",
+        "2",
+        "51",
+        "3.4"
+      ],
+      "correctIndex": 0,
+      "explanation": "17 % 5 ist der Rest der Division, also 2. Danach wird x mit 3 multipliziert: 2 * 3 = 6."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "name = \"Max\"\nprint(\"Hallo \" + Name)",
+      "options": [
+        "Strings dürfen nicht mit + verbunden werden",
+        "Nach Hallo fehlt ein Komma",
+        "\"Max\" muss in einfachen Anführungszeichen stehen",
+        "Name ist nicht dasselbe wie name – Python meldet einen NameError"
+      ],
+      "correctIndex": 3,
+      "explanation": "Python unterscheidet Groß- und Kleinschreibung. Die Variable heißt name, verwendet wird aber Name – die gibt es nicht."
+    },
+    {
+      "question": "Der Benutzer gibt 2.5 ein. Was gibt dieser Code aus?",
+      "code": "zahl = float(input(\"Zahl: \"))\nprint(zahl * 2)",
+      "options": [
+        "5",
+        "2.52.5",
+        "5.0",
+        "Eine Fehlermeldung"
+      ],
+      "correctIndex": 2,
+      "explanation": "float() wandelt den Text \"2.5\" in die Kommazahl 2.5 um. 2.5 * 2 ergibt 5.0 – ein float behält die Nachkommastelle in der Ausgabe."
+    }
+  ]
+}

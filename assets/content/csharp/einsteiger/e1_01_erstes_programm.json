@@ -1,5 +1,5 @@
 {
-  "id": "csharp-01",
+  "id": "csharp-e1_01_erstes_programm",
   "title": "Dein erstes Programm",
   "summary": "Text ausgeben mit Console.WriteLine() und die Grundregeln von C#.",
   "sections": [
@@ -36,20 +36,35 @@
     {
       "question": "Was fehlt in dieser Zeile?",
       "code": "Console.WriteLine(\"Hallo\")",
-      "options": ["Ein Doppelpunkt", "Ein Strichpunkt am Ende", "Nichts, sie ist korrekt", "Ein # am Anfang"],
+      "options": [
+        "Ein Doppelpunkt",
+        "Ein Strichpunkt am Ende",
+        "Nichts, sie ist korrekt",
+        "Ein # am Anfang"
+      ],
       "correctIndex": 1,
       "explanation": "In C# muss jede Anweisung mit ; enden."
     },
     {
       "question": "Was gibt dieser Code aus?",
       "code": "Console.Write(\"A\");\nConsole.Write(\"B\");",
-      "options": ["A und B in zwei Zeilen", "AB", "A B", "Fehler"],
+      "options": [
+        "A und B in zwei Zeilen",
+        "AB",
+        "A B",
+        "Fehler"
+      ],
       "correctIndex": 1,
       "explanation": "Console.Write() macht keinen Zeilenumbruch, deshalb steht AB direkt hintereinander."
     },
     {
       "question": "Wie beginnt ein einzeiliger Kommentar in C#?",
-      "options": ["#", "--", "//", "<!--"],
+      "options": [
+        "#",
+        "--",
+        "//",
+        "<!--"
+      ],
       "correctIndex": 2,
       "explanation": "In C# beginnen einzeilige Kommentare mit //."
     }

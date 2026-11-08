@@ -1,0 +1,125 @@
+{
+  "id": "python-f1-pruefung",
+  "title": "Abschlussprüfung: Datenstrukturen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "stimmen = {}\nfor name in [\"Tim\", \"Ali\", \"Tim\"]:\n    stimmen[name] = stimmen.get(name, 0) + 1\nprint(stimmen)",
+      "options": [
+        "{'Tim': 2, 'Ali': 1}",
+        "{'Tim': 1, 'Ali': 1, 'Tim': 1}",
+        "{'Tim': 1, 'Ali': 1}",
+        "KeyError"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beim ersten \"Tim\" liefert get 0, also wird 1 gespeichert. Beim zweiten \"Tim\" wird auf 2 erhöht. Schlüssel kommen nie doppelt vor."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "d = {\"x\": 5, \"y\": 1, \"z\": 3}\nprint(len([v for v in d.values() if v > 1]))",
+      "options": [
+        "3",
+        "2",
+        "1",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Comprehension behält nur Werte größer als 1, also 5 und 3. Die Liste hat damit 2 Elemente."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert hier?",
+      "code": "d = {\"a\": 1, \"b\": 2}\ndel d[\"b\"]\nprint(d[\"b\"])",
+      "options": [
+        "Es wird {'a': 1} ausgegeben",
+        "Es wird None ausgegeben",
+        "KeyError beim Zugriff auf \"b\"",
+        "TypeError, weil d leer ist"
+      ],
+      "correctIndex": 2,
+      "explanation": "del entfernt den Schlüssel \"b\". Der anschließende Zugriff mit eckigen Klammern löst einen KeyError aus."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "a, b, c = 1, 2, 3\na, b, c = b, c, a\nprint(a, b, c)",
+      "options": [
+        "1 2 3",
+        "3 2 1",
+        "2 3 1",
+        "3 1 2"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst werden die rechten Werte (b, c, a) = (2, 3, 1) gebildet und dann auf a, b, c verteilt."
+    },
+    {
+      "question": "Welche Aussage über Tupel stimmt?",
+      "options": [
+        "Tupel können mit append() erweitert werden",
+        "(7) ist ein Tupel mit einem Element",
+        "Eine Funktion mit return x, y gibt ein Tupel zurück",
+        "Tupel haben keinen Index"
+      ],
+      "correctIndex": 2,
+      "explanation": "return x, y erzeugt ein Tupel, das man beim Aufruf entpacken kann. (7) ist nur die Zahl 7 – für ein Tupel braucht es (7,)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "a = {\"Anna\", \"Ben\", \"Cem\"}\nb = {\"Ben\", \"Dora\"}\nprint(sorted(b - a))",
+      "options": [
+        "['Anna', 'Cem']",
+        "['Ben']",
+        "['Anna', 'Ben', 'Cem', 'Dora']",
+        "['Dora']"
+      ],
+      "correctIndex": 3,
+      "explanation": "b - a enthält alles, was in b, aber nicht in a ist. Das ist nur \"Dora\"."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(len({c.lower() for c in \"AnNaAe\"}))",
+      "options": [
+        "5",
+        "4",
+        "3",
+        "6"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Set Comprehension sammelt die Buchstaben in Kleinbuchstaben: a, n und e. Duplikate fallen weg."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print([x * x for x in range(4)])",
+      "options": [
+        "[0, 1, 4, 9]",
+        "[0, 2, 4, 6]",
+        "[1, 4, 9, 16]",
+        "[0, 1, 2, 3]"
+      ],
+      "correctIndex": 0,
+      "explanation": "Für x von 0 bis 3 wird x * x berechnet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "noten = {\"Mathe\": 4, \"Deutsch\": 1, \"POS\": 2}\nprint([f for f, n in noten.items() if n < 3])",
+      "options": [
+        "['Mathe', 'POS']",
+        "['Deutsch']",
+        "['Mathe', 'Deutsch', 'POS']",
+        "['Deutsch', 'POS']"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Comprehension geht über items() und behält nur die Fächer, deren Note kleiner als 3 ist: Deutsch (1) und POS (2)."
+    },
+    {
+      "question": "Du willst aus einer Liste mit Namen alle doppelten Namen entfernen, die Reihenfolge ist egal. Was ist die einfachste Lösung?",
+      "options": [
+        "Die Liste in ein Tupel umwandeln",
+        "Die Liste in ein Set umwandeln",
+        "Die Liste in ein Dictionary mit Index als Schlüssel umwandeln",
+        "Die Liste mit sorted() sortieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Set speichert jeden Wert nur einmal – set(namen) entfernt alle Duplikate auf einmal."
+    }
+  ]
+}

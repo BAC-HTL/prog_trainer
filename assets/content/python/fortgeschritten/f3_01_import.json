@@ -1,0 +1,95 @@
+{
+  "id": "python-f3_01_import",
+  "title": "Module importieren",
+  "summary": "Code aus anderen Dateien und Modulen mit import nutzen und eigene Module schreiben.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Modul ist einfach eine Python-Datei mit Funktionen und Variablen, die du in anderen Programmen wiederverwenden kannst. Python bringt schon viele Module mit. Mit import lädst du ein Modul und greifst dann mit modulname.name auf seinen Inhalt zu."
+    },
+    {
+      "type": "code",
+      "content": "import math\n\nprint(math.sqrt(16))   # 4.0\nprint(math.pi)         # 3.141592653589793"
+    },
+    {
+      "type": "text",
+      "content": "Brauchst du nur einzelne Teile, holst du sie mit from … import direkt herein. Dann schreibst du den Modulnamen nicht mehr davor. Mit as vergibst du einen kürzeren Namen (Alias)."
+    },
+    {
+      "type": "code",
+      "content": "from math import sqrt, floor\nimport random as rd\n\nprint(sqrt(25))      # 5.0\nprint(floor(3.9))    # 3\nprint(rd.randint(1, 6))   # z. B. 4"
+    },
+    {
+      "type": "text",
+      "content": "Vorsicht mit from modul import * – das holt ALLE Namen herein. Dann weißt du nicht mehr, woher eine Funktion kommt, und eigene Variablen können still überschrieben werden. Ebenso gefährlich: eine eigene Datei so zu nennen wie ein Modul, z. B. random.py. Dann importiert Python deine Datei statt des echten Moduls – und plötzlich fehlt randint."
+    },
+    {
+      "type": "text",
+      "content": "Ein eigenes Modul schreibst du, indem du Funktionen in eine eigene .py-Datei legst. Liegt sie im selben Ordner wie dein Hauptprogramm, kannst du sie über den Dateinamen (ohne .py) importieren. Beispiel mit zwei Dateien:"
+    },
+    {
+      "type": "code",
+      "content": "# Datei: notenrechner.py\ndef durchschnitt(noten):\n    return sum(noten) / len(noten)\n\ndef ist_positiv(note):\n    return note <= 4\n\n\n# Datei: main.py\nimport notenrechner\n\nnoten = [1, 2, 4]\nprint(notenrechner.durchschnitt(noten))   # 2.3333333333333335\nprint(notenrechner.ist_positiv(5))        # False"
+    },
+    {
+      "type": "text",
+      "content": "Beim Import wird die Moduldatei einmal komplett ausgeführt. Steht dort Testcode wie print(…), läuft er also auch beim Importieren mit. Damit Testcode nur beim direkten Starten läuft, prüfst du die Spezialvariable __name__: Sie ist \"__main__\", wenn die Datei direkt gestartet wurde, und sonst der Modulname."
+    },
+    {
+      "type": "code",
+      "content": "# Datei: notenrechner.py\ndef durchschnitt(noten):\n    return sum(noten) / len(noten)\n\nif __name__ == \"__main__\":\n    # läuft nur bei: python notenrechner.py\n    print(durchschnitt([1, 2, 3]))   # 2.0"
+    },
+    {
+      "type": "text",
+      "content": "Mehrere Module kannst du in einem Ordner zu einem Paket bündeln, z. B. spiel/grafik.py und spiel/sound.py. Importiert wird dann mit Punkt: import spiel.grafik oder from spiel import sound. Mit help(modul) oder dir(modul) siehst du, was ein Modul alles enthält."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import math\nprint(math.sqrt(9))",
+      "options": [
+        "9",
+        "3",
+        "3.0",
+        "NameError"
+      ],
+      "correctIndex": 2,
+      "explanation": "math.sqrt liefert immer einen float, auch wenn das Ergebnis ganzzahlig ist."
+    },
+    {
+      "question": "Finde den Fehler: Warum stürzt dieser Code ab?",
+      "code": "import math\nprint(sqrt(16))",
+      "options": [
+        "sqrt gibt es nicht im Modul math",
+        "Mit import math muss man math.sqrt schreiben – sqrt allein ist unbekannt (NameError)",
+        "import muss am Ende der Datei stehen",
+        "16 muss als String übergeben werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "import math macht nur den Namen math verfügbar. Ohne from math import sqrt musst du math.sqrt(16) schreiben."
+    },
+    {
+      "question": "Du nennst dein eigenes Programm random.py und schreibst darin import random und random.randint(1, 6). Was passiert?",
+      "options": [
+        "Alles funktioniert normal",
+        "Python importiert deine eigene Datei statt des echten Moduls, daher fehlt randint",
+        "Python benennt deine Datei automatisch um",
+        "randint liefert immer 1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Python sucht Module zuerst im Ordner deines Programms. Deine random.py verdeckt das echte Modul – ein häufiger Anfängerfehler."
+    },
+    {
+      "question": "Welchen Wert hat __name__ in einer Datei, die direkt mit python datei.py gestartet wurde?",
+      "options": [
+        "\"datei\"",
+        "\"datei.py\"",
+        "None",
+        "\"__main__\""
+      ],
+      "correctIndex": 3,
+      "explanation": "Die direkt gestartete Datei heißt für Python immer \"__main__\". Beim Importieren ist __name__ dagegen der Modulname."
+    }
+  ]
+}

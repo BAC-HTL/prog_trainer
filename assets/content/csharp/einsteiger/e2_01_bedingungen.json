@@ -1,5 +1,5 @@
 {
-  "id": "csharp-04",
+  "id": "csharp-e2_01_bedingungen",
   "title": "Bedingungen",
   "summary": "Mit Vergleichen, if/else if/else und den Operatoren &&, || und ! Entscheidungen treffen.",
   "sections": [
@@ -44,7 +44,12 @@
     {
       "question": "Was gibt dieser Code aus?",
       "code": "int x = 7;\n\nif (x > 10)\n{\n    Console.WriteLine(\"A\");\n}\nelse if (x > 5)\n{\n    Console.WriteLine(\"B\");\n}\nelse if (x > 0)\n{\n    Console.WriteLine(\"C\");\n}\nelse\n{\n    Console.WriteLine(\"D\");\n}",
-      "options": ["A", "C", "B", "B und C"],
+      "options": [
+        "A",
+        "C",
+        "B",
+        "B und C"
+      ],
       "correctIndex": 2,
       "explanation": "7 > 10 ist false, 7 > 5 ist true – also wird B ausgegeben. Obwohl auch 7 > 0 stimmt, wird C nicht mehr geprüft, weil nur der erste passende Block ausgeführt wird."
     },
@@ -63,14 +68,24 @@
     {
       "question": "Was gibt dieser Code aus?",
       "code": "int a = 3;\nbool ok = a > 1 && a < 3;\nConsole.WriteLine(ok);",
-      "options": ["True", "False", "3", "Fehler beim Kompilieren"],
+      "options": [
+        "True",
+        "False",
+        "3",
+        "Fehler beim Kompilieren"
+      ],
       "correctIndex": 1,
       "explanation": "a > 1 ist true, aber a < 3 ist false (3 ist nicht kleiner als 3). Bei && müssen beide Seiten true sein, also ist das Ergebnis False."
     },
     {
       "question": "Was gibt dieser Code aus?",
       "code": "bool regen = false;\nbool kalt = true;\n\nif (regen || !kalt)\n{\n    Console.WriteLine(\"Badehose\");\n}\nelse\n{\n    Console.WriteLine(\"Jacke\");\n}",
-      "options": ["Badehose", "Badehose und Jacke", "Nichts", "Jacke"],
+      "options": [
+        "Badehose",
+        "Badehose und Jacke",
+        "Nichts",
+        "Jacke"
+      ],
       "correctIndex": 3,
       "explanation": "regen ist false und !kalt ist ebenfalls false (kalt ist true, ! dreht das um). false || false ergibt false, deshalb läuft der else-Block: Jacke."
     }

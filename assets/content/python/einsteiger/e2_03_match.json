@@ -1,0 +1,92 @@
+{
+  "id": "python-e2_03_match",
+  "title": "match-case",
+  "summary": "Mit match-case einen Wert übersichtlich mit vielen festen Möglichkeiten vergleichen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wenn du einen Wert mit vielen festen Möglichkeiten vergleichst, wird eine elif-Kette schnell lang: if befehl == \"start\" … elif befehl == \"pause\" … elif befehl == \"ende\" … Seit Python 3.10 gibt es dafür match-case."
+    },
+    {
+      "type": "code",
+      "content": "befehl = \"pause\"\n\nmatch befehl:\n    case \"start\":\n        print(\"Spiel startet ...\")\n    case \"pause\":\n        print(\"Spiel pausiert.\")\n    case \"ende\":\n        print(\"Spiel beendet.\")\n# Ausgabe: Spiel pausiert."
+    },
+    {
+      "type": "text",
+      "content": "So funktioniert es: Nach match steht der Wert, den du prüfen willst. Python vergleicht ihn von oben nach unten mit jedem case. Beim ersten passenden case wird dessen Block ausgeführt – alle weiteren cases werden übersprungen. Ein break wie in manchen anderen Sprachen brauchst du nicht.\n\nBeachte die Einrückung: Die cases stehen eine Stufe unter match, ihr Code noch eine Stufe tiefer."
+    },
+    {
+      "type": "text",
+      "content": "Was, wenn kein case passt? Dann passiert einfach nichts. Für einen Standardfall schreibst du als letzten case einen Unterstrich: case _ passt auf jeden Wert – wie das else bei if."
+    },
+    {
+      "type": "code",
+      "content": "note = 6\n\nmatch note:\n    case 1:\n        print(\"Sehr gut\")\n    case 2:\n        print(\"Gut\")\n    case 3:\n        print(\"Befriedigend\")\n    case 4:\n        print(\"Genügend\")\n    case 5:\n        print(\"Nicht genügend\")\n    case _:\n        print(\"Ungültige Note\")\n# Ausgabe: Ungültige Note"
+    },
+    {
+      "type": "text",
+      "content": "Sollen mehrere Werte zum selben Ergebnis führen, verbindest du sie mit dem senkrechten Strich | (gelesen als „oder“):"
+    },
+    {
+      "type": "code",
+      "content": "tag = \"Sa\"\n\nmatch tag:\n    case \"Sa\" | \"So\":\n        print(\"Wochenende\")\n    case \"Mo\" | \"Di\" | \"Mi\" | \"Do\" | \"Fr\":\n        print(\"Schultag\")\n    case _:\n        print(\"Unbekannter Tag\")\n# Ausgabe: Wochenende"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler bei Menüs: input() liefert immer einen String. Wenn du den Text nicht mit int() umwandelst, musst du in den cases auch Strings schreiben – also case \"1\" statt case 1. Sonst passt kein case.\n\nmatch-case vergleicht nur mit festen Werten. Für Bereiche wie prozent >= 90 nimmst du weiterhin if/elif. Und: Auf Python-Versionen vor 3.10 gibt match einen SyntaxError."
+    },
+    {
+      "type": "code",
+      "content": "auswahl = input(\"1 = Neues Spiel, 2 = Laden, 3 = Beenden: \")\n\nmatch auswahl:\n    case \"1\":\n        print(\"Neues Spiel wird gestartet.\")\n    case \"2\":\n        print(\"Spielstand wird geladen.\")\n    case \"3\":\n        print(\"Bis bald!\")\n    case _:\n        print(\"Bitte 1, 2 oder 3 eingeben.\")"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "farbe = \"gelb\"\nmatch farbe:\n    case \"rot\":\n        print(\"Stopp\")\n    case \"gelb\":\n        print(\"Achtung\")\n    case \"grün\":\n        print(\"Fahren\")\n    case _:\n        print(\"Ampel kaputt?\")",
+      "options": [
+        "Achtung",
+        "Achtung und danach Fahren",
+        "Ampel kaputt?",
+        "Achtung und danach Ampel kaputt?"
+      ],
+      "correctIndex": 0,
+      "explanation": "\"gelb\" passt zum zweiten case. Danach ist match fertig – die weiteren cases, auch case _, werden nicht mehr ausgeführt."
+    },
+    {
+      "question": "Was bedeutet case _ in einem match-Block?",
+      "options": [
+        "Der Wert ist eine leere Zeichenkette",
+        "Das Programm wird an dieser Stelle beendet",
+        "Er passt auf jeden Wert und greift, wenn kein case davor gepasst hat",
+        "Er passt nur auf Zahlen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Unterstrich ist der Platzhalter für „alles andere“ – vergleichbar mit else. Deshalb steht er immer als letzter case."
+    },
+    {
+      "question": "Finde den Fehler: Der Benutzer gibt 2 ein, aber es wird nichts ausgegeben.",
+      "code": "wahl = input()\nmatch wahl:\n    case 1:\n        print(\"Neues Spiel\")\n    case 2:\n        print(\"Laden\")",
+      "options": [
+        "case darf nur mit Strings verwendet werden",
+        "Nach match fehlt ein Doppelpunkt",
+        "Zwischen den cases fehlt ein break",
+        "input() liefert den String \"2\", verglichen wird aber mit der Zahl 2"
+      ],
+      "correctIndex": 3,
+      "explanation": "\"2\" (Text) und 2 (Zahl) sind nicht gleich, deshalb passt kein case. Lösung: wahl = int(input()) oder case \"2\": schreiben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "monat = 2\nmatch monat:\n    case 12 | 1 | 2:\n        print(\"Winter\")\n    case 3 | 4 | 5:\n        print(\"Frühling\")\n    case _:\n        print(\"Andere Jahreszeit\")",
+      "options": [
+        "Andere Jahreszeit",
+        "Winter",
+        "Frühling",
+        "Nichts"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mit | fasst man mehrere Werte zusammen. 2 ist einer der Werte im ersten case (12 | 1 | 2), also wird Winter ausgegeben."
+    }
+  ]
+}

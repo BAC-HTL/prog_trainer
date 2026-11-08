@@ -1,0 +1,64 @@
+{
+  "id": "csharp-einsteiger",
+  "title": "Einsteiger",
+  "description": "Von null zu den ersten eigenen Programmen.",
+  "chapters": [
+    {
+      "id": "csharp-e1",
+      "title": "Erste Schritte",
+      "description": "Ausgabe, Variablen, Eingabe und Rechnen.",
+      "lessons": [
+        "csharp/einsteiger/e1_01_erstes_programm.json",
+        "csharp/einsteiger/e1_02_variablen.json",
+        "csharp/einsteiger/e1_03_eingabe_rechnen.json"
+      ],
+      "exam": "csharp/einsteiger/e1_pruefung.json"
+    },
+    {
+      "id": "csharp-e2",
+      "title": "Entscheidungen",
+      "description": "Programme, die auf Bedingungen reagieren.",
+      "lessons": [
+        "csharp/einsteiger/e2_01_bedingungen.json",
+        "csharp/einsteiger/e2_02_switch.json",
+        "csharp/einsteiger/e2_03_ternaer_verschachtelt.json"
+      ],
+      "exam": "csharp/einsteiger/e2_pruefung.json"
+    },
+    {
+      "id": "csharp-e3",
+      "title": "Schleifen",
+      "description": "Dinge wiederholen, ohne Code zu kopieren.",
+      "lessons": [
+        "csharp/einsteiger/e3_01_while_do.json",
+        "csharp/einsteiger/e3_02_for.json",
+        "csharp/einsteiger/e3_03_break_continue_verschachtelt.json"
+      ],
+      "exam": "csharp/einsteiger/e3_pruefung.json"
+    },
+    {
+      "id": "csharp-e4",
+      "title": "Arrays & Strings",
+      "description": "Viele Werte speichern und Text verarbeiten.",
+      "lessons": [
+        "csharp/einsteiger/e4_01_arrays.json",
+        "csharp/einsteiger/e4_02_strings.json",
+        "csharp/einsteiger/e4_03_string_methoden.json",
+        "csharp/einsteiger/e4_04_mehrdimensional.json"
+      ],
+      "exam": "csharp/einsteiger/e4_pruefung.json"
+    },
+    {
+      "id": "csharp-e5",
+      "title": "Methoden",
+      "description": "Code in wiederverwendbare Bausteine aufteilen.",
+      "lessons": [
+        "csharp/einsteiger/e5_01_methoden.json",
+        "csharp/einsteiger/e5_02_parameter_rueckgabe.json",
+        "csharp/einsteiger/e5_03_ueberladung.json",
+        "csharp/einsteiger/e5_04_ref_out.json"
+      ],
+      "exam": "csharp/einsteiger/e5_pruefung.json"
+    }
+  ]
+}

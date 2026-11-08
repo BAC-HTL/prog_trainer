@@ -1,5 +1,5 @@
 {
-  "id": "python-01",
+  "id": "python-e1_01_erstes_programm",
   "title": "Dein erstes Programm",
   "summary": "Text ausgeben mit print() und Kommentare schreiben.",
   "sections": [
@@ -36,20 +36,35 @@
     {
       "question": "Was gibt dieser Code aus?",
       "code": "print(\"Python\")",
-      "options": ["print(\"Python\")", "Python", "\"Python\"", "Nichts"],
+      "options": [
+        "print(\"Python\")",
+        "Python",
+        "\"Python\"",
+        "Nichts"
+      ],
       "correctIndex": 1,
       "explanation": "print() gibt den Inhalt zwischen den Anführungszeichen aus – die Anführungszeichen selbst werden nicht angezeigt."
     },
     {
       "question": "Welches Zeichen leitet in Python einen Kommentar ein?",
-      "options": ["//", "#", "--", "/*"],
+      "options": [
+        "//",
+        "#",
+        "--",
+        "/*"
+      ],
       "correctIndex": 1,
       "explanation": "In Python beginnen Kommentare mit #. // wird z. B. in C# verwendet."
     },
     {
       "question": "In welcher Reihenfolge werden die Zeilen ausgegeben?",
       "code": "print(\"B\")\n# print(\"A\")\nprint(\"C\")",
-      "options": ["A, B, C", "B, A, C", "B, C", "C, B"],
+      "options": [
+        "A, B, C",
+        "B, A, C",
+        "B, C",
+        "C, B"
+      ],
       "correctIndex": 2,
       "explanation": "Die Zeile mit print(\"A\") ist auskommentiert und wird ignoriert. Die übrigen Zeilen laufen von oben nach unten."
     }

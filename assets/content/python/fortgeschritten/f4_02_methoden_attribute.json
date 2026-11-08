@@ -1,0 +1,92 @@
+{
+  "id": "python-f4_02_methoden_attribute",
+  "title": "Methoden und Attribute",
+  "summary": "Objekten Verhalten geben und Instanz- von Klassenattributen unterscheiden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Objekte speichern nicht nur Daten, sie können auch etwas tun. Funktionen, die in einer Klasse stehen, heißen Methoden. Jede Methode bekommt als ersten Parameter self, damit sie auf die Attribute des Objekts zugreifen kann."
+    },
+    {
+      "type": "code",
+      "content": "class Bankkonto:\n    def __init__(self, inhaber):\n        self.inhaber = inhaber\n        self.kontostand = 0\n\n    def einzahlen(self, betrag):\n        self.kontostand += betrag\n\n    def abheben(self, betrag):\n        if betrag > self.kontostand:\n            print(\"Nicht genug Geld!\")\n        else:\n            self.kontostand -= betrag\n\nkonto = Bankkonto(\"Lena\")\nkonto.einzahlen(100)\nkonto.abheben(30)\nkonto.abheben(500)        # Nicht genug Geld!\nprint(konto.kontostand)   # 70"
+    },
+    {
+      "type": "text",
+      "content": "Beim Aufruf konto.einzahlen(100) setzt Python konto automatisch für self ein. Methoden können Attribute verändern (wie oben) oder mit return einen Wert zurückgeben. Methoden dürfen auch andere Methoden desselben Objekts über self aufrufen."
+    },
+    {
+      "type": "code",
+      "content": "class Rechteck:\n    def __init__(self, breite, hoehe):\n        self.breite = breite\n        self.hoehe = hoehe\n\n    def flaeche(self):\n        return self.breite * self.hoehe\n\n    def ist_groesser_als(self, anderes):\n        return self.flaeche() > anderes.flaeche()\n\na = Rechteck(3, 4)\nb = Rechteck(2, 5)\nprint(a.flaeche())           # 12\nprint(a.ist_groesser_als(b)) # True"
+    },
+    {
+      "type": "text",
+      "content": "Bisher waren alle Attribute Instanzattribute: Jedes Objekt hat seine eigenen. Es gibt aber auch Klassenattribute. Sie stehen direkt in der Klasse (nicht in __init__) und werden von allen Objekten geteilt – praktisch für Konstanten oder Zähler."
+    },
+    {
+      "type": "code",
+      "content": "class Spieler:\n    anzahl = 0              # Klassenattribut\n    max_leben = 3           # gilt für alle Spieler\n\n    def __init__(self, name):\n        self.name = name                 # Instanzattribut\n        self.leben = Spieler.max_leben\n        Spieler.anzahl += 1\n\np1 = Spieler(\"Mia\")\np2 = Spieler(\"Tom\")\nprint(Spieler.anzahl)   # 2\nprint(p1.leben)         # 3"
+    },
+    {
+      "type": "text",
+      "content": "Achtung, häufiger Fehler: Eine Liste als Klassenattribut teilen sich alle Objekte! Hängt ein Objekt etwas an, sehen es alle anderen auch. Veränderliche Werte wie Listen oder Dictionaries gehören deshalb in __init__."
+    },
+    {
+      "type": "code",
+      "content": "class Rucksack:\n    inhalt = []                 # falsch: eine Liste für ALLE\n\n    def einpacken(self, ding):\n        self.inhalt.append(ding)\n\na = Rucksack()\nb = Rucksack()\na.einpacken(\"Jause\")\nprint(b.inhalt)   # ['Jause'] – ups!\n\nclass Rucksack2:\n    def __init__(self):\n        self.inhalt = []        # richtig: jeder Rucksack hat seine eigene Liste"
+    },
+    {
+      "type": "text",
+      "content": "Noch eine Konvention: Attribute, die mit einem Unterstrich beginnen (z. B. self._pin), gelten als „intern“. Python verbietet den Zugriff von außen nicht, aber andere Programmierer:innen wissen: Finger weg, das ist nur für die Klasse selbst gedacht."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Zaehler:\n    def __init__(self):\n        self.wert = 0\n\n    def zaehle(self, schritt):\n        self.wert += schritt\n\nz = Zaehler()\nz.zaehle(3)\nz.zaehle(5)\nprint(z.wert)",
+      "options": [
+        "0",
+        "5",
+        "8",
+        "3"
+      ],
+      "correctIndex": 2,
+      "explanation": "zaehle() erhöht self.wert jeweils um schritt: 0 + 3 + 5 = 8."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Ticket:\n    anzahl = 0\n\n    def __init__(self):\n        Ticket.anzahl += 1\n\nt1 = Ticket()\nt2 = Ticket()\nt3 = Ticket()\nprint(t1.anzahl)",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "anzahl ist ein Klassenattribut und wird von allen Objekten geteilt. Drei Objekte erhöhen es dreimal auf 3."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert bei k.info()?",
+      "code": "class Tier:\n    def __init__(self, name):\n        self.name = name\n\n    def info(self):\n        print(name)\n\nk = Tier(\"Katze\")\nk.info()",
+      "options": [
+        "Es wird \"Katze\" ausgegeben",
+        "NameError, weil name ohne self. nicht bekannt ist",
+        "TypeError, weil info() kein Argument hat",
+        "Es wird None ausgegeben"
+      ],
+      "correctIndex": 1,
+      "explanation": "In der Methode muss man über self.name auf das Attribut zugreifen. Ein einfaches name ist eine unbekannte Variable → NameError."
+    },
+    {
+      "question": "Warum sollte eine Liste nicht als Klassenattribut, sondern in __init__ angelegt werden?",
+      "options": [
+        "Weil Listen in Klassen verboten sind",
+        "Weil Klassenattribute nur Zahlen sein dürfen",
+        "Weil sich sonst alle Objekte dieselbe Liste teilen",
+        "Weil die Liste sonst nach jedem Methodenaufruf gelöscht wird"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Klassenattribut gibt es nur einmal. Bei einer Liste würden alle Objekte in dieselbe Liste schreiben."
+    }
+  ]
+}

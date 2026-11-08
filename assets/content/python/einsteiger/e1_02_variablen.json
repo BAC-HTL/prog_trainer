@@ -1,5 +1,5 @@
 {
-  "id": "python-02",
+  "id": "python-e1_02_variablen",
   "title": "Variablen und Datentypen",
   "summary": "Werte speichern und die wichtigsten Datentypen kennenlernen.",
   "sections": [
@@ -31,20 +31,35 @@
   "quiz": [
     {
       "question": "Welchen Datentyp hat der Wert 3.5?",
-      "options": ["int", "float", "str", "bool"],
+      "options": [
+        "int",
+        "float",
+        "str",
+        "bool"
+      ],
       "correctIndex": 1,
       "explanation": "Zahlen mit Nachkommastellen sind vom Typ float."
     },
     {
       "question": "Was gibt dieser Code aus?",
       "code": "x = 5\nx = x * 2\nprint(x)",
-      "options": ["5", "x", "10", "52"],
+      "options": [
+        "5",
+        "x",
+        "10",
+        "52"
+      ],
       "correctIndex": 2,
       "explanation": "x ist zuerst 5. Dann wird x * 2 = 10 berechnet und wieder in x gespeichert."
     },
     {
       "question": "Welcher Wert ist ein String (str)?",
-      "options": ["42", "True", "\"42\"", "4.2"],
+      "options": [
+        "42",
+        "True",
+        "\"42\"",
+        "4.2"
+      ],
       "correctIndex": 2,
       "explanation": "Durch die Anführungszeichen ist \"42\" Text und keine Zahl."
     }

@@ -1,0 +1,97 @@
+{
+  "id": "python-f1_01_dictionaries",
+  "title": "Dictionaries",
+  "summary": "Werte unter einem Schlüssel speichern und schnell wiederfinden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Liste findet Werte über ihre Position (Index). Oft willst du aber über einen Namen zugreifen: „Welche Note hat Mathe?“ Dafür gibt es das Dictionary (dict). Es speichert Paare aus Schlüssel (key) und Wert (value) in geschwungenen Klammern."
+    },
+    {
+      "type": "code",
+      "content": "noten = {\"Mathe\": 2, \"Deutsch\": 1, \"Englisch\": 3}\nprint(noten[\"Mathe\"])   # 2\nprint(len(noten))       # 3"
+    },
+    {
+      "type": "text",
+      "content": "Mit dict[schlüssel] = wert fügst du ein neues Paar hinzu. Gibt es den Schlüssel schon, wird der alte Wert überschrieben – ein Schlüssel kommt in einem Dictionary nie doppelt vor. Mit del entfernst du ein Paar."
+    },
+    {
+      "type": "code",
+      "content": "noten = {\"Mathe\": 2}\nnoten[\"POS\"] = 1      # neu hinzufügen\nnoten[\"Mathe\"] = 3    # überschreiben\ndel noten[\"POS\"]      # löschen\nprint(noten)          # {'Mathe': 3}"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Greifst du auf einen Schlüssel zu, den es nicht gibt, stürzt das Programm mit einem KeyError ab. Prüfe vorher mit in, oder verwende get(). get() liefert None (oder einen Standardwert, den du angibst), wenn der Schlüssel fehlt."
+    },
+    {
+      "type": "code",
+      "content": "preise = {\"Semmel\": 0.5, \"Milch\": 1.3}\n\nif \"Butter\" in preise:\n    print(preise[\"Butter\"])\nelse:\n    print(\"Butter gibt es nicht\")\n\nprint(preise.get(\"Butter\"))       # None\nprint(preise.get(\"Butter\", 0))    # 0"
+    },
+    {
+      "type": "text",
+      "content": "Mit einer for-Schleife gehst du über ein Dictionary. Ohne Zusatz bekommst du die Schlüssel. Mit items() bekommst du Schlüssel und Wert gleichzeitig, mit values() nur die Werte. Die Reihenfolge entspricht der Reihenfolge beim Einfügen."
+    },
+    {
+      "type": "code",
+      "content": "lager = {\"Äpfel\": 12, \"Birnen\": 0, \"Bananen\": 7}\n\nfor obst, anzahl in lager.items():\n    print(f\"{obst}: {anzahl} Stück\")\n\nprint(sum(lager.values()))   # 19"
+    },
+    {
+      "type": "text",
+      "content": "Ein klassisches Muster ist das Zählen: Für jedes Element erhöhst du den passenden Zähler. get(wort, 0) liefert beim ersten Auftreten 0, sodass kein KeyError entsteht."
+    },
+    {
+      "type": "code",
+      "content": "woerter = \"ja nein ja vielleicht ja\".split()\nzaehler = {}\nfor wort in woerter:\n    zaehler[wort] = zaehler.get(wort, 0) + 1\nprint(zaehler)   # {'ja': 3, 'nein': 1, 'vielleicht': 1}"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "d = {\"a\": 1, \"b\": 2}\nd[\"a\"] = 3\nprint(d[\"a\"])",
+      "options": [
+        "2",
+        "3",
+        "{'a': 3}",
+        "KeyError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Schlüssel \"a\" kommt nur einmal vor. Die zweite Zuweisung überschreibt den Wert 1 mit 3."
+    },
+    {
+      "question": "Finde den Fehler: Warum stürzt dieses Programm ab?",
+      "code": "noten = {\"Mathe\": 2, \"Deutsch\": 1}\nprint(noten[\"Physik\"])",
+      "options": [
+        "Dictionaries kann man nicht mit print ausgeben",
+        "Der Schlüssel \"Physik\" existiert nicht – das führt zu einem KeyError",
+        "Die Werte müssen Strings sein",
+        "Es fehlt ein Doppelpunkt nach noten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Zugriff mit eckigen Klammern auf einen fehlenden Schlüssel löst einen KeyError aus. Sicherer ist noten.get(\"Physik\") oder vorher mit in prüfen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "lager = {\"Apfel\": 5}\nprint(lager.get(\"Kiwi\", 0))",
+      "options": [
+        "0",
+        "None",
+        "5",
+        "KeyError"
+      ],
+      "correctIndex": 0,
+      "explanation": "\"Kiwi\" ist kein Schlüssel. get() liefert dann den angegebenen Standardwert 0."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "d = {\"x\": 1, \"y\": 2}\nfor k, v in d.items():\n    print(k, v)",
+      "options": [
+        "x\ny",
+        "1\n2",
+        "x 1\ny 2",
+        "('x', 1)\n('y', 2)"
+      ],
+      "correctIndex": 2,
+      "explanation": "items() liefert Schlüssel und Wert. In der Schleife landen sie in k und v, print gibt beide durch ein Leerzeichen getrennt aus."
+    }
+  ]
+}

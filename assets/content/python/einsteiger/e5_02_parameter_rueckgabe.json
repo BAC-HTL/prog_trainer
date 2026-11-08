@@ -1,0 +1,105 @@
+{
+  "id": "python-e5_02_parameter_rueckgabe",
+  "title": "Parameter und Rückgabewerte",
+  "summary": "Werte an Funktionen übergeben und mit return Ergebnisse zurückliefern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Damit eine Funktion flexibel ist, kannst du ihr Werte übergeben. In den Klammern bei def stehen Parameter – das sind Variablen, die beim Aufruf mit Werten befüllt werden. Die Werte beim Aufruf heißen Argumente."
+    },
+    {
+      "type": "code",
+      "content": "def begruessen(name):\n    print(f\"Hallo {name}!\")\n\nbegruessen(\"Lena\")   # Hallo Lena!\nbegruessen(\"Tom\")    # Hallo Tom!"
+    },
+    {
+      "type": "text",
+      "content": "Mehrere Parameter trennst du mit Beistrichen. Die Argumente werden der Reihe nach zugeordnet: das erste Argument zum ersten Parameter usw. Übergibst du zu wenige oder zu viele Argumente, gibt es einen TypeError."
+    },
+    {
+      "type": "code",
+      "content": "def rechteck_zeichnen(breite, hoehe):\n    for i in range(hoehe):\n        print(\"#\" * breite)\n\nrechteck_zeichnen(5, 2)\n# rechteck_zeichnen(5)  # TypeError: missing 1 required positional argument: 'hoehe'"
+    },
+    {
+      "type": "text",
+      "content": "Oft soll eine Funktion etwas berechnen und das Ergebnis zurückgeben, statt es nur anzuzeigen. Dafür gibt es return. Der Aufruf wird dann durch den Rückgabewert „ersetzt“ – du kannst ihn speichern, weiterrechnen oder ausgeben."
+    },
+    {
+      "type": "code",
+      "content": "def flaeche(breite, hoehe):\n    return breite * hoehe\n\nzimmer = flaeche(4, 3)\nprint(zimmer)                     # 12\nprint(flaeche(2, 5) + flaeche(1, 1))  # 11"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Anfängerfehler: print und return verwechseln. print zeigt einen Wert nur am Bildschirm an. return gibt ihn an den Aufrufer zurück. Eine Funktion ohne return liefert automatisch None – damit kann man nicht weiterrechnen."
+    },
+    {
+      "type": "code",
+      "content": "def doppelt_print(x):\n    print(x * 2)\n\ndef doppelt_return(x):\n    return x * 2\n\nergebnis = doppelt_print(5)   # gibt 10 aus\nprint(ergebnis)               # None\n\nergebnis = doppelt_return(5)  # gibt nichts aus\nprint(ergebnis)               # 10"
+    },
+    {
+      "type": "text",
+      "content": "return beendet die Funktion sofort – Code danach wird nicht mehr ausgeführt. Das kannst du nutzen, um je nach Bedingung verschiedene Werte zurückzugeben. Funktionen, die True oder False liefern, eignen sich perfekt für if-Abfragen."
+    },
+    {
+      "type": "code",
+      "content": "def note_berechnen(prozent):\n    if prozent >= 90:\n        return 1\n    if prozent >= 80:\n        return 2\n    if prozent >= 65:\n        return 3\n    if prozent >= 50:\n        return 4\n    return 5\n\ndef ist_gerade(zahl):\n    return zahl % 2 == 0\n\nprint(note_berechnen(83))  # 2\nif ist_gerade(10):\n    print(\"10 ist gerade\")"
+    },
+    {
+      "type": "text",
+      "content": "Auch Listen kannst du übergeben. Diese Funktion berechnet den Durchschnitt einer Notenliste:"
+    },
+    {
+      "type": "code",
+      "content": "def durchschnitt(werte):\n    return sum(werte) / len(werte)\n\nnoten = [1, 2, 2, 3]\nprint(f\"Schnitt: {durchschnitt(noten)}\")  # Schnitt: 2.0"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def rechne(a, b):\n    return a * 2 + b * 2\n\nprint(rechne(2, 3))",
+      "options": [
+        "7",
+        "10",
+        "3",
+        "None"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Argumente werden der Reihe nach zugeordnet: a = 2 und b = 3. Dann wird a * 2 + b * 2 = 4 + 6 = 10 zurückgegeben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def hoch_drei(z):\n    print(z ** 3)\n\nx = hoch_drei(2)\nprint(x)",
+      "options": [
+        "8",
+        "8\n8",
+        "None",
+        "8\nNone"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Funktion gibt 8 mit print aus, hat aber kein return. Deshalb ist x None, und print(x) gibt None aus."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def pruefe(zahl):\n    if zahl > 0:\n        return \"positiv\"\n    print(\"fertig\")\n    return \"nicht positiv\"\n\nprint(pruefe(5))",
+      "options": [
+        "positiv\nfertig",
+        "positiv",
+        "fertig",
+        "positiv\nNone"
+      ],
+      "correctIndex": 1,
+      "explanation": "return beendet die Funktion sofort. Die Zeile print(\"fertig\") wird bei einer positiven Zahl nie erreicht."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "def maximum(a, b):\n    if a > b:\n        return a\n    return b\n\nprint(maximum(4))",
+      "options": [
+        "return darf nicht in einer Funktion stehen",
+        "Funktionsnamen dürfen keine Zahlen zurückgeben",
+        "Beim Aufruf fehlt ein Argument für b – TypeError",
+        "Es muss print statt return heißen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Funktion erwartet zwei Argumente (a und b), bekommt aber nur eines. Python meldet: TypeError: ... missing 1 required positional argument: 'b'."
+    }
+  ]
+}

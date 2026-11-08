@@ -1,0 +1,101 @@
+{
+  "id": "python-e5_03_gueltigkeitsbereich",
+  "title": "Gültigkeitsbereich von Variablen",
+  "summary": "Verstehen, wo Variablen sichtbar sind: lokale und globale Variablen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Nicht jede Variable ist überall im Programm sichtbar. Der Bereich, in dem eine Variable existiert, heißt Gültigkeitsbereich (englisch: scope). Variablen, die innerhalb einer Funktion angelegt werden – auch die Parameter –, sind lokal: Sie existieren nur, solange die Funktion läuft."
+    },
+    {
+      "type": "code",
+      "content": "def mwst_berechnen(netto):\n    steuer = netto * 0.2\n    return steuer\n\nprint(mwst_berechnen(50))  # 10.0\nprint(steuer)   # NameError: name 'steuer' is not defined"
+    },
+    {
+      "type": "text",
+      "content": "Außerhalb der Funktion gibt es steuer nicht. Wenn du den Wert draußen brauchst, gib ihn mit return zurück und speichere ihn: steuer = mwst_berechnen(50)."
+    },
+    {
+      "type": "text",
+      "content": "Variablen, die außerhalb jeder Funktion (ganz links, ohne Einrückung) angelegt werden, sind global. Eine Funktion darf globale Variablen lesen:"
+    },
+    {
+      "type": "code",
+      "content": "schulname = \"HTL Wien\"\n\ndef kopfzeile():\n    print(f\"=== {schulname} ===\")\n\nkopfzeile()   # === HTL Wien ==="
+    },
+    {
+      "type": "text",
+      "content": "Achtung: Wird in einer Funktion einer Variablen ein Wert zugewiesen, ist sie dort lokal – auch wenn es eine globale Variable mit demselben Namen gibt. Die globale Variable bleibt dann unverändert. Das nennt man Überdecken (shadowing)."
+    },
+    {
+      "type": "code",
+      "content": "punkte = 100\n\ndef zuruecksetzen():\n    punkte = 0          # neue, lokale Variable!\n    print(punkte)       # 0\n\nzuruecksetzen()\nprint(punkte)           # 100 – die globale ist unverändert"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Anfängerfehler: In einer Funktion eine globale Variable lesen UND verändern, z. B. mit zaehler += 1. Weil zugewiesen wird, hält Python zaehler für lokal – die lokale Variable hat aber noch keinen Wert. Ergebnis: UnboundLocalError."
+    },
+    {
+      "type": "code",
+      "content": "zaehler = 0\n\ndef klick():\n    zaehler += 1   # UnboundLocalError!\n\nklick()"
+    },
+    {
+      "type": "text",
+      "content": "Mit dem Schlüsselwort global könnte man das „reparieren“. Besser ist aber fast immer: Wert als Parameter hineingeben und das Ergebnis mit return zurückgeben. So ist sofort sichtbar, was eine Funktion braucht und was sie liefert – und sie verändert nicht heimlich andere Teile des Programms."
+    },
+    {
+      "type": "code",
+      "content": "# möglich, aber eher vermeiden:\nzaehler = 0\ndef klick():\n    global zaehler\n    zaehler += 1\n\nklick()\nprint(zaehler)  # 1\n\n# besser: Parameter + return\ndef erhoehen(wert):\n    return wert + 1\n\nstand = 0\nstand = erhoehen(stand)\nstand = erhoehen(stand)\nprint(stand)    # 2"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "x = 5\n\ndef aendern():\n    x = 10\n    print(x)\n\naendern()\nprint(x)",
+      "options": [
+        "5\n5",
+        "5\n10",
+        "10\n5",
+        "10\n10"
+      ],
+      "correctIndex": 2,
+      "explanation": "In der Funktion wird x = 10 zugewiesen – das ist eine neue lokale Variable. Die globale x bleibt 5."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "def addiere(a, b):\n    ergebnis = a + b\n    return ergebnis\n\naddiere(2, 3)\nprint(ergebnis)",
+      "options": [
+        "Die Funktion hat keinen Parameter",
+        "ergebnis ist eine lokale Variable und existiert außerhalb der Funktion nicht – NameError",
+        "return muss vor der Berechnung stehen",
+        "a + b darf nicht in einer Funktion berechnet werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "ergebnis wurde nur in der Funktion angelegt. Der Rückgabewert von addiere(2, 3) wird nicht gespeichert. Richtig wäre: ergebnis = addiere(2, 3)."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "leben = 50\n\ndef heilen():\n    leben = leben + 1\n\nheilen()\nprint(leben)",
+      "options": [
+        "Er gibt 51 aus",
+        "Er gibt 50 aus",
+        "UnboundLocalError, weil leben in der Funktion zugewiesen wird und dadurch lokal ist",
+        "NameError, weil Funktionen keine globalen Variablen sehen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Durch leben = leben + 1 gilt leben in der ganzen Funktion als lokal. Beim Lesen auf der rechten Seite hat die lokale Variable aber noch keinen Wert."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "rabatt = 10\n\ndef endpreis(preis):\n    return preis - rabatt\n\nprint(f\"Preis: {endpreis(30)}\")",
+      "options": [
+        "Preis: 20",
+        "Preis: 10",
+        "Preis: 0",
+        "Fehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Funktion liest die globale Variable rabatt (das ist erlaubt) und gibt 30 - 10 = 20 zurück."
+    }
+  ]
+}

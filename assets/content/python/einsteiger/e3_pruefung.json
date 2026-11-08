@@ -1,0 +1,127 @@
+{
+  "id": "python-e3-pruefung",
+  "title": "Abschlussprüfung: Schleifen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for i in range(5, 1):\n    print(i)",
+      "options": [
+        "5 4 3 2",
+        "1 2 3 4 5",
+        "Nichts",
+        "Eine Endlosschleife"
+      ],
+      "correctIndex": 2,
+      "explanation": "range(5, 1) zählt von 5 aufwärts bis ausschließlich 1. Weil 5 schon größer als 1 ist, enthält range keine einzige Zahl – die Schleife läuft kein einziges Mal."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "x = 1\nwhile x < 100:\n    x *= 3\nprint(x)",
+      "options": [
+        "81",
+        "243",
+        "100",
+        "729"
+      ],
+      "correctIndex": 1,
+      "explanation": "x wird so lange verdreifacht, wie es kleiner als 100 ist: 1, 3, 9, 27, 81, 243. Bei 81 ist die Bedingung noch wahr, also wird ein letztes Mal multipliziert. Erst 243 beendet die Schleife."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for i in range(1, 10):\n    if i % 2 == 0:\n        continue\n    if i > 6:\n        break\n    print(i)",
+      "options": [
+        "1 3 5",
+        "1 3 5 7 9",
+        "2 4 6",
+        "1 3 5 7"
+      ],
+      "correctIndex": 0,
+      "explanation": "Gerade Zahlen werden mit continue übersprungen. Die ungeraden 1, 3, 5 werden ausgegeben. Bei 7 ist i > 6 wahr – break beendet die Schleife."
+    },
+    {
+      "question": "Wie viele Sterne werden ausgegeben?",
+      "code": "for i in range(3):\n    for j in range(i, 3):\n        print(\"*\")",
+      "options": [
+        "9",
+        "3",
+        "6",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die innere Schleife startet bei i: Für i = 0 läuft sie 3-mal (0, 1, 2), für i = 1 2-mal, für i = 2 1-mal. 3 + 2 + 1 = 6."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for i in range(3):\n    for j in range(3):\n        if j == 1:\n            break\n    print(i, j)",
+      "options": [
+        "0 0",
+        "0 1, 1 1 und 2 1 – je in einer Zeile",
+        "Nur 0 1",
+        "0 0, 1 0 und 2 0 – je in einer Zeile"
+      ],
+      "correctIndex": 1,
+      "explanation": "break beendet nur die innere Schleife, sobald j den Wert 1 hat. print(i, j) steht in der äußeren Schleife und läuft daher dreimal – j ist jedes Mal 1."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for i in range(1, 4):\n    summe = 0\n    summe += i\nprint(summe)",
+      "options": [
+        "6",
+        "0",
+        "3",
+        "Eine Fehlermeldung"
+      ],
+      "correctIndex": 2,
+      "explanation": "summe = 0 steht in der Schleife und wird bei jedem Durchlauf zurückgesetzt. Übrig bleibt nur der letzte Wert: 0 + 3 = 3."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "zahl = 9\nteilbar = False\nfor t in range(2, zahl):\n    if zahl % t == 0:\n        teilbar = True\n        break\nprint(teilbar, t)",
+      "options": [
+        "False 8",
+        "True 9",
+        "True 8",
+        "True 3"
+      ],
+      "correctIndex": 3,
+      "explanation": "9 % 2 ist nicht 0, aber 9 % 3 ist 0. Das Flag wird True und break beendet die Schleife sofort – t behält den Wert 3."
+    },
+    {
+      "question": "Eingegeben werden 4, 9, 2, 9, 1 (je eine Zeile). Was gibt dieser Code aus?",
+      "code": "groesste = int(input())\nposition = 1\nfor nr in range(2, 6):\n    wert = int(input())\n    if wert > groesste:\n        groesste = wert\n        position = nr\nprint(groesste, position)",
+      "options": [
+        "9 2",
+        "9 4",
+        "1 5",
+        "9 5"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die 9 an Position 2 wird zum neuen Maximum. Die zweite 9 an Position 4 ist nicht größer (nur gleich), deshalb bleibt position bei 2."
+    },
+    {
+      "question": "Finde den Fehler: Der Code soll die Zahlen von 1 bis 10 addieren (Ergebnis 55), gibt aber 45 aus.",
+      "code": "summe = 0\nfor i in range(1, 10):\n    summe += i\nprint(summe)",
+      "options": [
+        "summe muss bei 1 starten",
+        "range(1, 10) endet bei 9 – richtig wäre range(1, 11)",
+        "Statt += muss man = schreiben",
+        "print(summe) muss in der Schleife stehen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die obere Grenze von range ist nicht dabei. range(1, 10) liefert 1 bis 9, und 1 + … + 9 = 45. Mit range(1, 11) kommt auch die 10 dazu."
+    },
+    {
+      "question": "Eingegeben werden 5, -3, 8, 0 (je eine Zeile). Was gibt dieser Code aus?",
+      "code": "anzahl = 0\nzahl = int(input())\nwhile zahl != 0:\n    if zahl > 0:\n        anzahl += 1\n    zahl = int(input())\nprint(anzahl)",
+      "options": [
+        "3",
+        "4",
+        "1",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Schleife liest so lange Zahlen, bis 0 kommt. Positiv sind 5 und 8 – -3 zählt nicht, und die 0 beendet die Schleife, bevor sie geprüft wird."
+    }
+  ]
+}

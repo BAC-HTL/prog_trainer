@@ -1,0 +1,101 @@
+{
+  "id": "python-e4_01_listen",
+  "title": "Listen",
+  "summary": "Mehrere Werte in einer Liste speichern, über den Index darauf zugreifen und mit for durchlaufen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Stell dir vor, du willst die Noten aller deiner Schularbeiten speichern. Mit einzelnen Variablen (note1, note2, note3 …) wird das schnell unübersichtlich. Eine Liste speichert beliebig viele Werte unter einem einzigen Namen. Du schreibst sie in eckige Klammern, die Werte trennst du mit Beistrichen."
+    },
+    {
+      "type": "code",
+      "content": "noten = [2, 1, 3, 2]\neinkauf = [\"Milch\", \"Brot\", \"Äpfel\"]\nleer = []\n\nprint(noten)    # [2, 1, 3, 2]\nprint(einkauf)  # ['Milch', 'Brot', 'Äpfel']"
+    },
+    {
+      "type": "text",
+      "content": "Jedes Element hat eine Position, den Index. Achtung: Python beginnt bei 0 zu zählen! Das erste Element hat den Index 0, das zweite den Index 1 usw. Mit negativen Indizes zählst du von hinten: -1 ist das letzte Element. Die Funktion len() liefert die Anzahl der Elemente."
+    },
+    {
+      "type": "code",
+      "content": "einkauf = [\"Milch\", \"Brot\", \"Äpfel\"]\nprint(einkauf[0])    # Milch\nprint(einkauf[2])    # Äpfel\nprint(einkauf[-1])   # Äpfel\nprint(len(einkauf))  # 3"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Anfängerfehler: Eine Liste mit 3 Elementen hat die Indizes 0, 1 und 2. Wer einkauf[3] schreibt, bekommt einen IndexError: list index out of range. Der höchste gültige Index ist immer len(liste) - 1."
+    },
+    {
+      "type": "text",
+      "content": "Listen sind veränderbar: Über den Index kannst du ein Element durch einen neuen Wert ersetzen."
+    },
+    {
+      "type": "code",
+      "content": "noten = [2, 1, 3, 2]\nnoten[2] = 1   # Verbesserung bei der dritten Schularbeit\nprint(noten)   # [2, 1, 1, 2]"
+    },
+    {
+      "type": "text",
+      "content": "Mit einer for-Schleife gehst du alle Elemente der Reihe nach durch – genau wie bei range(). Mit in prüfst du, ob ein Wert in der Liste vorkommt. Außerdem gibt es die praktischen Funktionen sum(), min() und max()."
+    },
+    {
+      "type": "code",
+      "content": "noten = [2, 1, 3, 2]\n\nfor note in noten:\n    print(f\"Note: {note}\")\n\nif 5 in noten:\n    print(\"Achtung, ein Fünfer!\")\nelse:\n    print(\"Kein Fünfer dabei.\")\n\nschnitt = sum(noten) / len(noten)\nprint(f\"Schnitt: {schnitt}\")      # Schnitt: 2.0\nprint(f\"Beste Note: {min(noten)}\")  # Beste Note: 1"
+    },
+    {
+      "type": "text",
+      "content": "Brauchst du in der Schleife auch die Position, kombinierst du range() mit len():"
+    },
+    {
+      "type": "code",
+      "content": "spieler = [\"Lena\", \"Tom\", \"Sara\"]\nfor i in range(len(spieler)):\n    print(f\"Platz {i + 1}: {spieler[i]}\")"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "staedte = [\"Wien\", \"Graz\", \"Linz\"]\nprint(staedte[1])",
+      "options": [
+        "Wien",
+        "Graz",
+        "Linz",
+        "Fehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Index beginnt bei 0: staedte[0] ist \"Wien\", staedte[1] ist \"Graz\"."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "zahlen = [4, 8, 15]\nprint(zahlen[3])",
+      "options": [
+        "Listen dürfen keine Zahlen enthalten",
+        "len() funktioniert nicht bei Listen",
+        "Es fehlt eine for-Schleife",
+        "zahlen[3] gibt es nicht – das löst einen IndexError aus"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Liste hat 3 Elemente mit den Indizes 0, 1 und 2. Index 3 liegt außerhalb der Liste: IndexError: list index out of range."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "werte = [3, 7, 1]\nprint(werte[-1])",
+      "options": [
+        "7",
+        "3",
+        "[3, 7, 1]",
+        "1"
+      ],
+      "correctIndex": 3,
+      "explanation": "-1 steht für das letzte Element der Liste, und das ist 1."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "werte = [5, 12, 8, 30]\nanzahl = 0\nfor w in werte:\n    if w > 10:\n        anzahl += 1\nprint(anzahl)",
+      "options": [
+        "2",
+        "3",
+        "0",
+        "1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Schleife zählt alle Elemente, die größer als 10 sind: 12 und 30. Also ist anzahl am Ende 2."
+    }
+  ]
+}

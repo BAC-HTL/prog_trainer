@@ -1,5 +1,5 @@
 {
-  "id": "csharp-03",
+  "id": "csharp-e1_03_eingabe_rechnen",
   "title": "Eingabe und Rechnen",
   "summary": "Eingaben mit Console.ReadLine() lesen, mit int.Parse umwandeln und mit +, -, *, / und % rechnen.",
   "sections": [
@@ -44,14 +44,24 @@
     {
       "question": "Was gibt dieser Code aus?",
       "code": "Console.WriteLine(17 / 5);",
-      "options": ["3.4", "4", "3", "2"],
+      "options": [
+        "3.4",
+        "4",
+        "3",
+        "2"
+      ],
       "correctIndex": 2,
       "explanation": "17 und 5 sind beide int, also ist auch das Ergebnis ein int. Die Kommastellen von 3.4 werden abgeschnitten, übrig bleibt 3."
     },
     {
       "question": "Was gibt dieser Code aus?",
       "code": "Console.WriteLine(17 % 5);",
-      "options": ["2", "3", "3.4", "5"],
+      "options": [
+        "2",
+        "3",
+        "3.4",
+        "5"
+      ],
       "correctIndex": 0,
       "explanation": "% liefert den Rest der Division: 17 = 3 * 5 + 2, also bleibt 2 übrig."
     },
@@ -70,7 +80,12 @@
     {
       "question": "Was gibt dieser Code aus?",
       "code": "int x = 7;\ndouble y = x / 2;\nConsole.WriteLine(y);",
-      "options": ["3.5", "3", "4", "Fehler beim Kompilieren"],
+      "options": [
+        "3.5",
+        "3",
+        "4",
+        "Fehler beim Kompilieren"
+      ],
       "correctIndex": 1,
       "explanation": "Fies! x / 2 ist eine Division von zwei int-Werten und ergibt deshalb 3. Erst danach wird die 3 in der double-Variable y gespeichert. Für 3.5 müsstest du x / 2.0 schreiben."
     }

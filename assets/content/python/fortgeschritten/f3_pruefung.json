@@ -1,0 +1,125 @@
+{
+  "id": "python-f3-pruefung",
+  "title": "Abschlussprüfung: Module & Pakete",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from math import floor, ceil\nprint(floor(2.5), ceil(2.5))",
+      "options": [
+        "2",
+        "3",
+        "2 3",
+        "NameError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mit from math import floor, ceil stehen beide Funktionen direkt zur Verfügung: floor(2.5) = 2, ceil(2.5) = 3."
+    },
+    {
+      "question": "Finde den Fehler: Warum stürzt dieser Code ab?",
+      "code": "import random as r\nprint(random.randint(1, 6))",
+      "options": [
+        "randint gibt es nicht",
+        "Durch den Alias as r gibt es den Namen random nicht – es müsste r.randint heißen",
+        "randint braucht drei Argumente",
+        "import muss in einer Funktion stehen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nach import random as r ist das Modul nur unter dem Namen r erreichbar. random allein führt zu einem NameError."
+    },
+    {
+      "question": "Die Datei helfer.py enthält eine Funktion und am Ende print(\"Test\") ohne if __name__ == \"__main__\":. Was passiert bei import helfer in main.py?",
+      "options": [
+        "Nichts wird ausgegeben",
+        "Es gibt einen ImportError",
+        "Test wird erst beim Programmende ausgegeben",
+        "Test wird beim Importieren ausgegeben"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beim Import wird die ganze Moduldatei einmal ausgeführt – also auch das print. Mit if __name__ == \"__main__\": verhindert man das."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from collections import Counter\nc = Counter(\"mississippi\")\nprint(c[\"s\"], c[\"x\"])",
+      "options": [
+        "4 0",
+        "3 0",
+        "4 None",
+        "KeyError"
+      ],
+      "correctIndex": 0,
+      "explanation": "\"s\" kommt in \"mississippi\" viermal vor. Ein Counter liefert für Elemente, die nie vorkamen, einfach 0 statt eines KeyErrors."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from collections import defaultdict\nd = defaultdict(list)\nd[\"Tim\"].append(\"Ball\")\nprint(d[\"Tim\"])",
+      "options": [
+        "[]",
+        "KeyError",
+        "['Ball']",
+        "None"
+      ],
+      "correctIndex": 2,
+      "explanation": "defaultdict(list) legt beim ersten Zugriff auf \"Tim\" automatisch eine leere Liste an, an die dann \"Ball\" angehängt wird."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from datetime import date\nprint(date(2026, 11, 8).strftime(\"%d.%m.%Y\"))",
+      "options": [
+        "2026-11-08",
+        "08.11.2026",
+        "11.08.2026",
+        "8.11.26"
+      ],
+      "correctIndex": 1,
+      "explanation": "%d ist der Tag mit zwei Stellen, %m der Monat, %Y das Jahr mit vier Stellen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from datetime import date\nprint((date(2026, 12, 1) - date(2026, 11, 1)).days)",
+      "options": [
+        "30",
+        "31",
+        "29",
+        "1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der November hat 30 Tage. Vom 1. November bis zum 1. Dezember liegen also 30 Tage."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from pathlib import Path\np = Path(\"docs\") / \"bericht.pdf\"\nprint(p.stem, p.suffix)",
+      "options": [
+        "bericht.pdf .pdf",
+        "docs/bericht .pdf",
+        "bericht pdf",
+        "bericht .pdf"
+      ],
+      "correctIndex": 3,
+      "explanation": ".stem ist der Dateiname ohne Endung, .suffix die Endung inklusive Punkt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import random\nrandom.seed(42)\na = random.randint(1, 10)\nrandom.seed(42)\nb = random.randint(1, 10)\nprint(a == b)",
+      "options": [
+        "True",
+        "False",
+        "Eine Zufallszahl zwischen 1 und 10",
+        "42"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit demselben seed liefert random dieselbe Zahlenfolge. Beide Aufrufe ergeben also denselben Wert, der Vergleich ist True."
+    },
+    {
+      "question": "In welcher Reihenfolge arbeitest du, um ein neues Projekt mit dem Paket requests sauber aufzusetzen?",
+      "options": [
+        "pip install requests → python -m venv .venv → venv aktivieren",
+        "venv aktivieren → python -m venv .venv → pip freeze",
+        "python -m venv .venv → venv aktivieren → python -m pip install requests",
+        "pip freeze → pip install requests → python -m venv .venv"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst die Umgebung anlegen, dann aktivieren – erst danach landen installierte Pakete in der venv statt global."
+    }
+  ]
+}

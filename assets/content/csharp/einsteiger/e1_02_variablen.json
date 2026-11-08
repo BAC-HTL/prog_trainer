@@ -1,5 +1,5 @@
 {
-  "id": "csharp-02",
+  "id": "csharp-e1_02_variablen",
   "title": "Variablen und Datentypen",
   "summary": "Werte speichern mit int, double, string und bool, var verwenden und Text mit $\"...\" zusammenbauen.",
   "sections": [
@@ -44,7 +44,12 @@
     {
       "question": "Was gibt dieser Code aus?",
       "code": "int x = 5;\nx = x + 3;\nx = 2;\nConsole.WriteLine(x);",
-      "options": ["8", "10", "2", "5"],
+      "options": [
+        "8",
+        "10",
+        "2",
+        "5"
+      ],
       "correctIndex": 2,
       "explanation": "Eine Variable merkt sich immer nur den letzten zugewiesenen Wert. Zuerst ist x 5, dann 8 – aber danach wird x auf 2 gesetzt."
     },
@@ -63,14 +68,24 @@
     {
       "question": "Was gibt dieser Code aus?",
       "code": "string name = \"Ali\";\nConsole.WriteLine(\"Hallo {name}!\");",
-      "options": ["Hallo Ali!", "Hallo {name}!", "Hallo name!", "Fehler beim Kompilieren"],
+      "options": [
+        "Hallo Ali!",
+        "Hallo {name}!",
+        "Hallo name!",
+        "Fehler beim Kompilieren"
+      ],
       "correctIndex": 1,
       "explanation": "Vor den Anführungszeichen fehlt das $. Ohne $ ist {name} ganz normaler Text und wird genau so ausgegeben. Mit $\"Hallo {name}!\" käme Hallo Ali! heraus."
     },
     {
       "question": "Welchen Datentyp hat die Variable wert?",
       "code": "var wert = 3.0;",
-      "options": ["double", "int", "string", "bool"],
+      "options": [
+        "double",
+        "int",
+        "string",
+        "bool"
+      ],
       "correctIndex": 0,
       "explanation": "3.0 hat einen Dezimalpunkt, deshalb ist es eine Kommazahl. var übernimmt diesen Typ, also ist wert ein double."
     }

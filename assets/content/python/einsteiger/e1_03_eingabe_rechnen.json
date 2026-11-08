@@ -1,5 +1,5 @@
 {
-  "id": "python-03",
+  "id": "python-e1_03_eingabe_rechnen",
   "title": "Eingabe und Rechnen",
   "summary": "Mit input() Daten einlesen, mit Zahlen rechnen und Ergebnisse mit f-Strings ausgeben.",
   "sections": [

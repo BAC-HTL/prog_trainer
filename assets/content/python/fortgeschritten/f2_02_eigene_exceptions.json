@@ -1,0 +1,96 @@
+{
+  "id": "python-f2_02_eigene_exceptions",
+  "title": "Fehler auslösen und eigene Exceptions",
+  "summary": "Mit raise selbst Fehler melden und eigene Fehlertypen definieren.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher hat Python die Fehler ausgelöst. Mit raise kannst du das selbst tun – etwa wenn eine Funktion einen ungültigen Wert bekommt. So merkt der Aufrufer sofort, dass etwas nicht stimmt, statt mit einem falschen Ergebnis weiterzurechnen."
+    },
+    {
+      "type": "code",
+      "content": "def note_pruefen(note):\n    if note < 1 or note > 5:\n        raise ValueError(f\"Ungültige Note: {note}\")\n    return note\n\nprint(note_pruefen(2))\nnote_pruefen(7)   # ValueError: Ungültige Note: 7"
+    },
+    {
+      "type": "text",
+      "content": "Der Aufrufer kann diesen Fehler dann wie gewohnt mit try/except abfangen. Die Nachricht, die du bei raise mitgibst, steckt im Fehlerobjekt."
+    },
+    {
+      "type": "code",
+      "content": "def note_pruefen(note):\n    if note < 1 or note > 5:\n        raise ValueError(f\"Ungültige Note: {note}\")\n    return note\n\nfor n in [3, 0]:\n    try:\n        note_pruefen(n)\n        print(f\"{n} ist ok\")\n    except ValueError as fehler:\n        print(fehler)"
+    },
+    {
+      "type": "text",
+      "content": "Manchmal passt kein eingebauter Fehlertyp. Dann definierst du einen eigenen. Dafür schreibst du eine kleine Klasse, die von Exception erbt. Was Klassen genau sind, lernst du im Kapitel Objektorientierung – hier reicht dir diese Vorlage. pass bedeutet „hier passiert nichts weiter“. Eigene Fehlernamen enden üblicherweise auf Error."
+    },
+    {
+      "type": "code",
+      "content": "class GuthabenError(Exception):\n    pass\n\ndef abheben(guthaben, betrag):\n    if betrag > guthaben:\n        raise GuthabenError(f\"Nur {guthaben} € verfügbar\")\n    return guthaben - betrag\n\ntry:\n    rest = abheben(20, 50)\nexcept GuthabenError as fehler:\n    print(f\"Abgelehnt: {fehler}\")"
+    },
+    {
+      "type": "text",
+      "content": "Vorteil eigener Exceptions: Der Aufrufer kann gezielt genau DEINEN Fehler abfangen, ohne versehentlich andere Fehler mitzuschlucken. Du kannst auch mehrere eigene Fehler von einem gemeinsamen Basisfehler erben lassen – dann fängt ein except für den Basisfehler alle ab."
+    },
+    {
+      "type": "code",
+      "content": "class SpielError(Exception):\n    pass\n\nclass UngueltigerZugError(SpielError):\n    pass\n\nclass SpielVorbeiError(SpielError):\n    pass\n\ntry:\n    raise SpielVorbeiError(\"Keine Leben mehr\")\nexcept SpielError as fehler:\n    print(f\"Spielfehler: {fehler}\")"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• raise ValueError ohne Nachricht – erlaubt, aber später weißt du nicht, was los war. Gib immer eine aussagekräftige Meldung mit.\n• Eigene Exception nicht von Exception ableiten – dann kann sie nicht mit raise ausgelöst werden.\n• raise innerhalb eines except-Blocks ohne Fehlerangabe wirft den gerade abgefangenen Fehler erneut weiter. Das ist praktisch, wenn du ihn nur protokollieren willst."
+    },
+    {
+      "type": "code",
+      "content": "try:\n    try:\n        int(\"x\")\n    except ValueError:\n        print(\"Fehler protokolliert\")\n        raise\nexcept ValueError:\n    print(\"Weiter oben nochmal abgefangen\")"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def check(x):\n    if x < 0:\n        raise ValueError(\"Zu klein\")\n    return x\n\ntry:\n    print(check(-1))\nexcept ValueError as e:\n    print(e)",
+      "options": [
+        "5",
+        "Zu klein",
+        "5\nZu klein",
+        "ValueError"
+      ],
+      "correctIndex": 1,
+      "explanation": "check(-1) löst den ValueError mit der Nachricht \"Zu klein\" aus. Er wird abgefangen und die Nachricht ausgegeben."
+    },
+    {
+      "question": "Wie definierst du richtig einen eigenen Fehlertyp?",
+      "options": [
+        "def MeinError(Exception): pass",
+        "class MeinError(Exception):\n    pass",
+        "raise MeinError = Exception",
+        "exception MeinError: pass"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein eigener Fehler ist eine Klasse, die von Exception erbt: class Name(Exception): mit pass als Inhalt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class LeerError(Exception):\n    pass\n\ntry:\n    raise ValueError(\"A\")\nexcept LeerError:\n    print(\"B\")",
+      "options": [
+        "A",
+        "B",
+        "A\nB",
+        "Programm stürzt ab"
+      ],
+      "correctIndex": 3,
+      "explanation": "Hier wird ein ValueError ausgelöst, aber nur der eigene LeerError wird abgefangen. ValueError hat nichts mit LeerError zu tun – das Programm stürzt ab."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class BasisError(Exception):\n    pass\n\nclass KindError(BasisError):\n    pass\n\ntry:\n    raise KindError(\"weg\")\nexcept BasisError as e:\n    print(f\"Basis: {e}\")",
+      "options": [
+        "Basis: weg",
+        "Kind: weg",
+        "weg",
+        "Programm stürzt ab"
+      ],
+      "correctIndex": 0,
+      "explanation": "KindError erbt von BasisError. Deshalb fängt except BasisError auch einen KindError ab."
+    }
+  ]
+}

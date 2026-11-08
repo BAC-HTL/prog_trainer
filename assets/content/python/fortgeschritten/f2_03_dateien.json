@@ -1,0 +1,96 @@
+{
+  "id": "python-f2_03_dateien",
+  "title": "Mit Dateien arbeiten",
+  "summary": "Textdateien lesen und schreiben und dabei Fehler sauber behandeln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Variablen verschwinden, sobald dein Programm endet. Willst du Daten dauerhaft speichern – etwa einen Highscore oder eine Einkaufsliste – schreibst du sie in eine Datei. Mit open() öffnest du eine Datei. Der zweite Parameter ist der Modus:\n• \"r\" – lesen (Standard)\n• \"w\" – schreiben (Datei wird neu angelegt bzw. ÜBERSCHRIEBEN!)\n• \"a\" – anhängen (append) ans Ende"
+    },
+    {
+      "type": "text",
+      "content": "Am besten öffnest du Dateien mit with. Dann wird die Datei automatisch geschlossen, sobald der eingerückte Block endet – auch wenn ein Fehler auftritt. Gib außerdem encoding=\"utf-8\" an, damit Umlaute wie ä, ö, ü auf allen Systemen (auch Windows) richtig gespeichert werden. write() fügt keinen Zeilenumbruch hinzu – den musst du mit \\n selbst schreiben."
+    },
+    {
+      "type": "code",
+      "content": "with open(\"einkauf.txt\", \"w\", encoding=\"utf-8\") as datei:\n    datei.write(\"Äpfel\\n\")\n    datei.write(\"Milch\\n\")\n\nwith open(\"einkauf.txt\", \"a\", encoding=\"utf-8\") as datei:\n    datei.write(\"Brot\\n\")\n\nwith open(\"einkauf.txt\", \"r\", encoding=\"utf-8\") as datei:\n    inhalt = datei.read()\nprint(inhalt)"
+    },
+    {
+      "type": "text",
+      "content": "read() liefert den ganzen Inhalt als einen String, readlines() eine Liste mit allen Zeilen. Meist willst du aber Zeile für Zeile arbeiten: Dafür gehst du mit for direkt über die Datei. Jede Zeile endet mit \\n – mit strip() entfernst du den Zeilenumbruch."
+    },
+    {
+      "type": "code",
+      "content": "with open(\"einkauf.txt\", \"w\", encoding=\"utf-8\") as datei:\n    datei.write(\"Äpfel\\nMilch\\nBrot\\n\")\n\nwith open(\"einkauf.txt\", encoding=\"utf-8\") as datei:\n    nummer = 1\n    for zeile in datei:\n        print(f\"{nummer}. {zeile.strip()}\")\n        nummer += 1"
+    },
+    {
+      "type": "text",
+      "content": "Daten mit mehreren Werten pro Zeile trennst du mit einem Zeichen, z. B. einem Strichpunkt. Beim Lesen zerlegst du die Zeile mit split(\";\"). Achtung: Alles, was aus einer Datei kommt, ist ein String – Zahlen musst du mit int() oder float() umwandeln."
+    },
+    {
+      "type": "code",
+      "content": "noten = {\"Mathe\": 2, \"Deutsch\": 1, \"POS\": 3}\nwith open(\"noten.txt\", \"w\", encoding=\"utf-8\") as datei:\n    for fach, note in noten.items():\n        datei.write(f\"{fach};{note}\\n\")\n\nsumme = 0\nwith open(\"noten.txt\", encoding=\"utf-8\") as datei:\n    for zeile in datei:\n        fach, note = zeile.strip().split(\";\")\n        summe += int(note)\nprint(f\"Notensumme: {summe}\")   # 6"
+    },
+    {
+      "type": "text",
+      "content": "Gibt es die Datei beim Lesen nicht, bekommst du einen FileNotFoundError. Den fängst du wie jeden anderen Fehler mit try/except ab – zum Beispiel, um beim allerersten Start einen Highscore von 0 anzunehmen."
+    },
+    {
+      "type": "code",
+      "content": "try:\n    with open(\"highscore.txt\", encoding=\"utf-8\") as datei:\n        highscore = int(datei.read())\nexcept FileNotFoundError:\n    highscore = 0\nprint(f\"Highscore: {highscore}\")"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• \"w\" statt \"a\" verwendet – der alte Inhalt ist weg.\n• Zeilenumbruch \\n beim Schreiben vergessen – alles landet in einer Zeile.\n• strip() beim Lesen vergessen – dann ist \"Milch\\n\" nicht gleich \"Milch\".\n• Relativer Pfad: \"einkauf.txt\" wird im aktuellen Arbeitsordner gesucht, nicht unbedingt dort, wo dein Skript liegt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was steht nach diesem Code in der Datei log.txt?",
+      "code": "for text in [\"A\", \"B\", \"C\"]:\n    with open(\"log.txt\", \"w\", encoding=\"utf-8\") as f:\n        f.write(text)\n\nwith open(\"log.txt\", encoding=\"utf-8\") as f:\n    print(f.read())",
+      "options": [
+        "A\nB\nC",
+        "B\nC",
+        "C",
+        "A"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jedes Öffnen mit \"w\" legt die Datei neu an und löscht den bisherigen Inhalt. Übrig bleibt nur das zuletzt geschriebene \"C\"."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "with open(\"z.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"3;7\\n\")\n\nwith open(\"z.txt\", encoding=\"utf-8\") as f:\n    a, b = f.read().strip().split(\";\")\nprint(int(a) + int(b))",
+      "options": [
+        "37",
+        "10",
+        "3 + 7",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "a und b sind nach dem Lesen und split() Strings. Mit int() werden sie in Zahlen umgewandelt, daher ergibt sich 10."
+    },
+    {
+      "question": "Finde den Fehler: Die Datei daten.txt existiert nicht. Was passiert?",
+      "code": "with open(\"daten.txt\", encoding=\"utf-8\") as f:\n    print(f.read())",
+      "options": [
+        "Die Datei wird automatisch leer angelegt",
+        "Es wird ein leerer String ausgegeben",
+        "FileNotFoundError",
+        "KeyError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Im Lesemodus muss die Datei existieren. Sonst löst open() einen FileNotFoundError aus."
+    },
+    {
+      "question": "Warum verwendet man open() am besten mit with?",
+      "options": [
+        "Weil die Datei sonst nicht gelesen werden kann",
+        "Weil die Datei am Ende des Blocks automatisch geschlossen wird",
+        "Weil with Umlaute automatisch richtig speichert",
+        "Weil with Dateien schneller macht"
+      ],
+      "correctIndex": 1,
+      "explanation": "with schließt die Datei automatisch – auch wenn im Block ein Fehler auftritt. Für Umlaute ist encoding=\"utf-8\" zuständig."
+    }
+  ]
+}

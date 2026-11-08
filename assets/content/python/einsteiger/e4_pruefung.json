@@ -1,0 +1,126 @@
+{
+  "id": "python-e4-pruefung",
+  "title": "Abschlussprüfung: Listen & Strings",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "liste = [0, 1, 2, 3, 4]\nprint(liste[len(liste) - 1])",
+      "options": [
+        "4",
+        "3",
+        "5",
+        "Fehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "len(liste) ist 5. Der höchste gültige Index ist daher 4, und liste[len(liste) - 1] ist das letzte Element: 4."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "werte = [1, 2, 3, 4]\nfor i in range(len(werte)):\n    if i % 2 == 1:\n        werte[i] = werte[i] * 2\nprint(werte)",
+      "options": [
+        "[1, 2, 3, 4]",
+        "[2, 4, 6, 8]",
+        "[1, 4, 3, 8]",
+        "[2, 2, 6, 4]"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Schleife läuft über die Indizes 0 bis 3. Nur bei ungeraden Indizes (1 und 3) wird der Wert verdoppelt: 2 wird zu 4, 4 wird zu 8."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "l = [\"x\", \"y\", \"x\"]\nl.append(\"z\")\nl.remove(\"x\")\nl.pop(1)\nprint(l)",
+      "options": [
+        "['x', 'z']",
+        "['y', 'z']",
+        "['x', 'y']",
+        "['z']"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nach append ist die Liste ['x', 'y', 'x', 'z']. remove(\"x\") entfernt nur das erste \"x\" → ['y', 'x', 'z']. pop(1) entfernt dann das Element an Index 1, also das zweite \"x\"."
+    },
+    {
+      "question": "Finde den Fehler! Das Programm soll die Namen sortiert ausgeben.",
+      "code": "namen = [\"Tom\", \"Ali\", \"Mia\"]\nsortiert = namen.sort()\nprint(sortiert)",
+      "options": [
+        "sort() gibt None zurück – in sortiert steht daher None statt einer Liste",
+        "Strings kann man nicht sortieren",
+        "Es muss sort(namen) heißen",
+        "Der Code ist korrekt"
+      ],
+      "correctIndex": 0,
+      "explanation": "sort() sortiert namen direkt und liefert None. Richtig wäre entweder namen.sort() und dann print(namen) oder sortiert = sorted(namen)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "text = \"Pizza\"\nprint(text.find(\"Z\"))",
+      "options": [
+        "4",
+        "2",
+        "1",
+        "-1"
+      ],
+      "correctIndex": 3,
+      "explanation": "find() sucht nach \"Z\" (Großbuchstabe). Groß- und Kleinschreibung zählt – \"Z\" kommt nicht vor, deshalb liefert find() -1."
+    },
+    {
+      "question": "Was gibt dieser Code aus, wenn \"  Max Muster  \" eingegeben wird?",
+      "code": "eingabe = input()\nteile = eingabe.strip().split()\nprint(teile[1].upper() + \", \" + teile[0])",
+      "options": [
+        "MUSTER, Max",
+        "Muster, Max",
+        "  MUSTER, Max  ",
+        "MAX, Muster"
+      ],
+      "correctIndex": 0,
+      "explanation": "strip() entfernt die Leerzeichen außen, split() zerlegt in ['Max', 'Muster']. teile[1].upper() ist \"MUSTER\", teile[0] ist \"Max\"."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "rechnung = \"1+2+3\"\nergebnis = 0\nfor teil in rechnung.split(\"+\"):\n    ergebnis += int(teil)\nprint(ergebnis)",
+      "options": [
+        "15",
+        "6",
+        "123",
+        "Fehler: TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "split(\"+\") liefert ['1', '2', '3']. Jeder Teil wird mit int() umgewandelt und addiert: 1 + 2 + 3 = 6."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "wort = \"Nachricht\"\nprint(wort[4:])",
+      "options": [
+        "Nach",
+        "richt",
+        "Nachricht",
+        "icht"
+      ],
+      "correctIndex": 1,
+      "explanation": "[4:] beginnt bei Index 4 (N=0, a=1, c=2, h=3, r=4) und geht bis zum Ende: \"richt\"."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "a = [1, 2, 3]\nb = a[:]\na.append(99)\nprint(a)\nprint(b)",
+      "options": [
+        "[1, 2, 3]\n[1, 2, 3, 99]",
+        "[1, 2, 3, 99]\n[1, 2, 3, 99]",
+        "[1, 2, 3, 99]\n[1, 2, 3]",
+        "[99]\n[1, 2, 3]"
+      ],
+      "correctIndex": 2,
+      "explanation": "b = a[:] erzeugt eine Kopie. append(99) verändert nur a, die Kopie b bleibt [1, 2, 3]."
+    },
+    {
+      "question": "Welcher Ausdruck liefert für die Liste z = [5, 6, 7, 8, 9] das Ergebnis [9, 7, 5]?",
+      "options": [
+        "z[::2]",
+        "z[-1:0:-2]",
+        "z[::-2]",
+        "z[4:0:2]"
+      ],
+      "correctIndex": 2,
+      "explanation": "Schritt -2 läuft rückwärts in Zweierschritten vom letzten Element bis zum Anfang: 9, 7, 5. z[-1:0:-2] hört vor Index 0 auf und liefert nur [9, 7]."
+    }
+  ]
+}

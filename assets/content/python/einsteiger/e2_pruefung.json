@@ -1,0 +1,126 @@
+{
+  "id": "python-e2-pruefung",
+  "title": "Abschlussprüfung: Entscheidungen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "punkte = 95\nif punkte >= 50:\n    print(\"Genügend\")\nelif punkte >= 90:\n    print(\"Sehr gut\")\nelse:\n    print(\"Nicht genügend\")",
+      "options": [
+        "Sehr gut",
+        "Genügend",
+        "Sehr gut und Genügend",
+        "Nicht genügend"
+      ],
+      "correctIndex": 1,
+      "explanation": "Python prüft von oben nach unten und nimmt den ersten passenden Zweig. 95 >= 50 ist schon wahr, also kommt der elif-Zweig nie dran. Die strengere Bedingung muss zuerst stehen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "a = 4\nprint(a > 2 and a < 4)",
+      "options": [
+        "True",
+        "4",
+        "Eine Fehlermeldung",
+        "False"
+      ],
+      "correctIndex": 3,
+      "explanation": "a > 2 ist wahr, aber a < 4 ist falsch (4 ist nicht kleiner als 4). Bei and müssen beide Teile wahr sein, also False."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "x = 3\nif x > 0:\n    if x > 5:\n        print(\"groß\")\nelse:\n    print(\"negativ oder null\")\nprint(\"fertig\")",
+      "options": [
+        "Nur fertig",
+        "groß und fertig",
+        "negativ oder null und fertig",
+        "Nichts"
+      ],
+      "correctIndex": 0,
+      "explanation": "x > 0 ist wahr, also wird der äußere if-Block betreten. Dort ist x > 5 falsch – und das innere if hat kein else. Das else ganz links gehört zum äußeren if und wird übersprungen. Am Ende läuft nur print(\"fertig\")."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "zahl = 1\nmatch zahl:\n    case _:\n        print(\"Irgendwas\")\n    case 1:\n        print(\"Eins\")",
+      "options": [
+        "Zahlen dürfen in case nicht vorkommen",
+        "case _ steht vorne und fängt alles ab – Python meldet einen SyntaxError",
+        "Nach case _ fehlt eine Bedingung",
+        "match braucht am Ende ein else"
+      ],
+      "correctIndex": 1,
+      "explanation": "case _ passt auf jeden Wert. Steht es nicht als letzter case, könnten die folgenden cases nie erreicht werden – das erkennt Python und meldet einen SyntaxError."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "zeichen = \"E\"\nmatch zeichen:\n    case \"a\" | \"e\" | \"i\" | \"o\" | \"u\":\n        print(\"Vokal\")\n    case _:\n        print(\"Konsonant\")",
+      "options": [
+        "Vokal",
+        "Nichts",
+        "Konsonant",
+        "Vokal und Konsonant"
+      ],
+      "correctIndex": 2,
+      "explanation": "Groß- und Kleinschreibung zählt: \"E\" ist nicht gleich \"e\". Keiner der Vokal-Werte passt, also greift case _."
+    },
+    {
+      "question": "Welche Bedingung ist gleichbedeutend mit not (alter < 18)?",
+      "options": [
+        "alter > 18",
+        "alter <= 18",
+        "alter >= 18",
+        "not alter > 18"
+      ],
+      "correctIndex": 2,
+      "explanation": "„Nicht jünger als 18“ heißt „18 oder älter“. Achtung: alter > 18 wäre falsch, weil dann genau 18 nicht dabei wäre."
+    },
+    {
+      "question": "Finde den Fehler: Auch am Montag wird „Wochenende!“ ausgegeben.",
+      "code": "tag = \"Montag\"\nif tag == \"Samstag\" or \"Sonntag\":\n    print(\"Wochenende!\")",
+      "options": [
+        "Strings kann man nicht mit == vergleichen",
+        "Es muss and statt or heißen",
+        "\"Sonntag\" allein ist immer wahr – richtig wäre tag == \"Samstag\" or tag == \"Sonntag\"",
+        "Nach dem if fehlt ein else"
+      ],
+      "correctIndex": 2,
+      "explanation": "or verbindet zwei vollständige Bedingungen. Rechts steht hier nur der Text \"Sonntag\", und ein nicht-leerer Text gilt als wahr. Damit ist die ganze Bedingung immer erfüllt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "benutzer = \"admin\"\npasswort = \"1234\"\nif benutzer == \"admin\":\n    if passwort == \"geheim\":\n        print(\"Willkommen\")\n    else:\n        print(\"Falsches Passwort\")\nelse:\n    print(\"Unbekannter Benutzer\")",
+      "options": [
+        "Willkommen",
+        "Unbekannter Benutzer",
+        "Nichts",
+        "Falsches Passwort"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Benutzer stimmt, also geht es in den äußeren if-Block. Das Passwort ist aber nicht \"geheim\" – deshalb läuft das innere else."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "x = 15\nif 10 < x <= 15:\n    print(\"im Bereich\")\nelif x > 15:\n    print(\"zu groß\")\nelse:\n    print(\"zu klein\")",
+      "options": [
+        "Fehler",
+        "im Bereich",
+        "zu groß",
+        "Nichts"
+      ],
+      "correctIndex": 1,
+      "explanation": "10 < x <= 15 bedeutet: x ist größer als 10 UND höchstens 15. Für x = 15 ist beides erfüllt."
+    },
+    {
+      "question": "Der Benutzer gibt 3 ein. Was gibt dieser Code aus?",
+      "code": "wahl = int(input())\nmatch wahl:\n    case 1 | 2:\n        print(\"Klein\")\n    case 3:\n        print(\"Mittel\")\n    case 3 | 4:\n        print(\"Groß\")",
+      "options": [
+        "Mittel",
+        "Mittel und Groß",
+        "Groß",
+        "Klein"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Eingabe wird mit int() zur Zahl 3. Sie passt zum zweiten case. Obwohl 3 auch im dritten case vorkommt, wird nur der erste passende case ausgeführt."
+    }
+  ]
+}

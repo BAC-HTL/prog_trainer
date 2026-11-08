@@ -1,0 +1,97 @@
+{
+  "id": "python-e3_02_continue_verschachtelt",
+  "title": "continue und verschachtelte Schleifen",
+  "summary": "Mit continue einzelne Durchläufe überspringen und Schleifen ineinander schachteln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Du kennst schon break, das eine Schleife komplett beendet. Sein kleiner Bruder heißt continue: Es überspringt nur den Rest des aktuellen Durchlaufs und macht sofort mit dem nächsten weiter."
+    },
+    {
+      "type": "code",
+      "content": "# Alle Zahlen von 1 bis 10 außer den Vielfachen von 3\nfor i in range(1, 11):\n    if i % 3 == 0:\n        continue\n    print(i)\n# Ausgabe: 1 2 4 5 7 8 10 (je in einer Zeile)"
+    },
+    {
+      "type": "text",
+      "content": "Der Unterschied auf einen Blick:\n• break – „Ich bin fertig“: Die Schleife endet sofort.\n• continue – „Diesen hier überspringe ich“: Die Schleife läuft mit dem nächsten Wert weiter.\n\nVorsicht bei while: Wenn der Zähler erst nach dem continue erhöht wird, wird er übersprungen – und du hast eine Endlosschleife. Erhöhe den Zähler deshalb vor dem continue."
+    },
+    {
+      "type": "code",
+      "content": "zahl = 0\nwhile zahl < 6:\n    zahl += 1          # zuerst erhöhen!\n    if zahl % 2 == 0:\n        continue       # gerade Zahlen überspringen\n    print(zahl)\n# Ausgabe: 1 3 5 (je in einer Zeile)"
+    },
+    {
+      "type": "text",
+      "content": "Schleifen kann man auch ineinander schachteln. Die innere Schleife läuft dann bei jedem Durchlauf der äußeren Schleife komplett durch. Bei 2 äußeren und 3 inneren Durchläufen wird der innere Code also 2 · 3 = 6-mal ausgeführt. Verwende für die beiden Schleifen unterschiedliche Variablennamen!"
+    },
+    {
+      "type": "code",
+      "content": "for runde in range(1, 3):\n    for spieler in range(1, 4):\n        print(f\"Runde {runde}: Spieler {spieler} ist dran\")\n# Runde 1: Spieler 1 ist dran\n# Runde 1: Spieler 2 ist dran\n# Runde 1: Spieler 3 ist dran\n# Runde 2: Spieler 1 ist dran\n# ..."
+    },
+    {
+      "type": "text",
+      "content": "Normalerweise beginnt print() nach jeder Ausgabe eine neue Zeile. Mit print(..., end=\"\") verhinderst du das – die nächste Ausgabe landet in derselben Zeile. Ein leeres print() macht dann den Zeilenumbruch. So kannst du zum Beispiel Muster zeichnen:"
+    },
+    {
+      "type": "code",
+      "content": "for zeile in range(1, 5):\n    for stern in range(zeile):\n        print(\"*\", end=\"\")\n    print()  # neue Zeile\n# *\n# **\n# ***\n# ****"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: break und continue wirken immer nur auf die Schleife, in der sie direkt stehen. Ein break in der inneren Schleife beendet also nur die innere – die äußere läuft weiter."
+    },
+    {
+      "type": "code",
+      "content": "for i in range(1, 4):\n    for j in range(1, 4):\n        if j == 2:\n            break      # beendet nur die innere Schleife\n        print(i, j)\n# 1 1\n# 2 1\n# 3 1"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for i in range(5):\n    if i == 2:\n        continue\n    print(i)",
+      "options": [
+        "0 1",
+        "0 1 3 4",
+        "0 1 2 3 4",
+        "2"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei i == 2 springt continue sofort zum nächsten Durchlauf, print(i) wird nur für die 2 übersprungen. Anders als break beendet continue die Schleife nicht."
+    },
+    {
+      "question": "Wie oft wird „Hallo“ ausgegeben?",
+      "code": "for a in range(3):\n    for b in range(4):\n        print(\"Hallo\")",
+      "options": [
+        "7",
+        "3",
+        "4",
+        "12"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die innere Schleife läuft 4-mal – und zwar bei jedem der 3 Durchläufe der äußeren Schleife. 3 · 4 = 12."
+    },
+    {
+      "question": "Finde den Fehler: Das Programm soll 0, 1, 3, 4 ausgeben, hängt aber nach der 1.",
+      "code": "i = 0\nwhile i < 5:\n    if i == 2:\n        continue\n    print(i)\n    i += 1",
+      "options": [
+        "Bei i == 2 überspringt continue auch i += 1 – i bleibt für immer 2",
+        "continue darf nicht in einer while-Schleife stehen",
+        "Es muss while i <= 5 heißen",
+        "print(i) muss vor dem if stehen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Sobald i den Wert 2 hat, springt continue zurück zur Bedingung, ohne i zu erhöhen. Die Schleife dreht sich endlos. Lösung: i += 1 vor das if verschieben (und dann bei 1 starten bzw. die Ausgabe anpassen)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for i in range(1, 4):\n    for j in range(i):\n        print(i, end=\"\")\n    print()",
+      "options": [
+        "123 (in einer Zeile)",
+        "1, 2 und 3 – jeweils in einer eigenen Zeile",
+        "1, 22 und 333 – jeweils in einer eigenen Zeile",
+        "111, 22 und 3 – jeweils in einer eigenen Zeile"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die innere Schleife läuft i-mal und gibt dabei i ohne Zeilenumbruch aus (end=\"\"). Danach sorgt print() für die neue Zeile: 1, dann 22, dann 333."
+    }
+  ]
+}

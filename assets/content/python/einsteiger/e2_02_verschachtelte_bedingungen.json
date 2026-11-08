@@ -1,0 +1,93 @@
+{
+  "id": "python-e2_02_verschachtelte_bedingungen",
+  "title": "Verschachtelte Bedingungen",
+  "summary": "Bedingungen ineinander schachteln, Bereiche prüfen und komplizierte Abfragen lesbar halten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Manchmal hängt eine Entscheidung von einer anderen ab. Dann schreibst du ein if in ein anderes if hinein – man nennt das Verschachtelung. Der innere Block wird einfach noch eine Stufe weiter eingerückt, also mit 8 Leerzeichen."
+    },
+    {
+      "type": "code",
+      "content": "alter = 15\nhat_ticket = True\n\nif hat_ticket:\n    print(\"Ticket wird geprüft ...\")\n    if alter >= 16:\n        print(\"Viel Spaß im Film!\")\n    else:\n        print(\"Leider erst ab 16.\")\nelse:\n    print(\"Bitte zuerst ein Ticket kaufen.\")\n# Ausgabe:\n# Ticket wird geprüft ...\n# Leider erst ab 16."
+    },
+    {
+      "type": "text",
+      "content": "Die Einrückung entscheidet, zu welchem if ein else gehört: Ein else gehört immer zu dem if, das genau gleich weit eingerückt ist. Im Beispiel oben gehört das erste else (8 Leerzeichen) zu if alter >= 16, das zweite else (ganz links) zu if hat_ticket.\n\nTypischer Anfängerfehler: Das else steht eine Stufe zu weit links oder rechts. Dann gehört es plötzlich zum falschen if – oder Python meldet einen IndentationError."
+    },
+    {
+      "type": "text",
+      "content": "Viele verschachtelte Bedingungen kannst du auch mit and zusammenfassen. Beide Varianten machen hier genau dasselbe:"
+    },
+    {
+      "type": "code",
+      "content": "punkte = 40\nhausuebung_abgegeben = True\n\n# verschachtelt\nif punkte >= 30:\n    if hausuebung_abgegeben:\n        print(\"Positiv\")\n\n# mit and – kürzer und flacher\nif punkte >= 30 and hausuebung_abgegeben:\n    print(\"Positiv\")"
+    },
+    {
+      "type": "text",
+      "content": "Faustregel: Verschachtle nur, wenn der innere Teil wirklich nur dann Sinn ergibt, wenn die äußere Bedingung zutrifft – oder wenn du für beide Ebenen eigene else-Zweige brauchst. Mehr als zwei, drei Ebenen werden schnell unübersichtlich.\n\nPraktisch ist auch die Bereichsprüfung: Statt punkte >= 0 and punkte <= 50 darfst du in Python kurz 0 <= punkte <= 50 schreiben."
+    },
+    {
+      "type": "code",
+      "content": "punkte = int(input(\"Punkte (0–50): \"))\n\nif 0 <= punkte <= 50:\n    if punkte >= 25:\n        print(\"Bestanden\")\n    else:\n        print(\"Nicht bestanden\")\nelse:\n    print(\"Ungültige Eingabe\")"
+    },
+    {
+      "type": "text",
+      "content": "Lange Bedingungen werden lesbarer, wenn du Teile davon in bool-Variablen speicherst. Ein Vergleich liefert ja True oder False – das kannst du dir merken.\n\nAchtung, häufiger Fehler: tag == \"Samstag\" or \"Sonntag\" prüft NICHT, ob tag einer der beiden Werte ist! Der Teil rechts von or ist nur der Text \"Sonntag\", und ein nicht-leerer Text gilt als wahr. Die Bedingung ist also immer erfüllt. Du musst den Vergleich auf beiden Seiten ausschreiben."
+    },
+    {
+      "type": "code",
+      "content": "tag = \"Sonntag\"\nregnet = False\n\nist_wochenende = tag == \"Samstag\" or tag == \"Sonntag\"\n\nif ist_wochenende and not regnet:\n    print(\"Ab in den Park!\")\nelif ist_wochenende:\n    print(\"Spieleabend daheim.\")\nelse:\n    print(\"Schultag.\")\n# Ausgabe: Ab in den Park!"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "x = 8\ny = 3\nif x > 5:\n    if y > 5:\n        print(\"A\")\n    else:\n        print(\"B\")\nelse:\n    print(\"C\")",
+      "options": [
+        "A",
+        "C",
+        "B",
+        "Nichts"
+      ],
+      "correctIndex": 2,
+      "explanation": "x > 5 ist wahr, also geht es in den äußeren if-Block. Dort ist y > 5 falsch, deshalb läuft das innere else und gibt B aus. Das äußere else wird übersprungen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "regen = False\ntemperatur = 10\nif regen:\n    if temperatur < 5:\n        print(\"Schneeregen?\")\nelse:\n    print(\"Kein Regen\")",
+      "options": [
+        "Kein Regen",
+        "Nichts",
+        "Schneeregen?",
+        "Eine Fehlermeldung"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das else steht ganz links und gehört deshalb zu if regen – nicht zum inneren if. Weil regen False ist, läuft dieser else-Zweig."
+    },
+    {
+      "question": "Welche Zeile ersetzt die beiden verschachtelten ifs, ohne das Verhalten zu ändern?",
+      "code": "a = 3\nb = 5\nif a > 0:\n    if b > 0:\n        print(\"Beide positiv\")",
+      "options": [
+        "if a > 0 or b > 0:",
+        "if a > 0, b > 0:",
+        "if not a > 0 and b > 0:",
+        "if a > 0 and b > 0:"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der print wird nur erreicht, wenn beide Bedingungen wahr sind – genau das macht and. Mit or würde schon eine wahre Bedingung reichen."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "note = 2\nif note <= 4:\n    print(\"Positiv\")\n    if note == 1:\n        print(\"Sehr gut!\")\n     else:\n        print(\"Weiter so!\")",
+      "options": [
+        "Nach else fehlt eine Bedingung",
+        "else steht nicht genau unter seinem if – Python meldet einen IndentationError",
+        "Ein if darf nicht in einem anderen if stehen",
+        "note == 1 muss in Klammern stehen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das else ist mit 5 statt 4 Leerzeichen eingerückt und passt damit zu keinem if. Es muss genau so weit eingerückt sein wie if note == 1."
+    }
+  ]
+}
