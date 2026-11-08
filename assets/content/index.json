@@ -1,0 +1,49 @@
+{
+  "tracks": [
+    {
+      "id": "python",
+      "title": "Python",
+      "description": "Einsteigerfreundlich – ideal für den Start.",
+      "icon": "python",
+      "kind": "language",
+      "lessons": [
+        "python/01_erstes_programm.json",
+        "python/02_variablen.json"
+      ]
+    },
+    {
+      "id": "csharp",
+      "title": "C#",
+      "description": "Vielseitig – von Spielen bis Business-Software.",
+      "icon": "csharp",
+      "kind": "language",
+      "lessons": [
+        "csharp/01_erstes_programm.json"
+      ]
+    },
+    {
+      "id": "architecture",
+      "title": "Software-Architektur",
+      "description": "Wie man große Programme sinnvoll aufbaut.",
+      "icon": "architecture",
+      "kind": "concept",
+      "lessons": []
+    },
+    {
+      "id": "testing",
+      "title": "Testing",
+      "description": "Wie man sicherstellt, dass Code funktioniert.",
+      "icon": "testing",
+      "kind": "concept",
+      "lessons": []
+    },
+    {
+      "id": "requirements",
+      "title": "Requirements Engineering",
+      "description": "Herausfinden, was die Software können soll.",
+      "icon": "requirements",
+      "kind": "concept",
+      "lessons": []
+    }
+  ]
+}
