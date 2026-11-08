@@ -1,0 +1,63 @@
+{
+  "id": "python-fortgeschritten",
+  "title": "Fortgeschritten",
+  "description": "Datenstrukturen, Fehlerbehandlung und Objektorientierung.",
+  "chapters": [
+    {
+      "id": "python-f1",
+      "title": "Datenstrukturen",
+      "description": "Dictionaries, Tupel, Sets und Comprehensions.",
+      "lessons": [
+        "python/fortgeschritten/f1_01_dictionaries.json",
+        "python/fortgeschritten/f1_02_tupel_sets.json",
+        "python/fortgeschritten/f1_03_comprehensions.json"
+      ],
+      "exam": "python/fortgeschritten/f1_pruefung.json"
+    },
+    {
+      "id": "python-f2",
+      "title": "Fehler & Dateien",
+      "description": "Fehler abfangen und mit Dateien arbeiten.",
+      "lessons": [
+        "python/fortgeschritten/f2_01_exceptions.json",
+        "python/fortgeschritten/f2_02_eigene_exceptions.json",
+        "python/fortgeschritten/f2_03_dateien.json"
+      ],
+      "exam": "python/fortgeschritten/f2_pruefung.json"
+    },
+    {
+      "id": "python-f3",
+      "title": "Module & Pakete",
+      "description": "Code organisieren und Bibliotheken nutzen.",
+      "lessons": [
+        "python/fortgeschritten/f3_01_import.json",
+        "python/fortgeschritten/f3_02_standardbibliothek.json",
+        "python/fortgeschritten/f3_03_pip_venv.json"
+      ],
+      "exam": "python/fortgeschritten/f3_pruefung.json"
+    },
+    {
+      "id": "python-f4",
+      "title": "Objektorientierung",
+      "description": "Klassen, Objekte und Vererbung.",
+      "lessons": [
+        "python/fortgeschritten/f4_01_klassen.json",
+        "python/fortgeschritten/f4_02_methoden_attribute.json",
+        "python/fortgeschritten/f4_03_vererbung.json",
+        "python/fortgeschritten/f4_04_dunder_property.json"
+      ],
+      "exam": "python/fortgeschritten/f4_pruefung.json"
+    },
+    {
+      "id": "python-f5",
+      "title": "Funktionale Werkzeuge",
+      "description": "Lambdas, Generatoren und Dekoratoren.",
+      "lessons": [
+        "python/fortgeschritten/f5_01_lambda_map_filter.json",
+        "python/fortgeschritten/f5_02_iteratoren_generatoren.json",
+        "python/fortgeschritten/f5_03_dekoratoren.json"
+      ],
+      "exam": "python/fortgeschritten/f5_pruefung.json"
+    }
+  ]
+}

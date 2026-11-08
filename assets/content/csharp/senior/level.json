@@ -1,0 +1,37 @@
+{
+  "id": "csharp-senior",
+  "title": "Senior",
+  "description": "Architektur, Qualität und Verantwortung im Team.",
+  "chapters": [
+    {
+      "id": "csharp-s1",
+      "title": "Design Patterns",
+      "description": "Strategy, Factory, Observer, Dependency Injection.",
+      "lessons": []
+    },
+    {
+      "id": "csharp-s2",
+      "title": "Software-Architektur",
+      "description": "Clean Architecture, DDD, Microservices.",
+      "lessons": []
+    },
+    {
+      "id": "csharp-s3",
+      "title": "Performance",
+      "description": "Span<T>, Allokationen, Benchmarking.",
+      "lessons": []
+    },
+    {
+      "id": "csharp-s4",
+      "title": "Web-APIs",
+      "description": "ASP.NET Core und REST.",
+      "lessons": []
+    },
+    {
+      "id": "csharp-s5",
+      "title": "Wartbarkeit & Reviews",
+      "description": "SOLID, Refactoring, technische Schulden.",
+      "lessons": []
+    }
+  ]
+}

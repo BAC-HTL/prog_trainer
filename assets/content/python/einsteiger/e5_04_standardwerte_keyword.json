@@ -1,0 +1,97 @@
+{
+  "id": "python-e5_04_standardwerte_keyword",
+  "title": "Standardwerte und Schlüsselwort-Argumente",
+  "summary": "Parameter mit Standardwerten versehen und Argumente beim Namen übergeben.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Manchmal hat ein Parameter einen Wert, der fast immer passt. Dann kannst du ihm einen Standardwert geben. Wird beim Aufruf kein Argument dafür übergeben, nimmt Python den Standardwert."
+    },
+    {
+      "type": "code",
+      "content": "def begruessen(name, gruss=\"Servus\"):\n    print(f\"{gruss}, {name}!\")\n\nbegruessen(\"Lena\")              # Servus, Lena!\nbegruessen(\"Tom\", \"Guten Morgen\")  # Guten Morgen, Tom!"
+    },
+    {
+      "type": "text",
+      "content": "Regel: Parameter mit Standardwert müssen nach den Parametern ohne Standardwert stehen. def f(a=1, b): ist ein SyntaxError – Python wüsste sonst nicht, welches Argument zu welchem Parameter gehört."
+    },
+    {
+      "type": "text",
+      "content": "Statt Argumente nur nach ihrer Reihenfolge zuzuordnen, kannst du sie auch beim Namen nennen: parameter=wert. Das sind Schlüsselwort-Argumente (keyword arguments). Die Reihenfolge ist dann egal, und der Aufruf wird viel lesbarer."
+    },
+    {
+      "type": "code",
+      "content": "def zeugnis_zeile(fach, note, kommentar=\"\"):\n    print(f\"{fach}: {note} {kommentar}\")\n\nzeugnis_zeile(\"Mathe\", 2)\nzeugnis_zeile(note=1, fach=\"Englisch\")\nzeugnis_zeile(\"POS\", 1, kommentar=\"(super!)\")"
+    },
+    {
+      "type": "text",
+      "content": "Du kennst das schon von eingebauten Funktionen! print() hat die Parameter sep (Trennzeichen zwischen den Werten, Standard: Leerzeichen) und end (was am Ende ausgegeben wird, Standard: Zeilenumbruch). Auch sort(reverse=True) ist ein Schlüsselwort-Argument."
+    },
+    {
+      "type": "code",
+      "content": "print(\"10\", \"11\", \"2026\", sep=\".\")   # 10.11.2026\n\nfor i in range(3):\n    print(i, end=\" \")\nprint()                                # Zeilenumbruch nachholen\n# Ausgabe: 0 1 2"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Anfängerfehler: Nach einem Schlüsselwort-Argument darf kein Argument ohne Namen mehr folgen. zeugnis_zeile(fach=\"Mathe\", 2) ist ein SyntaxError. Erst die Positions-Argumente, dann die Schlüsselwort-Argumente!"
+    },
+    {
+      "type": "text",
+      "content": "Ein praktisches Beispiel: Eine Funktion, die einen Fortschrittsbalken als Text erzeugt, etwa für die Lebensanzeige in einem Spiel. Standardwerte machen den einfachen Fall kurz, Schlüsselwort-Argumente den speziellen Fall verständlich:"
+    },
+    {
+      "type": "code",
+      "content": "def balken(wert, zeichen=\"#\", breite=10):\n    gefuellt = zeichen * wert\n    leer = \".\" * (breite - wert)\n    return f\"[{gefuellt}{leer}]\"\n\nprint(balken(3))                  # [###.......]\nprint(balken(4, breite=5))        # [####.]\nprint(balken(2, zeichen=\"*\"))     # [**........]"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def potenz(basis, exponent=2):\n    return basis ** exponent\n\nprint(potenz(3))",
+      "options": [
+        "9",
+        "3",
+        "27",
+        "Fehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "Für exponent wird kein Argument übergeben, also gilt der Standardwert 2: 3 ** 2 = 9."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(\"Wien\", \"Graz\", \"Linz\", sep=\"-\", end=\"!\")",
+      "options": [
+        "Wien-Graz-Linz",
+        "Wien Graz Linz-",
+        "Wien, Graz, Linz",
+        "Wien-Graz-Linz!"
+      ],
+      "correctIndex": 3,
+      "explanation": "sep=\"-\" setzt einen Bindestrich zwischen die Werte, end=\"!\" ersetzt den Zeilenumbruch am Ende durch ein Rufzeichen."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "def info(alter=16, name):\n    print(f\"{name} ist {alter}\")",
+      "options": [
+        "Standardwerte dürfen keine Zahlen sein",
+        "Ein Parameter ohne Standardwert (name) darf nicht nach einem mit Standardwert stehen – SyntaxError",
+        "f-Strings funktionieren nicht in Funktionen",
+        "Der Code ist korrekt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Parameter mit Standardwert müssen am Ende stehen. Richtig wäre: def info(name, alter=16)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def kosten(preis, menge=1, versand=0):\n    return preis * menge + versand\n\nprint(f\"Kosten: {kosten(menge=2, preis=10)}\")",
+      "options": [
+        "Kosten: 15",
+        "Kosten: 25",
+        "Kosten: 20",
+        "Kosten: 13"
+      ],
+      "correctIndex": 2,
+      "explanation": "menge=2 und preis=10 werden beim Namen übergeben, die Reihenfolge ist egal. versand behält den Standardwert 0. 2 · 10 + 0 = 20."
+    }
+  ]
+}

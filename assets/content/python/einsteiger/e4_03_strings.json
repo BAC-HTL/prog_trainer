@@ -1,0 +1,97 @@
+{
+  "id": "python-e4_03_strings",
+  "title": "Strings genauer",
+  "summary": "Auf einzelne Zeichen zugreifen und Text mit String-Methoden verarbeiten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein String ist eine Folge von Zeichen – fast wie eine Liste aus Buchstaben. Deshalb funktionieren Index, len(), in und die for-Schleife auch bei Strings."
+    },
+    {
+      "type": "code",
+      "content": "wort = \"Python\"\nprint(wort[0])     # P\nprint(wort[-1])    # n\nprint(len(wort))   # 6\nprint(\"th\" in wort)  # True\n\nfor zeichen in \"Hi!\":\n    print(zeichen)"
+    },
+    {
+      "type": "text",
+      "content": "Ein wichtiger Unterschied zu Listen: Strings sind unveränderlich. Du kannst kein einzelnes Zeichen austauschen – wort[0] = \"J\" führt zu einem TypeError. Stattdessen baust du einen neuen String und speicherst ihn in der Variable."
+    },
+    {
+      "type": "code",
+      "content": "wort = \"Python\"\n# wort[0] = \"J\"   # TypeError!\nwort = \"J\" + wort[1:]   # [1:] lernst du in der nächsten Lektion\nprint(wort)  # Jython"
+    },
+    {
+      "type": "text",
+      "content": "Strings haben viele nützliche Methoden:\n• upper() / lower() – alles groß bzw. klein\n• strip() – Leerzeichen am Anfang und Ende entfernen\n• replace(alt, neu) – Textteile ersetzen\n• count(x) – wie oft kommt x vor?\n• find(x) – Position von x (oder -1, wenn nicht gefunden)\n• startswith(x) / endswith(x) – beginnt bzw. endet der Text mit x?"
+    },
+    {
+      "type": "code",
+      "content": "eingabe = \"  JA  \"\nantwort = eingabe.strip().lower()\nprint(antwort)               # ja\nprint(antwort == \"ja\")       # True\n\nsatz = \"Ich mag Java\"\nprint(satz.replace(\"Java\", \"Python\"))  # Ich mag Python\nprint(satz.count(\"a\"))       # 3\nprint(satz.find(\"mag\"))      # 4\nprint(satz.startswith(\"Ich\"))  # True"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Anfängerfehler: Weil Strings unveränderlich sind, ändern auch die Methoden den Original-String nicht – sie liefern einen neuen. name.upper() allein bewirkt also nichts. Du musst das Ergebnis speichern: name = name.upper()."
+    },
+    {
+      "type": "code",
+      "content": "name = \"anna\"\nname.upper()\nprint(name)   # anna – unverändert!\nname = name.upper()\nprint(name)   # ANNA"
+    },
+    {
+      "type": "text",
+      "content": "Zwei Methoden verbinden Strings und Listen: split() zerlegt einen Text in eine Liste (standardmäßig an Leerzeichen), und \"trenner\".join(liste) fügt eine Liste von Strings zu einem Text zusammen. So kannst du z. B. mehrere Zahlen in einer Zeile einlesen."
+    },
+    {
+      "type": "code",
+      "content": "zeile = input(\"Zahlen: \")      # z. B. 4 8 15\nteile = zeile.split()\nprint(teile)                     # ['4', '8', '15']\nsumme = 0\nfor t in teile:\n    summe += int(t)\nprint(summe)                     # 27\n\nprint(\"-\".join([\"10\", \"11\", \"2026\"]))  # 10-11-2026\nprint(\"a,b,c\".split(\",\"))              # ['a', 'b', 'c']"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "text = \"Hallo Welt\"\ntext.upper()\nprint(text)",
+      "options": [
+        "hallo welt",
+        "HALLO WELT",
+        "Hallo Welt",
+        "Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "upper() liefert einen neuen String, verändert text aber nicht. Weil das Ergebnis nicht gespeichert wird, bleibt text unverändert."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "wort = \"hallo\"\nwort[0] = \"H\"\nprint(wort)",
+      "options": [
+        "Strings sind unveränderlich – wort[0] = \"H\" löst einen TypeError aus",
+        "Der Index muss bei 1 beginnen",
+        "Es fehlen Klammern bei print",
+        "Strings dürfen keine Kleinbuchstaben enthalten"
+      ],
+      "correctIndex": 0,
+      "explanation": "Einzelne Zeichen eines Strings kann man nicht ersetzen. Richtig wäre z. B. wort = \"H\" + wort[1:] oder wort.replace(\"h\", \"H\")."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "staedte = \"Wien;Graz;Linz\".split(\";\")\nprint(\",\".join(staedte))",
+      "options": [
+        "['Wien Graz Linz']",
+        "['Wien', 'Graz', 'Linz']",
+        "3",
+        "Wien,Graz,Linz"
+      ],
+      "correctIndex": 3,
+      "explanation": "split(\";\") zerlegt den Text an jedem Strichpunkt in eine Liste. \",\".join(...) fügt die Teile mit Beistrichen wieder zusammen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "anzahl = 0\nfor z in \"banane\":\n    if z in \"aeiou\":\n        anzahl += 1\nprint(anzahl)",
+      "options": [
+        "2",
+        "3",
+        "1",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Schleife zählt alle Zeichen, die in \"aeiou\" vorkommen. In \"banane\" sind das a, a und e – also 3."
+    }
+  ]
+}

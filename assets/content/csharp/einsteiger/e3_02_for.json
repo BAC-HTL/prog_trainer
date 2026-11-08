@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e3_02_for",
+  "title": "Die for-Schleife",
+  "summary": "Mit der for-Schleife zählen, in Schritten vor- und rückwärts laufen und Werte aufsummieren.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wenn du vorher weißt, wie oft etwas passieren soll, ist die for-Schleife die beste Wahl. Start, Bedingung und Schritt stehen dabei kompakt in einer einzigen Zeile:"
+    },
+    {
+      "type": "code",
+      "content": "for (int i = 1; i <= 5; i++)\n{\n    Console.WriteLine($\"Runde {i}\");\n}\n// Ausgabe:\n// Runde 1\n// Runde 2\n// Runde 3\n// Runde 4\n// Runde 5"
+    },
+    {
+      "type": "text",
+      "content": "Die drei Teile in den runden Klammern werden durch Strichpunkte getrennt:\n1. int i = 1 – Start: läuft genau einmal ganz am Anfang.\n2. i <= 5 – Bedingung: wird vor jedem Durchlauf geprüft. Ist sie false, endet die Schleife.\n3. i++ – Schritt: läuft nach jedem Durchlauf.\n\nDie Zählvariable heißt traditionell i, du kannst sie aber nennen, wie du willst."
+    },
+    {
+      "type": "text",
+      "content": "Der Schritt muss nicht immer i++ sein. Mit i += 5 zählst du in Fünferschritten, mit i-- rückwärts. Console.Write() hilft, alles in eine Zeile zu schreiben:"
+    },
+    {
+      "type": "code",
+      "content": "for (int i = 0; i <= 20; i += 5)\n{\n    Console.Write($\"{i} \");\n}\nConsole.WriteLine();\n\nfor (int i = 3; i >= 1; i--)\n{\n    Console.Write($\"{i}... \");\n}\nConsole.WriteLine(\"Los!\");\n// Ausgabe:\n// 0 5 10 15 20\n// 3... 2... 1... Los!"
+    },
+    {
+      "type": "text",
+      "content": "Ein typisches Muster: Vor der Schleife legst du eine Variable mit 0 an und addierst in jedem Durchlauf etwas dazu. So kannst du zum Beispiel den Gesamtpreis eines Einkaufs berechnen:"
+    },
+    {
+      "type": "code",
+      "content": "Console.Write(\"Wie viele Artikel? \");\nint anzahl = int.Parse(Console.ReadLine());\nint summe = 0;\n\nfor (int i = 1; i <= anzahl; i++)\n{\n    Console.Write($\"Preis von Artikel {i} in Euro: \");\n    summe += int.Parse(Console.ReadLine());\n}\nConsole.WriteLine($\"Gesamt: {summe} Euro\");\n// Eingaben: 3, 4, 2, 10\n// Ausgabe (nach den Eingaben): Gesamt: 16 Euro"
+    },
+    {
+      "type": "text",
+      "content": "Vorsicht vor dem „Um-eins-daneben“-Fehler (englisch: off-by-one). Ob die Schleife bei 0 oder 1 startet und ob du < oder <= schreibst, entscheidet über die Anzahl der Durchläufe:\n• for (int i = 0; i < 5; i++) – 5 Durchläufe: 0, 1, 2, 3, 4\n• for (int i = 1; i <= 5; i++) – 5 Durchläufe: 1, 2, 3, 4, 5\n• for (int i = 0; i <= 5; i++) – 6 Durchläufe: 0 bis 5!"
+    },
+    {
+      "type": "text",
+      "content": "Die Zählvariable gibt es nur innerhalb der Schleife. Nach der schließenden } ist sie verschwunden. Brauchst du ein Ergebnis danach noch, speichere es in einer Variable, die du vor der Schleife anlegst – so wie summe im Einkaufsbeispiel."
+    },
+    {
+      "type": "code",
+      "content": "int zahl = 7;\n\nfor (int i = 1; i <= 5; i++)\n{\n    Console.WriteLine($\"{i} x {zahl} = {i * zahl}\");\n}\n// Console.WriteLine(i);   // Fehler! i existiert hier nicht mehr\n// Ausgabe:\n// 1 x 7 = 7\n// 2 x 7 = 14\n// 3 x 7 = 21\n// 4 x 7 = 28\n// 5 x 7 = 35"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for (int i = 0; i < 10; i += 3)\n{\n    Console.Write($\"{i} \");\n}",
+      "options": [
+        "0 3 6 9",
+        "0 3 6 9 12",
+        "3 6 9",
+        "0 3 6"
+      ],
+      "correctIndex": 0,
+      "explanation": "i startet bei 0 und wächst in Dreierschritten: 0, 3, 6, 9. Danach wäre i 12 – und 12 < 10 ist false, also endet die Schleife."
+    },
+    {
+      "question": "Wie oft wird Hallo ausgegeben?",
+      "code": "for (int i = 1; i < 10; i++)\n{\n    Console.WriteLine(\"Hallo\");\n}",
+      "options": [
+        "10-mal",
+        "11-mal",
+        "1-mal",
+        "9-mal"
+      ],
+      "correctIndex": 3,
+      "explanation": "i läuft von 1 bis 9. Bei i = 10 ist i < 10 false. Das sind 9 Durchläufe. Für 10 Durchläufe bräuchte man i <= 10 oder einen Start bei 0."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "for (int i = 0; i < 3; i++)\n{\n    Console.WriteLine(\"Durchlauf\");\n}\nConsole.WriteLine(i);",
+      "options": [
+        "In der for-Zeile müssen Beistriche statt Strichpunkten stehen",
+        "i++ ist in einer for-Schleife nicht erlaubt",
+        "i existiert nur innerhalb der Schleife und kann danach nicht ausgegeben werden",
+        "Console.WriteLine darf nicht in einer Schleife stehen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Zählvariable i wird in der for-Zeile angelegt und gilt nur innerhalb der Schleife. Nach der } kennt C# den Namen i nicht mehr."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int summe = 0;\n\nfor (int i = 1; i <= 4; i++)\n{\n    summe += i * i;\n}\nConsole.WriteLine(summe);",
+      "options": [
+        "10",
+        "16",
+        "30",
+        "14"
+      ],
+      "correctIndex": 2,
+      "explanation": "Es werden die Quadratzahlen von 1 bis 4 addiert: 1 + 4 + 9 + 16 = 30."
+    }
+  ]
+}

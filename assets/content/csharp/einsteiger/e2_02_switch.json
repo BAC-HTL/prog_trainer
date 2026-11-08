@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e2_02_switch",
+  "title": "Die switch-Anweisung",
+  "summary": "Eine Variable mit switch, case, break und default übersichtlich mit vielen festen Werten vergleichen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Stell dir vor, du willst eine Zahl von 1 bis 7 in einen Wochentag umwandeln. Mit if und else if bräuchtest du sieben fast gleiche Bedingungen. Wenn du eine Variable mit vielen festen Werten vergleichst, ist die switch-Anweisung übersichtlicher:"
+    },
+    {
+      "type": "code",
+      "content": "int tag = 3;\n\nswitch (tag)\n{\n    case 1:\n        Console.WriteLine(\"Montag\");\n        break;\n    case 2:\n        Console.WriteLine(\"Dienstag\");\n        break;\n    case 3:\n        Console.WriteLine(\"Mittwoch\");\n        break;\n    default:\n        Console.WriteLine(\"Anderer Tag\");\n        break;\n}\n// Ausgabe: Mittwoch"
+    },
+    {
+      "type": "text",
+      "content": "So funktioniert switch:\n• In den runden Klammern nach switch steht der Wert, der geprüft wird.\n• Jedes case nennt einen möglichen Wert, gefolgt von einem Doppelpunkt (:).\n• Passt der Wert, läuft der Code nach diesem case.\n• break beendet den switch – danach geht es nach der schließenden } weiter.\n• default ist der „Sonst“-Fall: Er läuft, wenn kein case passt. default ist optional.\n\nTypischer Anfängerfehler: das break vergessen. In C# muss jeder case-Block mit break enden. Fehlt es, lässt sich das Programm gar nicht kompilieren – der Compiler meldet, dass die Steuerung nicht von einem case in den nächsten „durchfallen“ darf. (In C oder Java würde das Programm einfach im nächsten case weiterlaufen – C# verbietet das, um Fehler zu vermeiden.)"
+    },
+    {
+      "type": "code",
+      "content": "int note = 1;\n\nswitch (note)\n{\n    case 1:\n        Console.WriteLine(\"Sehr gut\");\n        // Fehler! Hier fehlt break;\n    case 2:\n        Console.WriteLine(\"Gut\");\n        break;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Sollen mehrere Werte dasselbe bewirken, schreibst du die case-Zeilen einfach direkt untereinander. Das nennt man case-Gruppierung. Zwischen den gruppierten case-Zeilen darf kein Code stehen:"
+    },
+    {
+      "type": "code",
+      "content": "int monat = 4;\n\nswitch (monat)\n{\n    case 1:\n    case 3:\n    case 5:\n    case 7:\n    case 8:\n    case 10:\n    case 12:\n        Console.WriteLine(\"31 Tage\");\n        break;\n    case 4:\n    case 6:\n    case 9:\n    case 11:\n        Console.WriteLine(\"30 Tage\");\n        break;\n    case 2:\n        Console.WriteLine(\"28 oder 29 Tage\");\n        break;\n    default:\n        Console.WriteLine(\"Diesen Monat gibt es nicht!\");\n        break;\n}\n// Ausgabe: 30 Tage"
+    },
+    {
+      "type": "text",
+      "content": "switch funktioniert auch mit strings – praktisch für Menüs und Befehle. Wie beim Vergleich mit == zählt die Groß- und Kleinschreibung.\n\nWichtig: Nach case dürfen nur feste Werte stehen (z. B. 3 oder \"start\"), keine Variablen. Und jeder Wert darf nur einmal vorkommen. Für Bereiche wie punkte >= 50 bleibt if/else if meist die bessere Wahl."
+    },
+    {
+      "type": "code",
+      "content": "Console.Write(\"Befehl (start/stopp/hilfe): \");\nstring befehl = Console.ReadLine();\n\nswitch (befehl)\n{\n    case \"start\":\n        Console.WriteLine(\"Das Spiel beginnt!\");\n        break;\n    case \"stopp\":\n        Console.WriteLine(\"Spiel beendet.\");\n        break;\n    case \"hilfe\":\n        Console.WriteLine(\"Tippe start oder stopp.\");\n        break;\n    default:\n        Console.WriteLine($\"Unbekannter Befehl: {befehl}\");\n        break;\n}\n// Eingabe: Start\n// Ausgabe: Unbekannter Befehl: Start"
+    },
+    {
+      "type": "text",
+      "content": "Vorschau: In modernem C# gibt es zusätzlich den switch-Ausdruck. Er liefert direkt einen Wert und ist dadurch sehr kompakt. Das _ steht dabei für „alles andere“, also wie default. Du lernst ihn später genauer kennen – hier nur ein erster Blick:"
+    },
+    {
+      "type": "code",
+      "content": "int tag = 2;\nstring name = tag switch\n{\n    1 => \"Montag\",\n    2 => \"Dienstag\",\n    _ => \"Anderer Tag\"\n};\nConsole.WriteLine(name);\n// Ausgabe: Dienstag"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int note = 3;\n\nswitch (note)\n{\n    case 1:\n    case 2:\n        Console.WriteLine(\"Super\");\n        break;\n    case 3:\n    case 4:\n        Console.WriteLine(\"Passt\");\n        break;\n    default:\n        Console.WriteLine(\"Nicht so gut\");\n        break;\n}",
+      "options": [
+        "Super",
+        "Passt",
+        "Nicht so gut",
+        "Super und Passt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Wert 3 passt zu case 3, der zusammen mit case 4 gruppiert ist. Deshalb wird Passt ausgegeben. Danach beendet break den switch."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "string farbe = \"rot\";\n\nswitch (farbe)\n{\n    case \"rot\":\n        Console.WriteLine(\"Stehen bleiben!\");\n    case \"grün\":\n        Console.WriteLine(\"Gehen!\");\n        break;\n}",
+      "options": [
+        "Nach switch (farbe) fehlt ein Strichpunkt",
+        "strings dürfen nicht in einem switch verwendet werden",
+        "Nach dem Code von case \"rot\" fehlt break",
+        "Der default-Fall fehlt"
+      ],
+      "correctIndex": 2,
+      "explanation": "In C# muss jeder case-Block mit break enden. Ohne break würde die Steuerung in case \"grün\" „durchfallen“ – das verbietet der Compiler. default ist dagegen optional."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string antwort = \"Ja\";\n\nswitch (antwort)\n{\n    case \"ja\":\n        Console.WriteLine(\"Bestätigt\");\n        break;\n    case \"nein\":\n        Console.WriteLine(\"Abgebrochen\");\n        break;\n    default:\n        Console.WriteLine(\"Ungültige Eingabe\");\n        break;\n}",
+      "options": [
+        "Bestätigt",
+        "Abgebrochen",
+        "Bestätigt und Abgebrochen",
+        "Ungültige Eingabe"
+      ],
+      "correctIndex": 3,
+      "explanation": "\"Ja\" mit großem J ist nicht dasselbe wie \"ja\". Weil kein case genau passt, läuft der default-Fall."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int zahl = 5;\n\nswitch (zahl)\n{\n    case 1:\n        Console.WriteLine(\"Eins\");\n        break;\n    case 3:\n        Console.WriteLine(\"Drei\");\n        break;\n}\nConsole.WriteLine(\"Ende\");",
+      "options": [
+        "Ende",
+        "Drei und dann Ende",
+        "Nichts",
+        "Fehler beim Kompilieren, weil default fehlt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Keiner der case-Werte passt zu 5, und einen default-Fall gibt es nicht. Der switch macht also gar nichts – das ist erlaubt. Danach läuft das Programm normal weiter und gibt Ende aus."
+    }
+  ]
+}

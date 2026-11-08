@@ -1,0 +1,96 @@
+{
+  "id": "python-e5_01_funktionen",
+  "title": "Funktionen",
+  "summary": "Mit def eigene Funktionen schreiben und Code so wiederverwendbar machen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Du kennst schon viele Funktionen: print(), input(), len(), int(). Jetzt schreibst du deine eigenen! Eine Funktion ist ein benannter Codeblock, den du beliebig oft aufrufen kannst. So musst du gleichen Code nicht mehrfach kopieren – und wenn du etwas ändern willst, änderst du es nur an einer Stelle."
+    },
+    {
+      "type": "text",
+      "content": "Eine Funktion definierst du mit def, dem Namen, runden Klammern und einem Doppelpunkt. Der eingerückte Block darunter ist der Funktionskörper. Für Funktionsnamen gelten dieselben Regeln wie für Variablen: klein, mit Unterstrichen, und am besten ein Verb, das sagt, was die Funktion tut."
+    },
+    {
+      "type": "code",
+      "content": "def begruessen():\n    print(\"Hallo!\")\n    print(\"Willkommen im Kurs.\")\n\nbegruessen()\nbegruessen()"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: def alleine führt noch nichts aus – es merkt sich nur, was die Funktion tun soll. Erst der Aufruf mit Namen und Klammern, z. B. begruessen(), führt den Code aus. Vergisst du die Klammern, passiert gar nichts."
+    },
+    {
+      "type": "text",
+      "content": "Typischer Anfängerfehler: Eine Funktion muss definiert sein, bevor sie aufgerufen wird. Python liest dein Programm von oben nach unten. Steht der Aufruf über dem def, gibt es einen NameError: name '...' is not defined."
+    },
+    {
+      "type": "code",
+      "content": "trennlinie()   # NameError: name 'trennlinie' is not defined\n\ndef trennlinie():\n    print(\"-\" * 20)"
+    },
+    {
+      "type": "text",
+      "content": "Funktionen können andere Funktionen aufrufen. So zerlegst du ein großes Programm in kleine, übersichtliche Bausteine. Hier baut eine Funktion ein kleines Menü aus mehreren Teilen:"
+    },
+    {
+      "type": "code",
+      "content": "def trennlinie():\n    print(\"-\" * 20)\n\ndef menue_anzeigen():\n    trennlinie()\n    print(\"1 – Neues Spiel\")\n    print(\"2 – Beenden\")\n    trennlinie()\n\nmenue_anzeigen()"
+    },
+    {
+      "type": "text",
+      "content": "Funktionen lassen sich gut mit Schleifen kombinieren. Der Aufruf in der Schleife führt den Funktionskörper bei jedem Durchlauf erneut aus:"
+    },
+    {
+      "type": "code",
+      "content": "def stern_zeile():\n    print(\"* * *\")\n\nfor i in range(3):\n    stern_zeile()"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def hallo():\n    print(\"Hi\")",
+      "options": [
+        "Hi",
+        "Nichts",
+        "Hi\nHi",
+        "Fehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Funktion wird nur definiert, aber nie aufgerufen. Ohne Aufruf hallo() wird der Funktionskörper nicht ausgeführt."
+    },
+    {
+      "question": "Finde den Fehler!",
+      "code": "zeige_punkte()\n\ndef zeige_punkte():\n    print(\"Punkte: 10\")",
+      "options": [
+        "def muss großgeschrieben werden",
+        "Die Funktion wird aufgerufen, bevor sie definiert ist – NameError",
+        "Funktionen dürfen kein print enthalten",
+        "Der Funktionsname darf keinen Unterstrich enthalten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Python arbeitet von oben nach unten. Beim Aufruf in Zeile 1 kennt Python die Funktion noch nicht. Der Aufruf muss unter das def."
+    },
+    {
+      "question": "Wie oft wird \"Tor!\" ausgegeben?",
+      "code": "def jubeln():\n    print(\"Tor!\")\n    print(\"Tor!\")\n\njubeln()\njubeln()",
+      "options": [
+        "1-mal",
+        "2-mal",
+        "3-mal",
+        "4-mal"
+      ],
+      "correctIndex": 3,
+      "explanation": "jubeln() gibt zweimal \"Tor!\" aus und wird zweimal aufgerufen: 2 · 2 = 4."
+    },
+    {
+      "question": "Was ist ein Vorteil von Funktionen?",
+      "options": [
+        "Programme laufen dadurch immer schneller",
+        "Man braucht keine Variablen mehr",
+        "Code muss nicht kopiert werden und Änderungen erfolgen nur an einer Stelle",
+        "Funktionen verhindern alle Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Funktionen machen Code wiederverwendbar und übersichtlich. Wird etwas geändert, passt man nur die Funktion an – nicht jede kopierte Stelle."
+    }
+  ]
+}

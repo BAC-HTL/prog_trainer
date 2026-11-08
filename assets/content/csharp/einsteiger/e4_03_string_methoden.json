@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e4_03_string_methoden",
+  "title": "String-Methoden",
+  "summary": "Texte mit ToUpper, Trim, Contains, IndexOf, Substring, Replace und Split bearbeiten und durchsuchen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Strings bringen viele fertige Methoden mit, die du mit einem Punkt aufrufst. Die wichtigste Regel vorweg: Weil Strings unveränderlich sind, ändert keine dieser Methoden den ursprünglichen string. Sie liefern immer einen neuen string zurück, den du speichern oder ausgeben musst."
+    },
+    {
+      "type": "code",
+      "content": "string name = \"Lena\";\nname.ToUpper();               // Ergebnis wird weggeworfen!\nConsole.WriteLine(name);      // Lena\n\nname = name.ToUpper();        // Ergebnis speichern\nConsole.WriteLine(name);      // LENA\nConsole.WriteLine(name.ToLower());   // lena"
+    },
+    {
+      "type": "text",
+      "content": "Bei Benutzereingaben sind Trim und ToLower Gold wert. Trim entfernt Leerzeichen am Anfang und am Ende. Gemeinsam mit ToLower ist dann egal, ob jemand „ja“, „JA“ oder „ Ja “ eintippt. Methoden kannst du auch hintereinander aufrufen:"
+    },
+    {
+      "type": "code",
+      "content": "Console.Write(\"Willst du weiterspielen? \");\nstring antwort = Console.ReadLine().Trim().ToLower();\n\nif (antwort == \"ja\")\n{\n    Console.WriteLine(\"Auf geht's!\");\n}\nelse\n{\n    Console.WriteLine(\"Bis zum nächsten Mal.\");\n}\n// Eingabe:  JA\n// Ausgabe: Auf geht's!"
+    },
+    {
+      "type": "text",
+      "content": "Zum Suchen in Texten gibt es:\n• Contains(\"…\") – kommt der Text vor? (true/false)\n• StartsWith(\"…\") und EndsWith(\"…\") – beginnt bzw. endet er damit?\n• IndexOf(\"…\") – an welchem Index beginnt der Text? Wird nichts gefunden, ist das Ergebnis -1."
+    },
+    {
+      "type": "code",
+      "content": "string mail = \"anna.huber@schule.at\";\n\nConsole.WriteLine(mail.Contains(\"@\"));      // True\nConsole.WriteLine(mail.EndsWith(\".at\"));    // True\nConsole.WriteLine(mail.StartsWith(\"Anna\")); // False (großes A!)\nConsole.WriteLine(mail.IndexOf(\"@\"));       // 10\nConsole.WriteLine(mail.IndexOf(\"#\"));       // -1"
+    },
+    {
+      "type": "text",
+      "content": "Mit Substring schneidest du einen Teil heraus: Substring(start, laenge) liefert laenge Zeichen ab dem Index start. Lässt du die Länge weg, bekommst du alles bis zum Ende. Achtung: Ragt der Bereich über das Ende hinaus, stürzt das Programm mit einer ArgumentOutOfRangeException ab.\n\nZusammen mit IndexOf kannst du so z. B. den Benutzernamen aus einer E-Mail-Adresse holen. Replace ersetzt Textteile:"
+    },
+    {
+      "type": "code",
+      "content": "string mail = \"anna.huber@schule.at\";\nint at = mail.IndexOf(\"@\");\n\nConsole.WriteLine(mail.Substring(0, at));    // anna.huber\nConsole.WriteLine(mail.Substring(at + 1));   // schule.at\nConsole.WriteLine(mail.Replace(\".\", \" \"));   // anna huber@schule at"
+    },
+    {
+      "type": "text",
+      "content": "Split zerlegt einen string an einem Trennzeichen und liefert ein string-Array. Das Gegenstück ist string.Join, das ein Array wieder zu einem string zusammenfügt. Das ist ideal, wenn jemand mehrere Zahlen in eine Zeile eintippt.\n\nAchtung: Split liefert strings, keine Zahlen. Zum Rechnen musst du jedes Teil mit int.Parse umwandeln – sonst hängt + die Texte nur aneinander."
+    },
+    {
+      "type": "code",
+      "content": "Console.Write(\"Gib Zahlen ein (mit Leerzeichen getrennt): \");\nstring[] teile = Console.ReadLine().Split(' ');\nint summe = 0;\n\nforeach (string teil in teile)\n{\n    summe += int.Parse(teil);\n}\n\nConsole.WriteLine($\"{teile.Length} Zahlen, Summe {summe}\");\nConsole.WriteLine(string.Join(\" + \", teile));\n// Eingabe:  4 8 15\n// Ausgabe:\n// 3 Zahlen, Summe 27\n// 4 + 8 + 15"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string s = \"  Hallo Welt  \";\ns.Trim();\nConsole.WriteLine(s.Length);",
+      "options": [
+        "10",
+        "14",
+        "12",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "s.Trim() liefert einen neuen string ohne die Leerzeichen, aber das Ergebnis wird nicht gespeichert. s selbst bleibt unverändert und hat 14 Zeichen (2 + 10 + 2). Richtig wäre s = s.Trim();"
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string datum = \"2026-11-08\";\nConsole.WriteLine(datum.Substring(5, 2));",
+      "options": [
+        "11",
+        "-1",
+        "11-",
+        "2026"
+      ],
+      "correctIndex": 0,
+      "explanation": "Substring(5, 2) liefert 2 Zeichen ab Index 5. Die Indizes 0–3 sind „2026“, Index 4 ist der Bindestrich, und ab Index 5 steht „11“."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string[] teile = \"rot,grün,,blau\".Split(',');\nConsole.WriteLine(teile.Length);",
+      "options": [
+        "3",
+        "5",
+        "4",
+        "1"
+      ],
+      "correctIndex": 2,
+      "explanation": "Split trennt an jedem Komma. Zwischen den zwei Kommas nach „grün“ steht nichts, daraus wird ein leerer string. Das Array enthält also „rot“, „grün“, „“ und „blau“ – 4 Elemente."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert bei diesem Code?",
+      "code": "string n = \"Max\";\nConsole.WriteLine(n.Substring(1, 3));",
+      "options": [
+        "Es wird „ax“ ausgegeben",
+        "Es wird „ax“ und ein Leerzeichen ausgegeben",
+        "Der Compiler meldet einen Fehler, weil die Zahlen falsch herum stehen",
+        "Das Programm stürzt mit einer ArgumentOutOfRangeException ab"
+      ],
+      "correctIndex": 3,
+      "explanation": "Substring(1, 3) will 3 Zeichen ab Index 1 – „Max“ hat ab dort aber nur noch 2 Zeichen. Der Compiler merkt das nicht, erst beim Ausführen stürzt das Programm ab. Richtig wäre n.Substring(1, 2) oder n.Substring(1)."
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "id": "csharp-f5_01_delegates_lambdas",
+  "title": "Delegates und Lambdas",
+  "summary": "Methoden in Variablen speichern und übergeben – mit Func, Action und der kurzen Lambda-Schreibweise =>.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher waren Variablen für Daten da: Zahlen, Texte, Objekte. In C# kannst du aber auch eine Methode in einer Variable speichern. Der Typ einer solchen Variable heißt Delegate. Stell ihn dir wie eine Fernbedienung vor: Du kannst sie herumreichen, und wer sie hat, kann die Methode auslösen.\n\nDu könntest mit dem Schlüsselwort delegate eigene Delegate-Typen definieren. In der Praxis verwendet man aber fast immer die fertigen Typen Func und Action."
+    },
+    {
+      "type": "code",
+      "content": "static int Verdopple(int x)\n{\n    return x * 2;\n}\n\nFunc<int, int> f = Verdopple;   // Methode merken – ohne ()!\nConsole.WriteLine(f(5));\nConsole.WriteLine(f(21));\n// Ausgabe:\n// 10\n// 42"
+    },
+    {
+      "type": "text",
+      "content": "So liest du die Typen:\n• Func<int, int> – nimmt einen int und liefert einen int. Bei Func ist der letzte Typ in den spitzen Klammern immer der Rückgabetyp.\n• Func<int, int, bool> – nimmt zwei ints und liefert einen bool.\n• Func<string> – nimmt nichts und liefert einen string.\n• Action<string> – nimmt einen string und liefert nichts (void).\n• Action – nimmt nichts und liefert nichts.\n\nAchtung: f = Verdopple; speichert die Methode. f = Verdopple(5); würde sie sofort aufrufen und versuchen, das Ergebnis 10 zu speichern – das ist ein Fehler."
+    },
+    {
+      "type": "text",
+      "content": "Für jede Kleinigkeit eine eigene Methode zu schreiben ist mühsam. Deshalb gibt es Lambda-Ausdrücke: Methoden ohne Namen, direkt dort geschrieben, wo du sie brauchst. Links vom Pfeil => stehen die Parameter, rechts das Ergebnis.\n\nRegeln für Lambdas:\n• Ein Parameter: Klammern sind optional (x => ...).\n• Kein oder mehrere Parameter: Klammern sind Pflicht (() => ..., (a, b) => ...).\n• Braucht die Lambda mehrere Anweisungen, schreibst du geschwungene Klammern und ein return – genau wie in einer normalen Methode."
+    },
+    {
+      "type": "code",
+      "content": "Func<int, int> quadrat = x => x * x;\nFunc<int, int, int> plus = (a, b) => a + b;\nFunc<string, bool> istLang = s => s.Length > 5;\nAction<string> gruesse = name => Console.WriteLine($\"Hallo {name}!\");\n\nConsole.WriteLine(quadrat(4));\nConsole.WriteLine(plus(3, 4));\nConsole.WriteLine(istLang(\"Schule\"));\ngruesse(\"Mia\");\n// Ausgabe:\n// 16\n// 7\n// True\n// Hallo Mia!"
+    },
+    {
+      "type": "code",
+      "content": "Func<int, string> bewerte = punkte =>\n{\n    if (punkte >= 50)\n        return \"bestanden\";\n    return \"nicht bestanden\";\n};\nConsole.WriteLine(bewerte(73));\n// Ausgabe: bestanden"
+    },
+    {
+      "type": "text",
+      "content": "Richtig stark wird das, wenn du Funktionen an Methoden übergibst. Die Methode legt den Ablauf fest, der Aufrufer entscheidet, was im Detail passiert. Viele Methoden von List<T> funktionieren genau so: FindAll und RemoveAll bekommen eine Bedingung, Sort kann eine Vergleichsfunktion bekommen, ForEach eine Aktion."
+    },
+    {
+      "type": "code",
+      "content": "static List<int> Filtere(List<int> liste, Func<int, bool> bedingung)\n{\n    var ergebnis = new List<int>();\n    foreach (int x in liste)\n    {\n        if (bedingung(x))\n            ergebnis.Add(x);\n    }\n    return ergebnis;\n}\n\nvar zahlen = new List<int> { 4, 11, 8, 3, 15 };\nConsole.WriteLine(string.Join(\" \", Filtere(zahlen, x => x > 5)));\nConsole.WriteLine(string.Join(\" \", Filtere(zahlen, x => x % 2 == 0)));\n\nzahlen.RemoveAll(x => x < 5);\nzahlen.ForEach(x => Console.Write(x + \";\"));\n// Ausgabe:\n// 11 8 15\n// 4 8\n// 11;8;15;"
+    },
+    {
+      "type": "text",
+      "content": "Noch ein Detail: Eine Lambda darf Variablen von außen verwenden. Sie merkt sich dabei die Variable selbst, nicht nur ihren aktuellen Wert. Ändert sich die Variable später, sieht die Lambda den neuen Wert. Dieses Verhalten nennt man Closure."
+    },
+    {
+      "type": "code",
+      "content": "int grenze = 10;\nFunc<int, bool> zuGross = x => x > grenze;\nConsole.WriteLine(zuGross(15));\ngrenze = 20;\nConsole.WriteLine(zuGross(15));\n// Ausgabe:\n// True\n// False"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Func<int, int> f = x => x + 1;\nFunc<int, int> g = x => x * 3;\nConsole.WriteLine(g(f(2)));",
+      "options": [
+        "7",
+        "9",
+        "6",
+        "8"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zuerst wird f(2) ausgewertet: 2 + 1 = 3. Dann g(3) = 3 * 3 = 9."
+    },
+    {
+      "question": "Welcher Typ passt zu einer Lambda, die zwei strings bekommt und eine Zahl (int) zurückliefert?",
+      "options": [
+        "Action<string, string, int>",
+        "Func<int, string, string>",
+        "Func<string, string, int>",
+        "Action<int>"
+      ],
+      "correctIndex": 2,
+      "explanation": "Liefert die Funktion etwas zurück, ist es ein Func. Die Parametertypen kommen zuerst, der Rückgabetyp steht immer an letzter Stelle."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Action<int> zeige = x => x * 2;\nzeige(5);",
+      "options": [
+        "Lambdas brauchen immer geschwungene Klammern",
+        "Der Parameter x muss in Klammern stehen",
+        "Action darf nur strings als Parameter haben",
+        "Action liefert keinen Wert zurück – x * 2 allein ist keine gültige Anweisung"
+      ],
+      "correctIndex": 3,
+      "explanation": "Action steht für \"tut etwas, liefert nichts\". x * 2 berechnet aber nur einen Wert und tut nichts damit. Richtig wäre z. B. x => Console.WriteLine(x * 2) oder ein Func<int, int>."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int faktor = 2;\nFunc<int, int> mal = x => x * faktor;\nfaktor = 5;\nvar l = new List<int> { 1, 2, 3 };\nl.ForEach(x => Console.Write(mal(x) + \" \"));",
+      "options": [
+        "5 10 15",
+        "2 4 6",
+        "1 2 3",
+        "Fehler: faktor ist in der Lambda nicht sichtbar"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Lambda merkt sich die Variable faktor selbst (Closure). Beim Aufruf hat faktor schon den Wert 5, also wird jede Zahl mal 5 gerechnet."
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "id": "csharp-f3-pruefung",
+  "title": "Abschlussprüfung: Collections & Generics",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var l = new List<int> { 5, 2, 8 };\nl.Add(1);\nl.Sort();\nl.RemoveAt(1);\nConsole.WriteLine(string.Join(\",\", l));",
+      "options": [
+        "1,5,8",
+        "1,2,8",
+        "2,5,8",
+        "1,2,5"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nach Add und Sort ist die Liste 1, 2, 5, 8. RemoveAt(1) entfernt das Element an Index 1 – das ist die 2. Übrig bleibt 1,5,8."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var l = new List<string> { \"a\", \"b\", \"a\", \"c\" };\nl.Remove(\"a\");\nl.Insert(1, \"x\");\nConsole.WriteLine(l.IndexOf(\"a\") + \" \" + l.Count);",
+      "options": [
+        "0 4",
+        "1 4",
+        "3 4",
+        "2 4"
+      ],
+      "correctIndex": 3,
+      "explanation": "Remove(\"a\") löscht nur das erste \"a\": b, a, c. Insert(1, \"x\") ergibt b, x, a, c. Das \"a\" steht jetzt an Index 2, die Liste hat 4 Elemente."
+    },
+    {
+      "question": "Finde den Fehler: Welcher Fehler tritt bei diesem Code auf?",
+      "code": "var noten = new List<int> { 1, 3, 2 };\nfor (int i = 0; i <= noten.Count; i++)\n{\n    Console.WriteLine(noten[i]);\n}",
+      "options": [
+        "KeyNotFoundException",
+        "Es wird nur 1 3 ausgegeben, sonst nichts",
+        "ArgumentOutOfRangeException beim letzten Durchlauf",
+        "Compilerfehler, weil Listen keinen Index haben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Bedingung i <= noten.Count lässt i bis 3 laufen. Gültige Indizes sind aber nur 0 bis 2. Bei noten[3] wirft die Liste eine ArgumentOutOfRangeException. Richtig wäre i < noten.Count."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var d = new Dictionary<string, int>();\nstring[] tiere = { \"Hund\", \"Katze\", \"Hund\", \"Hund\" };\nforeach (string t in tiere)\n{\n    d[t] = d.ContainsKey(t) ? d[t] + 1 : 1;\n}\nConsole.WriteLine(d[\"Hund\"] * 10 + d.Count);",
+      "options": [
+        "32",
+        "34",
+        "31",
+        "Eine KeyNotFoundException"
+      ],
+      "correctIndex": 0,
+      "explanation": "\"Hund\" kommt dreimal vor, \"Katze\" einmal. Das Dictionary hat also 2 Einträge. 3 * 10 + 2 = 32. Dank ContainsKey wird nie ein fehlender Schlüssel gelesen."
+    },
+    {
+      "question": "Welche Aussage über Dictionary<TKey, TValue> ist richtig?",
+      "options": [
+        "Ein Schlüssel darf mehrfach vorkommen, wenn die Werte verschieden sind",
+        "Werte dürfen sich wiederholen, Schlüssel müssen eindeutig sein",
+        "dict[key] = wert wirft eine Ausnahme, wenn key schon existiert",
+        "Die Einträge sind immer alphabetisch nach Schlüssel sortiert"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder Schlüssel ist eindeutig, Werte dürfen doppelt sein. dict[key] = wert überschreibt einfach. Eine Ausnahme wirft nur Add. Eine Sortierung gibt es nicht."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var lager = new Dictionary<string, int> { [\"Stift\"] = 3 };\nint n;\nbool ok = lager.TryGetValue(\"Heft\", out n);\nlager[\"Heft\"] = n + 5;\nConsole.WriteLine($\"{ok} {lager[\"Heft\"]} {lager.Count}\");",
+      "options": [
+        "True 5 2",
+        "False 5 1",
+        "False 8 2",
+        "False 5 2"
+      ],
+      "correctIndex": 3,
+      "explanation": "\"Heft\" gibt es noch nicht: TryGetValue liefert False und setzt n auf 0. Danach wird \"Heft\" mit 0 + 5 = 5 neu angelegt. Jetzt gibt es 2 Einträge."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int Zaehle<T>(List<T> liste, T gesucht)\n{\n    int n = 0;\n    foreach (T x in liste)\n        if (x.Equals(gesucht)) n++;\n    return n;\n}\n\nvar l = new List<char> { 'a', 'n', 'a', 'n', 'a' };\nConsole.WriteLine(Zaehle(l, 'a') - Zaehle(l, 'n'));",
+      "options": [
+        "3",
+        "1",
+        "2",
+        "Fehler: Equals gibt es für T nicht"
+      ],
+      "correctIndex": 1,
+      "explanation": "Equals hat jedes Objekt in C#, deshalb darfst du es auch ohne Einschränkung auf T aufrufen. 'a' kommt dreimal vor, 'n' zweimal: 3 - 2 = 1."
+    },
+    {
+      "question": "Finde den Fehler: Warum kompiliert dieser Code nicht?",
+      "code": "var b = new Box<int>();\nb.Inhalt = \"zehn\";\n\nclass Box<T>\n{\n    public T Inhalt { get; set; }\n}",
+      "options": [
+        "Bei Box<int> ist Inhalt ein int – ein string passt nicht hinein",
+        "Generische Klassen brauchen immer einen Konstruktor",
+        "Properties dürfen nicht vom Typ T sein",
+        "Box muss mit Box<T> b = new Box<T>() angelegt werden"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit Box<int> wird T überall durch int ersetzt. Inhalt ist daher ein int, und \"zehn\" ist ein string. Generics sind typsicher – das merkt schon der Compiler."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static T Kleinstes<T>(List<T> l) where T : IComparable<T>\n{\n    T min = l[0];\n    foreach (T x in l)\n        if (x.CompareTo(min) < 0) min = x;\n    return min;\n}\n\nvar woerter = new List<string> { \"Maus\", \"Elch\", \"Zebra\" };\nConsole.WriteLine(Kleinstes(woerter) + Kleinstes(new List<int> { 4, -2, 7 }));",
+      "options": [
+        "Maus-2",
+        "Zebra-2",
+        "Elch-2",
+        "Elch4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei strings vergleicht CompareTo alphabetisch: \"Elch\" kommt zuerst. Bei der int-Liste ist -2 am kleinsten. string + int ergibt \"Elch-2\"."
+    },
+    {
+      "question": "Du willst eine generische Methode schreiben, die mit new T() ein neues Objekt erzeugt. Welche Einschränkung brauchst du?",
+      "options": [
+        "where T : class",
+        "where T : IComparable<T>",
+        "where T : struct",
+        "where T : new()"
+      ],
+      "correctIndex": 3,
+      "explanation": "where T : new() garantiert, dass T einen parameterlosen Konstruktor hat. Nur dann darfst du new T() schreiben."
+    }
+  ]
+}

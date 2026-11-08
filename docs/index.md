@@ -1,36 +1,32 @@
 # Prog Trainer
 
-Eine Handy-App zum Programmierenlernen. Sie fängt bei null an und führt
-Schritt für Schritt durch die Grundlagen von **Python** und **C#**. Später
-kommen Themen wie Software-Architektur, Testing und Requirements Engineering
-dazu.
+Eine Handy-App für **Android und iOS** zum Programmierenlernen. Sie fängt bei
+null an und führt in **Python** und **C#** bis zum Senior-Level.
 
 ## Download
 
-[:material-android: APK herunterladen (aktueller Stand)](https://bac-htl.github.io/prog_trainer/download/prog_trainer.apk){ .md-button .md-button--primary }
+[:material-android: Android (APK)](https://bac-htl.github.io/prog_trainer/download/prog_trainer.apk){ .md-button .md-button--primary }
+[:material-apple: iOS (IPA, unsigniert)](https://bac-htl.github.io/prog_trainer/download/prog_trainer-unsigned.ipa){ .md-button }
 
-Die APK wird bei jeder Änderung auf `main` automatisch neu gebaut.
-Ältere Stände findest du unter
-[Releases](https://github.com/BAC-HTL/prog_trainer/releases).
-Wie du die App installierst, steht unter [Installation](installation.md).
+Beide Dateien werden bei jeder Änderung auf `main` automatisch neu gebaut
+und liegen auch unter
+[Releases](https://github.com/BAC-HTL/prog_trainer/releases/tag/latest).
+Wie man sie installiert, steht unter [Installation](installation.md).
 
-!!! note "Nur Android"
-    Für iOS gibt es noch keinen Download. Apps für iPhones lassen sich nur
-    über einen Mac und einen Apple-Developer-Account verteilen.
+## Funktionen
 
-## Was die App kann
+- **Lehrplan bis Senior.** Pro Sprache gibt es 4 Level (Einsteiger, Fortgeschritten, Profi, Senior) mit je 5 Kapiteln.
+- **Lektionen.** Jede Lektion hat Erklärungen, Code-Beispiele und ein Quiz mit sofortigem Feedback.
+- **Abschlussprüfung pro Kapitel.** Ab 70 % ist sie bestanden, und es gibt ein **PDF-Zertifikat** mit deinem Namen zum Herunterladen.
+- **Herausforderungen.** Du schreibst echten Code, der ausgeführt und gegen Testfälle geprüft wird. Für gelöste Aufgaben bekommst du Punkte. Punkte und Aufgaben werden **pro Sprache getrennt** geführt.
+- **Achievements** für Meilensteine wie die erste Lektion, eine fehlerfreie Prüfung oder 500 Punkte.
 
-- **Lernpfade** für Python (5 Lektionen) und C# (4 Lektionen)
-- **Lektionen** mit Erklärungen und Code-Beispielen
-- **Quiz** nach jeder Lektion mit sofortiger Erklärung zu jeder Antwort
-- Aufgabentypen wie „Was gibt dieser Code aus?“ und „Finde den Fehler“
+## Stand der Inhalte
 
-## Inhalte
-
-| Python | C# |
-|---|---|
-| 1. Dein erstes Programm | 1. Dein erstes Programm |
-| 2. Variablen und Datentypen | 2. Variablen und Datentypen |
-| 3. Eingabe und Rechnen | 3. Eingabe und Rechnen |
-| 4. Bedingungen | 4. Bedingungen |
-| 5. Schleifen | |
+| | Python | C# |
+|---|---|---|
+| Einsteiger | ✅ 5 Kapitel | ✅ 5 Kapitel |
+| Fortgeschritten | ✅ 5 Kapitel | ✅ 5 Kapitel |
+| Profi | Lehrplan steht | Lehrplan steht |
+| Senior | Lehrplan steht | Lehrplan steht |
+| Herausforderungen | 24 | 24 |

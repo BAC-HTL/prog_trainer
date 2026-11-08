@@ -1,0 +1,126 @@
+{
+  "id": "csharp-f1-pruefung",
+  "title": "Abschlussprüfung: Klassen & Objekte",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Schueler s = new Schueler();\ns.Name = \"Max\";\nUmbenennen(s);\nConsole.WriteLine(s.Name);\n\nvoid Umbenennen(Schueler x)\n{\n    x.Name = \"Moritz\";\n}\n\nclass Schueler\n{\n    public string Name = \"\";\n}",
+      "options": [
+        "Max",
+        "Moritz",
+        "Max Moritz",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Klassen sind Referenztypen. Die Methode bekommt einen Verweis auf dasselbe Objekt wie s und ändert daher den Namen des Originals – auch ohne ref."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Spieler a = new Spieler(\"Lena\");\nSpieler b = new Spieler(\"Lena\");\nConsole.WriteLine(a == b);\n\nclass Spieler\n{\n    public string Name;\n    public Spieler(string name) { Name = name; }\n}",
+      "options": [
+        "False",
+        "True",
+        "Lena",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 0,
+      "explanation": "== vergleicht bei Klassen, ob beide Variablen auf dasselbe Objekt zeigen. a und b sind zwei verschiedene Objekte, auch wenn sie den gleichen Namen haben. Deshalb False."
+    },
+    {
+      "question": "In welcher Reihenfolge erscheinen die Ausgaben?",
+      "code": "Pizza p = new Pizza(\"Salami\");\n\nclass Pizza\n{\n    public string Sorte;\n    public int Groesse;\n\n    public Pizza(string sorte, int groesse)\n    {\n        Sorte = sorte;\n        Groesse = groesse;\n        Console.Write(\"A \");\n    }\n\n    public Pizza(string sorte) : this(sorte, 30)\n    {\n        Console.Write(\"B\");\n    }\n}",
+      "options": [
+        "B A",
+        "nur B",
+        "nur A",
+        "A B"
+      ],
+      "correctIndex": 3,
+      "explanation": "new Pizza(\"Salami\") ruft zuerst über : this(sorte, 30) den Konstruktor mit zwei Parametern auf. Dessen Körper läuft zuerst (A), danach der Körper des aufrufenden Konstruktors (B)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Akku a = new Akku();\na.Ladung = 120;\na.Ladung = -20;\nConsole.WriteLine(a.Ladung);\n\nclass Akku\n{\n    private int ladung;\n\n    public int Ladung\n    {\n        get { return ladung; }\n        set\n        {\n            if (value >= 0)\n            {\n                ladung = value > 100 ? 100 : value;\n            }\n        }\n    }\n}",
+      "options": [
+        "120",
+        "0",
+        "-20",
+        "100"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der set-Teil begrenzt den Wert mit dem ternären Operator auf höchstens 100. 120 wird also als 100 gespeichert. Danach wird -20 gesetzt: Das ist kleiner als 0, also wird gar nichts geändert und es bleibt 100."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Buch b = new Buch(\"123\");\nb.Isbn = \"999\";\nConsole.WriteLine(b.Isbn);\n\nclass Buch\n{\n    public string Isbn { get; }\n\n    public Buch(string isbn)\n    {\n        Isbn = isbn;\n    }\n}",
+      "options": [
+        "Auto-Properties müssen immer einen set-Teil haben",
+        "Die Property Isbn hat nur get und darf nach dem Konstruktor nicht mehr geändert werden",
+        "Im Konstruktor muss this.Isbn stehen",
+        "string-Properties brauchen einen Startwert"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine Property nur mit { get; } darf ausschließlich im Konstruktor gesetzt werden. Die Zuweisung b.Isbn = \"999\"; von außen ist verboten."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Ticket t1 = new Ticket();\nTicket t2 = new Ticket();\nTicket t3 = new Ticket();\nConsole.WriteLine($\"{t1.Nr} {t2.Nr} {t3.Nr}\");\n\nclass Ticket\n{\n    private static int naechsteNr = 1;\n    public int Nr { get; }\n\n    public Ticket()\n    {\n        Nr = naechsteNr;\n        naechsteNr++;\n    }\n}",
+      "options": [
+        "1 1 1",
+        "3 3 3",
+        "1 2 3",
+        "0 1 2"
+      ],
+      "correctIndex": 2,
+      "explanation": "naechsteNr ist statisch und existiert nur einmal. Jeder Konstruktor-Aufruf gibt dem neuen Ticket den aktuellen Wert als eigene Nr und erhöht dann den gemeinsamen Zähler. Nr ist ein normales Feld, jedes Ticket behält seine Nummer."
+    },
+    {
+      "question": "In einem Online-Shop hat jedes Produkt einen Namen und einen Preis. Der Mehrwertsteuersatz von 20 % gilt für alle Produkte gleich. Wie modellierst du ihn am besten?",
+      "options": [
+        "Als normales public-Feld in jedem Produkt-Objekt",
+        "Als lokale Variable in jeder Methode",
+        "Als statisches Member (oder const) der Klasse Produkt",
+        "Als Parameter im Konstruktor jedes Produkts"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Wert, der für alle Objekte gleich ist, gehört zur Klasse selbst – also static bzw. const. Sonst würde jedes Objekt eine eigene Kopie speichern, die man auch noch versehentlich unterschiedlich setzen könnte."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Wuerfel w = new Wuerfel();\nConsole.WriteLine(w.Seiten);\n\nclass Wuerfel\n{\n    public int Seiten = 6;\n}\n\nConsole.WriteLine(\"Fertig\");",
+      "options": [
+        "Die Klasse Wuerfel braucht einen Konstruktor",
+        "Bei Top-Level-Statements müssen alle Anweisungen vor den Klassen stehen",
+        "Console.WriteLine darf nicht in einer Klasse verwendet werden",
+        "Die Klasse muss static sein"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die letzte Zeile Console.WriteLine(\"Fertig\"); steht nach der Klassendeklaration. In einem Programm mit Top-Level-Statements kommen zuerst alle Anweisungen, ganz unten die Klassen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Rucksack r = new Rucksack();\nr.Hinzufuegen();\nr.Hinzufuegen();\nr.Hinzufuegen();\nr.Hinzufuegen();\nConsole.WriteLine($\"{r.Anzahl} Teile, voll: {r.IstVoll}\");\n\nclass Rucksack\n{\n    public int Anzahl { get; private set; }\n    public bool IstVoll => Anzahl >= 3;\n\n    public void Hinzufuegen()\n    {\n        if (!IstVoll)\n        {\n            Anzahl++;\n        }\n    }\n}",
+      "options": [
+        "3 Teile, voll: False",
+        "3 Teile, voll: True",
+        "4 Teile, voll: True",
+        "2 Teile, voll: False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Methode Hinzufuegen() erhöht Anzahl nur, solange weniger als 3 Teile im Rucksack sind. Der vierte Aufruf ändert nichts mehr. IstVoll ist eine berechnete Property und liefert bei 3 Teilen True."
+    },
+    {
+      "question": "Was passiert, wenn man im folgenden Programm k.Stand = 5; ausführt?",
+      "code": "Zaehler k = new Zaehler();\nk.Stand = 5;\n\nclass Zaehler\n{\n    private int stand;\n\n    public int Stand\n    {\n        get { return stand; }\n        set { Stand = value; }\n    }\n}",
+      "options": [
+        "Stand wird auf 5 gesetzt",
+        "Der Compiler meldet einen Fehler",
+        "Der set-Teil ruft sich immer wieder selbst auf, bis das Programm mit einem Stack Overflow abstürzt",
+        "Der Wert wird ignoriert und Stand bleibt 0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Im set-Teil steht Stand = value; – das ist wieder eine Zuweisung an die Property selbst, die erneut set aufruft. Das wiederholt sich endlos, bis der Speicher für Methodenaufrufe voll ist. Richtig wäre ein privates Feld: stand = value;"
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "csharp-e2_01_bedingungen",
+  "title": "Bedingungen",
+  "summary": "Mit Vergleichen, if/else if/else und den Operatoren &&, || und ! Entscheidungen treffen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Vergleich liefert immer einen bool, also true oder false. Die Vergleichsoperatoren in C#:\n• == gleich\n• != ungleich\n• < kleiner, > größer\n• <= kleiner oder gleich, >= größer oder gleich\n\nVorsicht: = weist einen Wert zu, == vergleicht zwei Werte!"
+    },
+    {
+      "type": "code",
+      "content": "int alter = 15;\nConsole.WriteLine(alter >= 16);  // False\nConsole.WriteLine(alter == 15);  // True\nConsole.WriteLine(alter != 15);  // False"
+    },
+    {
+      "type": "text",
+      "content": "Mit if führt dein Programm Code nur dann aus, wenn eine Bedingung true ist. Die Bedingung steht in runden Klammern, der Code in geschwungenen Klammern { }. Mit else legst du fest, was sonst passieren soll:"
+    },
+    {
+      "type": "code",
+      "content": "int punkte = 42;\n\nif (punkte >= 50)\n{\n    Console.WriteLine(\"Bestanden!\");\n}\nelse\n{\n    Console.WriteLine(\"Leider nicht bestanden.\");\n}\n// Ausgabe: Leider nicht bestanden."
+    },
+    {
+      "type": "text",
+      "content": "Mit else if prüfst du mehrere Fälle nacheinander. C# geht von oben nach unten und führt nur den ersten Block aus, dessen Bedingung zutrifft. Alle weiteren werden übersprungen."
+    },
+    {
+      "type": "code",
+      "content": "int prozent = 78;\n\nif (prozent >= 90)\n{\n    Console.WriteLine(\"Sehr gut\");\n}\nelse if (prozent >= 80)\n{\n    Console.WriteLine(\"Gut\");\n}\nelse if (prozent >= 65)\n{\n    Console.WriteLine(\"Befriedigend\");\n}\nelse if (prozent >= 50)\n{\n    Console.WriteLine(\"Genügend\");\n}\nelse\n{\n    Console.WriteLine(\"Nicht genügend\");\n}\n// Ausgabe: Befriedigend"
+    },
+    {
+      "type": "text",
+      "content": "Mehrere Bedingungen kannst du verknüpfen:\n• && (und) – true, wenn beide Seiten true sind\n• || (oder) – true, wenn mindestens eine Seite true ist\n• ! (nicht) – dreht true und false um"
+    },
+    {
+      "type": "code",
+      "content": "int alter = 15;\nbool hatTicket = true;\nbool istWochenende = false;\nbool istFeiertag = true;\n\nif (alter >= 14 && hatTicket)\n{\n    Console.WriteLine(\"Du darfst ins Konzert.\");\n}\n\nif (istWochenende || istFeiertag)\n{\n    Console.WriteLine(\"Heute ist schulfrei!\");\n}\n\nif (!hatTicket)\n{\n    Console.WriteLine(\"Du brauchst noch ein Ticket.\");\n}\n// Ausgabe:\n// Du darfst ins Konzert.\n// Heute ist schulfrei!"
+    },
+    {
+      "type": "text",
+      "content": "Tipp: Auch strings kannst du mit == vergleichen, z. B. if (antwort == \"ja\"). Dabei zählt die Groß- und Kleinschreibung: \"Ja\" und \"ja\" sind nicht gleich."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 7;\n\nif (x > 10)\n{\n    Console.WriteLine(\"A\");\n}\nelse if (x > 5)\n{\n    Console.WriteLine(\"B\");\n}\nelse if (x > 0)\n{\n    Console.WriteLine(\"C\");\n}\nelse\n{\n    Console.WriteLine(\"D\");\n}",
+      "options": [
+        "A",
+        "C",
+        "B",
+        "B und C"
+      ],
+      "correctIndex": 2,
+      "explanation": "7 > 10 ist false, 7 > 5 ist true – also wird B ausgegeben. Obwohl auch 7 > 0 stimmt, wird C nicht mehr geprüft, weil nur der erste passende Block ausgeführt wird."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int x = 5;\n\nif (x = 5)\n{\n    Console.WriteLine(\"x ist fünf\");\n}",
+      "options": [
+        "In der Bedingung steht = (Zuweisung) statt == (Vergleich)",
+        "Nach if (x = 5) fehlt ein Strichpunkt",
+        "Die geschwungenen Klammern sind überflüssig",
+        "Zahlen darf man nicht mit if vergleichen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein einzelnes = weist einen Wert zu und liefert keinen bool. Für einen Vergleich brauchst du ==, also if (x == 5)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int a = 3;\nbool ok = a > 1 && a < 3;\nConsole.WriteLine(ok);",
+      "options": [
+        "True",
+        "False",
+        "3",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "a > 1 ist true, aber a < 3 ist false (3 ist nicht kleiner als 3). Bei && müssen beide Seiten true sein, also ist das Ergebnis False."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "bool regen = false;\nbool kalt = true;\n\nif (regen || !kalt)\n{\n    Console.WriteLine(\"Badehose\");\n}\nelse\n{\n    Console.WriteLine(\"Jacke\");\n}",
+      "options": [
+        "Badehose",
+        "Badehose und Jacke",
+        "Nichts",
+        "Jacke"
+      ],
+      "correctIndex": 3,
+      "explanation": "regen ist false und !kalt ist ebenfalls false (kalt ist true, ! dreht das um). false || false ergibt false, deshalb läuft der else-Block: Jacke."
+    }
+  ]
+}

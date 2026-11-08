@@ -1,0 +1,97 @@
+{
+  "id": "csharp-f3_01_list",
+  "title": "List<T> – Listen, die mitwachsen",
+  "summary": "Mit List<T> Elemente hinzufügen, entfernen, durchsuchen und sortieren – ohne vorher die Größe festzulegen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Arrays kennst du schon. Sie haben aber einen Haken: Die Größe steht beim Anlegen fest. Bei einer Einkaufsliste weißt du vorher nicht, wie viele Dinge draufkommen. Genau dafür gibt es List<T>. Eine Liste wächst und schrumpft automatisch. In den spitzen Klammern steht, welchen Typ die Elemente haben – List<string> ist eine Liste von Texten, List<int> eine Liste von ganzen Zahlen."
+    },
+    {
+      "type": "code",
+      "content": "List<string> einkauf = new List<string>();\neinkauf.Add(\"Milch\");\neinkauf.Add(\"Brot\");\neinkauf.Add(\"Äpfel\");\n\nConsole.WriteLine(einkauf.Count);\nConsole.WriteLine(einkauf[0]);\n// Ausgabe:\n// 3\n// Milch"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig:\n• Add hängt ein Element hinten an.\n• Count liefert die Anzahl der Elemente. Achtung: Beim Array heißt das Length, bei der Liste Count!\n• Mit [index] greifst du wie beim Array auf ein Element zu. Der erste Index ist 0.\n\nWenn du die Werte schon kennst, kannst du die Liste auch gleich befüllen:"
+    },
+    {
+      "type": "code",
+      "content": "List<int> noten = new List<int> { 2, 1, 4, 3 };\nnoten[2] = 3;          // Element an Index 2 ersetzen\nnoten.Insert(0, 5);    // an Index 0 einfügen, Rest rutscht nach hinten\n\nforeach (int n in noten)\n{\n    Console.Write(n + \" \");\n}\n// Ausgabe: 5 2 1 3 3"
+    },
+    {
+      "type": "text",
+      "content": "Zum Entfernen gibt es zwei Methoden, die man leicht verwechselt:\n• Remove(wert) löscht das erste Element mit diesem Wert.\n• RemoveAt(index) löscht das Element an dieser Position.\n\nMit Contains prüfst du, ob ein Wert vorkommt, und IndexOf sagt dir, wo er steht (oder -1, wenn es ihn nicht gibt)."
+    },
+    {
+      "type": "code",
+      "content": "var namen = new List<string> { \"Lena\", \"Ali\", \"Mia\", \"Ali\" };\nnamen.Remove(\"Ali\");      // nur das ERSTE \"Ali\" verschwindet\nnamen.RemoveAt(0);        // \"Lena\" verschwindet\n\nConsole.WriteLine(string.Join(\", \", namen));\nConsole.WriteLine(namen.Contains(\"Mia\"));\nConsole.WriteLine(namen.IndexOf(\"Tom\"));\n// Ausgabe:\n// Mia, Ali\n// True\n// -1"
+    },
+    {
+      "type": "text",
+      "content": "Praktisch sind auch Sort (sortiert aufsteigend), Reverse (dreht die Reihenfolge um) und Clear (leert die Liste). Sort und Reverse verändern die Liste selbst – sie liefern keine neue Liste zurück.\n\nNatürlich kannst du auch eigene Klassen in eine Liste packen, zum Beispiel List<Spieler>."
+    },
+    {
+      "type": "code",
+      "content": "var punkte = new List<int> { 40, 15, 80, 15 };\npunkte.Sort();\nConsole.WriteLine(string.Join(\" \", punkte));\npunkte.Reverse();\nConsole.WriteLine(string.Join(\" \", punkte));\n// Ausgabe:\n// 15 15 40 80\n// 80 40 15 15"
+    },
+    {
+      "type": "text",
+      "content": "Zwei typische Fehler:\n1. Ein Index, den es nicht gibt (z. B. liste[3] bei 3 Elementen), führt zur Laufzeit zu einer ArgumentOutOfRangeException.\n2. Innerhalb einer foreach-Schleife darfst du die Liste nicht verändern (kein Add oder Remove). Das Programm bricht sonst mit einer InvalidOperationException ab. Wenn du beim Durchlaufen löschen willst, nimm eine for-Schleife, die von hinten nach vorne zählt."
+    },
+    {
+      "type": "code",
+      "content": "var zahlen = new List<int> { 3, 8, 5, 10, 7 };\n// alle geraden Zahlen entfernen – von hinten nach vorne!\nfor (int i = zahlen.Count - 1; i >= 0; i--)\n{\n    if (zahlen[i] % 2 == 0)\n    {\n        zahlen.RemoveAt(i);\n    }\n}\nConsole.WriteLine(string.Join(\" \", zahlen));\n// Ausgabe: 3 5 7"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var liste = new List<int> { 4, 7, 4, 9 };\nliste.Remove(4);\nliste.Add(1);\nConsole.WriteLine(string.Join(\" \", liste));",
+      "options": [
+        "7 9 1",
+        "7 4 9 1",
+        "4 7 9 1",
+        "1 7 4 9"
+      ],
+      "correctIndex": 1,
+      "explanation": "Remove(4) löscht nur das erste Element mit dem Wert 4. Die zweite 4 bleibt stehen. Add hängt die 1 hinten an."
+    },
+    {
+      "question": "Finde den Fehler: Dieser Code lässt sich nicht kompilieren. Warum?",
+      "code": "var tiere = new List<string> { \"Hund\", \"Katze\" };\nConsole.WriteLine(tiere.Length);",
+      "options": [
+        "Listen können keine strings speichern",
+        "Eine Liste muss mit new List<string>(2) angelegt werden",
+        "Bei List<T> heißt die Anzahl Count, nicht Length",
+        "Console.WriteLine kann keine Listen ausgeben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Length gibt es nur bei Arrays und strings. Eine List<T> hat stattdessen die Eigenschaft Count."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "var namen = new List<string> { \"Ida\", \"Max\", \"Eva\" };\nforeach (string n in namen)\n{\n    if (n == \"Max\")\n    {\n        namen.Remove(n);\n    }\n}\nConsole.WriteLine(namen.Count);",
+      "options": [
+        "Es wird 2 ausgegeben",
+        "Es wird 3 ausgegeben",
+        "Der Compiler meldet einen Fehler",
+        "Zur Laufzeit gibt es eine InvalidOperationException"
+      ],
+      "correctIndex": 3,
+      "explanation": "Während foreach durch eine Liste läuft, darf sie nicht verändert werden. Beim nächsten Schleifenschritt merkt C#, dass sich die Liste geändert hat, und wirft eine InvalidOperationException."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var l = new List<string> { \"b\", \"c\" };\nl.Insert(0, \"a\");\nl.RemoveAt(1);\nConsole.WriteLine(l[1] + l.Count);",
+      "options": [
+        "c2",
+        "b2",
+        "c3",
+        "a2"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nach Insert ist die Liste a, b, c. RemoveAt(1) löscht das Element an Index 1, also \"b\". Übrig bleiben a und c. l[1] ist \"c\", Count ist 2."
+    }
+  ]
+}

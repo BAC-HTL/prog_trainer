@@ -1,0 +1,126 @@
+{
+  "id": "python-f5-pruefung",
+  "title": "Abschlussprüfung: Funktionale Werkzeuge",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "mal = lambda a, b: a * b\nprint(mal(3, 4))",
+      "options": [
+        "12",
+        "7",
+        "10",
+        "TypeError"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Lambda wird mit a=3 und b=4 aufgerufen: 3 * 4 = 12."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "getraenke = [\"Kaffee\", \"Tee\", \"Kakao\"]\nprint(sorted(getraenke, key=len))",
+      "options": [
+        "['Tee', 'Kaffee', 'Kakao']",
+        "['Kaffee', 'Kakao', 'Tee']",
+        "['Tee', 'Kakao', 'Kaffee']",
+        "['Kakao', 'Kaffee', 'Tee']"
+      ],
+      "correctIndex": 2,
+      "explanation": "key=len sortiert aufsteigend nach der Länge: Tee (3 Zeichen), Kakao (5), Kaffee (6)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "zahlen = [1, 2, 3, 4, 5]\ngerade = filter(lambda x: x % 2 == 0, zahlen)\nprint(list(map(lambda x: x ** 2, gerade)))",
+      "options": [
+        "[2, 4]",
+        "[4, 16]",
+        "[1, 9, 25]",
+        "[1, 4, 9, 16, 25]"
+      ],
+      "correctIndex": 1,
+      "explanation": "filter behält die geraden Zahlen 2 und 4, map quadriert sie: [4, 16]."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "ergebnisse = [(\"Anna\", 92), (\"Ben\", 78), (\"Cleo\", 85)]\nprint(min(ergebnisse, key=lambda e: e[1]))",
+      "options": [
+        "('Anna', 92)",
+        "('Ben', 78)",
+        "('Cleo', 85)",
+        "92"
+      ],
+      "correctIndex": 1,
+      "explanation": "min mit key vergleicht die Punkte (Index 1). Den kleinsten Wert 78 hat Ben – zurückgegeben wird das ganze Tupel."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def zaehler():\n    n = 0\n    while True:\n        n += 1\n        yield n\n\ng = zaehler()\nprint(next(g), next(g))",
+      "options": [
+        "0 1 2",
+        "1 2 3",
+        "0 1",
+        "1 2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei jedem yield pausiert der Generator. Die ersten beiden next()-Aufrufe liefern 1 und 2."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "g = (x for x in [1, 2, 3])\nprint(sum(g), sum(g))",
+      "options": [
+        "6 6",
+        "6 0",
+        "0 6",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Generator-Ausdruck kann nur einmal durchlaufen werden. Das erste sum() verbraucht ihn (1 + 2 + 3 = 6), das zweite sum() bekommt keine Werte mehr → 0."
+    },
+    {
+      "question": "In welcher Reihenfolge erscheinen die Ausgaben?",
+      "code": "def gen():\n    print(\"los\")\n    yield 1\n\ng = gen()\nprint(\"erstellt\")\nprint(next(g))",
+      "options": [
+        "erstellt, los, 1",
+        "los, erstellt, 1",
+        "erstellt, 1, los",
+        "los, 1, erstellt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Aufruf gen() führt noch keinen Code aus. Zuerst wird \"erstellt\" gedruckt, erst next() startet den Generator (\"los\") und liefert 1."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def plus_eins(func):\n    def wrapper(x):\n        return func(x) + 1\n    return wrapper\n\n@plus_eins\ndef verdopple(x):\n    return x * 2\n\nprint(verdopple(3))",
+      "options": [
+        "5",
+        "6",
+        "7",
+        "None"
+      ],
+      "correctIndex": 2,
+      "explanation": "@plus_eins packt verdopple ein: verdopple(3) liefert 6, der Wrapper addiert 1 → 7."
+    },
+    {
+      "question": "Finde den Fehler: Welcher Fehler tritt auf, wenn man diesen Dekorator auf eine Funktion mit Parametern anwendet?",
+      "code": "def log(func):\n    def wrapper():\n        print(\"Aufruf\")\n        return func()\n    return wrapper\n\n@log\ndef hoch(a, b):\n    return a ** b\n\nprint(hoch(2, 3))",
+      "options": [
+        "NameError",
+        "Kein Fehler, Ausgabe: Aufruf und dann 8",
+        "None wird ausgegeben",
+        "TypeError, weil wrapper keine Argumente annimmt"
+      ],
+      "correctIndex": 3,
+      "explanation": "wrapper() hat keine Parameter. Beim Aufruf hoch(2, 3) werden aber zwei Argumente übergeben → TypeError. Abhilfe: def wrapper(*args, **kwargs) und func(*args, **kwargs)."
+    },
+    {
+      "question": "Wozu dient @functools.wraps(func) innerhalb eines Dekorators?",
+      "options": [
+        "Es macht die Funktion schneller",
+        "Es sorgt dafür, dass der Wrapper automatisch return verwendet",
+        "Es übernimmt Name und Dokumentation der Originalfunktion auf den Wrapper",
+        "Es erlaubt, den Dekorator ohne @ zu verwenden"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ohne wraps hieße die dekorierte Funktion intern \"wrapper\". functools.wraps kopiert __name__ und die Doku der Originalfunktion."
+    }
+  ]
+}

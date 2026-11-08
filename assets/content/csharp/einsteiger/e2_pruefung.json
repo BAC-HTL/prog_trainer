@@ -1,0 +1,127 @@
+{
+  "id": "csharp-e2-pruefung",
+  "title": "Abschlussprüfung: Entscheidungen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int prozent = 95;\n\nif (prozent >= 50)\n{\n    Console.WriteLine(\"Genügend\");\n}\nelse if (prozent >= 90)\n{\n    Console.WriteLine(\"Sehr gut\");\n}\nelse\n{\n    Console.WriteLine(\"Nicht genügend\");\n}",
+      "options": [
+        "Sehr gut",
+        "Genügend",
+        "Sehr gut und Genügend",
+        "Nicht genügend"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Bedingungen werden von oben nach unten geprüft. 95 >= 50 ist schon true, also wird Genügend ausgegeben – der Rest wird übersprungen. Die strengere Bedingung (>= 90) müsste deshalb zuerst stehen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "bool a = true;\nbool b = false;\nConsole.WriteLine(!(a && b) || b);",
+      "options": [
+        "False",
+        "Fehler beim Kompilieren",
+        "True",
+        "a"
+      ],
+      "correctIndex": 2,
+      "explanation": "a && b ist false, weil b false ist. ! dreht das zu true um. true || b ergibt true, weil bei || eine Seite reicht."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int monat = 4;\n\nswitch (monat)\n{\n    case 12:\n    case 1:\n    case 2:\n        Console.WriteLine(\"Winter\");\n        break;\n    case 3:\n    case 4:\n    case 5:\n        Console.WriteLine(\"Frühling\");\n        break;\n    case 6:\n    case 7:\n    case 8:\n        Console.WriteLine(\"Sommer\");\n        break;\n    default:\n        Console.WriteLine(\"Herbst\");\n        break;\n}",
+      "options": [
+        "Winter",
+        "Sommer",
+        "Herbst",
+        "Frühling"
+      ],
+      "correctIndex": 3,
+      "explanation": "4 passt zu case 4, der mit case 3 und case 5 gruppiert ist. Deshalb läuft der Code dieser Gruppe: Frühling."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 2;\n\nswitch (x)\n{\n    default:\n        Console.WriteLine(\"Unbekannt\");\n        break;\n    case 1:\n        Console.WriteLine(\"Eins\");\n        break;\n    case 2:\n        Console.WriteLine(\"Zwei\");\n        break;\n}",
+      "options": [
+        "Zwei",
+        "Unbekannt",
+        "Unbekannt und Zwei",
+        "Fehler beim Kompilieren, weil default am Ende stehen muss"
+      ],
+      "correctIndex": 0,
+      "explanation": "default darf an beliebiger Stelle stehen und läuft trotzdem nur, wenn kein case passt. Da case 2 passt, wird Zwei ausgegeben. Üblich und übersichtlicher ist es aber, default ans Ende zu stellen."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int wahl = 1;\n\nswitch (wahl)\n{\n    case 1:\n        Console.WriteLine(\"Neues Spiel\");\n        break;\n    case 2:\n        Console.WriteLine(\"Laden\");\n        break;\n    case 1:\n        Console.WriteLine(\"Beenden\");\n        break;\n}",
+      "options": [
+        "Ein switch braucht mindestens drei case-Fälle",
+        "Der Wert 1 kommt in zwei case-Zeilen vor",
+        "Bei case 1 fehlt der default-Fall",
+        "Statt break muss return stehen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder case-Wert darf in einem switch nur einmal vorkommen. Sonst wüsste C# nicht, welcher Block laufen soll – der Compiler meldet einen Fehler."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int a = 7;\nint b = 12;\nint max = a > b ? a : b;\nstring art = max % 2 == 0 ? \"gerade\" : \"ungerade\";\nConsole.WriteLine($\"{max} {art}\");",
+      "options": [
+        "7 ungerade",
+        "12 ungerade",
+        "12 gerade",
+        "7 gerade"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst liefert a > b ? a : b den größeren Wert, also 12. Danach prüft der zweite ternäre Operator 12 % 2 == 0 – das ist true, also gerade."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int temperatur = 25;\nstring wetter = temperatur < 0 ? \"Frost\"\n              : temperatur < 20 ? \"kühl\"\n              : temperatur < 30 ? \"warm\"\n              : \"heiß\";\nConsole.WriteLine(wetter);",
+      "options": [
+        "kühl",
+        "warm",
+        "heiß",
+        "Frost"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Bedingungen werden von links nach rechts geprüft: 25 < 0 ist false, 25 < 20 ist false, 25 < 30 ist true – also warm."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int alter = 17;\nbool begleitung = false;\n\nif (alter >= 18)\n{\n    Console.WriteLine(\"Eintritt\");\n}\nelse\n{\n    if (begleitung)\n    {\n        Console.WriteLine(\"Eintritt mit Begleitung\");\n    }\n    else\n    {\n        Console.WriteLine(\"Kein Eintritt\");\n    }\n}",
+      "options": [
+        "Eintritt",
+        "Eintritt mit Begleitung",
+        "Kein Eintritt",
+        "Nichts"
+      ],
+      "correctIndex": 2,
+      "explanation": "17 >= 18 ist false, also geht es in den äußeren else-Block. Dort ist begleitung false, deshalb läuft das innere else: Kein Eintritt."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int x = 8;\n\nif (x > 5)\n    Console.WriteLine(\"groß\");\n    Console.WriteLine(\"sehr groß\");\nelse\n    Console.WriteLine(\"klein\");",
+      "options": [
+        "Vor else fehlt ein Strichpunkt",
+        "Ohne { } gehört nur die erste Zeile zum if – das else hat dadurch kein passendes if mehr",
+        "Nach if darf nur eine Zeile mit Console.WriteLine stehen, weil sonst die Einrückung falsch ist",
+        "Man darf x nicht mit 5 vergleichen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne geschwungene Klammern gehört nur Console.WriteLine(\"groß\") zum if. Die zweite Zeile steht schon außerhalb – die Einrückung täuscht. Das else folgt deshalb nicht direkt auf das if, und der Compiler meldet einen Fehler. Mit { } um beide Zeilen wäre alles korrekt."
+    },
+    {
+      "question": "Welche Bedingung bewirkt genau dasselbe wie dieser verschachtelte Code?",
+      "code": "bool hunger = true;\nint geld = 5;\n\nif (hunger)\n{\n    if (geld >= 5)\n    {\n        Console.WriteLine(\"Pizza kaufen!\");\n    }\n}",
+      "options": [
+        "if (hunger || geld >= 5)",
+        "if (hunger && geld >= 5)",
+        "if (!hunger && geld >= 5)",
+        "if (hunger && geld > 5)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Ausgabe passiert nur, wenn beide Bedingungen true sind: hunger UND geld >= 5. Das lässt sich mit && zusammenfassen. Bei > 5 wäre der Fall geld == 5 nicht mehr dabei."
+    }
+  ]
+}

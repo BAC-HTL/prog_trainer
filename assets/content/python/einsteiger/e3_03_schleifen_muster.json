@@ -1,0 +1,97 @@
+{
+  "id": "python-e3_03_schleifen_muster",
+  "title": "Typische Schleifen-Muster",
+  "summary": "Mit Zähler, Summe, Maximum/Minimum und Flag-Variable die häufigsten Schleifenaufgaben lösen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Aufgaben mit Schleifen folgen immer denselben Mustern. Sie haben alle drei Schritte gemeinsam:\n1. Vor der Schleife bekommt eine Variable einen Startwert.\n2. In der Schleife wird sie bei Bedarf verändert.\n3. Nach der Schleife wird das Ergebnis verwendet.\n\nMuster 1 – Zähler: Du willst wissen, wie oft etwas vorkommt. Der Zähler startet bei 0 und wird um 1 erhöht, wenn die Bedingung zutrifft."
+    },
+    {
+      "type": "code",
+      "content": "anzahl = 0\nfor zahl in range(1, 31):\n    if zahl % 7 == 0:\n        anzahl += 1\nprint(f\"{anzahl} Zahlen zwischen 1 und 30 sind durch 7 teilbar.\")\n# Ausgabe: 4 Zahlen zwischen 1 und 30 sind durch 7 teilbar."
+    },
+    {
+      "type": "text",
+      "content": "Muster 2 – Summe: Die Summe startet bei 0, jeder Wert wird dazuaddiert. Zusammen mit einem Zähler bekommst du daraus den Durchschnitt: summe / anzahl. Teile aber nie durch 0!\n\nMit round(wert, 2) rundest du auf 2 Nachkommastellen."
+    },
+    {
+      "type": "code",
+      "content": "anzahl = int(input(\"Wie viele Noten? \"))\nsumme = 0\nfor i in range(anzahl):\n    note = int(input(f\"Note {i + 1}: \"))\n    summe += note\n\nif anzahl > 0:\n    print(f\"Durchschnitt: {round(summe / anzahl, 2)}\")\nelse:\n    print(\"Keine Noten eingegeben.\")\n# Bei 1, 2, 2 → Durchschnitt: 1.67"
+    },
+    {
+      "type": "text",
+      "content": "Muster 3 – Maximum und Minimum: Du merkst dir den bisher größten (oder kleinsten) Wert und ersetzt ihn, sobald ein noch größerer (kleinerer) kommt.\n\nTypischer Fehler: hoechste = 0 als Startwert. Bei lauter Minusgraden ist dann 0 das „Maximum“, obwohl die 0 nie eingegeben wurde! Besser: Den ersten Wert vor der Schleife einlesen und als Startwert nehmen."
+    },
+    {
+      "type": "code",
+      "content": "temp = int(input(\"Temperatur Tag 1: \"))\nhoechste = temp\ntiefste = temp\n\nfor tag in range(2, 6):\n    temp = int(input(f\"Temperatur Tag {tag}: \"))\n    if temp > hoechste:\n        hoechste = temp\n    if temp < tiefste:\n        tiefste = temp\n\nprint(f\"Höchstwert: {hoechste}, Tiefstwert: {tiefste}\")\n# Bei -3, -7, 2, -1, -5 → Höchstwert: 2, Tiefstwert: -7"
+    },
+    {
+      "type": "text",
+      "content": "Muster 4 – Flag-Variable: Eine bool-Variable (das „Fähnchen“) startet mit einem Wert und wird umgedreht, sobald etwas Bestimmtes passiert. Nach der Schleife weißt du dann, ob es passiert ist. Oft kann man dann mit break aufhören, weil die Antwort schon feststeht.\n\nBeispiel: Ist eine Zahl (ab 2) eine Primzahl? Wir nehmen erst einmal an: ja. Finden wir einen Teiler, ist die Annahme falsch."
+    },
+    {
+      "type": "code",
+      "content": "zahl = 21\nist_primzahl = True\n\nfor teiler in range(2, zahl):\n    if zahl % teiler == 0:\n        ist_primzahl = False\n        break  # ein Teiler reicht\n\nif ist_primzahl:\n    print(f\"{zahl} ist eine Primzahl.\")\nelse:\n    print(f\"{zahl} ist keine Primzahl.\")\n# Ausgabe: 21 ist keine Primzahl."
+    },
+    {
+      "type": "text",
+      "content": "Häufigster Fehler bei allen Mustern: Der Startwert wird in der Schleife gesetzt statt davor. Dann wird er bei jedem Durchlauf wieder zurückgesetzt:"
+    },
+    {
+      "type": "code",
+      "content": "for i in range(3):\n    summe = 0       # FALSCH: gehört vor die Schleife!\n    summe += 5\nprint(summe)        # 5 statt 15"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "anzahl = 0\nfor i in range(1, 21):\n    if i % 4 == 0:\n        anzahl += 1\nprint(anzahl)",
+      "options": [
+        "4",
+        "20",
+        "5",
+        "6"
+      ],
+      "correctIndex": 2,
+      "explanation": "Gezählt werden die Vielfachen von 4 zwischen 1 und 20: 4, 8, 12, 16, 20. Die 20 ist dabei, weil range(1, 21) bis 20 geht."
+    },
+    {
+      "question": "Finde den Fehler: Eingegeben werden -5, -2 und -8. Erwartet wird -2, ausgegeben wird aber 0.",
+      "code": "hoechste = 0\nfor tag in range(3):\n    temp = int(input())\n    if temp > hoechste:\n        hoechste = temp\nprint(hoechste)",
+      "options": [
+        "Der Startwert 0 ist größer als alle Eingaben – er wird nie ersetzt",
+        "Es muss temp < hoechste heißen",
+        "int() kann keine negativen Zahlen umwandeln",
+        "range(3) liest nur 2 Werte ein"
+      ],
+      "correctIndex": 0,
+      "explanation": "Keine der Eingaben ist größer als 0, also bleibt hoechste bei 0. Richtig ist, den ersten eingelesenen Wert als Startwert zu verwenden."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "ergebnis = 1\nfor i in range(1, 5):\n    ergebnis *= i\nprint(ergebnis)",
+      "options": [
+        "10",
+        "0",
+        "120",
+        "24"
+      ],
+      "correctIndex": 3,
+      "explanation": "Hier wird multipliziert statt addiert: 1 · 1 · 2 · 3 · 4 = 24. Darum startet ergebnis bei 1 – mit 0 wäre das Ergebnis immer 0."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "gefunden = False\nfor zahl in range(1, 10):\n    if zahl == 5:\n        gefunden = True\n    else:\n        gefunden = False\nprint(gefunden)",
+      "options": [
+        "True",
+        "False",
+        "5",
+        "Eine Fehlermeldung"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei zahl == 5 wird gefunden zwar True, aber schon beim nächsten Durchlauf setzt der else-Zweig es wieder auf False. Eine Flag-Variable darf man nur in eine Richtung umschalten – der else-Zweig muss weg."
+    }
+  ]
+}

@@ -1,16 +1,45 @@
-# Installation (Android)
+# Installation
+
+## Android
 
 1. Am Handy die [APK herunterladen](https://bac-htl.github.io/prog_trainer/download/prog_trainer.apk).
-2. Die heruntergeladene Datei `prog_trainer.apk` antippen.
-3. Wenn Android fragt: **Installation aus unbekannten Quellen** für den
-   Browser bzw. die Dateien-App erlauben.
-4. **Installieren** antippen. Fertig.
+2. Die Datei `prog_trainer.apk` antippen.
+3. Wenn Android fragt, **Installation aus unbekannten Quellen** für den Browser bzw. die Dateien-App erlauben.
+4. **Installieren** antippen.
 
 !!! warning "Google Play Protect"
-    Weil die App (noch) nicht aus dem Play Store kommt, kann Play Protect
-    eine Warnung anzeigen. Mit „Trotzdem installieren“ geht es weiter.
+    Weil die App nicht aus dem Play Store kommt, kann Play Protect warnen.
+    Mit „Trotzdem installieren“ geht es weiter.
+
+## iOS (iPhone/iPad)
+
+Apple erlaubt Apps außerhalb des App Stores nur signiert. Die
+[IPA-Datei](https://bac-htl.github.io/prog_trainer/download/prog_trainer-unsigned.ipa)
+ist unsigniert und muss vor der Installation signiert werden:
+
+1. Am PC oder Mac [Sideloadly](https://sideloadly.io) oder
+   [AltStore](https://altstore.io) installieren.
+2. iPhone per Kabel verbinden, die IPA hineinziehen und mit der eigenen
+   (kostenlosen) Apple-ID anmelden.
+3. Am iPhone: Einstellungen → Allgemein → VPN & Geräteverwaltung → dem
+   Entwickler vertrauen.
+
+!!! note "7 Tage gültig"
+    Mit einer kostenlosen Apple-ID läuft die Signatur nach 7 Tagen ab und
+    muss erneuert werden. Eine dauerhafte Verteilung (TestFlight / App
+    Store) braucht einen Apple-Developer-Account (99 $/Jahr).
 
 ## Update
 
-Einfach die neue APK herunterladen und drüberinstallieren. Der Fortschritt
-bleibt erhalten, sobald die App ihn speichert (geplant).
+Neue Version herunterladen und drüberinstallieren. Der Fortschritt bleibt
+erhalten.
+
+## C#-Code ausführen
+
+Python läuft direkt am Handy. C# wird auf einem
+[Judge0](https://judge0.com)-Server kompiliert:
+
+1. Auf [rapidapi.com](https://rapidapi.com) ein Konto anlegen und die API
+   **„Judge0 CE“** mit dem kostenlosen Basic-Plan abonnieren
+   (50 Ausführungen pro Tag).
+2. In der App: **Einstellungen → API-Key** eintragen → Speichern.

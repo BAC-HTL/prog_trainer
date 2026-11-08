@@ -1,0 +1,96 @@
+{
+  "id": "python-f5_03_dekoratoren",
+  "title": "Dekoratoren",
+  "summary": "Funktionen mit zusätzlichem Verhalten ausstatten, ohne ihren Code zu ändern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Du weißt schon: Funktionen sind Werte. Man kann sie übergeben – und eine Funktion kann sogar eine neue Funktion definieren und zurückgeben. Genau darauf bauen Dekoratoren auf."
+    },
+    {
+      "type": "code",
+      "content": "def mache_gruss(gruss):\n    def innen(name):\n        return f\"{gruss}, {name}!\"\n    return innen          # Funktion zurückgeben, NICHT aufrufen\n\nservus = mache_gruss(\"Servus\")\nprint(servus(\"Lea\"))     # Servus, Lea!"
+    },
+    {
+      "type": "text",
+      "content": "Ein Dekorator ist eine Funktion, die eine andere Funktion entgegennimmt, sie in eine neue Funktion „einpackt“ (Wrapper) und diese zurückgibt. Der Wrapper kann vor und nach dem eigentlichen Aufruf zusätzlichen Code ausführen – z. B. etwas protokollieren."
+    },
+    {
+      "type": "code",
+      "content": "def protokoll(func):\n    def wrapper():\n        print(\"Start\")\n        func()\n        print(\"Ende\")\n    return wrapper\n\ndef hallo():\n    print(\"Hallo!\")\n\nhallo = protokoll(hallo)   # hallo einpacken\nhallo()\n# Start\n# Hallo!\n# Ende"
+    },
+    {
+      "type": "text",
+      "content": "Die Zeile hallo = protokoll(hallo) ist so üblich, dass es eine Kurzschreibweise gibt: @protokoll direkt über der Funktionsdefinition. Das bedeutet genau dasselbe."
+    },
+    {
+      "type": "text",
+      "content": "Damit der Wrapper für Funktionen mit beliebigen Parametern funktioniert, nimmt er *args (alle Positionsargumente als Tupel) und **kwargs (alle Keyword-Argumente als Dictionary) entgegen und reicht sie weiter. Und: Der Wrapper muss das Ergebnis der Funktion mit return zurückgeben, sonst geht es verloren."
+    },
+    {
+      "type": "code",
+      "content": "import functools\n\ndef protokoll(func):\n    @functools.wraps(func)          # behält Name und Doku der Originalfunktion\n    def wrapper(*args, **kwargs):\n        print(f\"Aufruf {func.__name__}{args}\")\n        ergebnis = func(*args, **kwargs)\n        print(f\"Ergebnis: {ergebnis}\")\n        return ergebnis\n    return wrapper\n\n@protokoll\ndef addiere(a, b):\n    return a + b\n\nsumme = addiere(3, 4)\n# Aufruf addiere(3, 4)\n# Ergebnis: 7\nprint(addiere.__name__)   # addiere (ohne wraps wäre es: wrapper)"
+    },
+    {
+      "type": "text",
+      "content": "Ein praktisches Beispiel: ein Dekorator, der misst, wie lange eine Funktion braucht. Du kannst ihn über jede beliebige Funktion setzen, ohne deren Code anzurühren."
+    },
+    {
+      "type": "code",
+      "content": "import time\nimport functools\n\ndef stoppuhr(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        start = time.perf_counter()\n        ergebnis = func(*args, **kwargs)\n        dauer = time.perf_counter() - start\n        print(f\"{func.__name__} brauchte {dauer:.3f} s\")\n        return ergebnis\n    return wrapper\n\n@stoppuhr\ndef summe_bis(n):\n    return sum(range(n))\n\nprint(summe_bis(1_000_000))   # z. B.: summe_bis brauchte 0.012 s, dann 499999500000"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• Im Dekorator return wrapper() statt return wrapper schreiben – dann wird der Wrapper sofort aufgerufen.\n• Im Wrapper das return vergessen – die dekorierte Funktion liefert dann immer None.\n• @protokoll() mit Klammern schreiben, obwohl der Dekorator keine eigenen Argumente erwartet.\n\nDekoratoren kennst du übrigens schon: @property ist auch einer!"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def laut(func):\n    def wrapper():\n        return func().upper() + \"!\"\n    return wrapper\n\n@laut\ndef sag():\n    return \"hi\"\n\nprint(sag())",
+      "options": [
+        "hi",
+        "HI",
+        "HI!",
+        "hi!"
+      ],
+      "correctIndex": 2,
+      "explanation": "@laut packt sag ein: Der Wrapper ruft sag() auf (\"hi\"), wandelt das Ergebnis mit upper() um und hängt \"!\" an."
+    },
+    {
+      "question": "Finde den Fehler: Was gibt der Code aus?",
+      "code": "def dekorator(func):\n    def wrapper(x):\n        func(x)\n    return wrapper\n\n@dekorator\ndef doppelt(x):\n    return x * 2\n\nprint(doppelt(5))",
+      "options": [
+        "10",
+        "None",
+        "TypeError",
+        "5"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Wrapper ruft func auf, gibt das Ergebnis aber nicht mit return zurück. Daher liefert die dekorierte Funktion None."
+    },
+    {
+      "question": "Welche Schreibweise ist gleichwertig zu @dekor über def f(): ...?",
+      "options": [
+        "f = dekor(f)",
+        "f = dekor(f())",
+        "dekor = f(dekor)",
+        "f = dekor"
+      ],
+      "correctIndex": 0,
+      "explanation": "@dekor bedeutet: Die Funktion f wird an dekor übergeben und das Ergebnis wieder unter dem Namen f gespeichert."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def rahmen(func):\n    def wrapper():\n        print(\"A\")\n        func()\n        print(\"C\")\n    return wrapper\n\n@rahmen\ndef mitte():\n    print(\"B\")\n\nmitte()",
+      "options": [
+        "A\nB\nC",
+        "B\nA\nC",
+        "A\nC\nB",
+        "B"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Wrapper gibt zuerst A aus, ruft dann die Originalfunktion auf (B) und gibt danach C aus."
+    }
+  ]
+}

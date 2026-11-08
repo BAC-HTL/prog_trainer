@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e4_02_strings",
+  "title": "Strings und Zeichen",
+  "summary": "Einen string als Folge von char-Zeichen verstehen, Zeichen durchlaufen, Sonderzeichen schreiben und Texte vergleichen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Einen string kennst du schon. Jetzt schauen wir hinein: Ein string ist eine Folge von einzelnen Zeichen – ähnlich wie ein Array. Mit Length erfährst du, wie viele Zeichen er hat, und mit [index] holst du ein einzelnes Zeichen heraus. Auch hier beginnt der Index bei 0."
+    },
+    {
+      "type": "code",
+      "content": "string wort = \"Schule\";\n\nConsole.WriteLine(wort.Length);   // 6\nConsole.WriteLine(wort[0]);       // S\nConsole.WriteLine(wort[wort.Length - 1]);   // e"
+    },
+    {
+      "type": "text",
+      "content": "Ein einzelnes Zeichen hat den Datentyp char. Ein char steht in einfachen Anführungszeichen, ein string in doppelten:\n• 'a' ist ein char (genau ein Zeichen)\n• \"a\" ist ein string (Text, der zufällig nur ein Zeichen lang ist)\n\nMit foreach kannst du einen string Zeichen für Zeichen durchlaufen. Hier zählen wir die Vokale in einem Namen:"
+    },
+    {
+      "type": "code",
+      "content": "string name = \"Valentina\";\nint vokale = 0;\n\nforeach (char c in name)\n{\n    if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')\n    {\n        vokale++;\n    }\n}\n\nConsole.WriteLine($\"{name} hat {vokale} Vokale.\");\n// Ausgabe: Valentina hat 4 Vokale."
+    },
+    {
+      "type": "text",
+      "content": "Für einzelne Zeichen gibt es nützliche Prüf-Methoden: char.IsDigit(c) prüft auf eine Ziffer, char.IsLetter(c) auf einen Buchstaben und char.IsUpper(c) auf einen Großbuchstaben. Damit lässt sich zum Beispiel ein einfacher Passwort-Check bauen:"
+    },
+    {
+      "type": "code",
+      "content": "string passwort = \"Sommer2026\";\nint ziffern = 0;\nint grosse = 0;\n\nfor (int i = 0; i < passwort.Length; i++)\n{\n    if (char.IsDigit(passwort[i])) ziffern++;\n    if (char.IsUpper(passwort[i])) grosse++;\n}\n\nConsole.WriteLine($\"Ziffern: {ziffern}, Großbuchstaben: {grosse}\");\n// Ausgabe: Ziffern: 4, Großbuchstaben: 1"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: Strings sind unveränderlich. Du kannst ein Zeichen zwar lesen, aber nicht überschreiben – wort[0] = 'X'; lässt sich nicht kompilieren. Stattdessen baust du einen neuen string zusammen und weist ihn zu. So drehst du zum Beispiel ein Wort um:"
+    },
+    {
+      "type": "code",
+      "content": "string wort = \"Lager\";\nstring umgedreht = \"\";\n\nfor (int i = wort.Length - 1; i >= 0; i--)\n{\n    umgedreht += wort[i];   // Zeichen hinten anhängen\n}\n\nConsole.WriteLine(umgedreht);\n// Ausgabe: regaL"
+    },
+    {
+      "type": "text",
+      "content": "Manche Zeichen kannst du nicht einfach so in einen string schreiben. Dafür gibt es Escape-Sequenzen mit Backslash:\n• \\n – neue Zeile\n• \\t – Tabulator\n• \\\" – Anführungszeichen im Text\n• \\\\ – ein Backslash\n\nSteht ein @ vor dem string, werden Backslashes ganz normal übernommen. Das ist praktisch für Windows-Pfade.\n\nUnd noch zwei Fallen:\n• Vergleiche mit == achten auf Groß- und Kleinschreibung: \"Wien\" == \"wien\" ist false.\n• Rechnest du zwei char mit + zusammen, bekommst du keinen Text, sondern eine Zahl! Jedes Zeichen hat intern einen Zahlencode ('A' ist 65, 'B' ist 66). Willst du Zeichen zu Text verbinden, beginne mit einem string, z. B. \"\" + c1 + c2."
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(\"Zeile 1\\nZeile 2\");\nConsole.WriteLine(\"Sie sagte: \\\"Servus!\\\"\");\nConsole.WriteLine(\"C:\\\\Schule\\\\Info\");\nConsole.WriteLine(@\"C:\\Schule\\Info\");\n// Ausgabe:\n// Zeile 1\n// Zeile 2\n// Sie sagte: \"Servus!\"\n// C:\\Schule\\Info\n// C:\\Schule\\Info\n\nstring s = \"AB\";\nConsole.WriteLine(s[0] + s[1]);        // 131  (65 + 66)\nConsole.WriteLine(\"\" + s[0] + s[1]);   // AB\nConsole.WriteLine(\"Wien\" == \"wien\");   // False"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string w = \"Informatik\";\nConsole.WriteLine($\"{w[2]} {w.Length}\");",
+      "options": [
+        "n 10",
+        "f 10",
+        "f 9",
+        "n 9"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Index beginnt bei 0: w[0] ist I, w[1] ist n, w[2] ist f. Das Wort „Informatik“ hat 10 Zeichen."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "string s = \"Haus\";\ns[0] = 'M';\nConsole.WriteLine(s);",
+      "options": [
+        "'M' muss in doppelten Anführungszeichen stehen",
+        "Der Index 0 existiert bei strings nicht",
+        "Es fehlt ein Semikolon",
+        "Strings sind unveränderlich, einzelne Zeichen kann man nur lesen, nicht überschreiben"
+      ],
+      "correctIndex": 3,
+      "explanation": "s[0] darf man nur lesen. Strings sind in C# unveränderlich. Stattdessen baut man einen neuen string, z. B. s = \"M\" + s.Substring(1); (Substring lernst du in der nächsten Lektion)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string t = \"Ananas\";\nint n = 0;\nforeach (char c in t)\n{\n    if (c == 'a')\n    {\n        n++;\n    }\n}\nConsole.WriteLine(n);",
+      "options": [
+        "3",
+        "1",
+        "2",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "„Ananas“ besteht aus A, n, a, n, a, s. Verglichen wird mit dem kleinen 'a', und das große 'A' am Anfang ist ein anderes Zeichen. Deshalb werden nur 2 Treffer gezählt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string w = \"Lisa\";\nstring r = \"\";\nfor (int i = w.Length - 1; i >= 0; i--)\n{\n    r += w[i];\n}\nConsole.WriteLine(r);",
+      "options": [
+        "asiL",
+        "Lisa",
+        "asi",
+        "Das Programm stürzt ab"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Schleife beginnt beim letzten Index (3) und läuft rückwärts bis 0. Jedes Zeichen wird hinten an r angehängt, so entsteht das umgedrehte Wort."
+    }
+  ]
+}

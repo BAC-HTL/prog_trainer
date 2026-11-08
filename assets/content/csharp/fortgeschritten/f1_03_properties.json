@@ -1,0 +1,88 @@
+{
+  "id": "csharp-f1_03_properties",
+  "title": "Kapselung und Properties",
+  "summary": "Felder mit private schützen, Zugriffe über Properties mit get und set steuern und Auto-Properties verwenden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Öffentliche Felder haben ein Problem: Jeder darf hineinschreiben, was er will. Niemand hindert dich daran, einem Schüler die Note 9 oder einem Konto -500 Euro Guthaben zu geben.\n\nDie Lösung heißt Kapselung: Das Feld wird private gemacht, also von außen unsichtbar. Der Zugriff läuft dann nur noch über einen kontrollierten Weg. In C# ist dieser Weg eine Property (Eigenschaft)."
+    },
+    {
+      "type": "code",
+      "content": "Schueler s = new Schueler();\ns.Note = 2;\nConsole.WriteLine(s.Note);   // 2\n\ns.Note = 9;                  // ungültig – wird abgelehnt\nConsole.WriteLine(s.Note);   // immer noch 2\n// Ausgabe:\n// 2\n// Ungültige Note: 9\n// 2\n\nclass Schueler\n{\n    private int note = 1;\n\n    public int Note\n    {\n        get { return note; }\n        set\n        {\n            if (value >= 1 && value <= 5)\n            {\n                note = value;\n            }\n            else\n            {\n                Console.WriteLine($\"Ungültige Note: {value}\");\n            }\n        }\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "So funktioniert eine Property:\n• Sie sieht von außen aus wie ein Feld: s.Note = 2; und Console.WriteLine(s.Note);\n• Beim Lesen läuft der get-Teil. Er gibt mit return einen Wert zurück.\n• Beim Schreiben läuft der set-Teil. Der neue Wert steht im automatisch vorhandenen Wort value.\n• Das private Feld note (klein) speichert den Wert wirklich. Die Property Note (groß) ist nur die „Tür“ dazu.\n\nFür private Felder schreibt man den Namen klein, oft auch mit Unterstrich wie _note. Properties schreibt man groß."
+    },
+    {
+      "type": "text",
+      "content": "Brauchst du keine Prüfung, wäre das viel Schreibarbeit. Dafür gibt es Auto-Properties: Du schreibst nur { get; set; }, und C# legt das private Feld im Hintergrund selbst an. Mit einem = kannst du auch gleich einen Startwert festlegen."
+    },
+    {
+      "type": "code",
+      "content": "Artikel a = new Artikel();\na.Name = \"Kebab\";\na.Preis = 6;\nConsole.WriteLine($\"{a.Name} kostet {a.Preis} Euro, Menge: {a.Menge}\");\n// Ausgabe: Kebab kostet 6 Euro, Menge: 1\n\nclass Artikel\n{\n    public string Name { get; set; } = \"\";\n    public int Preis { get; set; }\n    public int Menge { get; set; } = 1;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Oft soll man einen Wert von außen nur lesen, aber nicht ändern dürfen. Dafür machst du den set-Teil privat: { get; private set; }. Dann kann nur die Klasse selbst den Wert ändern, etwa in einem Konstruktor oder einer Methode.\n\nAußerdem gibt es berechnete Properties, die gar keinen eigenen Wert speichern, sondern ihn jedes Mal ausrechnen. Die Kurzschreibweise mit => bedeutet „gib dieses Ergebnis zurück“, also dasselbe wie get { return ...; }."
+    },
+    {
+      "type": "code",
+      "content": "Konto k = new Konto(\"Mia\");\nk.Einzahlen(80);\nk.Einzahlen(40);\nConsole.WriteLine($\"{k.Inhaber}: {k.Guthaben} Euro\");\nConsole.WriteLine($\"Reich? {k.IstReich}\");\n// k.Guthaben = 1000000;   // Fehler! set ist privat\n// Ausgabe:\n// Mia: 120 Euro\n// Reich? True\n\nclass Konto\n{\n    public string Inhaber { get; }\n    public int Guthaben { get; private set; }\n\n    // berechnete Property, nur get\n    public bool IstReich => Guthaben >= 100;\n\n    public Konto(string inhaber)\n    {\n        Inhaber = inhaber;\n    }\n\n    public void Einzahlen(int betrag)\n    {\n        if (betrag > 0)\n        {\n            Guthaben += betrag;\n        }\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Inhaber hat nur { get; } ohne set. So eine Property darf nur im Konstruktor gesetzt werden und ist danach unveränderlich.\n\nTypische Fehler:\n• Im set-Teil das Feld vergessen und stattdessen die Property selbst setzen (Note = value; innerhalb von Note). Dann ruft sich set immer wieder selbst auf, bis das Programm abstürzt.\n• Versuchen, auf eine Property ohne öffentliches set zu schreiben – das meldet der Compiler sofort.\n\nFaustregel für die Praxis: Felder immer private, nach außen nur Properties und Methoden anbieten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Thermostat t = new Thermostat();\nt.Temperatur = -20;\nt.Temperatur = 30;\nConsole.WriteLine(t.Temperatur);\n\nclass Thermostat\n{\n    private int temperatur = 50;\n\n    public int Temperatur\n    {\n        get { return temperatur; }\n        set\n        {\n            if (value >= 0)\n            {\n                temperatur = value;\n            }\n        }\n    }\n}",
+      "options": [
+        "-20",
+        "0",
+        "50",
+        "30"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Startwert ist 50. Beim Setzen auf -20 greift die Prüfung im set-Teil, der Wert wird nicht übernommen. Danach wird 30 gesetzt – das ist gültig."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Spieler s = new Spieler();\ns.Punkte = 100;\nConsole.WriteLine(s.Punkte);\n\nclass Spieler\n{\n    public int Punkte { get; private set; }\n}",
+      "options": [
+        "Auto-Properties dürfen keinen Startwert haben",
+        "Punkte hat einen privaten set-Teil, von außen darf man nicht schreiben",
+        "Properties müssen klein geschrieben werden",
+        "Eine Klasse braucht für Properties einen Konstruktor"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mit private set darf nur die Klasse selbst Punkte ändern. Die Zuweisung s.Punkte = 100; von außen ist verboten. Stattdessen könnte die Klasse eine Methode wie Sammeln() anbieten."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Rechteck r = new Rechteck();\nr.Breite = 3;\nr.Hoehe = 4;\nr.Breite = 6;\nConsole.WriteLine(r.Flaeche);\n\nclass Rechteck\n{\n    public int Breite { get; set; }\n    public int Hoehe { get; set; }\n    public int Flaeche => Breite * Hoehe;\n}",
+      "options": [
+        "24",
+        "10",
+        "4",
+        "6"
+      ],
+      "correctIndex": 0,
+      "explanation": "Flaeche ist eine berechnete Property: Sie rechnet bei jedem Lesen Breite * Hoehe aus. Da Breite zuvor auf 6 geändert wurde, ergibt das 6 * 4 = 24."
+    },
+    {
+      "question": "Wofür steht das Wort value im set-Teil einer Property?",
+      "options": [
+        "Für den alten Wert, bevor er geändert wird",
+        "Für den Rückgabewert von get",
+        "Für den neuen Wert, der gerade zugewiesen wird",
+        "Für das private Feld im Hintergrund"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei s.Note = 3; landet die 3 im set-Teil in value. Damit kannst du den neuen Wert prüfen, bevor du ihn im privaten Feld speicherst."
+    }
+  ]
+}

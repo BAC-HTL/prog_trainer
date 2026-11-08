@@ -1,0 +1,92 @@
+{
+  "id": "python-f4_03_vererbung",
+  "title": "Vererbung",
+  "summary": "Klassen von anderen Klassen erben lassen, Methoden überschreiben und super() nutzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Oft haben verschiedene Klassen viel gemeinsam: Ein Auto und ein Motorrad sind beide Fahrzeuge mit Marke und Geschwindigkeit. Statt den Code doppelt zu schreiben, kann eine Klasse von einer anderen erben. Die Unterklasse übernimmt alle Attribute und Methoden der Basisklasse (Oberklasse)."
+    },
+    {
+      "type": "code",
+      "content": "class Tier:\n    def __init__(self, name):\n        self.name = name\n\n    def vorstellen(self):\n        print(f\"Ich bin {self.name}.\")\n\nclass Hund(Tier):          # Hund erbt von Tier\n    def bellen(self):\n        print(\"Wuff!\")\n\nh = Hund(\"Bello\")\nh.vorstellen()   # Ich bin Bello.  (geerbt)\nh.bellen()       # Wuff!           (neu)"
+    },
+    {
+      "type": "text",
+      "content": "Die Basisklasse steht in Klammern hinter dem Klassennamen. Hund hat kein eigenes __init__, also wird das von Tier verwendet. Eine Unterklasse kann eine geerbte Methode auch überschreiben: Sie definiert eine Methode mit demselben Namen, und diese wird dann statt der geerbten verwendet."
+    },
+    {
+      "type": "code",
+      "content": "class Tier:\n    def __init__(self, name):\n        self.name = name\n\n    def laut(self):\n        return \"...\"\n\nclass Katze(Tier):\n    def laut(self):\n        return \"Miau\"\n\nclass Kuh(Tier):\n    def laut(self):\n        return \"Muh\"\n\nfor t in [Katze(\"Minka\"), Kuh(\"Berta\"), Tier(\"Unbekannt\")]:\n    print(t.name, \"sagt\", t.laut())"
+    },
+    {
+      "type": "text",
+      "content": "Was, wenn die Unterklasse zusätzliche Attribute braucht? Dann schreibt sie ein eigenes __init__. Damit die Attribute der Basisklasse trotzdem gesetzt werden, ruft man mit super().__init__(...) den Konstruktor der Basisklasse auf. super() bedeutet: „die Version aus der Basisklasse“."
+    },
+    {
+      "type": "code",
+      "content": "class Fahrzeug:\n    def __init__(self, marke, ps):\n        self.marke = marke\n        self.ps = ps\n\n    def beschreibung(self):\n        return f\"{self.marke} mit {self.ps} PS\"\n\nclass Elektroauto(Fahrzeug):\n    def __init__(self, marke, ps, akku_kwh):\n        super().__init__(marke, ps)    # Basisklasse erledigt marke und ps\n        self.akku_kwh = akku_kwh\n\n    def beschreibung(self):\n        basis = super().beschreibung() # geerbte Methode weiterverwenden\n        return f\"{basis}, Akku {self.akku_kwh} kWh\"\n\ne = Elektroauto(\"Tesla\", 300, 75)\nprint(e.beschreibung())   # Tesla mit 300 PS, Akku 75 kWh"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: super().__init__() vergessen. Dann fehlen die Attribute der Basisklasse, und beim Zugriff gibt es einen AttributeError."
+    },
+    {
+      "type": "code",
+      "content": "class Fahrrad(Fahrzeug):\n    def __init__(self, marke, gaenge):\n        self.gaenge = gaenge     # super().__init__ fehlt!\n\nf = Fahrrad(\"KTM\", 21)\nprint(f.marke)   # AttributeError: 'Fahrrad' object has no attribute 'marke'"
+    },
+    {
+      "type": "text",
+      "content": "Mit isinstance(objekt, Klasse) prüfst du, ob ein Objekt zu einer Klasse gehört – Unterklassen zählen dabei mit. Ein Elektroauto ist also auch ein Fahrzeug:\n\nisinstance(e, Elektroauto)  → True\nisinstance(e, Fahrzeug)     → True"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Person:\n    def gruss(self):\n        return \"Hallo\"\n\nclass Oesterreicher(Person):\n    def gruss(self):\n        return \"Servus\"\n\np = Oesterreicher()\nprint(p.gruss())",
+      "options": [
+        "Hallo",
+        "Servus",
+        "Hallo\nServus",
+        "Fehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "Oesterreicher überschreibt gruss(). Für ein Oesterreicher-Objekt wird daher die eigene Version verwendet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Person:\n    def __init__(self, name):\n        self.name = name\n\n    def info(self):\n        return self.name\n\nclass Lehrer(Person):\n    def info(self):\n        return super().info() + \" (Lehrer)\"\n\nprint(Lehrer(\"Huber\").info())",
+      "options": [
+        "Lehrer",
+        "Huber Lehrer",
+        "Huber (Lehrer)",
+        "AttributeError"
+      ],
+      "correctIndex": 2,
+      "explanation": "super().info() liefert \"Huber\" aus der Basisklasse, danach wird \" (Lehrer)\" angehängt."
+    },
+    {
+      "question": "Finde den Fehler: Welche Zeile löst einen Fehler aus?",
+      "code": "class Form:\n    def __init__(self, farbe):\n        self.farbe = farbe\n\nclass Kreis(Form):\n    def __init__(self, farbe, radius):\n        self.radius = radius\n\nk = Kreis(\"rot\", 2)\nprint(k.farbe)",
+      "options": [
+        "Zeile 5: class Kreis(Form):",
+        "Zeile 7: self.radius = radius",
+        "Zeile 10: print(k.farbe)",
+        "Keine – es wird rot ausgegeben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Kreis.__init__ ruft super().__init__(farbe) nicht auf, also wird self.farbe nie gesetzt. Der Zugriff k.farbe löst einen AttributeError aus."
+    },
+    {
+      "question": "Was liefert isinstance(h, Tier), wenn Hund von Tier erbt und h = Hund() ist?",
+      "options": [
+        "True",
+        "False",
+        "TypeError",
+        "Hund"
+      ],
+      "correctIndex": 0,
+      "explanation": "isinstance berücksichtigt Vererbung: Jeder Hund ist auch ein Tier."
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "id": "csharp-f4_03_dateien",
+  "title": "Dateien lesen und schreiben",
+  "summary": "Textdateien mit der Klasse File auf einen Schlag lesen und schreiben und große Dateien mit StreamReader und using zeilenweise verarbeiten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher waren alle Daten weg, sobald dein Programm beendet war. Mit Dateien kannst du Highscores, Einkaufslisten oder Notenlisten dauerhaft speichern. Die einfachste Möglichkeit bietet die Klasse File (aus System.IO, das bei .NET automatisch eingebunden ist). Mit WriteAllText schreibst du einen Text in eine Datei, mit ReadAllText liest du ihn wieder ein."
+    },
+    {
+      "type": "code",
+      "content": "File.WriteAllText(\"gruss.txt\", \"Servus aus der Datei!\");\n\nstring inhalt = File.ReadAllText(\"gruss.txt\");\nConsole.WriteLine(inhalt);\n// Ausgabe: Servus aus der Datei!"
+    },
+    {
+      "type": "text",
+      "content": "Gut zu wissen:\n• Gibst du nur einen Dateinamen an, landet die Datei im aktuellen Arbeitsordner deines Programms.\n• WriteAllText legt die Datei neu an oder überschreibt sie komplett – der alte Inhalt ist dann weg!\n• Willst du etwas hinten anhängen, nimm File.AppendAllText.\n\nMeistens arbeitest du mit Zeilen. Dafür gibt es WriteAllLines und ReadAllLines. Sie arbeiten mit einem string-Array (WriteAllLines nimmt auch eine List<string>)."
+    },
+    {
+      "type": "code",
+      "content": "var einkauf = new List<string> { \"Milch\", \"Brot\", \"Käse\" };\nFile.WriteAllLines(\"einkauf.txt\", einkauf);\nFile.AppendAllText(\"einkauf.txt\", \"Äpfel\\n\");\n\nstring[] zeilen = File.ReadAllLines(\"einkauf.txt\");\nConsole.WriteLine($\"{zeilen.Length} Einträge\");\nforeach (string z in zeilen)\n{\n    Console.WriteLine(\"- \" + z);\n}\n// Ausgabe:\n// 4 Einträge\n// - Milch\n// - Brot\n// - Käse\n// - Äpfel"
+    },
+    {
+      "type": "text",
+      "content": "Was passiert, wenn die Datei gar nicht existiert? Dann wirft ReadAllText eine FileNotFoundException. Du kannst vorher mit File.Exists prüfen oder die Exception mit try/catch abfangen – so wie du es im letzten Kapitel gelernt hast."
+    },
+    {
+      "type": "code",
+      "content": "string pfad = \"highscore.txt\";\nint highscore = 0;\n\nif (File.Exists(pfad))\n{\n    highscore = int.Parse(File.ReadAllText(pfad));\n}\nConsole.WriteLine(\"Alter Highscore: \" + highscore);\n\nint neuePunkte = 120;\nif (neuePunkte > highscore)\n{\n    File.WriteAllText(pfad, neuePunkte.ToString());\n    Console.WriteLine(\"Neuer Rekord gespeichert!\");\n}\n// Ausgabe beim ersten Start:\n// Alter Highscore: 0\n// Neuer Rekord gespeichert!"
+    },
+    {
+      "type": "text",
+      "content": "ReadAllLines lädt die ganze Datei auf einmal in den Speicher. Bei riesigen Dateien (etwa einer Logdatei mit Millionen Zeilen) ist das ungünstig. Dann liest du mit einem StreamReader Zeile für Zeile. ReadLine liefert die nächste Zeile – und null, wenn die Datei zu Ende ist.\n\nEin StreamReader hält die Datei geöffnet. Sie muss danach unbedingt wieder geschlossen werden, sonst bleibt sie gesperrt. Genau dafür gibt es den using-Block: Am Ende des Blocks wird die Datei automatisch geschlossen – auch dann, wenn mittendrin eine Exception auftritt."
+    },
+    {
+      "type": "code",
+      "content": "// noten.txt enthält:\n// Lena;1\n// Ali;3\n// Mia;2\nint summe = 0;\nusing (StreamReader reader = new StreamReader(\"noten.txt\"))\n{\n    string zeile;\n    while ((zeile = reader.ReadLine()) != null)\n    {\n        string[] teile = zeile.Split(';');\n        Console.WriteLine($\"{teile[0]} hat Note {teile[1]}\");\n        summe += int.Parse(teile[1]);\n    }\n}   // hier wird die Datei automatisch geschlossen\nConsole.WriteLine(\"Summe: \" + summe);\n// Ausgabe:\n// Lena hat Note 1\n// Ali hat Note 3\n// Mia hat Note 2\n// Summe: 6"
+    },
+    {
+      "type": "text",
+      "content": "Das Gegenstück zum Schreiben ist der StreamWriter mit WriteLine – ebenfalls im using-Block. Seit C# 8 gibt es außerdem die Kurzform using var reader = new StreamReader(...); ohne geschwungene Klammern. Dann wird die Datei am Ende des umgebenden Blocks geschlossen."
+    },
+    {
+      "type": "code",
+      "content": "using (StreamWriter writer = new StreamWriter(\"log.txt\"))\n{\n    for (int i = 1; i <= 3; i++)\n    {\n        writer.WriteLine($\"Runde {i} gespielt\");\n    }\n}\nConsole.WriteLine(File.ReadAllLines(\"log.txt\")[2]);\n// Ausgabe: Runde 3 gespielt"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Die Datei daten.txt enthält vorher die Zeilen \"eins\" und \"zwei\". Was gibt dieser Code aus?",
+      "code": "File.WriteAllText(\"daten.txt\", \"drei\");\nConsole.WriteLine(File.ReadAllLines(\"daten.txt\").Length);",
+      "options": [
+        "3",
+        "2",
+        "0",
+        "1"
+      ],
+      "correctIndex": 3,
+      "explanation": "WriteAllText überschreibt die Datei komplett. Danach steht nur noch \"drei\" darin – also genau eine Zeile."
+    },
+    {
+      "question": "Welche Exception wirft File.ReadAllText, wenn es die angegebene Datei nicht gibt?",
+      "code": "string text = File.ReadAllText(\"gibtsnicht.txt\");",
+      "options": [
+        "FileNotFoundException",
+        "NullReferenceException",
+        "FormatException",
+        "Keine – es wird ein leerer string geliefert"
+      ],
+      "correctIndex": 0,
+      "explanation": "Fehlt die Datei, wirft ReadAllText eine FileNotFoundException. Mit File.Exists kannst du das vorher prüfen."
+    },
+    {
+      "question": "Warum steht der StreamReader in einem using-Block?",
+      "options": [
+        "Damit die Datei schneller gelesen wird",
+        "Damit die Datei am Ende des Blocks automatisch geschlossen wird – auch bei einer Exception",
+        "Weil StreamReader sonst nicht kompiliert",
+        "Damit der Inhalt automatisch in einen string umgewandelt wird"
+      ],
+      "correctIndex": 1,
+      "explanation": "using sorgt dafür, dass die Datei am Ende des Blocks garantiert geschlossen wird. Sonst bliebe sie geöffnet und eventuell für andere Programme gesperrt."
+    },
+    {
+      "question": "Die Datei zahlen.txt enthält die Zeilen 4, 10 und 1. Was gibt dieser Code aus?",
+      "code": "int max = 0;\nusing (var r = new StreamReader(\"zahlen.txt\"))\n{\n    string z;\n    while ((z = r.ReadLine()) != null)\n    {\n        int n = int.Parse(z);\n        if (n > max) max = n;\n    }\n}\nFile.AppendAllText(\"zahlen.txt\", max + \"\\n\");\nConsole.WriteLine(File.ReadAllLines(\"zahlen.txt\").Length + max);",
+      "options": [
+        "14",
+        "13",
+        "15",
+        "Eine IOException, weil die Datei noch offen ist"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Maximum ist 10. Nach dem using-Block ist die Datei wieder geschlossen, AppendAllText hängt also problemlos eine vierte Zeile an. 4 Zeilen + 10 = 14."
+    }
+  ]
+}

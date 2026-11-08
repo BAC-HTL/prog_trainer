@@ -1,0 +1,97 @@
+{
+  "id": "python-f1_03_comprehensions",
+  "title": "Comprehensions",
+  "summary": "Listen, Sets und Dictionaries kurz und lesbar in einer Zeile erzeugen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Oft baust du eine neue Liste, indem du über eine andere Liste läufst und jedes Element umwandelst. Mit einer Schleife braucht das drei Zeilen:"
+    },
+    {
+      "type": "code",
+      "content": "zahlen = [1, 2, 3, 4]\nquadrate = []\nfor z in zahlen:\n    quadrate.append(z * z)\nprint(quadrate)   # [1, 4, 9, 16]"
+    },
+    {
+      "type": "text",
+      "content": "Eine List Comprehension erledigt das in einer Zeile. Lies sie von links nach rechts: „Nimm z * z für jedes z in zahlen.“ Vorne steht der Ausdruck, dahinter die for-Schleife – alles in eckigen Klammern."
+    },
+    {
+      "type": "code",
+      "content": "zahlen = [1, 2, 3, 4]\nquadrate = [z * z for z in zahlen]\nprint(quadrate)   # [1, 4, 9, 16]\n\nnamen = [\"anna\", \"ben\"]\nprint([n.upper() for n in namen])   # ['ANNA', 'BEN']"
+    },
+    {
+      "type": "text",
+      "content": "Mit einem if am Ende filterst du: Nur Elemente, für die die Bedingung wahr ist, landen in der neuen Liste."
+    },
+    {
+      "type": "code",
+      "content": "noten = [1, 5, 3, 5, 2]\nnegativ = [n for n in noten if n == 5]\nprint(len(negativ))   # 2\n\ngerade = [x for x in range(10) if x % 2 == 0]\nprint(gerade)         # [0, 2, 4, 6, 8]"
+    },
+    {
+      "type": "text",
+      "content": "Willst du jedes Element behalten, aber je nach Bedingung anders umwandeln, brauchst du if und else – dann steht beides VOR dem for. Typischer Fehler: else am Ende hinschreiben, das ist ein SyntaxError."
+    },
+    {
+      "type": "code",
+      "content": "punkte = [45, 80, 30, 95]\nergebnis = [\"bestanden\" if p >= 50 else \"nicht bestanden\" for p in punkte]\nprint(ergebnis)"
+    },
+    {
+      "type": "text",
+      "content": "Dasselbe Prinzip funktioniert für Sets (geschwungene Klammern) und Dictionaries (geschwungene Klammern mit schlüssel: wert).\n\nFaustregel: Comprehensions sind super für kurze, einfache Umwandlungen. Wird es kompliziert (mehrere Bedingungen, verschachtelte Logik), ist eine normale Schleife meist besser lesbar."
+    },
+    {
+      "type": "code",
+      "content": "woerter = [\"Hallo\", \"Welt\", \"Hi\"]\nlaengen = {w: len(w) for w in woerter}\nprint(laengen)   # {'Hallo': 5, 'Welt': 4, 'Hi': 2}\n\nanfangsbuchstaben = {w[0] for w in woerter}\nprint(sorted(anfangsbuchstaben))   # ['H', 'W']"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print([x * 2 for x in [1, 2, 3]])",
+      "options": [
+        "[1, 2, 3]",
+        "[2, 4, 6]",
+        "[1, 4, 9]",
+        "[3, 4, 5]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Für jedes x in der Liste wird x * 2 berechnet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print([x for x in range(1, 7) if x % 2 == 0])",
+      "options": [
+        "[1, 2, 3, 4, 5, 6]",
+        "[1, 3, 5]",
+        "[2, 4, 6]",
+        "[0, 2, 4, 6]"
+      ],
+      "correctIndex": 2,
+      "explanation": "range(1, 7) liefert 1 bis 6. Der Filter behält nur Zahlen, bei denen x % 2 == 0 ist."
+    },
+    {
+      "question": "Finde den Fehler: Warum funktioniert diese Zeile nicht?",
+      "code": "zahlen = [3, -1, 2]\nergebnis = [x for x in zahlen if x > 0 else \"neg\"]",
+      "options": [
+        "Comprehensions dürfen kein if enthalten",
+        "Bei if mit else muss beides vor dem for stehen",
+        "Strings sind in Comprehensions nicht erlaubt",
+        "Es fehlt ein append()"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein if am Ende ist nur ein Filter und darf kein else haben. Richtig wäre: [\"ok\" if x > 0 else \"neg\" for x in zahlen]."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print({w: len(w) for w in [\"a\", \"bb\"]})",
+      "options": [
+        "{'a': 1, 'bb': 2}",
+        "{1: 'a', 2: 'bb'}",
+        "['a', 'bb']",
+        "{'a', 'bb'}"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Dictionary Comprehension verwendet jedes Wort als Schlüssel und seine Länge als Wert."
+    }
+  ]
+}

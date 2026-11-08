@@ -1,0 +1,126 @@
+{
+  "id": "python-e5-pruefung",
+  "title": "Abschlussprüfung: Funktionen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def zeige():\n    print(\"A\")\n\nprint(\"B\")\nzeige()\nprint(\"C\")",
+      "options": [
+        "A\nB\nC",
+        "B\nA\nC",
+        "A\nC\nB",
+        "B\nC\nA"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das def führt noch nichts aus. Zuerst wird B ausgegeben, dann ruft zeige() die Funktion auf (A), danach folgt C."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def verdoppeln(x):\n    return x * 2\n\ndef plus_zwei(x):\n    return x + 2\n\nprint(plus_zwei(verdoppeln(3)))",
+      "options": [
+        "8",
+        "6",
+        "7",
+        "5"
+      ],
+      "correctIndex": 0,
+      "explanation": "verdoppeln(3) liefert 6, plus_zwei(6) liefert 8. Der innere Aufruf wird zuerst ausgewertet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def summieren(a, b):\n    print(a + b)\n\nx = summieren(1, 2) + 3\nprint(f\"Summe: {x}\")",
+      "options": [
+        "Summe: 6",
+        "Summe: 3",
+        "Summe: None",
+        "Fehler: TypeError"
+      ],
+      "correctIndex": 3,
+      "explanation": "summieren gibt nichts mit return zurück, liefert also None. None + 3 ist nicht erlaubt: TypeError: unsupported operand type(s)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def erster_negativer(werte):\n    for i in range(len(werte)):\n        if werte[i] < 0:\n            return i\n    return -1\n\nprint(erster_negativer([4, -2, 7, -9]))",
+      "options": [
+        "3",
+        "4",
+        "1",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Funktion gibt beim ersten gefundenen negativen Wert sofort dessen Index zurück. -2 steht an Index 1. Das return beendet die Schleife und die Funktion."
+    },
+    {
+      "question": "Welche Aussage über den Code stimmt?",
+      "code": "faktor = 2\n\ndef setze():\n    faktor = 5\n    return faktor * 4\n\nsetze()\nprint(faktor)",
+      "options": [
+        "Er gibt 20 aus, weil faktor global verändert wurde",
+        "Er gibt 2 aus, weil die Zuweisung faktor = 5 nur eine lokale Variable anlegt",
+        "Er löst einen UnboundLocalError aus",
+        "Er gibt 5 aus"
+      ],
+      "correctIndex": 1,
+      "explanation": "faktor = 5 in der Funktion erzeugt eine lokale Variable. Die globale faktor bleibt 2."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "stand = 0\n\ndef tor():\n    stand += 1\n\nfor i in range(3):\n    tor()\nprint(stand)",
+      "options": [
+        "0",
+        "3",
+        "Fehler: UnboundLocalError",
+        "1"
+      ],
+      "correctIndex": 2,
+      "explanation": "In der Funktion wird stand zugewiesen (stand += 1), daher ist stand lokal. Beim Lesen hat die lokale Variable noch keinen Wert: UnboundLocalError."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def gruessen(name, gruss=\"Hallo\", zeichen=\"!\"):\n    return f\"{gruss} {name}{zeichen}\"\n\nprint(gruessen(\"Max\", zeichen=\"?\"))",
+      "options": [
+        "Hallo Max?",
+        "Hi Max?",
+        "Hallo Max!",
+        "Hi Max!"
+      ],
+      "correctIndex": 0,
+      "explanation": "gruss behält den Standardwert \"Hallo\", zeichen wird per Schlüsselwort auf \"?\" gesetzt."
+    },
+    {
+      "question": "Welcher Aufruf von def flug(von, nach, klasse=\"Economy\") ist FEHLERHAFT?",
+      "options": [
+        "flug(\"Wien\", \"Rom\")",
+        "flug(nach=\"Rom\", von=\"Wien\")",
+        "flug(\"Wien\", nach=\"Rom\", klasse=\"Business\")",
+        "flug(von=\"Wien\", \"Rom\")"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nach einem Schlüsselwort-Argument darf kein Positions-Argument mehr folgen. flug(von=\"Wien\", \"Rom\") ist ein SyntaxError."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def ausgabe(zahl):\n    print(zahl, end=\"|\")\n\nfor i in range(1, 4):\n    ausgabe(i)",
+      "options": [
+        "1 2 3|",
+        "1|2|3|",
+        "1|2|3",
+        "1 2 3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei jedem Aufruf wird die Zahl mit end=\"|\" statt eines Zeilenumbruchs ausgegeben. Nach der 3 steht deshalb auch ein |."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def gross(namen):\n    ergebnis = []\n    for n in namen:\n        ergebnis.append(n.upper())\n    return ergebnis\n\nprint(gross([\"anna\", \"ben\"]))",
+      "options": [
+        "['ANNA', 'BEN']",
+        "['anna', 'ben']",
+        "[]",
+        "None"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Funktion baut eine neue Liste, hängt jeden Namen in Großbuchstaben an und gibt sie mit return zurück."
+    }
+  ]
+}

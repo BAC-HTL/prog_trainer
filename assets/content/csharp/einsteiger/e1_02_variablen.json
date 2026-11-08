@@ -1,0 +1,93 @@
+{
+  "id": "csharp-e1_02_variablen",
+  "title": "Variablen und Datentypen",
+  "summary": "Werte speichern mit int, double, string und bool, var verwenden und Text mit $\"...\" zusammenbauen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Variable ist wie eine beschriftete Schachtel, in der sich dein Programm einen Wert merkt. In C# schreibst du zuerst den Datentyp, dann den Namen und dann mit = den Wert:"
+    },
+    {
+      "type": "code",
+      "content": "int alter = 15;\ndouble preis = 4.99;\nstring name = \"Lena\";\nbool istSchueler = true;\n\nConsole.WriteLine(name);\nConsole.WriteLine(alter);\n// Ausgabe:\n// Lena\n// 15"
+    },
+    {
+      "type": "text",
+      "content": "Die vier wichtigsten Datentypen:\n• int – ganze Zahlen wie 15, 0 oder -3\n• double – Kommazahlen. Achtung: Im Code schreibst du einen Punkt, also 4.99 und nicht 4,99!\n• string – Text, immer zwischen doppelten Anführungszeichen\n• bool – Wahrheitswerte, nur true oder false"
+    },
+    {
+      "type": "text",
+      "content": "Den Wert einer Variable kannst du später ändern. Den Typ schreibst du dabei nicht noch einmal dazu, denn die Variable gibt es ja schon:"
+    },
+    {
+      "type": "code",
+      "content": "int punkte = 10;\npunkte = 25;\npunkte = punkte + 5;\nConsole.WriteLine(punkte);\n// Ausgabe: 30"
+    },
+    {
+      "type": "text",
+      "content": "Mit var musst du den Typ nicht selbst hinschreiben – der Compiler erkennt ihn am Wert. Wichtig: Der Typ steht danach trotzdem fest. C# ist typsicher: Einer int-Variable kannst du keinen Text zuweisen. Das merkt schon der Compiler, und das Programm startet gar nicht erst."
+    },
+    {
+      "type": "code",
+      "content": "var stadt = \"Graz\";   // stadt ist ein string\nvar anzahl = 3;       // anzahl ist ein int\nvar note = 1.5;       // note ist ein double\n\nanzahl = 4;           // OK, 4 ist ein int\n// anzahl = \"vier\";   // Fehler! Ein string passt nicht in einen int"
+    },
+    {
+      "type": "text",
+      "content": "Willst du Variablen in einen Text einbauen, verwendest du String-Interpolation: Vor die Anführungszeichen kommt ein $, und in geschwungenen Klammern { } steht die Variable oder sogar eine ganze Rechnung."
+    },
+    {
+      "type": "code",
+      "content": "string name = \"Lena\";\nint alter = 15;\nConsole.WriteLine($\"{name} ist {alter} Jahre alt.\");\nConsole.WriteLine($\"Nächstes Jahr ist sie {alter + 1}.\");\n// Ausgabe:\n// Lena ist 15 Jahre alt.\n// Nächstes Jahr ist sie 16."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 5;\nx = x + 3;\nx = 2;\nConsole.WriteLine(x);",
+      "options": [
+        "8",
+        "10",
+        "2",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine Variable merkt sich immer nur den letzten zugewiesenen Wert. Zuerst ist x 5, dann 8 – aber danach wird x auf 2 gesetzt."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int anzahl = \"7\";\nConsole.WriteLine(anzahl);",
+      "options": [
+        "Variablennamen müssen mit einem Großbuchstaben beginnen",
+        "Console.WriteLine kann keine Zahlen ausgeben",
+        "Es fehlt das Schlüsselwort var",
+        "\"7\" ist ein string und passt nicht in eine int-Variable"
+      ],
+      "correctIndex": 3,
+      "explanation": "Durch die Anführungszeichen ist \"7\" Text und keine Zahl. C# ist typsicher und erlaubt nicht, einem int einen string zuzuweisen. Richtig wäre: int anzahl = 7;"
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string name = \"Ali\";\nConsole.WriteLine(\"Hallo {name}!\");",
+      "options": [
+        "Hallo Ali!",
+        "Hallo {name}!",
+        "Hallo name!",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Vor den Anführungszeichen fehlt das $. Ohne $ ist {name} ganz normaler Text und wird genau so ausgegeben. Mit $\"Hallo {name}!\" käme Hallo Ali! heraus."
+    },
+    {
+      "question": "Welchen Datentyp hat die Variable wert?",
+      "code": "var wert = 3.0;",
+      "options": [
+        "double",
+        "int",
+        "string",
+        "bool"
+      ],
+      "correctIndex": 0,
+      "explanation": "3.0 hat einen Dezimalpunkt, deshalb ist es eine Kommazahl. var übernimmt diesen Typ, also ist wert ein double."
+    }
+  ]
+}

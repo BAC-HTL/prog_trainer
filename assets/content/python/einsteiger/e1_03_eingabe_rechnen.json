@@ -1,0 +1,93 @@
+{
+  "id": "python-e1_03_eingabe_rechnen",
+  "title": "Eingabe und Rechnen",
+  "summary": "Mit input() Daten einlesen, mit Zahlen rechnen und Ergebnisse mit f-Strings ausgeben.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit input() kann dein Programm Text von der Tastatur einlesen. Der Text in den Klammern wird als Aufforderung angezeigt, dann wartet das Programm, bis du etwas eintippst und Enter drückst."
+    },
+    {
+      "type": "code",
+      "content": "name = input(\"Wie heißt du? \")\nprint(\"Hallo \" + name)"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: input() liefert immer einen String – auch wenn du eine Zahl eintippst! \"5\" + \"3\" ergibt deshalb \"53\" und nicht 8. Mit int() wandelst du den Text in eine ganze Zahl um, mit float() in eine Kommazahl."
+    },
+    {
+      "type": "code",
+      "content": "alter = int(input(\"Wie alt bist du? \"))\nprint(alter + 1)  # bei Eingabe 15 → 16"
+    },
+    {
+      "type": "text",
+      "content": "Python kennt diese Rechenoperatoren:\n• + Addition\n• - Subtraktion\n• * Multiplikation\n• / Division (Ergebnis ist immer ein float)\n• // ganzzahlige Division (Nachkommastellen werden abgeschnitten)\n• % Rest der Division (Modulo)\n• ** Potenz"
+    },
+    {
+      "type": "code",
+      "content": "print(7 + 3)   # 10\nprint(7 - 3)   # 4\nprint(7 * 3)   # 21\nprint(7 / 2)   # 3.5\nprint(6 / 2)   # 3.0\nprint(7 // 2)  # 3\nprint(7 % 2)   # 1\nprint(2 ** 3)  # 8"
+    },
+    {
+      "type": "text",
+      "content": "Wie in der Mathematik gilt: Potenz vor Punkt vor Strich. Mit runden Klammern legst du die Reihenfolge selbst fest."
+    },
+    {
+      "type": "text",
+      "content": "Mit f-Strings baust du Variablen bequem in Text ein: Schreib ein f vor die Anführungszeichen und setze Variablen oder ganze Rechnungen in geschwungene Klammern { }."
+    },
+    {
+      "type": "code",
+      "content": "name = \"Lena\"\npunkte = 8\nprint(f\"{name} hat {punkte} Punkte.\")\nprint(f\"Doppelt so viele wären {punkte * 2}.\")\nprint(f\"(2 + 3) * 4 = {(2 + 3) * 4}\")"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(17 // 5, \"und\", 17 % 5)",
+      "options": [
+        "3 und 2",
+        "3.4 und 2",
+        "2 und 3",
+        "3 und 3.4"
+      ],
+      "correctIndex": 0,
+      "explanation": "17 // 5 ist die ganzzahlige Division: 5 passt 3-mal in 17. Der Rest ist 17 - 15 = 2, also ergibt 17 % 5 den Wert 2."
+    },
+    {
+      "question": "Der Benutzer gibt 4 ein. Was gibt dieser Code aus?",
+      "code": "zahl = input(\"Zahl: \")\nprint(zahl * 2)",
+      "options": [
+        "8",
+        "44",
+        "Eine Fehlermeldung",
+        "4 * 2"
+      ],
+      "correctIndex": 1,
+      "explanation": "input() liefert den String \"4\". Ein String mal 2 wiederholt den Text: \"4\" * 2 ergibt \"44\". Richtig wäre int(input(\"Zahl: \"))."
+    },
+    {
+      "question": "Finde den Fehler: Der Code soll z. B. „Nächstes Jahr bist du 16“ ausgeben.",
+      "code": "alter = int(input(\"Alter: \"))\nprint(\"Nächstes Jahr bist du {alter + 1}\")",
+      "options": [
+        "int() darf nicht um input() stehen",
+        "Statt + muss man += schreiben",
+        "Geschweifte Klammern sind in Python verboten",
+        "Vor dem String fehlt das f"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ohne das f vor den Anführungszeichen ist es ein normaler String – Python gibt {alter + 1} wörtlich aus, statt die Rechnung einzusetzen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(2 ** 3 + 10 / 4)",
+      "options": [
+        "10",
+        "8.5",
+        "10.5",
+        "4.5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst die Potenz: 2 ** 3 = 8. Dann die Division: 10 / 4 = 2.5. Zum Schluss 8 + 2.5 = 10.5. Weil / immer einen float liefert, ist das Ergebnis eine Kommazahl."
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "id": "python-f4_04_dunder_property",
+  "title": "Spezialmethoden und Properties",
+  "summary": "Mit __str__, __repr__, __eq__, __len__ und @property Klassen wie eingebaute Typen verhalten lassen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wenn du ein eigenes Objekt mit print ausgibst, bekommst du etwas Unschönes wie <__main__.Buch object at 0x7f...>. Mit Spezialmethoden (wegen der doppelten Unterstriche auch „Dunder-Methoden“ genannt, von double underscore) bestimmst du, wie sich dein Objekt verhält."
+    },
+    {
+      "type": "text",
+      "content": "__str__ liefert die lesbare Darstellung für Nutzer:innen – sie wird von print() und str() verwendet. __repr__ liefert eine eindeutige Darstellung für Entwickler:innen – sie erscheint z. B., wenn das Objekt in einer Liste ausgegeben wird. Beide müssen einen String zurückgeben (return, nicht print!)."
+    },
+    {
+      "type": "code",
+      "content": "class Buch:\n    def __init__(self, titel, seiten):\n        self.titel = titel\n        self.seiten = seiten\n\n    def __str__(self):\n        return f\"„{self.titel}“ ({self.seiten} Seiten)\"\n\n    def __repr__(self):\n        return f\"Buch('{self.titel}', {self.seiten})\"\n\nb = Buch(\"Momo\", 300)\nprint(b)        # „Momo“ (300 Seiten)\nprint([b])      # [Buch('Momo', 300)]"
+    },
+    {
+      "type": "text",
+      "content": "Normalerweise vergleicht == bei eigenen Objekten nur, ob es dasselbe Objekt ist. Zwei Punkte mit gleichen Koordinaten wären also „ungleich“. Mit __eq__ legst du selbst fest, wann zwei Objekte gleich sind. __len__ wird von len() aufgerufen und muss eine ganze Zahl liefern."
+    },
+    {
+      "type": "code",
+      "content": "class Punkt:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n\nprint(Punkt(1, 2) == Punkt(1, 2))   # True (ohne __eq__ wäre es False)\n\nclass Playlist:\n    def __init__(self):\n        self.songs = []\n\n    def __len__(self):\n        return len(self.songs)\n\np = Playlist()\np.songs.append(\"Song A\")\np.songs.append(\"Song B\")\nprint(len(p))   # 2"
+    },
+    {
+      "type": "text",
+      "content": "Manchmal soll ein Attribut geprüft werden, bevor es gesetzt wird – eine Note muss z. B. zwischen 1 und 5 liegen. Dafür gibt es @property. Damit schreibst du eine Methode, die von außen wie ein normales Attribut aussieht. Mit @name.setter definierst du, was beim Zuweisen passiert."
+    },
+    {
+      "type": "code",
+      "content": "class Pruefung:\n    def __init__(self, fach, note):\n        self.fach = fach\n        self.note = note          # nutzt schon den Setter!\n\n    @property\n    def note(self):\n        return self._note\n\n    @note.setter\n    def note(self, wert):\n        if wert < 1 or wert > 5:\n            raise ValueError(\"Note muss zwischen 1 und 5 liegen\")\n        self._note = wert\n\n    @property\n    def bestanden(self):          # nur lesbar, wird berechnet\n        return self.note < 5\n\np = Pruefung(\"Mathe\", 2)\nprint(p.note, p.bestanden)   # 2 True\np.note = 5\nprint(p.bestanden)           # False\np.note = 7                   # ValueError: Note muss zwischen 1 und 5 liegen"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: Der echte Wert wird in self._note (mit Unterstrich) gespeichert. Würdest du im Setter self.note = wert schreiben, ruft sich der Setter endlos selbst auf → RecursionError. Eine Property ohne Setter (wie bestanden) ist nur lesbar; eine Zuweisung p.bestanden = True ergibt einen AttributeError.\n\nWeitere Anfängerfehler: In __str__ print statt return verwenden (→ TypeError) und beim Zugriff auf eine Property Klammern setzen: p.note() statt p.note."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Stadt:\n    def __init__(self, name, ew):\n        self.name = name\n        self.ew = ew\n\n    def __str__(self):\n        return f\"{self.name} ({self.ew} EW)\"\n\n    def __repr__(self):\n        return f\"Stadt('{self.name}')\"\n\nprint([Stadt(\"Wien\", 2000000)])",
+      "options": [
+        "Wien (2000000 EW)",
+        "Stadt('Wien')",
+        "[Wien (2000000 EW)]",
+        "[Stadt('Wien')]"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine Liste zeigt ihre Elemente mit __repr__ an, nicht mit __str__."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Karte:\n    def __init__(self, wert):\n        self.wert = wert\n\na = Karte(10)\nb = Karte(10)\nprint(a == b)",
+      "options": [
+        "True",
+        "False",
+        "TypeError",
+        "None"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne __eq__ prüft == nur, ob es dasselbe Objekt ist. a und b sind zwei verschiedene Objekte → False."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert bei print(t)?",
+      "code": "class Team:\n    def __init__(self, groesse):\n        self.groesse = groesse\n\n    def __str__(self):\n        print(f\"Team: {self.groesse}\")\n\nt = Team(4)\nprint(t)",
+      "options": [
+        "Es wird Team: 4 ausgegeben",
+        "Team: 4 wird ausgegeben, danach TypeError",
+        "Es wird None ausgegeben",
+        "Nichts – print ignoriert __str__"
+      ],
+      "correctIndex": 1,
+      "explanation": "__str__ gibt mit print aus, liefert aber None zurück. print(t) verlangt einen String → nach der Ausgabe folgt TypeError: __str__ returned non-string."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Lager:\n    def __init__(self):\n        self._wert = 10\n\n    @property\n    def wert(self):\n        return self._wert\n\n    @wert.setter\n    def wert(self, neu):\n        if neu < 0:\n            raise ValueError(\"negativ\")\n        self._wert = neu\n\nl = Lager()\nl.wert = 20\nl.wert = -5\nprint(l.wert)",
+      "options": [
+        "10",
+        "20",
+        "ValueError",
+        "AttributeError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Zuweisung l.wert = -5 läuft über den Setter. Der Wert ist negativ, also wird ein ValueError ausgelöst."
+    }
+  ]
+}

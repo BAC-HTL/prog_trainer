@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../app_services.dart';
 import '../models/content.dart';
 import '../widgets/code_block.dart';
+import '../widgets/option_tile.dart';
 
-/// Multiple-Choice-Quiz zu einer Lektion.
+/// Multiple-Choice-Quiz zu einer Lektion – mit sofortigem Feedback.
 class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key, required this.lesson});
+  const QuizScreen({super.key, required this.lesson, required this.lessonPath});
 
   final Lesson lesson;
+  final String lessonPath;
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -33,6 +36,9 @@ class _QuizScreenState extends State<QuizScreen> {
       _index++;
       _selected = null;
     });
+    if (_index >= _questions.length) {
+      AppServices.of(context).progress.completeLesson(widget.lessonPath);
+    }
   }
 
   void _restart() {
@@ -59,24 +65,24 @@ class _QuizScreenState extends State<QuizScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          'Frage ${_index + 1} von ${_questions.length}',
-          style: theme.textTheme.labelLarge,
-        ),
+        LinearProgressIndicator(value: _index / _questions.length),
+        const SizedBox(height: 12),
+        Text('Frage ${_index + 1} von ${_questions.length}',
+            style: theme.textTheme.labelLarge),
         const SizedBox(height: 8),
         Text(q.question, style: theme.textTheme.titleLarge),
         if (q.code != null) CodeBlock(q.code!),
         const SizedBox(height: 12),
         for (var i = 0; i < q.options.length; i++)
-          _OptionTile(
+          OptionTile(
             text: q.options[i],
             state: !answered
-                ? _OptionState.neutral
+                ? OptionState.neutral
                 : i == q.correctIndex
-                    ? _OptionState.correct
+                    ? OptionState.correct
                     : i == _selected
-                        ? _OptionState.wrong
-                        : _OptionState.neutral,
+                        ? OptionState.wrong
+                        : OptionState.neutral,
             onTap: () => _select(i),
           ),
         if (answered) ...[
@@ -91,8 +97,7 @@ class _QuizScreenState extends State<QuizScreen> {
           FilledButton(
             onPressed: _next,
             child: Text(
-              _index + 1 < _questions.length ? 'Nächste Frage' : 'Ergebnis',
-            ),
+                _index + 1 < _questions.length ? 'Nächste Frage' : 'Ergebnis'),
           ),
         ],
       ],
@@ -114,10 +119,10 @@ class _QuizScreenState extends State<QuizScreen> {
               color: theme.colorScheme.primary,
             ),
             const SizedBox(height: 16),
-            Text(
-              '$_correctCount von $total richtig',
-              style: theme.textTheme.headlineSmall,
-            ),
+            Text('$_correctCount von $total richtig',
+                style: theme.textTheme.headlineSmall),
+            const SizedBox(height: 8),
+            const Text('Lektion abgeschlossen ✓'),
             const SizedBox(height: 24),
             OutlinedButton(
               onPressed: _restart,
@@ -125,43 +130,15 @@ class _QuizScreenState extends State<QuizScreen> {
             ),
             const SizedBox(height: 8),
             FilledButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Zurück zur Lektion'),
+              onPressed: () {
+                Navigator.of(context)
+                  ..pop()
+                  ..pop();
+              },
+              child: const Text('Zurück zum Kapitel'),
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-enum _OptionState { neutral, correct, wrong }
-
-class _OptionTile extends StatelessWidget {
-  const _OptionTile({
-    required this.text,
-    required this.state,
-    required this.onTap,
-  });
-
-  final String text;
-  final _OptionState state;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final (Color? color, IconData? icon) = switch (state) {
-      _OptionState.correct => (Colors.green.shade100, Icons.check_circle),
-      _OptionState.wrong => (Colors.red.shade100, Icons.cancel),
-      _OptionState.neutral => (null, null),
-    };
-
-    return Card(
-      color: color,
-      child: ListTile(
-        title: Text(text),
-        trailing: icon == null ? null : Icon(icon),
-        onTap: onTap,
       ),
     );
   }

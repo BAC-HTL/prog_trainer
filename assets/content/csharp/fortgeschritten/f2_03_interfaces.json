@@ -1,0 +1,87 @@
+{
+  "id": "csharp-f2_03_interfaces",
+  "title": "Interfaces",
+  "summary": "Mit interface Verträge definieren, die beliebige Klassen erfüllen können – auch mehrere gleichzeitig.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Interface (Schnittstelle) ist ein Vertrag. Es legt fest, welche Methoden und Properties eine Klasse haben muss – aber nicht, wie sie funktionieren. Jede Klasse, die das Interface implementiert, verspricht: „Ich kann das.“\n\nInterfaces schreibt man mit dem Schlüsselwort interface. Nach Konvention beginnt ihr Name mit einem großen I, z. B. IDruckbar oder ISpeicherbar."
+    },
+    {
+      "type": "code",
+      "content": "Rechnung r = new Rechnung(42, 99);\nZeugnis z = new Zeugnis(\"Lena\", 1);\n\nr.Drucken();\nz.Drucken();\n// Ausgabe:\n// Rechnung Nr. 42 über 99 Euro\n// Zeugnis von Lena, Durchschnitt: 1\n\ninterface IDruckbar\n{\n    void Drucken();\n}\n\nclass Rechnung : IDruckbar\n{\n    private int nummer;\n    private int betrag;\n\n    public Rechnung(int nummer, int betrag)\n    {\n        this.nummer = nummer;\n        this.betrag = betrag;\n    }\n\n    public void Drucken()\n    {\n        Console.WriteLine($\"Rechnung Nr. {nummer} über {betrag} Euro\");\n    }\n}\n\nclass Zeugnis : IDruckbar\n{\n    private string name;\n    private int schnitt;\n\n    public Zeugnis(string name, int schnitt)\n    {\n        this.name = name;\n        this.schnitt = schnitt;\n    }\n\n    public void Drucken()\n    {\n        Console.WriteLine($\"Zeugnis von {name}, Durchschnitt: {schnitt}\");\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Was fällt auf?\n• Im Interface stehen nur die Methodenköpfe mit Strichpunkt, ohne Körper und ohne public. Alles in einem Interface ist automatisch öffentlich.\n• In der Klasse muss die Methode public sein und genau dieselbe Signatur haben. Ein override brauchst du hier nicht.\n• Rechnung und Zeugnis haben sonst nichts gemeinsam – keine gemeinsame Basisklasse. Trotzdem sind beide druckbar.\n\nGenau das ist der Unterschied zur Vererbung: Vererbung sagt „X ist ein Y“, ein Interface sagt „X kann Z“."
+    },
+    {
+      "type": "text",
+      "content": "Wie eine Basisklasse kannst du auch ein Interface als Datentyp verwenden. Eine Variable vom Typ IDruckbar kann jedes Objekt aufnehmen, dessen Klasse IDruckbar implementiert. Damit kannst du Methoden schreiben, die mit allem funktionieren, was „druckbar“ ist:"
+    },
+    {
+      "type": "code",
+      "content": "IDruckbar[] stapel = { new Foto(\"Urlaub.jpg\"), new Brief(\"Oma\"), new Foto(\"Klasse.png\") };\n\nforeach (IDruckbar d in stapel)\n{\n    d.Drucken();\n}\nConsole.WriteLine($\"{stapel.Length} Seiten gedruckt.\");\n// Ausgabe:\n// Foto: Urlaub.jpg\n// Brief an Oma\n// Foto: Klasse.png\n// 3 Seiten gedruckt.\n\ninterface IDruckbar\n{\n    void Drucken();\n}\n\nclass Foto : IDruckbar\n{\n    private string datei;\n    public Foto(string datei) { this.datei = datei; }\n    public void Drucken() => Console.WriteLine($\"Foto: {datei}\");\n}\n\nclass Brief : IDruckbar\n{\n    private string empfaenger;\n    public Brief(string empfaenger) { this.empfaenger = empfaenger; }\n    public void Drucken() => Console.WriteLine($\"Brief an {empfaenger}\");\n}"
+    },
+    {
+      "type": "text",
+      "content": "Der große Vorteil: Eine Klasse darf nur von einer Basisklasse erben, aber beliebig viele Interfaces implementieren. Man trennt sie mit Beistrichen. Gibt es zusätzlich eine Basisklasse, muss diese als Erstes in der Liste stehen.\n\nInterfaces können auch Properties vorschreiben. Die Klasse kann sie dann z. B. als Auto-Property umsetzen."
+    },
+    {
+      "type": "code",
+      "content": "Ente donald = new Ente(\"Donald\");\ndonald.Schwimmen();\ndonald.Fliegen();\nConsole.WriteLine($\"Flughöhe: {donald.MaxHoehe} m\");\n// Ausgabe:\n// Donald paddelt.\n// Donald flattert los.\n// Flughöhe: 300 m\n\ninterface ISchwimmer\n{\n    void Schwimmen();\n}\n\ninterface IFlieger\n{\n    int MaxHoehe { get; }\n    void Fliegen();\n}\n\nclass Tier\n{\n    public string Name { get; }\n    public Tier(string name) { Name = name; }\n}\n\n// zuerst die Basisklasse, dann die Interfaces\nclass Ente : Tier, ISchwimmer, IFlieger\n{\n    public int MaxHoehe { get; } = 300;\n\n    public Ente(string name) : base(name) { }\n\n    public void Schwimmen() => Console.WriteLine($\"{Name} paddelt.\");\n    public void Fliegen() => Console.WriteLine($\"{Name} flattert los.\");\n}"
+    },
+    {
+      "type": "text",
+      "content": "Interfaces begegnen dir in .NET ständig, zum Beispiel IComparable (Objekte lassen sich vergleichen und sortieren) oder IEnumerable (man kann mit foreach darüber laufen). Das sind dieselben Verträge, nur von Microsoft geschrieben.\n\nTypische Fehler:\n• Eine Methode des Interfaces vergessen – dann meldet der Compiler, dass die Klasse das Interface-Member nicht implementiert.\n• public in der Klasse vergessen – eine Interface-Methode muss öffentlich umgesetzt werden.\n• new IDruckbar() schreiben – von einem Interface kann man genauso wenig wie von einer abstrakten Klasse ein Objekt erzeugen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Spiel s = new Spiel();\ns.Speichern();\n\ninterface ISpeicherbar\n{\n    void Speichern();\n    void Laden();\n}\n\nclass Spiel : ISpeicherbar\n{\n    public void Speichern()\n    {\n        Console.WriteLine(\"Gespeichert.\");\n    }\n}",
+      "options": [
+        "Interfaces müssen mit abstract gekennzeichnet werden",
+        "Spiel implementiert die Methode Laden() aus ISpeicherbar nicht",
+        "Die Methode Speichern() braucht das Schlüsselwort override",
+        "Interface-Namen dürfen nicht mit I beginnen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Wer ein Interface implementiert, muss alle seine Member umsetzen. Spiel hat Speichern(), aber Laden() fehlt. Ein override ist bei Interfaces nicht nötig."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "ISchaltbar[] geraete = { new Lampe(), new Radio() };\nforeach (ISchaltbar g in geraete)\n{\n    g.Einschalten();\n}\n\ninterface ISchaltbar\n{\n    void Einschalten();\n}\n\nclass Lampe : ISchaltbar\n{\n    public void Einschalten() => Console.Write(\"Licht an | \");\n}\n\nclass Radio : ISchaltbar\n{\n    public void Einschalten() => Console.Write(\"Musik an\");\n}",
+      "options": [
+        "Licht an | Musik an",
+        "Licht aus | Musik aus",
+        "Licht an | Musik aus",
+        "Musik an | Licht an"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beide Objekte werden über den Interface-Typ ISchaltbar angesprochen. Jeder Aufruf von Einschalten() führt die Methode der jeweiligen Klasse aus – in der Reihenfolge des Arrays: zuerst Lampe, dann Radio."
+    },
+    {
+      "question": "Welche Klassendeklaration ist in C# erlaubt? (Fahrzeug und Boot sind Klassen, IElektrisch und ISchwimmfaehig Interfaces)",
+      "options": [
+        "class Amphibie : Fahrzeug, Boot",
+        "class Amphibie : IElektrisch, Fahrzeug",
+        "class Amphibie : Fahrzeug, IElektrisch, ISchwimmfaehig",
+        "class Amphibie : Fahrzeug : ISchwimmfaehig"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine Klasse darf nur von einer Basisklasse erben, aber mehrere Interfaces implementieren. Die Basisklasse muss dabei als Erste in der Liste stehen, alles wird mit Beistrichen getrennt."
+    },
+    {
+      "question": "Was ist der wichtigste Unterschied zwischen einem Interface und einer Basisklasse?",
+      "options": [
+        "Ein Interface beschreibt, was eine Klasse können muss, und eine Klasse kann viele Interfaces implementieren",
+        "Ein Interface darf nur von einer einzigen Klasse implementiert werden",
+        "Von einem Interface kann man mit new Objekte erzeugen",
+        "Interfaces können nur Felder enthalten, aber keine Methoden"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Interface ist ein Vertrag („kann Z“) ohne eigene Umsetzung. Eine Klasse darf beliebig viele Interfaces implementieren, aber nur von einer Basisklasse erben."
+    }
+  ]
+}

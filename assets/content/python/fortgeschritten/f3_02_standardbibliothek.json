@@ -1,0 +1,96 @@
+{
+  "id": "python-f3_02_standardbibliothek",
+  "title": "Die Standardbibliothek",
+  "summary": "Nützliche eingebaute Module kennenlernen: math, random, datetime, collections und pathlib.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Python kommt „mit Batterien“: Die Standardbibliothek enthält hunderte Module, die du ohne Installation importieren kannst. Hier sind die wichtigsten für den Alltag. Los geht es mit math für Mathematik:\n• math.sqrt(x) – Wurzel\n• math.floor(x) / math.ceil(x) – ab- bzw. aufrunden auf eine ganze Zahl\n• math.pi – die Zahl Pi"
+    },
+    {
+      "type": "code",
+      "content": "import math\n\nradius = 2\nflaeche = math.pi * radius ** 2\nprint(f\"Fläche: {flaeche:.2f}\")   # Fläche: 12.57\n\nschueler = 23\nbusse = math.ceil(schueler / 10)   # Busse für je 10 Personen\nprint(busse)                      # 3"
+    },
+    {
+      "type": "text",
+      "content": "random liefert Zufallszahlen – ideal für Spiele:\n• random.randint(a, b) – ganze Zahl von a bis b (b ist hier INKLUSIVE, anders als bei range!)\n• random.choice(liste) – ein zufälliges Element\n• random.shuffle(liste) – mischt die Liste direkt\nMit random.seed(zahl) erhältst du bei jedem Start dieselbe „Zufallsfolge“ – praktisch zum Testen."
+    },
+    {
+      "type": "code",
+      "content": "import random\n\nwuerfel = random.randint(1, 6)\nprint(1 <= wuerfel <= 6)   # True\n\nkarten = [\"Ass\", \"König\", \"Dame\"]\nrandom.shuffle(karten)\nprint(len(karten))         # 3 – nur die Reihenfolge ist anders\nprint(random.choice([\"Schere\", \"Stein\", \"Papier\"]))"
+    },
+    {
+      "type": "text",
+      "content": "datetime hilft beim Rechnen mit Datum und Zeit. date(jahr, monat, tag) erzeugt ein Datum, date.today() liefert das heutige. Mit timedelta addierst du Tage, und zwei Daten kannst du voneinander abziehen. strftime() formatiert ein Datum: %d = Tag, %m = Monat, %Y = Jahr."
+    },
+    {
+      "type": "code",
+      "content": "from datetime import date, timedelta\n\nferien = date(2026, 7, 4)\nprint(ferien.strftime(\"%d.%m.%Y\"))   # 04.07.2026\n\nabgabe = date(2026, 3, 10) + timedelta(days=14)\nprint(abgabe)                        # 2026-03-24\n\ntage = (date(2026, 12, 24) - date(2026, 12, 1)).days\nprint(f\"Noch {tage} Tage bis Weihnachten\")   # 23"
+    },
+    {
+      "type": "text",
+      "content": "collections bietet erweiterte Datenstrukturen. Counter zählt Elemente in einem Schritt – das Zählmuster mit get() aus dem Dictionary-Kapitel wird damit zum Einzeiler. most_common(n) liefert die n häufigsten Elemente. Fragst du nach einem Element, das nie vorkam, liefert ein Counter 0 statt eines KeyErrors. defaultdict ist ein Dictionary, das fehlende Schlüssel automatisch mit einem Startwert anlegt."
+    },
+    {
+      "type": "code",
+      "content": "from collections import Counter, defaultdict\n\nstimmen = [\"Pizza\", \"Döner\", \"Pizza\", \"Sushi\", \"Pizza\"]\nzaehler = Counter(stimmen)\nprint(zaehler[\"Pizza\"])          # 3\nprint(zaehler.most_common(1))    # [('Pizza', 3)]\n\nklassen = defaultdict(list)\nklassen[\"3AHIT\"].append(\"Lena\")   # kein KeyError!\nprint(klassen[\"3AHIT\"])           # ['Lena']"
+    },
+    {
+      "type": "text",
+      "content": "Für Dateipfade gibt es os und das modernere pathlib. Ein Path-Objekt setzt Pfade mit / zusammen und verwendet automatisch das richtige Trennzeichen (\\ unter Windows, / unter Linux und macOS). Nützlich sind .name (Dateiname), .stem (Name ohne Endung), .suffix (Endung) und .exists(). os.getcwd() zeigt dir den aktuellen Arbeitsordner."
+    },
+    {
+      "type": "code",
+      "content": "from pathlib import Path\nimport os\n\npfad = Path(\"daten\") / \"noten.txt\"\nprint(pfad.name)      # noten.txt\nprint(pfad.stem)      # noten\nprint(pfad.suffix)    # .txt\nprint(pfad.exists())  # False, solange es die Datei nicht gibt\n\nPath(\"daten\").mkdir(exist_ok=True)\npfad.write_text(\"Mathe;2\\n\", encoding=\"utf-8\")\nprint(pfad.read_text(encoding=\"utf-8\").strip())   # Mathe;2\nprint(os.path.exists(pfad))                       # True"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Werte kann random.randint(1, 3) liefern?",
+      "options": [
+        "0, 1, 2",
+        "1, 2",
+        "1, 2, 3",
+        "0, 1, 2, 3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei randint sind beide Grenzen inklusive – anders als bei range(1, 3)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import math\nprint(math.ceil(5 / 2))",
+      "options": [
+        "2",
+        "3",
+        "2.5",
+        "2.0"
+      ],
+      "correctIndex": 1,
+      "explanation": "math.ceil rundet immer auf die nächste ganze Zahl auf: 2.5 wird zu 3."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from datetime import date, timedelta\nprint(date(2026, 2, 28) + timedelta(days=1))",
+      "options": [
+        "2026-02-28",
+        "2026-03-01",
+        "2026-02-29",
+        "ValueError"
+      ],
+      "correctIndex": 1,
+      "explanation": "2026 ist kein Schaltjahr. Der Tag nach dem 28. Februar ist daher der 1. März. timedelta kümmert sich um solche Details."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from collections import Counter\nprint(Counter([\"a\", \"b\", \"a\", \"b\", \"a\"]).most_common(1))",
+      "options": [
+        "[('a', 3)]",
+        "[('b', 2)]",
+        "{'a': 3}",
+        "3"
+      ],
+      "correctIndex": 0,
+      "explanation": "Counter zählt: \"a\" kommt dreimal vor, \"b\" zweimal. most_common(1) liefert eine Liste mit dem häufigsten Paar."
+    }
+  ]
+}

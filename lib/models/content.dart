@@ -1,8 +1,7 @@
 /// Datenmodelle für die Lerninhalte.
 ///
-/// Die Inhalte liegen als JSON-Dateien unter `assets/content/` und werden
-/// beim Start geladen. So kann man neue Sprachen und Lektionen hinzufügen,
-/// ohne den App-Code anzufassen.
+/// Aufbau: Track (z. B. Python) → Level (Einsteiger … Senior) → Kapitel →
+/// Lektionen + Abschlussprüfung. Alles liegt als JSON unter `assets/content/`.
 library;
 
 enum TrackKind { language, concept }
@@ -15,7 +14,9 @@ class Track {
     required this.description,
     required this.icon,
     required this.kind,
-    required this.lessonPaths,
+    required this.levelPaths,
+    this.challengesPath,
+    this.runtime,
   });
 
   final String id;
@@ -24,10 +25,17 @@ class Track {
   final String icon;
   final TrackKind kind;
 
-  /// Pfade relativ zu `assets/content/`, z. B. `python/01_hallo_welt.json`.
-  final List<String> lessonPaths;
+  /// Pfade relativ zu `assets/content/`, z. B. `python/einsteiger/level.json`.
+  final List<String> levelPaths;
 
-  bool get isAvailable => lessonPaths.isNotEmpty;
+  /// Datei mit den Herausforderungen dieser Sprache (falls vorhanden).
+  final String? challengesPath;
+
+  /// Welche Laufzeit Code dieses Tracks ausführt (`python`, `csharp`).
+  final String? runtime;
+
+  bool get isAvailable => levelPaths.isNotEmpty;
+  bool get hasChallenges => challengesPath != null;
 
   factory Track.fromJson(Map<String, dynamic> json) {
     return Track(
@@ -36,7 +44,64 @@ class Track {
       description: json['description'] as String,
       icon: json['icon'] as String? ?? 'code',
       kind: json['kind'] == 'concept' ? TrackKind.concept : TrackKind.language,
+      levelPaths: List<String>.from(json['levels'] as List? ?? const []),
+      challengesPath: json['challenges'] as String?,
+      runtime: json['runtime'] as String?,
+    );
+  }
+}
+
+/// Eine Stufe innerhalb eines Tracks, z. B. "Einsteiger".
+class Level {
+  const Level({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.chapters,
+  });
+
+  final String id;
+  final String title;
+  final String description;
+  final List<Chapter> chapters;
+
+  factory Level.fromJson(Map<String, dynamic> json) {
+    return Level(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String? ?? '',
+      chapters: (json['chapters'] as List)
+          .map((c) => Chapter.fromJson(c as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
+/// Ein Kapitel mit mehreren Lektionen und einer Abschlussprüfung.
+class Chapter {
+  const Chapter({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.lessonPaths,
+    this.examPath,
+  });
+
+  final String id;
+  final String title;
+  final String description;
+  final List<String> lessonPaths;
+  final String? examPath;
+
+  bool get isAvailable => lessonPaths.isNotEmpty;
+
+  factory Chapter.fromJson(Map<String, dynamic> json) {
+    return Chapter(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String? ?? '',
       lessonPaths: List<String>.from(json['lessons'] as List? ?? const []),
+      examPath: json['exam'] as String?,
     );
   }
 }
@@ -58,7 +123,7 @@ class LessonSection {
   }
 }
 
-/// Eine Multiple-Choice-Frage.
+/// Eine Multiple-Choice-Frage (für Quiz und Prüfung).
 class QuizQuestion {
   const QuizQuestion({
     required this.question,
@@ -111,6 +176,32 @@ class Lesson {
           .map((s) => LessonSection.fromJson(s as Map<String, dynamic>))
           .toList(),
       quiz: (json['quiz'] as List? ?? const [])
+          .map((q) => QuizQuestion.fromJson(q as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+}
+
+/// Abschlussprüfung eines Kapitels.
+class Exam {
+  const Exam({
+    required this.id,
+    required this.title,
+    required this.passPercent,
+    required this.questions,
+  });
+
+  final String id;
+  final String title;
+  final int passPercent;
+  final List<QuizQuestion> questions;
+
+  factory Exam.fromJson(Map<String, dynamic> json) {
+    return Exam(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      passPercent: json['passPercent'] as int? ?? 70,
+      questions: (json['questions'] as List)
           .map((q) => QuizQuestion.fromJson(q as Map<String, dynamic>))
           .toList(),
     );

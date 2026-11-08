@@ -1,0 +1,93 @@
+{
+  "id": "python-f1_02_tupel_sets",
+  "title": "Tupel und Sets",
+  "summary": "Unveränderliche Tupel und Mengen ohne Duplikate kennenlernen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Tupel ist wie eine Liste, die du nicht mehr ändern kannst. Du schreibst es mit runden statt eckigen Klammern. Index und Slicing funktionieren genau wie bei Listen. Tupel eignen sich für Werte, die zusammengehören und fix sind – etwa Koordinaten oder ein Datum.\n\nVersuchst du, ein Element eines Tupels zu ändern, bekommst du einen TypeError. Achtung bei Tupeln mit nur einem Element: (5) ist einfach die Zahl 5. Für ein Tupel brauchst du ein Komma: (5,)."
+    },
+    {
+      "type": "code",
+      "content": "punkt = (3, 5)\ngeburtstag = (2008, 4, 17)\nprint(punkt[0])        # 3\nprint(geburtstag[1:])  # (4, 17)\nprint(len(geburtstag)) # 3\n\n# punkt[0] = 10   # TypeError: 'tuple' object does not support item assignment\n\nprint(type((5)))    # <class 'int'>\nprint(type((5,)))   # <class 'tuple'>"
+    },
+    {
+      "type": "text",
+      "content": "Sehr praktisch ist das Entpacken: Du verteilst die Werte eines Tupels auf mehrere Variablen. So kann eine Funktion auch mehrere Werte zurückgeben – sie gibt in Wahrheit ein Tupel zurück. Und so tauschst du zwei Variablen in einer Zeile."
+    },
+    {
+      "type": "code",
+      "content": "def min_max(zahlen):\n    return min(zahlen), max(zahlen)\n\nkleinste, groesste = min_max([4, 9, 1, 7])\nprint(kleinste, groesste)   # 1 9\n\na, b = 1, 2\na, b = b, a\nprint(a, b)                 # 2 1"
+    },
+    {
+      "type": "text",
+      "content": "Ein Set (Menge) ist eine Sammlung ohne Duplikate und ohne feste Reihenfolge. Du schreibst es mit geschwungenen Klammern, aber ohne Doppelpunkte. Ein leeres Set erzeugst du mit set() – denn {} ist ein leeres Dictionary! Mit add() fügst du hinzu, mit remove() entfernst du, und in prüft blitzschnell, ob etwas enthalten ist. Einen Index gibt es nicht."
+    },
+    {
+      "type": "code",
+      "content": "besucher = [\"Lena\", \"Tim\", \"Lena\", \"Ali\", \"Tim\"]\neindeutig = set(besucher)\nprint(len(eindeutig))      # 3\nprint(\"Ali\" in eindeutig)  # True\n\nfarben = set()\nfarben.add(\"rot\")\nfarben.add(\"rot\")   # Duplikat wird ignoriert\nprint(farben)       # {'rot'}"
+    },
+    {
+      "type": "text",
+      "content": "Sets beherrschen Mengenoperationen aus der Mathematik:\n• a | b – Vereinigung (alles, was in a oder b ist)\n• a & b – Schnittmenge (was in beiden ist)\n• a - b – Differenz (was in a, aber nicht in b ist)\nDa Sets ungeordnet sind, sortieren wir sie hier mit sorted() für eine stabile Ausgabe."
+    },
+    {
+      "type": "code",
+      "content": "fussball = {\"Anna\", \"Ben\", \"Cem\"}\nschach = {\"Ben\", \"Dora\"}\n\nprint(sorted(fussball | schach))   # ['Anna', 'Ben', 'Cem', 'Dora']\nprint(sorted(fussball & schach))   # ['Ben']\nprint(sorted(fussball - schach))   # ['Anna', 'Cem']"
+    },
+    {
+      "type": "text",
+      "content": "Wann was?\n• Liste: geordnet, veränderbar, Duplikate erlaubt\n• Tupel: geordnet, unveränderlich – für fixe Datensätze\n• Set: ungeordnet, keine Duplikate – zum Entfernen doppelter Werte und für schnelles in\n• Dictionary: Schlüssel → Wert"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "zahlen = {1, 2, 2, 3, 3, 3}\nprint(len(zahlen))",
+      "options": [
+        "6",
+        "3",
+        "4",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Set speichert jeden Wert nur einmal. Übrig bleiben 1, 2 und 3."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert bei diesem Code?",
+      "code": "position = (10, 20)\nposition[0] = 99\nprint(position)",
+      "options": [
+        "Er gibt (10, 20) aus",
+        "Er gibt (99, 20) aus",
+        "TypeError, weil Tupel unveränderlich sind",
+        "IndexError, weil der Index 0 nicht existiert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Tupel können nach dem Erzeugen nicht verändert werden. Die Zuweisung an ein Element löst einen TypeError aus."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "a = {\"a\", \"b\", \"c\"}\nb = {\"b\", \"c\", \"d\"}\nprint(sorted(a & b))",
+      "options": [
+        "['b', 'c']",
+        "['a', 'b', 'c', 'd']",
+        "['a']",
+        "['a', 'd']"
+      ],
+      "correctIndex": 0,
+      "explanation": "& bildet die Schnittmenge: Nur \"b\" und \"c\" kommen in beiden Sets vor."
+    },
+    {
+      "question": "Welchen Typ hat x = {} ?",
+      "code": "x = {}\nprint(type(x).__name__)",
+      "options": [
+        "set",
+        "tuple",
+        "dict",
+        "list"
+      ],
+      "correctIndex": 2,
+      "explanation": "Leere geschwungene Klammern ergeben ein leeres Dictionary. Ein leeres Set erzeugst du mit set()."
+    }
+  ]
+}

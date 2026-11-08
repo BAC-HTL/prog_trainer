@@ -1,0 +1,97 @@
+{
+  "id": "python-e4_04_slicing",
+  "title": "Slicing",
+  "summary": "Mit [start:stop:schritt] Teile aus Listen und Strings herausschneiden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit einem Index holst du ein einzelnes Element. Mit Slicing („Schneiden“) holst du einen ganzen Ausschnitt. Die Schreibweise ist [start:stop] – genau wie bei range() ist start dabei und stop nicht mehr."
+    },
+    {
+      "type": "code",
+      "content": "zahlen = [10, 20, 30, 40, 50]\nprint(zahlen[1:3])   # [20, 30]\nprint(zahlen[0:4])   # [10, 20, 30, 40]"
+    },
+    {
+      "type": "text",
+      "content": "Lässt du start weg, beginnt der Ausschnitt am Anfang. Lässt du stop weg, geht er bis zum Ende. Negative Zahlen zählen wieder von hinten. Das funktioniert genauso bei Strings – das Ergebnis ist dann ein String."
+    },
+    {
+      "type": "code",
+      "content": "zahlen = [10, 20, 30, 40, 50]\nprint(zahlen[:2])    # [10, 20]      – die ersten 2\nprint(zahlen[2:])    # [30, 40, 50]  – ab Index 2\nprint(zahlen[-2:])   # [40, 50]      – die letzten 2\n\nwort = \"Programmieren\"\nprint(wort[:7])      # Program\nprint(wort[-4:])     # eren"
+    },
+    {
+      "type": "text",
+      "content": "Ein dritter Wert gibt die Schrittweite an: [start:stop:schritt]. Mit dem Schritt -1 läufst du rückwärts – [::-1] dreht eine Liste oder einen String komplett um."
+    },
+    {
+      "type": "code",
+      "content": "zahlen = [0, 1, 2, 3, 4, 5, 6]\nprint(zahlen[::2])    # [0, 2, 4, 6]  – jedes zweite\nprint(zahlen[1::2])   # [1, 3, 5]\nprint(zahlen[::-1])   # [6, 5, 4, 3, 2, 1, 0]\n\nprint(\"Lager\"[::-1])  # regaL"
+    },
+    {
+      "type": "text",
+      "content": "Damit lässt sich zum Beispiel ganz einfach prüfen, ob ein Wort ein Palindrom ist – also vorwärts und rückwärts gleich gelesen wird:"
+    },
+    {
+      "type": "code",
+      "content": "wort = input(\"Wort: \").lower()\nif wort == wort[::-1]:\n    print(\"Palindrom!\")\nelse:\n    print(\"Kein Palindrom.\")"
+    },
+    {
+      "type": "text",
+      "content": "Gut zu wissen: Anders als ein einzelner Index löst ein Slice keinen Fehler aus, wenn er über das Ende hinausgeht – er liefert einfach weniger (oder gar keine) Elemente. Außerdem erzeugt ein Slice immer eine neue Liste. liste[:] ist daher eine einfache Möglichkeit, eine Kopie zu machen."
+    },
+    {
+      "type": "code",
+      "content": "zahlen = [1, 2, 3]\nprint(zahlen[1:100])  # [2, 3] – kein Fehler\nprint(zahlen[5:])     # []\n\nkopie = zahlen[:]\nkopie.append(4)\nprint(zahlen)  # [1, 2, 3] – Original unverändert\nprint(kopie)   # [1, 2, 3, 4]"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "buchstaben = [\"a\", \"b\", \"c\", \"d\", \"e\"]\nprint(buchstaben[1:3])",
+      "options": [
+        "['b', 'c', 'd']",
+        "['b', 'c']",
+        "['a', 'b', 'c']",
+        "['c', 'd']"
+      ],
+      "correctIndex": 1,
+      "explanation": "[1:3] beginnt bei Index 1 (\"b\") und endet vor Index 3. Also sind nur \"b\" und \"c\" dabei."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "wort = \"Haustür\"\nprint(wort[-3:])",
+      "options": [
+        "Haus",
+        "ür",
+        "Hau",
+        "tür"
+      ],
+      "correctIndex": 3,
+      "explanation": "[-3:] liefert die letzten drei Zeichen des Strings."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "werte = [1, 2, 3]\nprint(werte[5:10])",
+      "options": [
+        "5",
+        "[]",
+        "Fehler: IndexError",
+        "[1, 2, 3]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Slice, der hinter dem Ende beginnt, löst keinen Fehler aus, sondern liefert eine leere Liste."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "ziffern = \"0123456789\"\nrueckwaerts = ziffern[::-1]\nprint(rueckwaerts[1::2])",
+      "options": [
+        "86420",
+        "97531",
+        "13579",
+        "02468"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zuerst dreht [::-1] den String um: \"9876543210\". Davon nimmt [1::2] jedes zweite Zeichen ab Index 1: 8, 6, 4, 2, 0."
+    }
+  ]
+}

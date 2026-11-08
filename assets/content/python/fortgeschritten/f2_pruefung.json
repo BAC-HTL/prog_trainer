@@ -1,0 +1,126 @@
+{
+  "id": "python-f2-pruefung",
+  "title": "Abschlussprüfung: Fehler & Dateien",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for t in [\"1\", \"x\", \"3\"]:\n    try:\n        print(int(t))\n    except ValueError:\n        print(\"Fehler\")",
+      "options": [
+        "1\n2\n3",
+        "1\n3",
+        "1\nFehler\n3",
+        "1\nFehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "\"x\" kann nicht in int umgewandelt werden. Der Fehler wird pro Durchlauf abgefangen, die Schleife läuft weiter."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try:\n    print(\"A\")\nexcept ValueError:\n    print(\"B\")\nfinally:\n    print(\"C\")",
+      "options": [
+        "A\nC",
+        "A\nB\nC",
+        "B\nC",
+        "A\nB"
+      ],
+      "correctIndex": 0,
+      "explanation": "Im try-Block tritt kein Fehler auf: A wird ausgegeben, der except-Block wird übersprungen und finally gibt immer C aus."
+    },
+    {
+      "question": "Welcher Fehler tritt bei {\"a\": 1}[\"b\"] auf?",
+      "code": "{\"a\": 1}[\"b\"]",
+      "options": [
+        "IndexError",
+        "ValueError",
+        "KeyError",
+        "NameError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein fehlender Schlüssel in einem Dictionary führt zu einem KeyError."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def teile(a, b):\n    try:\n        return a // b\n    except ZeroDivisionError:\n        return -1\n\nprint(teile(5, 0))",
+      "options": [
+        "0",
+        "Division durch 0",
+        "Division durch 0\n-1",
+        "-1"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Funktion fängt den ZeroDivisionError selbst ab und gibt -1 zurück. Ausgegeben wird nur der Rückgabewert."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def setze_alter(a):\n    if a < 0 or a > 150:\n        raise ValueError(\"Alter unrealistisch\")\n    return a\n\ntry:\n    print(f\"Alter: {setze_alter(200)}\")\nexcept ValueError as e:\n    print(e)",
+      "options": [
+        "Alter: 200",
+        "Alter unrealistisch",
+        "ValueError",
+        "None"
+      ],
+      "correctIndex": 1,
+      "explanation": "200 ist größer als 150, also wird ein ValueError mit eigener Nachricht ausgelöst, abgefangen und die Nachricht ausgegeben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class LeerError(Exception):\n    pass\n\ntry:\n    raise LeerError()\nexcept ValueError:\n    print(\"Leer\")\nexcept Exception:\n    print(\"Fehler\")",
+      "options": [
+        "Leer",
+        "Fehler",
+        "Leer\nFehler",
+        "Programm stürzt ab"
+      ],
+      "correctIndex": 1,
+      "explanation": "LeerError erbt nicht von ValueError, sondern von Exception. Daher passt der erste except nicht, wohl aber except Exception."
+    },
+    {
+      "question": "Warum ist ein nacktes except: (ohne Fehlertyp) meist eine schlechte Idee?",
+      "options": [
+        "Es ist ein SyntaxError",
+        "Es fängt nur ValueError ab",
+        "Es fängt alle Fehler ab und versteckt dadurch auch echte Programmierfehler",
+        "Es führt den finally-Block nicht aus"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein nacktes except fängt alles ab – auch Tippfehler wie NameError. Bugs bleiben so unbemerkt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "with open(\"t.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"eins\\nzwei\\n\")\nwith open(\"t.txt\", \"a\", encoding=\"utf-8\") as f:\n    f.write(\"drei\\n\")\nwith open(\"t.txt\", encoding=\"utf-8\") as f:\n    zeilen = f.readlines()\nprint(len(zeilen))",
+      "options": [
+        "3",
+        "2",
+        "1",
+        "0"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der erste Block schreibt zwei Zeilen, der zweite hängt mit \"a\" eine dritte an. Die Liste enthält drei Zeilen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "with open(\"e.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"Milch\\n\")\nwith open(\"e.txt\", encoding=\"utf-8\") as f:\n    for zeile in f:\n        print(zeile == \"Milch\")",
+      "options": [
+        "True",
+        "False",
+        "Milch",
+        "FileNotFoundError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die gelesene Zeile ist \"Milch\\n\" mit Zeilenumbruch und daher nicht gleich \"Milch\". Mit strip() wäre es True."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert bei diesem Code?",
+      "code": "with open(\"p.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"5\\n10\\n\")\nsumme = 0\nwith open(\"p.txt\", encoding=\"utf-8\") as f:\n    for zeile in f:\n        summe += zeile.strip()\nprint(summe)",
+      "options": [
+        "Es wird 15 ausgegeben",
+        "Es wird 510 ausgegeben",
+        "TypeError, weil die Werte aus der Datei Strings sind",
+        "ValueError beim Umwandeln"
+      ],
+      "correctIndex": 2,
+      "explanation": "Alles aus der Datei ist ein String. summe ist aber eine Zahl – 0 + \"5\" löst einen TypeError aus. Richtig wäre summe += int(zeile)."
+    }
+  ]
+}

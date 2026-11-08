@@ -1,0 +1,96 @@
+{
+  "id": "python-f2_01_exceptions",
+  "title": "Fehler abfangen mit try/except",
+  "summary": "Laufzeitfehler mit try und except abfangen, statt das Programm abstürzen zu lassen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Manche Fehler passieren erst, während das Programm läuft – etwa wenn jemand „zwölf“ statt 12 eintippt. Python wirft dann eine Exception (Ausnahme) und bricht ab. Die wichtigsten kennst du schon:\n• ValueError – falscher Wert, z. B. int(\"abc\")\n• ZeroDivisionError – Division durch 0\n• IndexError – Listenindex außerhalb\n• KeyError – Schlüssel fehlt im Dictionary\n• TypeError – falscher Typ, z. B. \"5\" + 3"
+    },
+    {
+      "type": "code",
+      "content": "alter = int(\"zwölf\")   # ValueError: invalid literal for int()"
+    },
+    {
+      "type": "text",
+      "content": "Mit try und except fängst du so einen Fehler ab. Python führt den try-Block aus. Tritt dort eine Exception auf, springt es sofort in den passenden except-Block, und das Programm läuft danach normal weiter."
+    },
+    {
+      "type": "code",
+      "content": "eingabe = \"zwölf\"\ntry:\n    alter = int(eingabe)\n    print(f\"Du bist {alter} Jahre alt.\")\nexcept ValueError:\n    print(\"Bitte gib eine Zahl ein!\")\nprint(\"Programm läuft weiter\")"
+    },
+    {
+      "type": "text",
+      "content": "Du kannst mehrere except-Blöcke für verschiedene Fehler schreiben. Mit as fehler bekommst du das Fehlerobjekt und kannst die Meldung ausgeben."
+    },
+    {
+      "type": "code",
+      "content": "def durchschnitt(punkte, anzahl):\n    try:\n        return punkte / anzahl\n    except ZeroDivisionError:\n        print(\"Anzahl darf nicht 0 sein\")\n    except TypeError as fehler:\n        print(f\"Falscher Typ: {fehler}\")\n\ndurchschnitt(10, 0)\ndurchschnitt(10, \"2\")"
+    },
+    {
+      "type": "text",
+      "content": "Zwei optionale Blöcke ergänzen try:\n• else – läuft nur, wenn KEIN Fehler aufgetreten ist\n• finally – läuft IMMER, egal ob Fehler oder nicht (z. B. zum Aufräumen)"
+    },
+    {
+      "type": "code",
+      "content": "for text in [\"4\", \"x\"]:\n    try:\n        zahl = int(text)\n    except ValueError:\n        print(f\"{text}: keine Zahl\")\n    else:\n        print(f\"{text}: Quadrat ist {zahl * zahl}\")\n    finally:\n        print(\"geprüft\")"
+    },
+    {
+      "type": "text",
+      "content": "Ein typisches Muster ist die Eingabeschleife: Fragen, bis die Eingabe passt.\n\nAnfängerfehler: ein nacktes except: ohne Fehlertyp. Das fängt wirklich ALLES ab – auch Tippfehler in deinem eigenen Code – und versteckt so echte Bugs. Gib immer den Fehlertyp an, den du erwartest."
+    },
+    {
+      "type": "code",
+      "content": "while True:\n    try:\n        note = int(input(\"Note (1-5): \"))\n        break\n    except ValueError:\n        print(\"Das war keine Zahl.\")\nprint(f\"Gespeichert: {note}\")"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try:\n    zahl = int(\"abc\")\n    print(\"A\")\nexcept ValueError:\n    print(\"C\")",
+      "options": [
+        "A\nB",
+        "A\nC",
+        "C",
+        "B\nC"
+      ],
+      "correctIndex": 2,
+      "explanation": "int(\"abc\") löst sofort einen ValueError aus. print(\"A\") wird deshalb nie erreicht – es geht direkt in den except-Block."
+    },
+    {
+      "question": "Wann wird der finally-Block ausgeführt?",
+      "options": [
+        "Nur wenn ein Fehler aufgetreten ist",
+        "Nur wenn kein Fehler aufgetreten ist",
+        "Immer, egal ob ein Fehler aufgetreten ist oder nicht",
+        "Nie, wenn es auch einen else-Block gibt"
+      ],
+      "correctIndex": 2,
+      "explanation": "finally läuft immer. Nur bei Erfolg läuft else, nur bei Fehler läuft except."
+    },
+    {
+      "question": "Finde den Fehler: Warum wird die Fehlermeldung nicht abgefangen?",
+      "code": "zahlen = [1, 2, 3]\ntry:\n    print(zahlen[5])\nexcept ValueError:\n    print(\"Fehler!\")",
+      "options": [
+        "except muss vor try stehen",
+        "Der Fehler ist ein IndexError, abgefangen wird aber nur ValueError",
+        "print darf nicht in try stehen",
+        "Listen kann man nicht in try verwenden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Index 5 existiert nicht – das ist ein IndexError. Der except-Block fängt nur ValueError, daher stürzt das Programm trotzdem ab."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try:\n    x = 10 / 2\nexcept ZeroDivisionError:\n    print(\"fehler\")\nelse:\n    print(\"ok\")\nfinally:\n    print(\"ende\")",
+      "options": [
+        "ok\nende",
+        "fehler\nende",
+        "ok\nfehler\nende",
+        "ende"
+      ],
+      "correctIndex": 0,
+      "explanation": "10 / 2 funktioniert ohne Fehler, also läuft else (\"ok\") und danach finally (\"ende\")."
+    }
+  ]
+}

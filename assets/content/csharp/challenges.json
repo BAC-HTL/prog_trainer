@@ -1,0 +1,790 @@
+{
+  "challenges": [
+    {
+      "id": "cs-001",
+      "title": "Hallo und nächstes Jahr",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies einen Namen (Zeile 1) und ein Alter (Zeile 2) ein. Gib dann zwei Zeilen aus:\n`Hallo <Name>!`\n`Nächstes Jahr bist du <Alter+1>.`\n\nBeispiel:\nEingabe:\nLena\n15\nAusgabe:\nHallo Lena!\nNächstes Jahr bist du 16.",
+      "starterCode": "string name = Console.ReadLine();\nint alter = int.Parse(Console.ReadLine());\n\n// TODO: Begrüßung und Alter im nächsten Jahr ausgeben\n",
+      "hints": [
+        "Mit `$\"Hallo {name}!\"` baust du Text und Variablen zusammen.",
+        "Rechne `alter + 1` direkt in der Ausgabe."
+      ],
+      "tests": [
+        {
+          "stdin": "Lena\n15",
+          "expected": "Hallo Lena!\nNächstes Jahr bist du 16."
+        },
+        {
+          "stdin": "Max\n0",
+          "expected": "Hallo Max!\nNächstes Jahr bist du 1."
+        },
+        {
+          "stdin": "Ayşe\n99",
+          "expected": "Hallo Ayşe!\nNächstes Jahr bist du 100."
+        }
+      ],
+      "solution": "string name = Console.ReadLine();\nint alter = int.Parse(Console.ReadLine());\nConsole.WriteLine($\"Hallo {name}!\");\nConsole.WriteLine($\"Nächstes Jahr bist du {alter + 1}.\");\n"
+    },
+    {
+      "id": "cs-002",
+      "title": "Klassenzimmer ausmessen",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies Länge und Breite eines Klassenzimmers in Metern (ganze Zahlen, je eine Zeile) ein. Gib die Fläche und den Umfang aus:\n`Fläche: <f> m²`\n`Umfang: <u> m`\n\nBeispiel:\nEingabe:\n8\n6\nAusgabe:\nFläche: 48 m²\nUmfang: 28 m",
+      "starterCode": "int laenge = int.Parse(Console.ReadLine());\nint breite = int.Parse(Console.ReadLine());\n\n// TODO: Fläche und Umfang berechnen und ausgeben\n",
+      "hints": [
+        "Fläche = Länge · Breite",
+        "Umfang = 2 · (Länge + Breite)"
+      ],
+      "tests": [
+        {
+          "stdin": "8\n6",
+          "expected": "Fläche: 48 m²\nUmfang: 28 m"
+        },
+        {
+          "stdin": "5\n5",
+          "expected": "Fläche: 25 m²\nUmfang: 20 m"
+        },
+        {
+          "stdin": "1\n0",
+          "expected": "Fläche: 0 m²\nUmfang: 2 m"
+        },
+        {
+          "stdin": "120\n45",
+          "expected": "Fläche: 5400 m²\nUmfang: 330 m"
+        }
+      ],
+      "solution": "int laenge = int.Parse(Console.ReadLine());\nint breite = int.Parse(Console.ReadLine());\nint flaeche = laenge * breite;\nint umfang = 2 * (laenge + breite);\nConsole.WriteLine($\"Fläche: {flaeche} m²\");\nConsole.WriteLine($\"Umfang: {umfang} m\");\n"
+    },
+    {
+      "id": "cs-003",
+      "title": "Gerade oder ungerade?",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies eine ganze Zahl ein (sie kann auch negativ sein) und gib `<zahl> ist gerade` oder `<zahl> ist ungerade` aus.\n\nBeispiel:\nEingabe:\n7\nAusgabe:\n7 ist ungerade",
+      "starterCode": "int zahl = int.Parse(Console.ReadLine());\n\nif (/* TODO: Bedingung */ true)\n{\n    // gerade\n}\nelse\n{\n    // ungerade\n}\n",
+      "hints": [
+        "Der Rest-Operator `%` liefert den Rest einer Division.",
+        "Achtung: `-7 % 2` ist in C# `-1`, nicht `1`. Prüfe daher besser `zahl % 2 == 0`."
+      ],
+      "tests": [
+        {
+          "stdin": "7",
+          "expected": "7 ist ungerade"
+        },
+        {
+          "stdin": "10",
+          "expected": "10 ist gerade"
+        },
+        {
+          "stdin": "0",
+          "expected": "0 ist gerade"
+        },
+        {
+          "stdin": "-7",
+          "expected": "-7 ist ungerade"
+        }
+      ],
+      "solution": "int zahl = int.Parse(Console.ReadLine());\nif (zahl % 2 == 0)\n{\n    Console.WriteLine($\"{zahl} ist gerade\");\n}\nelse\n{\n    Console.WriteLine($\"{zahl} ist ungerade\");\n}\n"
+    },
+    {
+      "id": "cs-004",
+      "title": "Punkte in Noten umrechnen",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Bei einer Schularbeit gibt es 0 bis 100 Punkte. Lies die Punkte ein und gib die Note aus:\n- 90–100 → `Sehr gut`\n- 80–89 → `Gut`\n- 65–79 → `Befriedigend`\n- 50–64 → `Genügend`\n- 0–49 → `Nicht genügend`\n- alles andere → `Ungültig`\n\nBeispiel:\nEingabe:\n83\nAusgabe:\nGut",
+      "starterCode": "int punkte = int.Parse(Console.ReadLine());\n\n// TODO: zuerst ungültige Werte abfangen, dann von oben nach unten prüfen\n",
+      "hints": [
+        "Prüfe zuerst `punkte < 0 || punkte > 100`.",
+        "Mit einer `if / else if`-Kette von der besten Note abwärts musst du nur die Untergrenze prüfen."
+      ],
+      "tests": [
+        {
+          "stdin": "83",
+          "expected": "Gut"
+        },
+        {
+          "stdin": "100",
+          "expected": "Sehr gut"
+        },
+        {
+          "stdin": "50",
+          "expected": "Genügend"
+        },
+        {
+          "stdin": "49",
+          "expected": "Nicht genügend"
+        },
+        {
+          "stdin": "101",
+          "expected": "Ungültig"
+        }
+      ],
+      "solution": "int punkte = int.Parse(Console.ReadLine());\nif (punkte < 0 || punkte > 100)\n    Console.WriteLine(\"Ungültig\");\nelse if (punkte >= 90)\n    Console.WriteLine(\"Sehr gut\");\nelse if (punkte >= 80)\n    Console.WriteLine(\"Gut\");\nelse if (punkte >= 65)\n    Console.WriteLine(\"Befriedigend\");\nelse if (punkte >= 50)\n    Console.WriteLine(\"Genügend\");\nelse\n    Console.WriteLine(\"Nicht genügend\");\n"
+    },
+    {
+      "id": "cs-005",
+      "title": "FizzBuzz",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies eine Zahl n ein und gib die Zahlen von 1 bis n aus – jede in einer eigenen Zeile. Dabei gilt:\n- durch 3 und 5 teilbar → `FizzBuzz`\n- nur durch 3 teilbar → `Fizz`\n- nur durch 5 teilbar → `Buzz`\n- sonst die Zahl selbst\n\nIst n kleiner als 1, wird nichts ausgegeben.\n\nBeispiel:\nEingabe:\n5\nAusgabe:\n1\n2\nFizz\n4\nBuzz",
+      "starterCode": "int n = int.Parse(Console.ReadLine());\n\nfor (int i = 1; i <= n; i++)\n{\n    // TODO: FizzBuzz-Regeln\n}\n",
+      "hints": [
+        "Prüfe den Fall „durch 3 UND 5 teilbar“ zuerst – sonst landest du schon bei `Fizz`.",
+        "Durch 3 und 5 teilbar heißt dasselbe wie durch 15 teilbar."
+      ],
+      "tests": [
+        {
+          "stdin": "5",
+          "expected": "1\n2\nFizz\n4\nBuzz"
+        },
+        {
+          "stdin": "15",
+          "expected": "1\n2\nFizz\n4\nBuzz\nFizz\n7\n8\nFizz\nBuzz\n11\nFizz\n13\n14\nFizzBuzz"
+        },
+        {
+          "stdin": "1",
+          "expected": "1"
+        },
+        {
+          "stdin": "0",
+          "expected": ""
+        }
+      ],
+      "solution": "int n = int.Parse(Console.ReadLine());\nfor (int i = 1; i <= n; i++)\n{\n    if (i % 15 == 0)\n        Console.WriteLine(\"FizzBuzz\");\n    else if (i % 3 == 0)\n        Console.WriteLine(\"Fizz\");\n    else if (i % 5 == 0)\n        Console.WriteLine(\"Buzz\");\n    else\n        Console.WriteLine(i);\n}\n"
+    },
+    {
+      "id": "cs-006",
+      "title": "Quersumme",
+      "level": "einsteiger",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Lies eine nicht-negative ganze Zahl ein und gib ihre Quersumme (Summe aller Ziffern) aus. Löse die Aufgabe mit einer Schleife und Rechenoperationen, nicht über Strings.\n\nBeispiel:\nEingabe:\n4711\nAusgabe:\n13",
+      "starterCode": "int zahl = int.Parse(Console.ReadLine());\nint summe = 0;\n\nwhile (/* TODO */ false)\n{\n    // TODO: letzte Ziffer addieren und abschneiden\n}\n\nConsole.WriteLine(summe);\n",
+      "hints": [
+        "`zahl % 10` liefert die letzte Ziffer.",
+        "`zahl / 10` schneidet die letzte Ziffer ab (Ganzzahldivision).",
+        "Die Schleife läuft, solange `zahl > 0` ist."
+      ],
+      "tests": [
+        {
+          "stdin": "4711",
+          "expected": "13"
+        },
+        {
+          "stdin": "0",
+          "expected": "0"
+        },
+        {
+          "stdin": "9",
+          "expected": "9"
+        },
+        {
+          "stdin": "1000000",
+          "expected": "1"
+        },
+        {
+          "stdin": "999999999",
+          "expected": "81"
+        }
+      ],
+      "solution": "int zahl = int.Parse(Console.ReadLine());\nint summe = 0;\nwhile (zahl > 0)\n{\n    summe += zahl % 10;\n    zahl /= 10;\n}\nConsole.WriteLine(summe);\n"
+    },
+    {
+      "id": "cs-007",
+      "title": "Schaltjahr-Check",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies eine Jahreszahl ein und gib `Schaltjahr` oder `Kein Schaltjahr` aus.\n\nRegeln: Ein Jahr ist ein Schaltjahr, wenn es durch 4 teilbar ist – außer es ist durch 100 teilbar. Ist es aber durch 400 teilbar, ist es doch wieder ein Schaltjahr.\n\nBeispiel:\nEingabe:\n2024\nAusgabe:\nSchaltjahr",
+      "starterCode": "int jahr = int.Parse(Console.ReadLine());\nbool schaltjahr = false; // TODO: Bedingung\n\nConsole.WriteLine(schaltjahr ? \"Schaltjahr\" : \"Kein Schaltjahr\");\n",
+      "hints": [
+        "Du kannst alles in einer Bedingung mit `&&` und `||` ausdrücken.",
+        "`(jahr % 4 == 0 && jahr % 100 != 0) || jahr % 400 == 0`"
+      ],
+      "tests": [
+        {
+          "stdin": "2024",
+          "expected": "Schaltjahr"
+        },
+        {
+          "stdin": "2023",
+          "expected": "Kein Schaltjahr"
+        },
+        {
+          "stdin": "1900",
+          "expected": "Kein Schaltjahr"
+        },
+        {
+          "stdin": "2000",
+          "expected": "Schaltjahr"
+        }
+      ],
+      "solution": "int jahr = int.Parse(Console.ReadLine());\nbool schaltjahr = (jahr % 4 == 0 && jahr % 100 != 0) || jahr % 400 == 0;\nConsole.WriteLine(schaltjahr ? \"Schaltjahr\" : \"Kein Schaltjahr\");\n"
+    },
+    {
+      "id": "cs-008",
+      "title": "Notendurchschnitt",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "In Zeile 1 steht die Anzahl n der Noten, danach folgen n Zeilen mit je einer Note (1–5). Gib aus:\n`Durchschnitt: <d>` (genau 2 Nachkommastellen, Punkt als Trennzeichen)\n`Beste Note: <b>`\n`Negativ: <anzahl der Fünfer>`\n\nBeispiel:\nEingabe:\n4\n1\n2\n2\n5\nAusgabe:\nDurchschnitt: 2.50\nBeste Note: 1\nNegativ: 1",
+      "starterCode": "using System.Globalization;\n\nint n = int.Parse(Console.ReadLine());\nint summe = 0;\nint beste = 5;\nint negativ = 0;\n\nfor (int i = 0; i < n; i++)\n{\n    int note = int.Parse(Console.ReadLine());\n    // TODO\n}\n\ndouble schnitt = 0; // TODO\nConsole.WriteLine(\"Durchschnitt: \" + schnitt.ToString(\"0.00\", CultureInfo.InvariantCulture));\n",
+      "hints": [
+        "Achtung bei der Division: `summe / n` mit zwei `int` schneidet die Kommastellen ab. Rechne `(double)summe / n`.",
+        "`ToString(\"0.00\", CultureInfo.InvariantCulture)` sorgt für den Punkt statt eines Kommas."
+      ],
+      "tests": [
+        {
+          "stdin": "4\n1\n2\n2\n5",
+          "expected": "Durchschnitt: 2.50\nBeste Note: 1\nNegativ: 1"
+        },
+        {
+          "stdin": "1\n3",
+          "expected": "Durchschnitt: 3.00\nBeste Note: 3\nNegativ: 0"
+        },
+        {
+          "stdin": "3\n1\n1\n2",
+          "expected": "Durchschnitt: 1.33\nBeste Note: 1\nNegativ: 0"
+        },
+        {
+          "stdin": "3\n5\n5\n4",
+          "expected": "Durchschnitt: 4.67\nBeste Note: 4\nNegativ: 2"
+        }
+      ],
+      "solution": "using System.Globalization;\n\nint n = int.Parse(Console.ReadLine());\nint summe = 0;\nint beste = 5;\nint negativ = 0;\nfor (int i = 0; i < n; i++)\n{\n    int note = int.Parse(Console.ReadLine());\n    summe += note;\n    if (note < beste)\n        beste = note;\n    if (note == 5)\n        negativ++;\n}\ndouble schnitt = (double)summe / n;\nConsole.WriteLine(\"Durchschnitt: \" + schnitt.ToString(\"0.00\", CultureInfo.InvariantCulture));\nConsole.WriteLine($\"Beste Note: {beste}\");\nConsole.WriteLine($\"Negativ: {negativ}\");\n"
+    },
+    {
+      "id": "cs-009",
+      "title": "Primzahlen bis n",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies eine Zahl n ein und gib alle Primzahlen von 2 bis n in einer Zeile aus, getrennt durch je ein Leerzeichen. Gibt es keine (n < 2), gib `keine` aus.\n\nBeispiel:\nEingabe:\n20\nAusgabe:\n2 3 5 7 11 13 17 19",
+      "starterCode": "int n = int.Parse(Console.ReadLine());\nstring ergebnis = \"\";\n\nfor (int zahl = 2; zahl <= n; zahl++)\n{\n    bool istPrim = true;\n    // TODO: Teiler suchen (verschachtelte Schleife)\n\n    if (istPrim)\n    {\n        // TODO: an ergebnis anhängen\n    }\n}\n\n// TODO: ergebnis oder \"keine\" ausgeben\n",
+      "hints": [
+        "Eine Zahl ist prim, wenn sie keinen Teiler zwischen 2 und ihrer Wurzel hat – `t * t <= zahl` reicht als Schleifenbedingung.",
+        "Mit `break` kannst du die innere Schleife verlassen, sobald ein Teiler gefunden wurde.",
+        "Achte darauf, dass am Ende kein Leerzeichen zu viel steht – oder nutze `.Trim()`."
+      ],
+      "tests": [
+        {
+          "stdin": "20",
+          "expected": "2 3 5 7 11 13 17 19"
+        },
+        {
+          "stdin": "2",
+          "expected": "2"
+        },
+        {
+          "stdin": "1",
+          "expected": "keine"
+        },
+        {
+          "stdin": "30",
+          "expected": "2 3 5 7 11 13 17 19 23 29"
+        }
+      ],
+      "solution": "int n = int.Parse(Console.ReadLine());\nstring ergebnis = \"\";\nfor (int zahl = 2; zahl <= n; zahl++)\n{\n    bool istPrim = true;\n    for (int t = 2; t * t <= zahl; t++)\n    {\n        if (zahl % t == 0)\n        {\n            istPrim = false;\n            break;\n        }\n    }\n    if (istPrim)\n        ergebnis += zahl + \" \";\n}\nConsole.WriteLine(ergebnis == \"\" ? \"keine\" : ergebnis.Trim());\n"
+    },
+    {
+      "id": "cs-010",
+      "title": "Palindrom-Detektor",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Ein Palindrom liest sich vorwärts und rückwärts gleich, z. B. „Rentner“ oder „Ein Esel lese nie“. Lies eine Zeile ein. Groß-/Kleinschreibung und Leerzeichen werden ignoriert. Gib `Palindrom` oder `Kein Palindrom` aus.\n\nBeispiel:\nEingabe:\nEin Esel lese nie\nAusgabe:\nPalindrom",
+      "starterCode": "string text = Console.ReadLine();\n\n// TODO: Text vereinfachen (klein, ohne Leerzeichen)\n// TODO: von beiden Enden zur Mitte vergleichen\n",
+      "hints": [
+        "`text.ToLower().Replace(\" \", \"\")` entfernt die Störfaktoren.",
+        "Vergleiche `s[i]` mit `s[s.Length - 1 - i]` für die erste Hälfte."
+      ],
+      "tests": [
+        {
+          "stdin": "Ein Esel lese nie",
+          "expected": "Palindrom"
+        },
+        {
+          "stdin": "Rentner",
+          "expected": "Palindrom"
+        },
+        {
+          "stdin": "Programmieren",
+          "expected": "Kein Palindrom"
+        },
+        {
+          "stdin": "a",
+          "expected": "Palindrom"
+        },
+        {
+          "stdin": "Anna Banane",
+          "expected": "Kein Palindrom"
+        }
+      ],
+      "solution": "string text = Console.ReadLine();\nstring s = text.ToLower().Replace(\" \", \"\");\nbool palindrom = true;\nfor (int i = 0; i < s.Length / 2; i++)\n{\n    if (s[i] != s[s.Length - 1 - i])\n    {\n        palindrom = false;\n        break;\n    }\n}\nConsole.WriteLine(palindrom ? \"Palindrom\" : \"Kein Palindrom\");\n"
+    },
+    {
+      "id": "cs-011",
+      "title": "Wörter und Vokale zählen",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies einen Satz ein. Wörter sind durch ein oder mehrere Leerzeichen getrennt. Gib aus:\n`Wörter: <anzahl>`\n`Vokale: <anzahl der Buchstaben a, e, i, o, u – groß oder klein>`\n`Längstes Wort: <wort>` (bei Gleichstand das erste)\n\nBeispiel:\nEingabe:\nIch lerne heute CSharp\nAusgabe:\nWörter: 4\nVokale: 7\nLängstes Wort: CSharp",
+      "starterCode": "string satz = Console.ReadLine();\nstring[] woerter = satz.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);\n\n// TODO: Vokale zählen\n// TODO: längstes Wort suchen\n",
+      "hints": [
+        "`StringSplitOptions.RemoveEmptyEntries` verhindert leere „Wörter“ bei doppelten Leerzeichen.",
+        "Für Vokale: `\"aeiou\".Contains(char.ToLower(c))` für jedes Zeichen `c` im Satz.",
+        "Für das längste Wort nur bei `>` (nicht `>=`) ersetzen, dann gewinnt bei Gleichstand das erste."
+      ],
+      "tests": [
+        {
+          "stdin": "Ich lerne heute CSharp",
+          "expected": "Wörter: 4\nVokale: 7\nLängstes Wort: CSharp"
+        },
+        {
+          "stdin": "Hallo",
+          "expected": "Wörter: 1\nVokale: 2\nLängstes Wort: Hallo"
+        },
+        {
+          "stdin": "  Der   Hund  bellt  ",
+          "expected": "Wörter: 3\nVokale: 3\nLängstes Wort: bellt"
+        },
+        {
+          "stdin": "AEIOU xyz",
+          "expected": "Wörter: 2\nVokale: 5\nLängstes Wort: AEIOU"
+        }
+      ],
+      "solution": "string satz = Console.ReadLine();\nstring[] woerter = satz.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);\nint vokale = 0;\nforeach (char c in satz)\n{\n    if (\"aeiou\".Contains(char.ToLower(c)))\n        vokale++;\n}\nstring laengstes = \"\";\nforeach (string w in woerter)\n{\n    if (w.Length > laengstes.Length)\n        laengstes = w;\n}\nConsole.WriteLine($\"Wörter: {woerter.Length}\");\nConsole.WriteLine($\"Vokale: {vokale}\");\nConsole.WriteLine($\"Längstes Wort: {laengstes}\");\n"
+    },
+    {
+      "id": "cs-012",
+      "title": "ggT und kgV als Methoden",
+      "level": "einsteiger",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Schreibe zwei Methoden `int Ggt(int x, int y)` (größter gemeinsamer Teiler, euklidischer Algorithmus) und `int Kgv(int x, int y)` (kleinstes gemeinsames Vielfaches). Lies zwei positive Zahlen ein und gib aus:\n`ggT: <g>`\n`kgV: <k>`\n\nBeispiel:\nEingabe:\n12\n18\nAusgabe:\nggT: 6\nkgV: 36",
+      "starterCode": "int a = int.Parse(Console.ReadLine());\nint b = int.Parse(Console.ReadLine());\n\nConsole.WriteLine($\"ggT: {Ggt(a, b)}\");\nConsole.WriteLine($\"kgV: {Kgv(a, b)}\");\n\nint Ggt(int x, int y)\n{\n    // TODO: euklidischer Algorithmus\n    return 0;\n}\n\nint Kgv(int x, int y)\n{\n    // TODO: nutze Ggt\n    return 0;\n}\n",
+      "hints": [
+        "Euklid: Solange `y != 0`: `rest = x % y; x = y; y = rest;` – am Ende steht der ggT in `x`.",
+        "kgV = a / ggT(a, b) * b (erst dividieren, dann multiplizieren, damit es nicht überläuft)."
+      ],
+      "tests": [
+        {
+          "stdin": "12\n18",
+          "expected": "ggT: 6\nkgV: 36"
+        },
+        {
+          "stdin": "7\n13",
+          "expected": "ggT: 1\nkgV: 91"
+        },
+        {
+          "stdin": "5\n5",
+          "expected": "ggT: 5\nkgV: 5"
+        },
+        {
+          "stdin": "100\n75",
+          "expected": "ggT: 25\nkgV: 300"
+        }
+      ],
+      "solution": "int a = int.Parse(Console.ReadLine());\nint b = int.Parse(Console.ReadLine());\n\nConsole.WriteLine($\"ggT: {Ggt(a, b)}\");\nConsole.WriteLine($\"kgV: {Kgv(a, b)}\");\n\nint Ggt(int x, int y)\n{\n    while (y != 0)\n    {\n        int rest = x % y;\n        x = y;\n        y = rest;\n    }\n    return x;\n}\n\nint Kgv(int x, int y)\n{\n    return x / Ggt(x, y) * y;\n}\n"
+    },
+    {
+      "id": "cs-013",
+      "title": "Caesar-Verschlüsselung",
+      "level": "einsteiger",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Julius Caesar verschob jeden Buchstaben um eine feste Anzahl Stellen im Alphabet. Lies eine Verschiebung k (Zeile 1, darf auch negativ oder größer als 26 sein) und einen Text (Zeile 2) ein. Verschiebe alle Buchstaben A–Z bzw. a–z um k Stellen (mit Umlauf: nach Z kommt wieder A). Groß-/Kleinschreibung bleibt erhalten, alle anderen Zeichen bleiben unverändert. Gib den verschlüsselten Text aus.\n\nBeispiel:\nEingabe:\n3\nHallo, Welt!\nAusgabe:\nKdoor, Zhow!",
+      "starterCode": "int k = int.Parse(Console.ReadLine());\nstring text = Console.ReadLine();\nstring ergebnis = \"\";\n\nforeach (char c in text)\n{\n    // TODO: Großbuchstabe? Kleinbuchstabe? Sonst unverändert anhängen\n}\n\nConsole.WriteLine(ergebnis);\n",
+      "hints": [
+        "Rechne mit der Position im Alphabet: `c - 'A'` ergibt 0 bis 25.",
+        "`((pos + k) % 26 + 26) % 26` funktioniert auch für negative k.",
+        "Zurück zum Zeichen: `(char)('A' + neuePos)`."
+      ],
+      "tests": [
+        {
+          "stdin": "3\nHallo, Welt!",
+          "expected": "Kdoor, Zhow!"
+        },
+        {
+          "stdin": "1\nxyz XYZ",
+          "expected": "yza YZA"
+        },
+        {
+          "stdin": "-3\nKdoor, Zhow!",
+          "expected": "Hallo, Welt!"
+        },
+        {
+          "stdin": "26\nHTL Rennweg 2026",
+          "expected": "HTL Rennweg 2026"
+        },
+        {
+          "stdin": "29\nabc",
+          "expected": "def"
+        }
+      ],
+      "solution": "int k = int.Parse(Console.ReadLine());\nstring text = Console.ReadLine();\nstring ergebnis = \"\";\nforeach (char c in text)\n{\n    if (c >= 'A' && c <= 'Z')\n    {\n        int pos = ((c - 'A' + k) % 26 + 26) % 26;\n        ergebnis += (char)('A' + pos);\n    }\n    else if (c >= 'a' && c <= 'z')\n    {\n        int pos = ((c - 'a' + k) % 26 + 26) % 26;\n        ergebnis += (char)('a' + pos);\n    }\n    else\n    {\n        ergebnis += c;\n    }\n}\nConsole.WriteLine(ergebnis);\n"
+    },
+    {
+      "id": "cs-014",
+      "title": "Tic-Tac-Toe-Schiedsrichter",
+      "level": "einsteiger",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Lies ein Tic-Tac-Toe-Feld aus 3 Zeilen mit je 3 Zeichen ein (`X`, `O` oder `.` für leer). Gib aus:\n- `X gewinnt` oder `O gewinnt`, wenn ein Spieler drei in einer Reihe, Spalte oder Diagonale hat,\n- `Unentschieden`, wenn niemand gewonnen hat und das Feld voll ist,\n- `Spiel läuft`, sonst.\n\nDu kannst davon ausgehen, dass höchstens ein Spieler gewonnen hat.\n\nBeispiel:\nEingabe:\nXO.\nXO.\nX..\nAusgabe:\nX gewinnt",
+      "starterCode": "char[,] feld = new char[3, 3];\nfor (int z = 0; z < 3; z++)\n{\n    string zeile = Console.ReadLine();\n    for (int s = 0; s < 3; s++)\n        feld[z, s] = zeile[s];\n}\n\n// TODO: Methode schreiben, die prüft, ob ein Spieler gewonnen hat\n// TODO: Ergebnis ausgeben\n",
+      "hints": [
+        "Schreib eine Methode `bool Gewonnen(char[,] f, char spieler)`, die alle 8 Linien prüft.",
+        "Zeilen und Spalten erledigst du mit einer Schleife über i: `f[i,0], f[i,1], f[i,2]` bzw. `f[0,i], f[1,i], f[2,i]`.",
+        "Für „Feld voll“ zählst du die `.`-Zeichen."
+      ],
+      "tests": [
+        {
+          "stdin": "XO.\nXO.\nX..",
+          "expected": "X gewinnt"
+        },
+        {
+          "stdin": "XOX\nOOX\nXXO",
+          "expected": "Unentschieden"
+        },
+        {
+          "stdin": "X.O\n.O.\nOXX",
+          "expected": "O gewinnt"
+        },
+        {
+          "stdin": "X..\n.O.\n...",
+          "expected": "Spiel läuft"
+        },
+        {
+          "stdin": "XXO\nOOO\nX.X",
+          "expected": "O gewinnt"
+        }
+      ],
+      "solution": "char[,] feld = new char[3, 3];\nfor (int z = 0; z < 3; z++)\n{\n    string zeile = Console.ReadLine();\n    for (int s = 0; s < 3; s++)\n        feld[z, s] = zeile[s];\n}\n\nint leer = 0;\nforeach (char c in feld)\n{\n    if (c == '.')\n        leer++;\n}\n\nif (Gewonnen(feld, 'X'))\n    Console.WriteLine(\"X gewinnt\");\nelse if (Gewonnen(feld, 'O'))\n    Console.WriteLine(\"O gewinnt\");\nelse if (leer == 0)\n    Console.WriteLine(\"Unentschieden\");\nelse\n    Console.WriteLine(\"Spiel läuft\");\n\nbool Gewonnen(char[,] f, char p)\n{\n    for (int i = 0; i < 3; i++)\n    {\n        if (f[i, 0] == p && f[i, 1] == p && f[i, 2] == p)\n            return true;\n        if (f[0, i] == p && f[1, i] == p && f[2, i] == p)\n            return true;\n    }\n    if (f[0, 0] == p && f[1, 1] == p && f[2, 2] == p)\n        return true;\n    return f[0, 2] == p && f[1, 1] == p && f[2, 0] == p;\n}\n"
+    },
+    {
+      "id": "cs-015",
+      "title": "Klasse Schüler",
+      "level": "fortgeschritten",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Schreibe eine Klasse `Schueler` mit den Properties `Name` und `Klasse` (beide `string`) sowie einer Liste von Noten. Sie soll die Methoden `NoteHinzufuegen(int note)` und `int Beste()` sowie eine Methode `string Info()` haben.\n\nEingabe: Name (Zeile 1), Klasse (Zeile 2), danach eine Zeile mit Noten, getrennt durch Leerzeichen.\nAusgabe: `<Name> (<Klasse>): <Anzahl> Noten, beste Note <b>`\n\nBeispiel:\nEingabe:\nMia\n2AHIT\n3 1 2\nAusgabe:\nMia (2AHIT): 3 Noten, beste Note 1",
+      "starterCode": "string name = Console.ReadLine();\nstring klasse = Console.ReadLine();\nstring[] teile = Console.ReadLine().Split(' ');\n\nSchueler s = new Schueler(name, klasse);\nforeach (string t in teile)\n    s.NoteHinzufuegen(int.Parse(t));\n\nConsole.WriteLine(s.Info());\n\nclass Schueler\n{\n    private List<int> noten = new List<int>();\n\n    // TODO: Properties Name und Klasse\n\n    public Schueler(string name, string klasse)\n    {\n        // TODO\n    }\n\n    public void NoteHinzufuegen(int note)\n    {\n        // TODO\n    }\n\n    public int Beste()\n    {\n        // TODO\n        return 0;\n    }\n\n    public string Info()\n    {\n        // TODO\n        return \"\";\n    }\n}\n",
+      "hints": [
+        "Auto-Properties: `public string Name { get; private set; }`.",
+        "Die beste Note ist das Minimum – `noten.Min()` (LINQ) oder eine Schleife.",
+        "Die Anzahl der Noten liefert `noten.Count`."
+      ],
+      "tests": [
+        {
+          "stdin": "Mia\n2AHIT\n3 1 2",
+          "expected": "Mia (2AHIT): 3 Noten, beste Note 1"
+        },
+        {
+          "stdin": "Jonas\n4BHIF\n5",
+          "expected": "Jonas (4BHIF): 1 Noten, beste Note 5"
+        },
+        {
+          "stdin": "Ela\n1CHEL\n2 2 2 2",
+          "expected": "Ela (1CHEL): 4 Noten, beste Note 2"
+        }
+      ],
+      "solution": "string name = Console.ReadLine();\nstring klasse = Console.ReadLine();\nstring[] teile = Console.ReadLine().Split(' ');\n\nSchueler s = new Schueler(name, klasse);\nforeach (string t in teile)\n    s.NoteHinzufuegen(int.Parse(t));\n\nConsole.WriteLine(s.Info());\n\nclass Schueler\n{\n    private List<int> noten = new List<int>();\n\n    public string Name { get; private set; }\n    public string Klasse { get; private set; }\n\n    public Schueler(string name, string klasse)\n    {\n        Name = name;\n        Klasse = klasse;\n    }\n\n    public void NoteHinzufuegen(int note)\n    {\n        noten.Add(note);\n    }\n\n    public int Beste()\n    {\n        return noten.Min();\n    }\n\n    public string Info()\n    {\n        return $\"{Name} ({Klasse}): {noten.Count} Noten, beste Note {Beste()}\";\n    }\n}\n"
+    },
+    {
+      "id": "cs-016",
+      "title": "Ticket-Automat mit static",
+      "level": "fortgeschritten",
+      "difficulty": "leicht",
+      "points": 10,
+      "description": "Jedes neue `Ticket` soll automatisch eine fortlaufende Nummer bekommen (beginnend bei 1). Verwende dafür ein `static`-Feld in der Klasse. Zusätzlich soll die statische Property `Ticket.Anzahl` zählen, wie viele Tickets erstellt wurden.\n\nEingabe: Zeile 1 enthält n, danach n Zeilen mit je einem Kundennamen.\nAusgabe: Für jedes Ticket `Ticket #<nr>: <Name>`, am Ende `Gesamt: <Anzahl>`.\n\nBeispiel:\nEingabe:\n2\nAnna\nBen\nAusgabe:\nTicket #1: Anna\nTicket #2: Ben\nGesamt: 2",
+      "starterCode": "int n = int.Parse(Console.ReadLine());\nfor (int i = 0; i < n; i++)\n{\n    Ticket t = new Ticket(Console.ReadLine());\n    Console.WriteLine(t);\n}\nConsole.WriteLine($\"Gesamt: {Ticket.Anzahl}\");\n\nclass Ticket\n{\n    public static int Anzahl { get; private set; }\n\n    // TODO: Nummer und Kunde als Properties\n\n    public Ticket(string kunde)\n    {\n        // TODO\n    }\n\n    public override string ToString()\n    {\n        // TODO\n        return \"\";\n    }\n}\n",
+      "hints": [
+        "Ein `static`-Feld gehört der Klasse, nicht dem einzelnen Objekt – alle Tickets teilen sich denselben Zähler.",
+        "Im Konstruktor: Zähler erhöhen und den neuen Wert als eigene `Nummer` speichern.",
+        "`Console.WriteLine(t)` ruft automatisch `ToString()` auf."
+      ],
+      "tests": [
+        {
+          "stdin": "2\nAnna\nBen",
+          "expected": "Ticket #1: Anna\nTicket #2: Ben\nGesamt: 2"
+        },
+        {
+          "stdin": "1\nZoe",
+          "expected": "Ticket #1: Zoe\nGesamt: 1"
+        },
+        {
+          "stdin": "0",
+          "expected": "Gesamt: 0"
+        },
+        {
+          "stdin": "4\nA\nB\nC\nD",
+          "expected": "Ticket #1: A\nTicket #2: B\nTicket #3: C\nTicket #4: D\nGesamt: 4"
+        }
+      ],
+      "solution": "int n = int.Parse(Console.ReadLine());\nfor (int i = 0; i < n; i++)\n{\n    Ticket t = new Ticket(Console.ReadLine());\n    Console.WriteLine(t);\n}\nConsole.WriteLine($\"Gesamt: {Ticket.Anzahl}\");\n\nclass Ticket\n{\n    public static int Anzahl { get; private set; }\n\n    public int Nummer { get; private set; }\n    public string Kunde { get; private set; }\n\n    public Ticket(string kunde)\n    {\n        Anzahl++;\n        Nummer = Anzahl;\n        Kunde = kunde;\n    }\n\n    public override string ToString()\n    {\n        return $\"Ticket #{Nummer}: {Kunde}\";\n    }\n}\n"
+    },
+    {
+      "id": "cs-017",
+      "title": "Bankkonto mit Befehlen",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Schreibe eine Klasse `Bankkonto` mit einem Kontostand (ganze Euro), der von außen nur gelesen werden kann, und den Methoden `Einzahlen` und `Abheben`. Ungültige Beträge (≤ 0) oder zu wenig Guthaben sollen eine Exception werfen, die du im Hauptprogramm abfängst.\n\nEingabe: Befehle, je einer pro Zeile, bis die Eingabe endet:\n- `EIN <betrag>` → bei Erfolg `OK`\n- `AB <betrag>` → bei Erfolg `OK`\n- `STAND` → `Stand: <kontostand>`\n\nBei einem Fehler wird statt `OK` die Meldung `Fehler: <Message>` ausgegeben. Die Messages lauten `Betrag muss positiv sein` bzw. `Zu wenig Guthaben`.\n\nBeispiel:\nEingabe:\nEIN 100\nAB 30\nAB 500\nSTAND\nAusgabe:\nOK\nOK\nFehler: Zu wenig Guthaben\nStand: 70",
+      "starterCode": "Bankkonto konto = new Bankkonto();\nstring zeile;\nwhile ((zeile = Console.ReadLine()) != null)\n{\n    string[] teile = zeile.Split(' ');\n    // TODO: Befehl auswerten, Exceptions mit try/catch abfangen\n}\n\nclass Bankkonto\n{\n    public int Stand { get; private set; }\n\n    public void Einzahlen(int betrag)\n    {\n        // TODO\n    }\n\n    public void Abheben(int betrag)\n    {\n        // TODO\n    }\n}\n",
+      "hints": [
+        "`Console.ReadLine()` liefert `null`, wenn keine Eingabe mehr kommt.",
+        "Wirf z. B. `throw new ArgumentException(\"Betrag muss positiv sein\");` und `throw new InvalidOperationException(\"Zu wenig Guthaben\");`.",
+        "Im `catch (Exception ex)` gibst du `ex.Message` aus."
+      ],
+      "tests": [
+        {
+          "stdin": "EIN 100\nAB 30\nAB 500\nSTAND",
+          "expected": "OK\nOK\nFehler: Zu wenig Guthaben\nStand: 70"
+        },
+        {
+          "stdin": "STAND",
+          "expected": "Stand: 0"
+        },
+        {
+          "stdin": "EIN -5\nEIN 0\nSTAND",
+          "expected": "Fehler: Betrag muss positiv sein\nFehler: Betrag muss positiv sein\nStand: 0"
+        },
+        {
+          "stdin": "EIN 50\nAB 50\nSTAND\nAB 1",
+          "expected": "OK\nOK\nStand: 0\nFehler: Zu wenig Guthaben"
+        }
+      ],
+      "solution": "Bankkonto konto = new Bankkonto();\nstring zeile;\nwhile ((zeile = Console.ReadLine()) != null)\n{\n    string[] teile = zeile.Split(' ');\n    try\n    {\n        switch (teile[0])\n        {\n            case \"EIN\":\n                konto.Einzahlen(int.Parse(teile[1]));\n                Console.WriteLine(\"OK\");\n                break;\n            case \"AB\":\n                konto.Abheben(int.Parse(teile[1]));\n                Console.WriteLine(\"OK\");\n                break;\n            case \"STAND\":\n                Console.WriteLine($\"Stand: {konto.Stand}\");\n                break;\n        }\n    }\n    catch (Exception ex)\n    {\n        Console.WriteLine($\"Fehler: {ex.Message}\");\n    }\n}\n\nclass Bankkonto\n{\n    public int Stand { get; private set; }\n\n    public void Einzahlen(int betrag)\n    {\n        if (betrag <= 0)\n            throw new ArgumentException(\"Betrag muss positiv sein\");\n        Stand += betrag;\n    }\n\n    public void Abheben(int betrag)\n    {\n        if (betrag <= 0)\n            throw new ArgumentException(\"Betrag muss positiv sein\");\n        if (betrag > Stand)\n            throw new InvalidOperationException(\"Zu wenig Guthaben\");\n        Stand -= betrag;\n    }\n}\n"
+    },
+    {
+      "id": "cs-018",
+      "title": "Tierkonzert (Polymorphie)",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Erstelle eine abstrakte Klasse `Tier` mit der Property `Name` und der abstrakten Methode `string Laut()`. Leite davon `Hund` (`Wuff`), `Katze` (`Miau`) und `Kuh` (`Muh`) ab. Eine nicht-abstrakte Methode `Vorstellen()` in `Tier` liefert `<Name> sagt <Laut>`.\n\nEingabe: Zeile 1 enthält n, danach n Zeilen der Form `<Art> <Name>` (Art ist `Hund`, `Katze` oder `Kuh`).\nAusgabe: Für jedes Tier eine Zeile `Vorstellen()`, danach `<n> Tiere im Konzert`.\n\nBeispiel:\nEingabe:\n2\nHund Rex\nKatze Luna\nAusgabe:\nRex sagt Wuff\nLuna sagt Miau\n2 Tiere im Konzert",
+      "starterCode": "int n = int.Parse(Console.ReadLine());\nList<Tier> tiere = new List<Tier>();\nfor (int i = 0; i < n; i++)\n{\n    string[] teile = Console.ReadLine().Split(' ');\n    // TODO: je nach teile[0] das passende Objekt erzeugen\n}\n\n// TODO: alle Tiere vorstellen\n\nabstract class Tier\n{\n    public string Name { get; private set; }\n\n    protected Tier(string name)\n    {\n        Name = name;\n    }\n\n    public abstract string Laut();\n\n    // TODO: Vorstellen()\n}\n\n// TODO: Hund, Katze, Kuh\n",
+      "hints": [
+        "Abgeleitete Klasse: `class Hund : Tier { public Hund(string name) : base(name) { } ... }`.",
+        "Überschreiben mit `public override string Laut() { return \"Wuff\"; }`.",
+        "Die Liste hat den Typ `List<Tier>` – beim Aufruf von `Laut()` wird automatisch die richtige Version gewählt."
+      ],
+      "tests": [
+        {
+          "stdin": "2\nHund Rex\nKatze Luna",
+          "expected": "Rex sagt Wuff\nLuna sagt Miau\n2 Tiere im Konzert"
+        },
+        {
+          "stdin": "3\nKuh Berta\nKuh Rosi\nHund Bello",
+          "expected": "Berta sagt Muh\nRosi sagt Muh\nBello sagt Wuff\n3 Tiere im Konzert"
+        },
+        {
+          "stdin": "0",
+          "expected": "0 Tiere im Konzert"
+        }
+      ],
+      "solution": "int n = int.Parse(Console.ReadLine());\nList<Tier> tiere = new List<Tier>();\nfor (int i = 0; i < n; i++)\n{\n    string[] teile = Console.ReadLine().Split(' ');\n    switch (teile[0])\n    {\n        case \"Hund\":\n            tiere.Add(new Hund(teile[1]));\n            break;\n        case \"Katze\":\n            tiere.Add(new Katze(teile[1]));\n            break;\n        case \"Kuh\":\n            tiere.Add(new Kuh(teile[1]));\n            break;\n    }\n}\n\nforeach (Tier t in tiere)\n    Console.WriteLine(t.Vorstellen());\nConsole.WriteLine($\"{tiere.Count} Tiere im Konzert\");\n\nabstract class Tier\n{\n    public string Name { get; private set; }\n\n    protected Tier(string name)\n    {\n        Name = name;\n    }\n\n    public abstract string Laut();\n\n    public string Vorstellen()\n    {\n        return $\"{Name} sagt {Laut()}\";\n    }\n}\n\nclass Hund : Tier\n{\n    public Hund(string name) : base(name) { }\n    public override string Laut() { return \"Wuff\"; }\n}\n\nclass Katze : Tier\n{\n    public Katze(string name) : base(name) { }\n    public override string Laut() { return \"Miau\"; }\n}\n\nclass Kuh : Tier\n{\n    public Kuh(string name) : base(name) { }\n    public override string Laut() { return \"Muh\"; }\n}\n"
+    },
+    {
+      "id": "cs-019",
+      "title": "Flächen mit Interface",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Definiere ein Interface `IForm` mit `double Flaeche()` und `string Name { get; }`. Implementiere es in `Kreis` (Radius), `Rechteck` (Breite, Höhe) und `Dreieck` (Grundseite, Höhe).\n\nEingabe: Zeile 1 enthält n, danach n Zeilen wie `Kreis 2`, `Rechteck 3 4` oder `Dreieck 6 2` (ganze Zahlen).\nAusgabe: Für jede Form `<Name>: <Fläche>` und am Ende `Summe: <Gesamtfläche>` – jeweils mit genau 2 Nachkommastellen und Punkt (Kreis: π · r², verwende `Math.PI`).\n\nBeispiel:\nEingabe:\n2\nRechteck 3 4\nKreis 1\nAusgabe:\nRechteck: 12.00\nKreis: 3.14\nSumme: 15.14",
+      "starterCode": "using System.Globalization;\n\nint n = int.Parse(Console.ReadLine());\nList<IForm> formen = new List<IForm>();\n// TODO: Zeilen einlesen und Formen erzeugen\n// TODO: Flächen ausgeben und Summe bilden\n\ninterface IForm\n{\n    string Name { get; }\n    double Flaeche();\n}\n\n// TODO: Kreis, Rechteck, Dreieck\n",
+      "hints": [
+        "Eine Klasse implementiert ein Interface mit `class Kreis : IForm`.",
+        "Dreieck: Grundseite · Höhe / 2 – rechne mit `double`, sonst geht die Hälfte verloren.",
+        "Formatieren: `wert.ToString(\"0.00\", CultureInfo.InvariantCulture)`."
+      ],
+      "tests": [
+        {
+          "stdin": "2\nRechteck 3 4\nKreis 1",
+          "expected": "Rechteck: 12.00\nKreis: 3.14\nSumme: 15.14"
+        },
+        {
+          "stdin": "1\nDreieck 3 3",
+          "expected": "Dreieck: 4.50\nSumme: 4.50"
+        },
+        {
+          "stdin": "3\nKreis 2\nDreieck 6 2\nRechteck 0 5",
+          "expected": "Kreis: 12.57\nDreieck: 6.00\nRechteck: 0.00\nSumme: 18.57"
+        },
+        {
+          "stdin": "0",
+          "expected": "Summe: 0.00"
+        }
+      ],
+      "solution": "using System.Globalization;\n\nint n = int.Parse(Console.ReadLine());\nList<IForm> formen = new List<IForm>();\nfor (int i = 0; i < n; i++)\n{\n    string[] t = Console.ReadLine().Split(' ');\n    if (t[0] == \"Kreis\")\n        formen.Add(new Kreis(int.Parse(t[1])));\n    else if (t[0] == \"Rechteck\")\n        formen.Add(new Rechteck(int.Parse(t[1]), int.Parse(t[2])));\n    else if (t[0] == \"Dreieck\")\n        formen.Add(new Dreieck(int.Parse(t[1]), int.Parse(t[2])));\n}\n\ndouble summe = 0;\nforeach (IForm f in formen)\n{\n    double a = f.Flaeche();\n    summe += a;\n    Console.WriteLine(f.Name + \": \" + a.ToString(\"0.00\", CultureInfo.InvariantCulture));\n}\nConsole.WriteLine(\"Summe: \" + summe.ToString(\"0.00\", CultureInfo.InvariantCulture));\n\ninterface IForm\n{\n    string Name { get; }\n    double Flaeche();\n}\n\nclass Kreis : IForm\n{\n    private double r;\n    public Kreis(double r) { this.r = r; }\n    public string Name { get { return \"Kreis\"; } }\n    public double Flaeche() { return Math.PI * r * r; }\n}\n\nclass Rechteck : IForm\n{\n    private double b, h;\n    public Rechteck(double b, double h) { this.b = b; this.h = h; }\n    public string Name { get { return \"Rechteck\"; } }\n    public double Flaeche() { return b * h; }\n}\n\nclass Dreieck : IForm\n{\n    private double g, h;\n    public Dreieck(double g, double h) { this.g = g; this.h = h; }\n    public string Name { get { return \"Dreieck\"; } }\n    public double Flaeche() { return g * h / 2; }\n}\n"
+    },
+    {
+      "id": "cs-020",
+      "title": "Lagerverwaltung mit Dictionary",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Verwalte den Lagerbestand des Schulbuffets mit einem `Dictionary<string, int>`.\n\nEingabe: Befehle, je einer pro Zeile, bis die Eingabe endet:\n- `REIN <artikel> <menge>` → Bestand erhöhen (neuer Artikel startet bei 0)\n- `RAUS <artikel> <menge>` → Bestand verringern; ist zu wenig da oder der Artikel unbekannt, gib `Nicht genug <artikel>` aus und ändere nichts\n- `INVENTUR` → alle Artikel mit Bestand > 0 alphabetisch sortiert als `<artikel>: <menge>` ausgeben; gibt es keinen, `Lager leer`\n\nBeispiel:\nEingabe:\nREIN Semmel 10\nREIN Apfel 5\nRAUS Semmel 3\nRAUS Apfel 9\nINVENTUR\nAusgabe:\nNicht genug Apfel\nApfel: 5\nSemmel: 7",
+      "starterCode": "Dictionary<string, int> lager = new Dictionary<string, int>();\nstring zeile;\nwhile ((zeile = Console.ReadLine()) != null)\n{\n    string[] t = zeile.Split(' ');\n    // TODO: REIN, RAUS, INVENTUR\n}\n",
+      "hints": [
+        "`lager.ContainsKey(artikel)` prüft, ob ein Artikel schon existiert.",
+        "`lager.TryGetValue(artikel, out int menge)` liefert 0, wenn der Artikel fehlt.",
+        "Für die alphabetische Ausgabe: `lager.Keys.OrderBy(k => k)` oder `new SortedDictionary`."
+      ],
+      "tests": [
+        {
+          "stdin": "REIN Semmel 10\nREIN Apfel 5\nRAUS Semmel 3\nRAUS Apfel 9\nINVENTUR",
+          "expected": "Nicht genug Apfel\nApfel: 5\nSemmel: 7"
+        },
+        {
+          "stdin": "INVENTUR",
+          "expected": "Lager leer"
+        },
+        {
+          "stdin": "RAUS Wasser 1\nREIN Wasser 2\nRAUS Wasser 2\nINVENTUR",
+          "expected": "Nicht genug Wasser\nLager leer"
+        },
+        {
+          "stdin": "REIN Kakao 1\nREIN Kakao 4\nINVENTUR\nRAUS Kakao 5\nREIN Brezel 2\nINVENTUR",
+          "expected": "Kakao: 5\nBrezel: 2"
+        }
+      ],
+      "solution": "Dictionary<string, int> lager = new Dictionary<string, int>();\nstring zeile;\nwhile ((zeile = Console.ReadLine()) != null)\n{\n    string[] t = zeile.Split(' ');\n    if (t[0] == \"REIN\")\n    {\n        string artikel = t[1];\n        int menge = int.Parse(t[2]);\n        if (lager.ContainsKey(artikel))\n            lager[artikel] += menge;\n        else\n            lager[artikel] = menge;\n    }\n    else if (t[0] == \"RAUS\")\n    {\n        string artikel = t[1];\n        int menge = int.Parse(t[2]);\n        int vorhanden;\n        lager.TryGetValue(artikel, out vorhanden);\n        if (vorhanden < menge)\n            Console.WriteLine($\"Nicht genug {artikel}\");\n        else\n            lager[artikel] = vorhanden - menge;\n    }\n    else if (t[0] == \"INVENTUR\")\n    {\n        bool leer = true;\n        foreach (string artikel in lager.Keys.OrderBy(k => k, StringComparer.Ordinal))\n        {\n            if (lager[artikel] > 0)\n            {\n                Console.WriteLine($\"{artikel}: {lager[artikel]}\");\n                leer = false;\n            }\n        }\n        if (leer)\n            Console.WriteLine(\"Lager leer\");\n    }\n}\n"
+    },
+    {
+      "id": "cs-021",
+      "title": "Robuste Eingabe mit Exceptions",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies Zeilen bis zum Ende der Eingabe. Jede Zeile sollte eine ganze Zahl sein – ist sie es nicht, soll `int.Parse` eine `FormatException` werfen, die du abfängst; Zahlen außerhalb des `int`-Bereichs lösen eine `OverflowException` aus. Leere Zeilen werden übersprungen.\n\nAusgabe:\n`Summe: <summe der gültigen Zahlen>`\n`Ungültig: <anzahl FormatException>`\n`Zu groß: <anzahl OverflowException>`\n\nBeispiel:\nEingabe:\n10\nzwölf\n5\n99999999999\nAusgabe:\nSumme: 15\nUngültig: 1\nZu groß: 1",
+      "starterCode": "long summe = 0;\nint ungueltig = 0;\nint zuGross = 0;\nstring zeile;\nwhile ((zeile = Console.ReadLine()) != null)\n{\n    if (zeile.Trim() == \"\")\n        continue;\n    // TODO: try / catch (FormatException) / catch (OverflowException)\n}\n\n// TODO: Ausgabe\n",
+      "hints": [
+        "Du kannst mehrere `catch`-Blöcke hintereinander schreiben, je einen pro Exception-Typ.",
+        "Die Summe als `long` verhindert, dass viele große `int`-Werte überlaufen."
+      ],
+      "tests": [
+        {
+          "stdin": "10\nzwölf\n5\n99999999999",
+          "expected": "Summe: 15\nUngültig: 1\nZu groß: 1"
+        },
+        {
+          "stdin": "1\n2\n3",
+          "expected": "Summe: 6\nUngültig: 0\nZu groß: 0"
+        },
+        {
+          "stdin": "abc\n3.5\n\n-4",
+          "expected": "Summe: -4\nUngültig: 2\nZu groß: 0"
+        },
+        {
+          "stdin": "2147483647\n2147483647\n2147483648",
+          "expected": "Summe: 4294967294\nUngültig: 0\nZu groß: 1"
+        }
+      ],
+      "solution": "long summe = 0;\nint ungueltig = 0;\nint zuGross = 0;\nstring zeile;\nwhile ((zeile = Console.ReadLine()) != null)\n{\n    if (zeile.Trim() == \"\")\n        continue;\n    try\n    {\n        summe += int.Parse(zeile);\n    }\n    catch (FormatException)\n    {\n        ungueltig++;\n    }\n    catch (OverflowException)\n    {\n        zuGross++;\n    }\n}\nConsole.WriteLine($\"Summe: {summe}\");\nConsole.WriteLine($\"Ungültig: {ungueltig}\");\nConsole.WriteLine($\"Zu groß: {zuGross}\");\n"
+    },
+    {
+      "id": "cs-022",
+      "title": "Wort-Hitparade",
+      "level": "fortgeschritten",
+      "difficulty": "mittel",
+      "points": 20,
+      "description": "Lies einen Text (eine Zeile) ein und finde die drei häufigsten Wörter. Groß-/Kleinschreibung wird ignoriert (alles klein ausgeben), die Satzzeichen `. , ! ?` werden entfernt. Sortiere nach Häufigkeit absteigend, bei Gleichstand alphabetisch. Gib höchstens 3 Zeilen der Form `<wort>: <anzahl>` aus.\n\nBeispiel:\nEingabe:\nDer Hund und der Ball. Der Hund bellt!\nAusgabe:\nder: 3\nhund: 2\nball: 1",
+      "starterCode": "string text = Console.ReadLine().ToLower();\n// TODO: Satzzeichen entfernen\nstring[] woerter = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);\n\nDictionary<string, int> zaehler = new Dictionary<string, int>();\n// TODO: zählen\n\n// TODO: sortieren und die Top 3 ausgeben\n",
+      "hints": [
+        "Satzzeichen entfernst du z. B. mit mehreren `Replace`-Aufrufen.",
+        "Sortieren nach zwei Kriterien: `zaehler.OrderByDescending(p => p.Value).ThenBy(p => p.Key, StringComparer.Ordinal)`.",
+        "`.Take(3)` liefert höchstens drei Elemente – auch wenn es weniger gibt."
+      ],
+      "tests": [
+        {
+          "stdin": "Der Hund und der Ball. Der Hund bellt!",
+          "expected": "der: 3\nhund: 2\nball: 1"
+        },
+        {
+          "stdin": "Hallo",
+          "expected": "hallo: 1"
+        },
+        {
+          "stdin": "a b c d a b",
+          "expected": "a: 2\nb: 2\nc: 1"
+        },
+        {
+          "stdin": "Ja, ja, JA! Nein? nein.",
+          "expected": "ja: 3\nnein: 2"
+        }
+      ],
+      "solution": "string text = Console.ReadLine().ToLower();\nforeach (char z in \".,!?\")\n    text = text.Replace(z.ToString(), \"\");\nstring[] woerter = text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);\n\nDictionary<string, int> zaehler = new Dictionary<string, int>();\nforeach (string w in woerter)\n{\n    if (zaehler.ContainsKey(w))\n        zaehler[w]++;\n    else\n        zaehler[w] = 1;\n}\n\nvar top = zaehler\n    .OrderByDescending(p => p.Value)\n    .ThenBy(p => p.Key, StringComparer.Ordinal)\n    .Take(3);\nforeach (var p in top)\n    Console.WriteLine($\"{p.Key}: {p.Value}\");\n"
+    },
+    {
+      "id": "cs-023",
+      "title": "Klammer-Checker mit generischem Stapel",
+      "level": "fortgeschritten",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Schreibe eine generische Klasse `Stapel<T>` mit `Push(T)`, `T Pop()`, `T Peek()` und der Property `bool IstLeer` (intern eine `List<T>`). `Pop` und `Peek` auf einem leeren Stapel werfen eine `InvalidOperationException`.\n\nNutze `Stapel<char>`, um zu prüfen, ob die Klammern `()`, `[]` und `{}` in einer Zeile korrekt geschachtelt sind. Andere Zeichen werden ignoriert.\n\nEingabe: Zeile 1 enthält n, danach n Zeilen.\nAusgabe: Pro Zeile `OK` oder `FEHLER`.\n\nBeispiel:\nEingabe:\n3\nif (a[0] == 1) { x(); }\n([)]\n((\nAusgabe:\nOK\nFEHLER\nFEHLER",
+      "starterCode": "int n = int.Parse(Console.ReadLine());\nfor (int i = 0; i < n; i++)\n{\n    string zeile = Console.ReadLine();\n    Console.WriteLine(Pruefen(zeile) ? \"OK\" : \"FEHLER\");\n}\n\nbool Pruefen(string s)\n{\n    Stapel<char> stapel = new Stapel<char>();\n    // TODO: öffnende Klammern pushen, schließende mit Peek/Pop vergleichen\n    return false;\n}\n\nclass Stapel<T>\n{\n    private List<T> daten = new List<T>();\n\n    // TODO: Push, Pop, Peek, IstLeer\n}\n",
+      "hints": [
+        "`Pop`: letztes Element merken, mit `RemoveAt(daten.Count - 1)` entfernen und zurückgeben.",
+        "Bei einer schließenden Klammer: Ist der Stapel leer oder passt das oberste Zeichen nicht, ist die Zeile fehlerhaft.",
+        "Am Ende muss der Stapel leer sein – sonst fehlt eine schließende Klammer."
+      ],
+      "tests": [
+        {
+          "stdin": "3\nif (a[0] == 1) { x(); }\n([)]\n((",
+          "expected": "OK\nFEHLER\nFEHLER"
+        },
+        {
+          "stdin": "2\n\n)(",
+          "expected": "OK\nFEHLER"
+        },
+        {
+          "stdin": "1\n{[()()]}",
+          "expected": "OK"
+        },
+        {
+          "stdin": "2\nkeine Klammern\n}",
+          "expected": "OK\nFEHLER"
+        }
+      ],
+      "solution": "int n = int.Parse(Console.ReadLine());\nfor (int i = 0; i < n; i++)\n{\n    string zeile = Console.ReadLine();\n    Console.WriteLine(Pruefen(zeile) ? \"OK\" : \"FEHLER\");\n}\n\nbool Pruefen(string s)\n{\n    Stapel<char> stapel = new Stapel<char>();\n    foreach (char c in s)\n    {\n        if (c == '(' || c == '[' || c == '{')\n        {\n            stapel.Push(c);\n        }\n        else if (c == ')' || c == ']' || c == '}')\n        {\n            if (stapel.IstLeer)\n                return false;\n            char offen = stapel.Pop();\n            if ((c == ')' && offen != '(') || (c == ']' && offen != '[') || (c == '}' && offen != '{'))\n                return false;\n        }\n    }\n    return stapel.IstLeer;\n}\n\nclass Stapel<T>\n{\n    private List<T> daten = new List<T>();\n\n    public bool IstLeer { get { return daten.Count == 0; } }\n\n    public void Push(T wert)\n    {\n        daten.Add(wert);\n    }\n\n    public T Peek()\n    {\n        if (IstLeer)\n            throw new InvalidOperationException(\"Stapel ist leer\");\n        return daten[daten.Count - 1];\n    }\n\n    public T Pop()\n    {\n        T wert = Peek();\n        daten.RemoveAt(daten.Count - 1);\n        return wert;\n    }\n}\n"
+    },
+    {
+      "id": "cs-024",
+      "title": "Klassenauswertung mit LINQ",
+      "level": "fortgeschritten",
+      "difficulty": "schwer",
+      "points": 40,
+      "description": "Die Ergebnisse eines Tests liegen als Zeilen `<Name>;<Klasse>;<Punkte>` vor (bis zum Ende der Eingabe). Werte sie mit LINQ aus und gib aus:\n1. `Bester: <Name> (<Punkte>)` – bei Gleichstand der alphabetisch erste Name\n2. Für jede Klasse (alphabetisch sortiert) eine Zeile `<Klasse>: Schnitt <d>, bestanden <b>/<gesamt>` – Schnitt mit genau 1 Nachkommastelle und Punkt, bestanden heißt mindestens 50 Punkte\n3. `Nicht bestanden: <Namen>` – alphabetisch, mit `, ` getrennt, oder `keiner`\n\nBeispiel:\nEingabe:\nAnna;3A;88\nBen;3B;45\nCem;3A;50\nDora;3B;91\nAusgabe:\nBester: Dora (91)\n3A: Schnitt 69.0, bestanden 2/2\n3B: Schnitt 68.0, bestanden 1/2\nNicht bestanden: Ben",
+      "starterCode": "using System.Globalization;\n\nList<Ergebnis> liste = new List<Ergebnis>();\nstring zeile;\nwhile ((zeile = Console.ReadLine()) != null)\n{\n    string[] t = zeile.Split(';');\n    liste.Add(new Ergebnis(t[0], t[1], int.Parse(t[2])));\n}\n\n// TODO: 1. Bester (OrderByDescending + ThenBy + First)\n// TODO: 2. GroupBy nach Klasse\n// TODO: 3. Nicht bestanden (Where + Select + string.Join)\n\nclass Ergebnis\n{\n    public string Name { get; private set; }\n    public string Klasse { get; private set; }\n    public int Punkte { get; private set; }\n\n    public Ergebnis(string name, string klasse, int punkte)\n    {\n        Name = name;\n        Klasse = klasse;\n        Punkte = punkte;\n    }\n}\n",
+      "hints": [
+        "`liste.OrderByDescending(e => e.Punkte).ThenBy(e => e.Name, StringComparer.Ordinal).First()` liefert den Besten.",
+        "`liste.GroupBy(e => e.Klasse).OrderBy(g => g.Key, StringComparer.Ordinal)` – pro Gruppe helfen `g.Average(e => e.Punkte)`, `g.Count(e => e.Punkte >= 50)` und `g.Count()`.",
+        "`string.Join(\", \", namen)` verbindet die Namen."
+      ],
+      "tests": [
+        {
+          "stdin": "Anna;3A;88\nBen;3B;45\nCem;3A;50\nDora;3B;91",
+          "expected": "Bester: Dora (91)\n3A: Schnitt 69.0, bestanden 2/2\n3B: Schnitt 68.0, bestanden 1/2\nNicht bestanden: Ben"
+        },
+        {
+          "stdin": "Lea;1A;100",
+          "expected": "Bester: Lea (100)\n1A: Schnitt 100.0, bestanden 1/1\nNicht bestanden: keiner"
+        },
+        {
+          "stdin": "Zoe;2B;70\nAli;2B;70\nMax;2A;10\nEva;2A;49\nTim;2B;0",
+          "expected": "Bester: Ali (70)\n2A: Schnitt 29.5, bestanden 0/2\n2B: Schnitt 46.7, bestanden 2/3\nNicht bestanden: Eva, Max, Tim"
+        }
+      ],
+      "solution": "using System.Globalization;\n\nList<Ergebnis> liste = new List<Ergebnis>();\nstring zeile;\nwhile ((zeile = Console.ReadLine()) != null)\n{\n    string[] t = zeile.Split(';');\n    liste.Add(new Ergebnis(t[0], t[1], int.Parse(t[2])));\n}\n\nErgebnis bester = liste\n    .OrderByDescending(e => e.Punkte)\n    .ThenBy(e => e.Name, StringComparer.Ordinal)\n    .First();\nConsole.WriteLine($\"Bester: {bester.Name} ({bester.Punkte})\");\n\nvar klassen = liste\n    .GroupBy(e => e.Klasse)\n    .OrderBy(g => g.Key, StringComparer.Ordinal);\nforeach (var g in klassen)\n{\n    double schnitt = g.Average(e => e.Punkte);\n    int bestanden = g.Count(e => e.Punkte >= 50);\n    Console.WriteLine($\"{g.Key}: Schnitt {schnitt.ToString(\"0.0\", CultureInfo.InvariantCulture)}, bestanden {bestanden}/{g.Count()}\");\n}\n\nList<string> durchgefallen = liste\n    .Where(e => e.Punkte < 50)\n    .Select(e => e.Name)\n    .OrderBy(n => n, StringComparer.Ordinal)\n    .ToList();\nConsole.WriteLine(\"Nicht bestanden: \" + (durchgefallen.Count == 0 ? \"keiner\" : string.Join(\", \", durchgefallen)));\n\nclass Ergebnis\n{\n    public string Name { get; private set; }\n    public string Klasse { get; private set; }\n    public int Punkte { get; private set; }\n\n    public Ergebnis(string name, string klasse, int punkte)\n    {\n        Name = name;\n        Klasse = klasse;\n        Punkte = punkte;\n    }\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "id": "python-e4_02_listen_methoden",
+  "title": "Listen-Methoden",
+  "summary": "Elemente hinzufügen, entfernen, sortieren und zählen – mit den eingebauten Methoden von Listen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Listen bringen eigene Befehle mit, die Methoden. Du rufst sie mit einem Punkt nach dem Listennamen auf: liste.methode(). Die wichtigste ist append(): Sie hängt ein Element ans Ende der Liste an."
+    },
+    {
+      "type": "code",
+      "content": "einkauf = []\neinkauf.append(\"Milch\")\neinkauf.append(\"Brot\")\nprint(einkauf)  # ['Milch', 'Brot']"
+    },
+    {
+      "type": "text",
+      "content": "Mit append() und einer Schleife kannst du eine Liste aus Benutzereingaben aufbauen. Hier werden so lange Noten eingelesen, bis eine leere Eingabe kommt:"
+    },
+    {
+      "type": "code",
+      "content": "noten = []\nwhile True:\n    eingabe = input(\"Note (leer = fertig): \")\n    if eingabe == \"\":\n        break\n    noten.append(int(eingabe))\nprint(noten)"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Methoden zum Einfügen und Entfernen:\n• insert(i, x) – fügt x an Position i ein\n• remove(x) – entfernt das erste Vorkommen von x (ValueError, wenn x fehlt)\n• pop() – entfernt das letzte Element und gibt es zurück\n• pop(i) – entfernt das Element an Position i und gibt es zurück"
+    },
+    {
+      "type": "code",
+      "content": "warteschlange = [\"Anna\", \"Ben\", \"Clara\"]\nwarteschlange.insert(0, \"Dora\")  # ['Dora', 'Anna', 'Ben', 'Clara']\nwarteschlange.remove(\"Ben\")       # ['Dora', 'Anna', 'Clara']\nerste = warteschlange.pop(0)\nprint(erste)          # Dora\nprint(warteschlange)  # ['Anna', 'Clara']"
+    },
+    {
+      "type": "text",
+      "content": "Zum Sortieren und Zählen:\n• sort() – sortiert die Liste aufsteigend (sort(reverse=True) absteigend)\n• reverse() – dreht die Reihenfolge um\n• count(x) – wie oft kommt x vor?\n• index(x) – an welcher Position steht x zum ersten Mal?\n\nDie Funktion sorted(liste) liefert dagegen eine neue, sortierte Liste und lässt das Original unverändert."
+    },
+    {
+      "type": "code",
+      "content": "punkte = [40, 85, 62, 85]\nprint(punkte.count(85))  # 2\nprint(punkte.index(62))  # 2\n\nrangliste = sorted(punkte, reverse=True)\nprint(rangliste)  # [85, 85, 62, 40]\nprint(punkte)     # [40, 85, 62, 85] – unverändert\n\npunkte.sort()\nprint(punkte)     # [40, 62, 85, 85]"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Anfängerfehler: Methoden wie append() und sort() verändern die Liste direkt und geben None zurück – also „nichts“. Wer das Ergebnis wieder in die Variable speichert, verliert seine Liste!"
+    },
+    {
+      "type": "code",
+      "content": "zahlen = [3, 1, 2]\nzahlen = zahlen.sort()   # FALSCH!\nprint(zahlen)            # None\n\nzahlen = [3, 1, 2]\nzahlen.sort()            # richtig\nprint(zahlen)            # [1, 2, 3]"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "liste = [\"a\", \"b\"]\nliste.insert(1, \"c\")\nprint(liste)",
+      "options": [
+        "['a', 'b', 'c']",
+        "['c', 'a', 'b']",
+        "['a', 'c', 'b']",
+        "['a', 'b']"
+      ],
+      "correctIndex": 2,
+      "explanation": "insert(1, \"c\") fügt \"c\" an Position 1 ein. \"b\" rutscht dadurch eine Stelle nach hinten."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "werte = [5, 3, 8]\nwerte = werte.sort()\nprint(werte)",
+      "options": [
+        "[5, 3, 8]",
+        "None",
+        "[3, 5, 8]",
+        "Fehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "sort() sortiert die Liste direkt und gibt None zurück. Durch die Zuweisung steht in werte jetzt None statt der Liste."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "stapel = [1, 4, 7]\noben = stapel.pop()\nprint(oben)\nprint(stapel)",
+      "options": [
+        "7\n[1, 4]",
+        "4\n[1, 7]",
+        "1\n[4, 7]",
+        "7\n[1, 4, 7]"
+      ],
+      "correctIndex": 0,
+      "explanation": "pop() ohne Index entfernt das letzte Element (7) und gibt es zurück. Übrig bleiben 1 und 4."
+    },
+    {
+      "question": "Worin unterscheiden sich liste.sort() und sorted(liste)?",
+      "options": [
+        "Es gibt keinen Unterschied",
+        "sorted() kann nur Zahlen sortieren",
+        "sort() verändert die Liste selbst, sorted() liefert eine neue sortierte Liste und lässt das Original unverändert",
+        "sort() sortiert absteigend, sorted() aufsteigend"
+      ],
+      "correctIndex": 2,
+      "explanation": "sort() ist eine Methode, die die Liste direkt umbaut (Rückgabe None). sorted() ist eine Funktion, die eine sortierte Kopie zurückgibt."
+    }
+  ]
+}

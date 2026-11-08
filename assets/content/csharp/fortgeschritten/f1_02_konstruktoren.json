@@ -1,0 +1,92 @@
+{
+  "id": "csharp-f1_02_konstruktoren",
+  "title": "Konstruktoren",
+  "summary": "Objekte mit einem Konstruktor gleich beim Erzeugen sinnvoll befüllen, this verwenden und mehrere Konstruktoren anbieten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher hast du ein Objekt erzeugt und danach jedes Feld einzeln gesetzt. Das ist mühsam – und vergisst du ein Feld, hat das Objekt einen unsinnigen Wert. Ein Konstruktor löst das: Er ist eine besondere Methode, die automatisch bei new aufgerufen wird.\n\nEin Konstruktor heißt genau wie die Klasse und hat keinen Rückgabetyp – nicht einmal void."
+    },
+    {
+      "type": "code",
+      "content": "Schueler s = new Schueler(\"Lena\", 2);\nConsole.WriteLine($\"{s.Name}: {s.Note}\");\n// Ausgabe: Lena: 2\n\nclass Schueler\n{\n    public string Name;\n    public int Note;\n\n    public Schueler(string name, int note)\n    {\n        Name = name;\n        Note = note;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Die Werte in new Schueler(\"Lena\", 2) landen in den Parametern name und note. Der Konstruktor kopiert sie in die Felder Name und Note. Weil der Konstruktor Name sicher setzt, brauchen wir hier keinen Startwert \"\" mehr.\n\nOft heißen Parameter und Felder gleich. Dann musst du unterscheiden, was gemeint ist. Dafür gibt es das Schlüsselwort this: this bedeutet „dieses Objekt hier“. this.name ist das Feld, name allein der Parameter."
+    },
+    {
+      "type": "code",
+      "content": "Haustier h = new Haustier(\"Minka\", 3);\nh.Vorstellen();\n// Ausgabe: Ich bin Minka und 3 Jahre alt.\n\nclass Haustier\n{\n    public string name;\n    public int alter;\n\n    public Haustier(string name, int alter)\n    {\n        this.name = name;\n        this.alter = alter;\n    }\n\n    public void Vorstellen()\n    {\n        Console.WriteLine($\"Ich bin {name} und {alter} Jahre alt.\");\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Ein klassischer Fehler: Schreibst du name = name; ohne this, weist du den Parameter sich selbst zu. Das Feld bleibt leer, und dein Objekt hat keinen Namen.\n\nSchreibst du gar keinen Konstruktor, erzeugt C# automatisch einen leeren Standardkonstruktor ohne Parameter. Deshalb hat new Schueler() in der letzten Lektion funktioniert. Aber Achtung: Sobald du selbst einen Konstruktor schreibst, fällt dieser Standardkonstruktor weg!"
+    },
+    {
+      "type": "code",
+      "content": "// Fehler! Die Klasse hat nur einen Konstruktor mit zwei Parametern:\n// Schueler s = new Schueler();\n\nSchueler s = new Schueler(\"Jonas\", 1);   // so passt es\nConsole.WriteLine(s.Name);\n\nclass Schueler\n{\n    public string Name;\n    public int Note;\n\n    public Schueler(string name, int note)\n    {\n        Name = name;\n        Note = note;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Wie Methoden kannst du auch Konstruktoren überladen: mehrere Konstruktoren mit unterschiedlichen Parametern. Damit du Code nicht doppelt schreiben musst, kann ein Konstruktor mit : this(...) einen anderen aufrufen. Der aufgerufene Konstruktor läuft dabei zuerst."
+    },
+    {
+      "type": "code",
+      "content": "Spielfigur held = new Spielfigur(\"Aria\", 150);\nSpielfigur gegner = new Spielfigur(\"Goblin\");\n\nConsole.WriteLine($\"{held.Name} hat {held.Leben} Leben.\");\nConsole.WriteLine($\"{gegner.Name} hat {gegner.Leben} Leben.\");\n// Ausgabe:\n// Aria hat 150 Leben.\n// Goblin hat 100 Leben.\n\nclass Spielfigur\n{\n    public string Name;\n    public int Leben;\n\n    public Spielfigur(string name, int leben)\n    {\n        Name = name;\n        Leben = leben;\n    }\n\n    // Ohne Angabe gibt es 100 Leben\n    public Spielfigur(string name) : this(name, 100)\n    {\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Ein Konstruktor ist auch der richtige Ort, um Werte zu prüfen. So stellst du sicher, dass gar kein Objekt mit falschen Daten entstehen kann – zum Beispiel eine Note 7 oder ein negatives Alter. Wie man darauf sauber reagiert, lernst du später bei den Properties und Exceptions.\n\nMerke:\n• Name des Konstruktors = Name der Klasse, kein Rückgabetyp\n• läuft automatisch bei new\n• this.feld unterscheidet das Feld vom gleichnamigen Parameter\n• eigener Konstruktor → kein automatischer Standardkonstruktor mehr"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Box b = new Box(5);\nb.Zeigen();\n\nclass Box\n{\n    public int groesse;\n\n    public Box(int groesse)\n    {\n        groesse = groesse;\n    }\n\n    public void Zeigen()\n    {\n        Console.WriteLine($\"Box {groesse}\");\n    }\n}",
+      "options": [
+        "Box 5",
+        "Box 0",
+        "Fehler beim Kompilieren",
+        "5"
+      ],
+      "correctIndex": 1,
+      "explanation": "Im Konstruktor steht groesse = groesse; – ohne this weist sich der Parameter selbst zu. Das Feld groesse bleibt beim Standardwert 0."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Lampe l = new Lampe();\nConsole.WriteLine(l.An);\n\nclass Lampe\n{\n    public bool An;\n\n    public Lampe(bool an)\n    {\n        An = an;\n    }\n}",
+      "options": [
+        "Ein Konstruktor braucht den Rückgabetyp void",
+        "Die Klasse hat keinen Konstruktor ohne Parameter mehr, new Lampe() passt also nicht",
+        "Felder vom Typ bool sind in Klassen nicht erlaubt",
+        "this darf in einem Konstruktor nicht verwendet werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Sobald man einen eigenen Konstruktor schreibt, erzeugt C# keinen Standardkonstruktor mehr. new Lampe() findet keinen passenden Konstruktor. Richtig wäre z. B. new Lampe(true)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Fahrrad f = new Fahrrad(\"Rot\");\nConsole.WriteLine($\"{f.Farbe} {f.Gaenge}\");\n\nclass Fahrrad\n{\n    public string Farbe;\n    public int Gaenge;\n\n    public Fahrrad(string farbe, int gaenge)\n    {\n        Farbe = farbe;\n        Gaenge = gaenge;\n    }\n\n    public Fahrrad(string farbe) : this(farbe, 4)\n    {\n    }\n}",
+      "options": [
+        "Rot 4",
+        "Rot 0",
+        "Weiß 4",
+        "Weiß 0"
+      ],
+      "correctIndex": 0,
+      "explanation": "new Fahrrad(\"Rot\") ruft über : this(farbe, 4) den Konstruktor mit zwei Parametern auf. Damit ist Farbe \"Rot\" und Gaenge 4."
+    },
+    {
+      "question": "Welche Aussage über Konstruktoren ist richtig?",
+      "options": [
+        "Ein Konstruktor muss mit return ein Objekt zurückgeben",
+        "Ein Konstruktor kann einen beliebigen Namen haben",
+        "Eine Klasse darf höchstens einen Konstruktor haben",
+        "Ein Konstruktor heißt wie die Klasse, hat keinen Rückgabetyp und läuft automatisch bei new"
+      ],
+      "correctIndex": 3,
+      "explanation": "Konstruktoren heißen genau wie ihre Klasse, haben keinen Rückgabetyp und werden bei new automatisch aufgerufen. Man kann mehrere davon haben (Überladung)."
+    }
+  ]
+}

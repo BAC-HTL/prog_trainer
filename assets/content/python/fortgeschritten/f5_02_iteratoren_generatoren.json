@@ -1,0 +1,92 @@
+{
+  "id": "python-f5_02_iteratoren_generatoren",
+  "title": "Iteratoren und Generatoren",
+  "summary": "Verstehen, wie for-Schleifen intern arbeiten, und Werte mit yield erst bei Bedarf erzeugen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit for kannst du über Listen, Strings, Dictionaries und Dateien laufen. Diese Dinge heißen iterierbar. Hinter den Kulissen holt sich for mit iter() einen Iterator und fragt ihn mit next() immer wieder nach dem nächsten Element."
+    },
+    {
+      "type": "code",
+      "content": "farben = [\"rot\", \"grün\", \"blau\"]\nit = iter(farben)\n\nprint(next(it))   # rot\nprint(next(it))   # grün\nprint(next(it))   # blau\nprint(next(it))   # StopIteration – keine Elemente mehr"
+    },
+    {
+      "type": "text",
+      "content": "Ist der Iterator leer, löst next() eine StopIteration aus. Die for-Schleife fängt diese Ausnahme ab und beendet sich ganz normal. Wichtig: Ein Iterator „merkt“ sich seine Position und kann nur einmal durchlaufen werden."
+    },
+    {
+      "type": "text",
+      "content": "Einen eigenen Iterator kannst du sehr bequem mit einem Generator bauen. Ein Generator ist eine Funktion mit yield statt return. Bei jedem yield gibt sie einen Wert heraus und pausiert. Beim nächsten next() läuft sie genau dort weiter."
+    },
+    {
+      "type": "code",
+      "content": "def countdown(start):\n    while start > 0:\n        yield start\n        start -= 1\n    print(\"Start!\")\n\nfor zahl in countdown(3):\n    print(zahl)\n# 3\n# 2\n# 1\n# Start!"
+    },
+    {
+      "type": "code",
+      "content": "def ziehe_karten():\n    print(\"Mische...\")\n    yield \"Herz Ass\"\n    yield \"Pik König\"\n\ng = ziehe_karten()      # hier passiert noch NICHTS\nprint(type(g))          # <class 'generator'>\nprint(next(g))          # Mische...  dann  Herz Ass\nprint(next(g))          # Pik König\nprint(list(g))          # [] – der Generator ist schon verbraucht"
+    },
+    {
+      "type": "text",
+      "content": "Der Aufruf ziehe_karten() führt den Code noch nicht aus, sondern erzeugt nur ein Generator-Objekt. Erst next() (oder eine for-Schleife) startet ihn. Ein häufiger Fehler ist, einen Generator zweimal durchlaufen zu wollen – beim zweiten Mal ist er leer. Brauchst du die Werte öfter, speichere sie mit list() oder erzeuge einen neuen Generator."
+    },
+    {
+      "type": "text",
+      "content": "Der große Vorteil: Generatoren erzeugen Werte erst bei Bedarf (lazy). Sie brauchen kaum Speicher, auch bei Millionen Werten – oder sogar unendlich vielen. Eine Kurzschreibweise ist der Generator-Ausdruck: wie eine List Comprehension, aber mit runden Klammern."
+    },
+    {
+      "type": "code",
+      "content": "quadrate_liste = [x * x for x in range(1_000_000)]   # eine Million Werte im Speicher\nquadrate_gen = (x * x for x in range(1_000_000))    # erzeugt sie erst beim Durchlaufen\n\nprint(sum(x * x for x in range(1_000_000)))          # 333332833333500000\n\ndef ids():\n    n = 1\n    while True:          # unendlich – bei einem Generator kein Problem\n        yield f\"ID-{n:03d}\"\n        n += 1\n\ngen = ids()\nprint(next(gen), next(gen))   # ID-001 ID-002"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def doppelt(liste):\n    for x in liste:\n        yield x * 2\n\ng = doppelt([1, 2, 3])\nprint(list(g), \"und dann\", list(g))",
+      "options": [
+        "[1, 2, 3]",
+        "[2, 4, 6]",
+        "[1, 2, 3] und dann []",
+        "[2, 4, 6] und dann []"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Generator liefert 2, 4, 6. Nach dem ersten list() ist er verbraucht, das zweite list() ergibt []."
+    },
+    {
+      "question": "Was passiert beim Aufruf g = zaehle() (ohne weiteren Code)?",
+      "code": "def zaehle():\n    print(\"A\")\n    yield 1\n    print(\"B\")\n    yield 2\n\ng = zaehle()",
+      "options": [
+        "Es wird A ausgegeben",
+        "Es wird A und B ausgegeben",
+        "Es wird nichts ausgegeben, nur ein Generator-Objekt erzeugt",
+        "StopIteration"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Aufruf einer Generator-Funktion führt ihren Code noch nicht aus. Erst next() oder eine Schleife starten ihn."
+    },
+    {
+      "question": "Finde den Fehler: Welche Ausnahme löst die letzte Zeile aus?",
+      "code": "it = iter([\"a\", \"b\"])\nnext(it)\nnext(it)\nnext(it)",
+      "options": [
+        "IndexError",
+        "StopIteration",
+        "ValueError",
+        "Keine, es wird None ausgegeben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Iterator hat nur zwei Elemente. Das dritte next() findet keines mehr und löst StopIteration aus."
+    },
+    {
+      "question": "Was ist der Hauptvorteil von (x * x for x in range(10**8)) gegenüber [x * x for x in range(10**8)]?",
+      "options": [
+        "Der Generator-Ausdruck rechnet schneller jedes einzelne Quadrat",
+        "Der Generator-Ausdruck speichert nicht alle Werte gleichzeitig, sondern erzeugt sie bei Bedarf",
+        "Man kann den Generator-Ausdruck beliebig oft durchlaufen",
+        "Es gibt keinen Unterschied"
+      ],
+      "correctIndex": 1,
+      "explanation": "Generatoren arbeiten lazy: Es existiert immer nur der aktuelle Wert im Speicher. Dafür kann man sie nur einmal durchlaufen."
+    }
+  ]
+}

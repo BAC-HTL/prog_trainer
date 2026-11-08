@@ -1,7 +1,7 @@
 name: prog_trainer
-description: Lern-App zum Programmierenlernen – von null bis zu Software-Architektur.
+description: Lern-App zum Programmierenlernen – von null bis Senior-Level.
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.2.0+2
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
@@ -9,6 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.3.0
+  http: ^1.2.0
+  pdf: ^3.11.0
+  printing: ^5.13.0
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:
@@ -21,4 +26,12 @@ flutter:
   assets:
     - assets/content/
     - assets/content/python/
+    - assets/content/python/einsteiger/
+    - assets/content/python/fortgeschritten/
+    - assets/content/python/profi/
+    - assets/content/python/senior/
     - assets/content/csharp/
+    - assets/content/csharp/einsteiger/
+    - assets/content/csharp/fortgeschritten/
+    - assets/content/csharp/profi/
+    - assets/content/csharp/senior/

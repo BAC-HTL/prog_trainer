@@ -1,0 +1,92 @@
+{
+  "id": "csharp-f4_02_eigene_exceptions",
+  "title": "Eigene Exceptions",
+  "summary": "Eigene Exception-Klassen von Exception ableiten, mit zusätzlichen Infos ausstatten und Fehler mit throw; weiterreichen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die eingebauten Exceptions passen nicht immer. Wenn in deinem Bankprogramm jemand mehr abhebt, als am Konto ist, sagt eine ArgumentException wenig aus. Besser ist eine eigene Exception mit einem sprechenden Namen, zum Beispiel ZuWenigGuthabenException.\n\nDas Gute: Du kennst schon alles, was du dafür brauchst. Eine eigene Exception ist einfach eine Klasse, die von Exception erbt."
+    },
+    {
+      "type": "code",
+      "content": "class ZuWenigGuthabenException : Exception\n{\n    public ZuWenigGuthabenException(string nachricht) : base(nachricht)\n    {\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Drei Regeln dazu:\n• Der Name endet laut Konvention auf Exception.\n• Die Klasse erbt von Exception (oder von einer passenden Unterklasse).\n• Mit : base(nachricht) gibst du den Text an den Konstruktor der Basisklasse weiter. Dadurch steht er später in ex.Message.\n\nGeworfen und gefangen wird sie genau wie jede andere Exception:"
+    },
+    {
+      "type": "code",
+      "content": "var konto = new Konto();\nkonto.Einzahlen(50);\n\ntry\n{\n    konto.Abheben(20);\n    konto.Abheben(100);\n}\ncatch (ZuWenigGuthabenException ex)\n{\n    Console.WriteLine(\"Abgelehnt: \" + ex.Message);\n}\nConsole.WriteLine(\"Kontostand: \" + konto.Stand);\n// Ausgabe:\n// Abgelehnt: Es fehlen 70 Euro\n// Kontostand: 30\n\nclass Konto\n{\n    public int Stand { get; private set; }\n\n    public void Einzahlen(int betrag)\n    {\n        Stand += betrag;\n    }\n\n    public void Abheben(int betrag)\n    {\n        if (betrag > Stand)\n        {\n            throw new ZuWenigGuthabenException($\"Es fehlen {betrag - Stand} Euro\");\n        }\n        Stand -= betrag;\n    }\n}\n\nclass ZuWenigGuthabenException : Exception\n{\n    public ZuWenigGuthabenException(string nachricht) : base(nachricht)\n    {\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Weil deine Exception eine ganz normale Klasse ist, kann sie auch eigene Properties haben. So bekommt der Aufrufer nicht nur einen Text, sondern echte Daten, mit denen er weiterrechnen kann:"
+    },
+    {
+      "type": "code",
+      "content": "try\n{\n    throw new UngueltigeNoteException(7);\n}\ncatch (UngueltigeNoteException ex)\n{\n    Console.WriteLine(ex.Message);\n    Console.WriteLine(\"Wert: \" + ex.Note);\n}\n// Ausgabe:\n// Note 7 ist nicht erlaubt\n// Wert: 7\n\nclass UngueltigeNoteException : Exception\n{\n    public int Note { get; }\n\n    public UngueltigeNoteException(int note)\n        : base($\"Note {note} ist nicht erlaubt\")\n    {\n        Note = note;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Da es um Vererbung geht, gilt auch hier Polymorphie: catch (Exception) fängt deine eigene Exception ebenfalls ab. Du kannst sogar eine kleine Hierarchie bauen, etwa SpielException als Basis und darunter UngueltigerZugException. Ein catch (SpielException) fängt dann alle Spiel-Fehler auf einmal.\n\nManchmal willst du eine Exception nur kurz bemerken (zum Beispiel protokollieren) und dann trotzdem weiterreichen. Dafür schreibst du im catch-Block einfach throw; ohne etwas dahinter."
+    },
+    {
+      "type": "code",
+      "content": "try\n{\n    Verarbeite(\"abc\");\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"Hauptprogramm: Eingabe ungültig\");\n}\n\nstatic void Verarbeite(string text)\n{\n    try\n    {\n        int zahl = int.Parse(text);\n    }\n    catch (FormatException)\n    {\n        Console.WriteLine(\"Log: Parse fehlgeschlagen\");\n        throw;   // dieselbe Exception weiterwerfen\n    }\n}\n// Ausgabe:\n// Log: Parse fehlgeschlagen\n// Hauptprogramm: Eingabe ungültig"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• Die Klasse erbt nicht von Exception – dann kannst du sie weder werfen noch fangen, der Compiler meldet einen Fehler.\n• Du vergisst : base(nachricht) – dann enthält ex.Message nur einen nichtssagenden Standardtext.\n• Du schreibst throw ex; statt throw; – das funktioniert zwar, löscht aber die Information, wo der Fehler ursprünglich passiert ist. Zum Weiterreichen also immer throw; verwenden."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "throw new LeererNameException();\n\nclass LeererNameException\n{\n}",
+      "options": [
+        "Der Name darf nicht auf Exception enden",
+        "Es fehlt ein Konstruktor mit string-Parameter",
+        "throw muss immer in einem try-Block stehen",
+        "Die Klasse erbt nicht von Exception und kann daher nicht geworfen werden"
+      ],
+      "correctIndex": 3,
+      "explanation": "Mit throw kann man nur Objekte werfen, deren Klasse von Exception abgeleitet ist. Richtig wäre class LeererNameException : Exception."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try\n{\n    throw new SpielException(\"Feld besetzt\");\n}\ncatch (Exception ex)\n{\n    Console.WriteLine(\"Fehler: \" + ex.Message);\n}\n\nclass SpielException : Exception\n{\n    public SpielException(string m) : base(m) { }\n}",
+      "options": [
+        "Nichts, die Exception wird nicht gefangen",
+        "Fehler: Feld besetzt",
+        "Fehler: SpielException",
+        "Fehler: "
+      ],
+      "correctIndex": 1,
+      "explanation": "SpielException erbt von Exception, also fängt catch (Exception) sie ab. Weil der Text mit base(m) weitergegeben wurde, steht er in ex.Message."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try\n{\n    try\n    {\n        throw new ZugException(4);\n    }\n    catch (ZugException ex)\n    {\n        Console.WriteLine(\"innen \" + ex.Feld);\n        throw;\n    }\n}\ncatch (ZugException ex)\n{\n    Console.WriteLine(\"außen \" + (ex.Feld + 1));\n}\n\nclass ZugException : Exception\n{\n    public int Feld { get; }\n    public ZugException(int feld) { Feld = feld; }\n}",
+      "options": [
+        "innen 4\naußen 5",
+        "innen 4",
+        "außen 5",
+        "innen 4\naußen 4"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der innere catch gibt \"innen 4\" aus und reicht die Exception mit throw; weiter. Der äußere catch fängt dasselbe Objekt und rechnet 4 + 1 = 5."
+    },
+    {
+      "question": "Wozu dient : base(nachricht) im Konstruktor einer eigenen Exception?",
+      "options": [
+        "Damit die Exception automatisch geworfen wird",
+        "Damit man die Exception nicht mehr fangen kann",
+        "Damit der Text an die Basisklasse Exception geht und in ex.Message landet",
+        "Damit die Exception von der Klasse base erbt"
+      ],
+      "correctIndex": 2,
+      "explanation": "base(...) ruft den Konstruktor der Basisklasse Exception auf. Diese speichert den Text, den du danach über die Eigenschaft Message auslesen kannst."
+    }
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "id": "csharp-e1-pruefung",
+  "title": "Abschlussprüfung: Erste Schritte",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.Write(\"1\");\nConsole.WriteLine(\"2\");\nConsole.Write(\"3\");",
+      "options": [
+        "123 in einer Zeile",
+        "12 in der ersten Zeile, 3 in der zweiten Zeile",
+        "1 in der ersten Zeile, 23 in der zweiten Zeile",
+        "1, 2 und 3 jeweils in einer eigenen Zeile"
+      ],
+      "correctIndex": 1,
+      "explanation": "Write(\"1\") macht keinen Zeilenumbruch, deshalb folgt die 2 direkt dahinter. WriteLine(\"2\") beendet danach die Zeile, und die 3 landet in der nächsten Zeile."
+    },
+    {
+      "question": "Welche dieser Zeilen lässt sich ohne Fehler kompilieren?",
+      "options": [
+        "double preis = 4,99;",
+        "string name = 'Lena';",
+        "bool fertig = \"true\";",
+        "int anzahl = 12;"
+      ],
+      "correctIndex": 3,
+      "explanation": "Kommazahlen schreibt man im Code mit Punkt (4.99), Texte stehen in doppelten Anführungszeichen, und \"true\" mit Anführungszeichen ist ein string und kein bool. Nur int anzahl = 12; ist korrekt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int a = 10;\nint b = 4;\nConsole.WriteLine(a / b + a % b);",
+      "options": [
+        "4",
+        "2",
+        "4.5",
+        "3"
+      ],
+      "correctIndex": 0,
+      "explanation": "10 / 4 ist eine Ganzzahl-Division und ergibt 2 (die Kommastellen fallen weg). 10 % 4 ist der Rest, also 2. Zusammen: 2 + 2 = 4."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string x = \"4\";\nstring y = \"2\";\nConsole.WriteLine(x + y);",
+      "options": [
+        "6",
+        "4 2",
+        "Fehler beim Kompilieren",
+        "42"
+      ],
+      "correctIndex": 3,
+      "explanation": "x und y sind strings. Der Operator + hängt Texte einfach aneinander, statt zu rechnen. Aus \"4\" und \"2\" wird \"42\"."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.WriteLine(\"Summe: \" + 3 + 2);",
+      "options": [
+        "Summe: 5",
+        "Summe: 32",
+        "Summe: 3 + 2",
+        "Fehler beim Kompilieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "C# rechnet von links nach rechts: \"Summe: \" + 3 ergibt den Text \"Summe: 3\". Danach wird an diesen Text die 2 angehängt. Für Summe: 5 bräuchtest du Klammern: \"Summe: \" + (3 + 2)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "double d = 9 / 2 * 2.0;\nConsole.WriteLine(d);",
+      "options": [
+        "9",
+        "4",
+        "8",
+        "4.5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst wird 9 / 2 berechnet – zwei int-Werte, also 4. Erst danach wird mit 2.0 multipliziert: 4 * 2.0 = 8. Dass das Ergebnis in einem double landet, ändert an der Ganzzahl-Division nichts."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int punkte = 10;\nint punkte = 20;\nConsole.WriteLine(punkte);",
+      "options": [
+        "Die Variable punkte wird zweimal mit int angelegt",
+        "Variablen darf man nicht überschreiben",
+        "20 ist zu groß für einen int",
+        "Nach dem letzten Console.WriteLine fehlt ein Kommentar"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit int punkte wird eine Variable neu angelegt – das darf pro Name nur einmal passieren. Zum Ändern des Werts schreibt man nur punkte = 20; ohne Datentyp davor."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "var zahl;\nzahl = 5;\nConsole.WriteLine(zahl);",
+      "options": [
+        "var darf nur für strings verwendet werden",
+        "Bei var muss sofort ein Wert zugewiesen werden, sonst kennt der Compiler den Typ nicht",
+        "Der Name zahl ist reserviert",
+        "Es fehlt ein $ vor der Zahl 5"
+      ],
+      "correctIndex": 1,
+      "explanation": "var bestimmt den Typ anhand des Werts. Ohne Wert in derselben Zeile weiß der Compiler nicht, welcher Typ gemeint ist. Richtig wäre var zahl = 5; oder int zahl;"
+    },
+    {
+      "question": "Das Programm bekommt die Eingabe 8. Was gibt es aus?",
+      "code": "int zahl = int.Parse(Console.ReadLine());\nConsole.WriteLine($\"Ergebnis: {zahl + 2}\");",
+      "options": [
+        "Ergebnis: 88",
+        "Ergebnis: 16",
+        "Ergebnis: 10",
+        "Ergebnis: 82"
+      ],
+      "correctIndex": 2,
+      "explanation": "int.Parse wandelt den Text \"8\" in die Zahl 8 um. Im $-String wird {zahl + 2} ausgerechnet, also 10."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.WriteLine(Math.Max(Math.Abs(-12), Math.Pow(2, 3) + Math.Sqrt(16)));",
+      "options": [
+        "12",
+        "7",
+        "11",
+        "10"
+      ],
+      "correctIndex": 0,
+      "explanation": "Math.Pow(2, 3) ist 2 hoch 3 = 8, Math.Sqrt(16) ist 4. Math.Max vergleicht Math.Abs(-12) = 12 mit 8 + 4 = 12. Beide Werte sind gleich groß, also kommt 12 heraus."
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "id": "csharp-f2_01_vererbung",
+  "title": "Vererbung",
+  "summary": "Mit : eine Klasse von einer anderen ableiten, Gemeinsamkeiten erben und den Basis-Konstruktor mit base aufrufen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Stell dir ein Spiel mit Kriegern und Magiern vor. Beide haben einen Namen und Lebenspunkte, beide können Schaden nehmen. Der Krieger hat zusätzlich eine Rüstung, der Magier Mana. Würdest du zwei völlig getrennte Klassen schreiben, müsstest du Name, Leben und SchadenNehmen() doppelt programmieren.\n\nMit Vererbung schreibst du das Gemeinsame genau einmal in eine Basisklasse. Andere Klassen leiten davon ab und erben alles automatisch. In C# schreibst du dafür einen Doppelpunkt hinter den Klassennamen: class Krieger : Figur"
+    },
+    {
+      "type": "code",
+      "content": "Krieger k = new Krieger();\nk.Name = \"Thorin\";\nk.Ruestung = 5;\nk.SchadenNehmen(30);      // geerbt von Figur\nk.Status();               // geerbt von Figur\nConsole.WriteLine($\"Rüstung: {k.Ruestung}\");\n// Ausgabe:\n// Thorin: 70 Leben\n// Rüstung: 5\n\nclass Figur\n{\n    public string Name { get; set; } = \"\";\n    public int Leben { get; set; } = 100;\n\n    public void SchadenNehmen(int schaden)\n    {\n        Leben -= schaden;\n    }\n\n    public void Status()\n    {\n        Console.WriteLine($\"{Name}: {Leben} Leben\");\n    }\n}\n\nclass Krieger : Figur\n{\n    public int Ruestung { get; set; }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Die Begriffe:\n• Figur ist die Basisklasse (auch Oberklasse oder Elternklasse).\n• Krieger ist die abgeleitete Klasse (Unterklasse, Kindklasse).\n• Krieger hat alles, was Figur hat, plus seine eigenen Member wie Ruestung.\n\nVererbung passt immer dann, wenn man sagen kann: „X ist ein Y“. Ein Krieger ist eine Figur. Ein Auto ist ein Fahrzeug. Aber: Ein Motor ist kein Auto – ein Auto hat einen Motor. Bei „hat ein“ verwendest du ein Feld oder eine Property, keine Vererbung."
+    },
+    {
+      "type": "text",
+      "content": "Hat die Basisklasse einen Konstruktor mit Parametern, muss die abgeleitete Klasse ihn aufrufen. Das machst du mit : base(...) hinter dem eigenen Konstruktor. Der Basis-Konstruktor läuft immer zuerst, danach der Konstruktor der abgeleiteten Klasse."
+    },
+    {
+      "type": "code",
+      "content": "Magier m = new Magier(\"Merlin\", 50);\nm.Zaubern();\nm.Zaubern();\n// Ausgabe:\n// Figur Merlin wird erstellt.\n// Magier wird erstellt.\n// Merlin zaubert! Mana übrig: 30\n// Merlin zaubert! Mana übrig: 10\n\nclass Figur\n{\n    public string Name { get; }\n\n    public Figur(string name)\n    {\n        Name = name;\n        Console.WriteLine($\"Figur {name} wird erstellt.\");\n    }\n}\n\nclass Magier : Figur\n{\n    public int Mana { get; private set; }\n\n    public Magier(string name, int mana) : base(name)\n    {\n        Mana = mana;\n        Console.WriteLine(\"Magier wird erstellt.\");\n    }\n\n    public void Zaubern()\n    {\n        Mana -= 20;\n        Console.WriteLine($\"{Name} zaubert! Mana übrig: {Mana}\");\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Vergisst du : base(name), meldet der Compiler einen Fehler: Er würde gerne den Konstruktor Figur() ohne Parameter aufrufen, aber den gibt es nicht.\n\nPrivate Member der Basisklasse werden zwar geerbt, die abgeleitete Klasse darf aber nicht direkt darauf zugreifen. Soll eine Unterklasse ein Member benutzen dürfen, die Außenwelt aber nicht, nimmst du protected:\n• public – alle dürfen zugreifen\n• protected – nur die Klasse selbst und abgeleitete Klassen\n• private – nur die Klasse selbst"
+    },
+    {
+      "type": "code",
+      "content": "Sparkonto s = new Sparkonto();\ns.Einzahlen(200);\ns.ZinsenGutschreiben();\ns.Anzeigen();\n// s.guthaben = 1000;   // Fehler! protected ist von außen nicht sichtbar\n// Ausgabe: Guthaben: 210 Euro\n\nclass Konto\n{\n    protected int guthaben;\n\n    public void Einzahlen(int betrag)\n    {\n        guthaben += betrag;\n    }\n\n    public void Anzeigen()\n    {\n        Console.WriteLine($\"Guthaben: {guthaben} Euro\");\n    }\n}\n\nclass Sparkonto : Konto\n{\n    public void ZinsenGutschreiben()\n    {\n        guthaben += guthaben * 5 / 100;   // erlaubt dank protected\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Noch ein paar Regeln:\n• Eine Klasse kann in C# nur von genau einer Basisklasse erben. class A : B, C geht nicht.\n• Vererbung kann über mehrere Stufen gehen: Hund : Saeugetier und Saeugetier : Tier. Ein Hund hat dann alles von Säugetier und Tier.\n• Jede Klasse erbt letztlich von object. Daher hat jedes Objekt z. B. die Methode ToString().\n\nTypischer Fehler: Vererbung nur verwenden, um Code wiederzuverwenden, obwohl die „ist ein“-Beziehung nicht stimmt. Eine Klasse Auto : Motor wäre falsch modelliert."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "B obj = new B();\n\nclass A\n{\n    public A()\n    {\n        Console.WriteLine(\"A\");\n    }\n}\n\nclass B : A\n{\n    public B()\n    {\n        Console.WriteLine(\"B\");\n    }\n}",
+      "options": [
+        "B dann A",
+        "A dann B",
+        "nur B",
+        "nur A"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim Erzeugen eines B-Objekts läuft zuerst der Konstruktor der Basisklasse A, danach der von B. Das Ergebnis sind also die Zeilen A und B in dieser Reihenfolge."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "Hund h = new Hund(\"Bello\");\nh.Bellen();\n\nclass Tier\n{\n    public string Name;\n\n    public Tier(string name)\n    {\n        Name = name;\n    }\n}\n\nclass Hund : Tier\n{\n    public Hund(string name)\n    {\n    }\n\n    public void Bellen()\n    {\n        Console.WriteLine($\"{Name}: Wuff!\");\n    }\n}",
+      "options": [
+        "Hund muss das Feld Name noch einmal selbst deklarieren",
+        "Der Konstruktor von Hund ruft den Basis-Konstruktor Tier(string) nicht mit : base(name) auf",
+        "Eine Klasse darf nicht von Tier erben, weil Tier einen Konstruktor hat",
+        "Bellen() muss static sein"
+      ],
+      "correctIndex": 1,
+      "explanation": "Tier hat nur einen Konstruktor mit Parameter. Ohne : base(name) versucht C#, Tier() ohne Parameter aufzurufen – den gibt es nicht. Richtig: public Hund(string name) : base(name) { }"
+    },
+    {
+      "question": "Bei welchem Paar ist Vererbung (class X : Y) sinnvoll?",
+      "options": [
+        "Lehrer : Person",
+        "Rad : Fahrrad",
+        "Klassenzimmer : Schueler",
+        "Seite : Buch"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Lehrer ist eine Person – die „ist ein“-Beziehung stimmt. Ein Fahrrad hat Räder, ein Buch hat Seiten, ein Klassenzimmer hat Schüler. Das sind „hat ein“-Beziehungen, dafür nimmt man Felder oder Properties."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Turbo t = new Turbo();\nt.Gas();\nt.Gas();\nt.Boost();\nConsole.WriteLine(t.Anzeige());\n\nclass Fahrzeug\n{\n    protected int tempo;\n\n    public void Gas()\n    {\n        tempo += 5;\n    }\n\n    public int Anzeige()\n    {\n        return tempo;\n    }\n}\n\nclass Turbo : Fahrzeug\n{\n    public void Boost()\n    {\n        tempo += 5;\n    }\n}",
+      "options": [
+        "10",
+        "0",
+        "Fehler beim Kompilieren",
+        "15"
+      ],
+      "correctIndex": 3,
+      "explanation": "Turbo erbt Tempo und Gas() von Fahrzeug. Gas() wird zweimal aufgerufen (+5 +5 = 10), danach erhöht Boost() das protected-Feld um weitere 5. Insgesamt 15."
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "id": "python-f4_01_klassen",
+  "title": "Klassen und Objekte",
+  "summary": "Mit Klassen eigene Datentypen bauen und daraus Objekte erzeugen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher hast du Daten in Variablen, Listen und Dictionaries gespeichert. Eine Klasse ist ein Bauplan für einen eigenen Datentyp. Aus diesem Bauplan erzeugst du beliebig viele Objekte (auch Instanzen genannt) – so wie aus einem Keksausstecher viele Kekse entstehen."
+    },
+    {
+      "type": "code",
+      "content": "class Hund:\n    pass\n\nbello = Hund()      # ein Objekt erzeugen\nrex = Hund()        # noch eines\nprint(type(bello))  # <class '__main__.Hund'>"
+    },
+    {
+      "type": "text",
+      "content": "Klassennamen schreibt man in Python mit großem Anfangsbuchstaben (Hund, Schueler, Bankkonto). Ein Objekt erzeugst du, indem du die Klasse wie eine Funktion aufrufst – die Klammern nicht vergessen!\n\nDamit ein Objekt Daten hat, gibt es die spezielle Methode __init__. Sie wird automatisch beim Erzeugen aufgerufen und heißt Konstruktor."
+    },
+    {
+      "type": "code",
+      "content": "class Schueler:\n    def __init__(self, name, klasse):\n        self.name = name\n        self.klasse = klasse\n\nanna = Schueler(\"Anna\", \"3AHIT\")\nben = Schueler(\"Ben\", \"2BHIT\")\n\nprint(anna.name)    # Anna\nprint(ben.klasse)   # 2BHIT"
+    },
+    {
+      "type": "text",
+      "content": "Was ist self? self ist das Objekt, das gerade gebaut (oder benutzt) wird. Mit self.name = name speicherst du den Wert im Objekt – das nennt man ein Attribut. Beim Aufruf Schueler(\"Anna\", \"3AHIT\") übergibt Python self automatisch, du gibst nur name und klasse an."
+    },
+    {
+      "type": "text",
+      "content": "Jedes Objekt hat seine eigenen Attribute. Änderst du ein Attribut bei einem Objekt, bleibt das andere unverändert. Mit der Punkt-Schreibweise kannst du Attribute lesen und ändern:"
+    },
+    {
+      "type": "code",
+      "content": "anna = Schueler(\"Anna\", \"3AHIT\")\nben = Schueler(\"Ben\", \"3AHIT\")\n\nben.klasse = \"4AHIT\"   # nur Ben steigt auf\nprint(anna.klasse)      # 3AHIT\nprint(ben.klasse)       # 4AHIT"
+    },
+    {
+      "type": "text",
+      "content": "Typische Anfängerfehler:\n• self in der Parameterliste vergessen → TypeError beim Erzeugen.\n• self. vor dem Attribut vergessen: name = name speichert nur eine lokale Variable, das Objekt bekommt kein Attribut.\n• __init__ mit nur einem Unterstrich auf jeder Seite schreiben – es sind zwei!"
+    },
+    {
+      "type": "code",
+      "content": "class Spiel:\n    def __init__(self, titel):\n        titel = titel        # Fehler: self. fehlt!\n\ns = Spiel(\"Tetris\")\nprint(s.titel)   # AttributeError: 'Spiel' object has no attribute 'titel'"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Auto:\n    def __init__(self, stadt):\n        self.stadt = stadt\n\na = Auto(\"Wien\")\nb = Auto(\"Wien\")\nb.stadt = \"Graz\"\nprint(b.stadt)",
+      "options": [
+        "Wien",
+        "Graz",
+        "auto.stadt",
+        "Fehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jedes Objekt hat eigene Attribute. b.stadt wurde auf \"Graz\" gesetzt, a.stadt bleibt \"Wien\" – ausgegeben wird b.stadt."
+    },
+    {
+      "question": "Wofür steht self in einer Methode?",
+      "options": [
+        "Für die Klasse selbst",
+        "Für das aktuelle Objekt, mit dem gearbeitet wird",
+        "Für das erste Argument, das man beim Aufruf angibt",
+        "Es ist ein reserviertes Schlüsselwort ohne Bedeutung"
+      ],
+      "correctIndex": 1,
+      "explanation": "self verweist auf das Objekt, auf dem die Methode aufgerufen wird. Python übergibt es automatisch."
+    },
+    {
+      "question": "Finde den Fehler: Welcher Fehler tritt auf?",
+      "code": "class Wuerfel:\n    def __init__(seiten):\n        self.seiten = seiten\n\nw = Wuerfel(4)\nprint(w.seiten)",
+      "options": [
+        "AttributeError",
+        "NameError",
+        "TypeError",
+        "Kein Fehler, Ausgabe: 4"
+      ],
+      "correctIndex": 2,
+      "explanation": "__init__ hat kein self. Python übergibt das Objekt trotzdem automatisch, dadurch kommen zwei Argumente an, aber nur ein Parameter ist vorgesehen → TypeError."
+    },
+    {
+      "question": "Wann wird __init__ aufgerufen?",
+      "options": [
+        "Nur wenn man w.__init__() schreibt",
+        "Automatisch beim Erzeugen eines Objekts, z. B. bei Wuerfel(6)",
+        "Beim Definieren der Klasse mit class",
+        "Beim ersten Zugriff auf ein Attribut"
+      ],
+      "correctIndex": 1,
+      "explanation": "__init__ ist der Konstruktor und läuft automatisch, sobald ein neues Objekt erzeugt wird."
+    }
+  ]
+}

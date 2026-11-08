@@ -1,0 +1,89 @@
+{
+  "id": "python-f3_03_pip_venv",
+  "title": "Pakete mit pip und virtuelle Umgebungen",
+  "summary": "Externe Pakete mit pip installieren und Projekte mit venv sauber trennen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Standardbibliothek ist groß, aber nicht alles ist dabei. Für Spiele, Webseiten oder Datenanalyse gibt es hunderttausende Pakete im Python Package Index (PyPI, pypi.org). Installiert werden sie mit pip, dem Paketmanager von Python. pip startest du im Terminal (nicht in der Python-Konsole!)."
+    },
+    {
+      "type": "code",
+      "content": "# Paket installieren\npython -m pip install requests\n\n# bestimmte Version installieren\npython -m pip install requests==2.32.3\n\n# installierte Pakete anzeigen\npython -m pip list\n\n# Paket wieder entfernen\npython -m pip uninstall requests"
+    },
+    {
+      "type": "text",
+      "content": "Tipp: python -m pip statt nur pip stellt sicher, dass das Paket genau für das Python installiert wird, mit dem du es startest. Unter Windows heißt der Befehl oft py statt python. Nach der Installation verwendest du das Paket wie jedes andere Modul mit import."
+    },
+    {
+      "type": "code",
+      "content": "import requests\n\nantwort = requests.get(\"https://api.github.com\")\nprint(antwort.status_code)   # 200, wenn alles klappt"
+    },
+    {
+      "type": "text",
+      "content": "Problem: Projekt A braucht Version 1 eines Pakets, Projekt B Version 2. Installierst du alles global, kommen sich die Projekte in die Quere. Die Lösung ist eine virtuelle Umgebung (venv): ein eigener Ordner pro Projekt mit eigenem Python und eigenen Paketen. Du legst sie einmal an und aktivierst sie in jedem neuen Terminal."
+    },
+    {
+      "type": "code",
+      "content": "# virtuelle Umgebung im Ordner .venv anlegen\npython -m venv .venv\n\n# aktivieren unter Windows (PowerShell)\n.venv\\Scripts\\Activate.ps1\n\n# aktivieren unter Linux / macOS\nsource .venv/bin/activate\n\n# jetzt landen Pakete nur in .venv\npython -m pip install requests\n\n# Umgebung verlassen\ndeactivate"
+    },
+    {
+      "type": "text",
+      "content": "Nach dem Aktivieren steht meist (.venv) vor der Eingabezeile – so erkennst du, dass die Umgebung aktiv ist. Den .venv-Ordner gibst du nicht weiter und lädst ihn nicht auf Git hoch (Eintrag in .gitignore). Stattdessen speicherst du die Paketliste in der Datei requirements.txt. Wer dein Projekt bekommt, legt sich eine eigene venv an und installiert alles mit einem Befehl."
+    },
+    {
+      "type": "code",
+      "content": "# Paketliste speichern\npython -m pip freeze > requirements.txt\n\n# Inhalt z. B.:\n# requests==2.32.3\n# urllib3==2.2.2\n\n# auf einem anderen Rechner: alles installieren\npython -m pip install -r requirements.txt"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• ModuleNotFoundError, obwohl du das Paket installiert hast – meist ist die falsche Umgebung aktiv (oder gar keine). Prüfe mit python -m pip list.\n• pip install in der Python-Konsole (>>>) eingeben – pip ist ein Terminal-Befehl.\n• Die venv in einem neuen Terminal nicht aktivieren.\n• Unter Windows blockiert PowerShell manchmal Skripte. Dann hilft einmalig: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned – oder du verwendest die Eingabeaufforderung (cmd) mit .venv\\Scripts\\activate.bat."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wozu dient eine virtuelle Umgebung (venv)?",
+      "options": [
+        "Sie macht Python-Programme schneller",
+        "Jedes Projekt bekommt eigene, voneinander getrennte Pakete und Versionen",
+        "Sie ersetzt pip",
+        "Sie ist nötig, um die Standardbibliothek zu nutzen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mit einer venv hat jedes Projekt seine eigenen Pakete. So kommen sich unterschiedliche Versionen nicht in die Quere."
+    },
+    {
+      "question": "Welcher Befehl installiert alle Pakete aus requirements.txt?",
+      "options": [
+        "python -m pip freeze > requirements.txt",
+        "python -m venv requirements.txt",
+        "python -m pip install -r requirements.txt",
+        "import requirements"
+      ],
+      "correctIndex": 2,
+      "explanation": "pip install -r liest die Datei und installiert jede Zeile. freeze > requirements.txt erzeugt die Datei erst."
+    },
+    {
+      "question": "Du hast requests installiert, bekommst beim Start aber ModuleNotFoundError: No module named 'requests'. Was ist die wahrscheinlichste Ursache?",
+      "options": [
+        "requests gehört zur Standardbibliothek",
+        "Das Programm läuft mit einem anderen Python bzw. einer anderen (oder keiner aktiven) virtuellen Umgebung",
+        "Module muss man immer mit from importieren",
+        "Die Datei requirements.txt fehlt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Pakete sind nur in der Umgebung installiert, in der pip ausgeführt wurde. Aktiviere die richtige venv und prüfe mit python -m pip list."
+    },
+    {
+      "question": "Was solltest du mit dem Ordner .venv tun, wenn du dein Projekt auf Git hochlädst?",
+      "options": [
+        "Mit hochladen, damit andere ihn nutzen können",
+        "Vorher in requirements.venv umbenennen",
+        "Mit pip uninstall löschen",
+        "In .gitignore eintragen und stattdessen requirements.txt mitliefern"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der .venv-Ordner ist groß und systemabhängig. Andere erzeugen sich ihre eigene venv und installieren die Pakete aus requirements.txt."
+    }
+  ]
+}

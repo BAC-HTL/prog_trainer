@@ -1,0 +1,97 @@
+{
+  "id": "csharp-f5_03_linq_fortgeschritten",
+  "title": "LINQ für Fortgeschrittene",
+  "summary": "Mit Any/All prüfen, mit First/FirstOrDefault suchen, mit Sum/Average rechnen, mit GroupBy gruppieren – und verstehen, wann eine LINQ-Abfrage wirklich ausgeführt wird.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "In dieser Lektion arbeiten wir mit einer Liste von Spielen aus einem Online-Shop. Jedes Spiel hat einen Titel, ein Genre und einen Preis. Die Klasse Spiel findest du im ersten Beispiel ganz unten; die weiteren Beispiele verwenden dieselbe Liste spiele.\n\nAny und All beantworten Ja/Nein-Fragen: Any prüft, ob mindestens ein Element die Bedingung erfüllt. All prüft, ob alle sie erfüllen. Beide liefern einen bool."
+    },
+    {
+      "type": "code",
+      "content": "var spiele = new List<Spiel>\n{\n    new Spiel(\"Kart Racer\", \"Rennen\", 40),\n    new Spiel(\"Dungeon Quest\", \"Rollenspiel\", 60),\n    new Spiel(\"Pixel Farm\", \"Simulation\", 20),\n    new Spiel(\"Speed Rush\", \"Rennen\", 30),\n    new Spiel(\"Dragon Saga\", \"Rollenspiel\", 50)\n};\n\nConsole.WriteLine(spiele.Any(s => s.Preis > 55));\nConsole.WriteLine(spiele.All(s => s.Preis < 50));\n// Ausgabe:\n// True\n// False\n\nclass Spiel\n{\n    public string Titel { get; }\n    public string Genre { get; }\n    public int Preis { get; }\n    public Spiel(string t, string g, int p) { Titel = t; Genre = g; Preis = p; }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Um ein einzelnes Element zu finden, gibt es First und FirstOrDefault. Beide liefern das erste Element, das die Bedingung erfüllt. Der Unterschied zeigt sich, wenn keines passt:\n• First wirft dann eine InvalidOperationException.\n• FirstOrDefault liefert den Standardwert – bei Objekten und strings null, bei int 0.\n\nNach FirstOrDefault musst du deshalb auf null prüfen, sonst droht eine NullReferenceException."
+    },
+    {
+      "type": "code",
+      "content": "// spiele wie oben\nSpiel rpg = spiele.First(s => s.Genre == \"Rollenspiel\");\nConsole.WriteLine(rpg.Titel);\n\nSpiel puzzle = spiele.FirstOrDefault(s => s.Genre == \"Puzzle\");\nif (puzzle == null)\n{\n    Console.WriteLine(\"Kein Puzzle-Spiel gefunden\");\n}\n// Ausgabe:\n// Dungeon Quest\n// Kein Puzzle-Spiel gefunden"
+    },
+    {
+      "type": "text",
+      "content": "Zum Rechnen gibt es Sum, Average, Min und Max. Mit einer Lambda gibst du an, welcher Wert verwendet wird. Achtung: Average liefert immer einen double, auch wenn alle Werte ints sind. Und Average auf einer leeren Folge wirft eine InvalidOperationException."
+    },
+    {
+      "type": "code",
+      "content": "// spiele wie oben\nint gesamt = spiele.Sum(s => s.Preis);\ndouble schnitt = spiele.Average(s => s.Preis);\nint teuerstes = spiele.Max(s => s.Preis);\n\nConsole.WriteLine($\"Summe: {gesamt}\");\nConsole.WriteLine($\"Schnitt: {schnitt}\");\nConsole.WriteLine($\"Max: {teuerstes}\");\n// Ausgabe:\n// Summe: 200\n// Schnitt: 40\n// Max: 60"
+    },
+    {
+      "type": "text",
+      "content": "GroupBy teilt die Elemente nach einem Schlüssel in Gruppen auf – zum Beispiel alle Spiele nach Genre. Jede Gruppe hat eine Property Key (das Genre) und enthält selbst wieder die passenden Elemente. Auf eine Gruppe kannst du deshalb wieder LINQ anwenden, etwa Count() oder Sum(). Zusammen mit Select und OrderBy entsteht so in wenigen Zeilen eine kleine Auswertung:"
+    },
+    {
+      "type": "code",
+      "content": "// spiele wie oben\nvar proGenre = spiele\n    .GroupBy(s => s.Genre)\n    .Select(g => $\"{g.Key}: {g.Count()} Stück, {g.Sum(s => s.Preis)} Euro\")\n    .OrderBy(text => text);\n\nforeach (string zeile in proGenre)\n{\n    Console.WriteLine(zeile);\n}\n// Ausgabe:\n// Rennen: 2 Stück, 70 Euro\n// Rollenspiel: 2 Stück, 110 Euro\n// Simulation: 1 Stück, 20 Euro"
+    },
+    {
+      "type": "text",
+      "content": "Zum Schluss eine Besonderheit, die viele überrascht: verzögerte Ausführung (deferred execution). Where, Select, OrderBy und GroupBy rechnen nicht sofort. Sie merken sich nur, was zu tun ist. Ausgeführt wird die Abfrage erst, wenn jemand die Ergebnisse wirklich braucht – bei foreach, ToList(), Count(), Sum(), First() und Ähnlichem. Ändert sich die Quelle davor, sieht die Abfrage die Änderung. Willst du einen festen Stand, rufst du sofort ToList() auf."
+    },
+    {
+      "type": "code",
+      "content": "var zahlen = new List<int> { 1, 5, 9 };\nvar gross = zahlen.Where(z => z > 4);   // noch nichts berechnet!\nvar fest = zahlen.Where(z => z > 4).ToList();   // sofort berechnet\n\nzahlen.Add(20);\n\nConsole.WriteLine(gross.Count());   // jetzt erst wird gefiltert\nConsole.WriteLine(fest.Count);\n// Ausgabe:\n// 3\n// 2"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] noten = { 2, 1, 3, 2 };\nConsole.WriteLine(noten.Any(n => n == 5));\nConsole.WriteLine(noten.All(n => n <= 3));\nConsole.WriteLine(noten.Average());",
+      "options": [
+        "False\nTrue\n1",
+        "True\nTrue\n2",
+        "False\nFalse\n2",
+        "False\nTrue\n2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Keine Note ist 5, also liefert Any False. Alle Noten sind höchstens 3, also liefert All True. Der Durchschnitt ist (2 + 1 + 3 + 2) / 4 = 2."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "var namen = new List<string> { \"Anna\", \"Bernd\" };\nstring a = namen.FirstOrDefault(n => n.StartsWith(\"C\"));\nstring b = namen.First(n => n.StartsWith(\"C\"));\nConsole.WriteLine(\"fertig\");",
+      "options": [
+        "Es wird fertig ausgegeben",
+        "FirstOrDefault wirft eine NullReferenceException",
+        "First wirft eine InvalidOperationException, weil kein Name passt",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "FirstOrDefault liefert einfach null, wenn nichts passt – a ist also null, aber es passiert noch nichts. First dagegen wirft eine InvalidOperationException, sobald kein Element gefunden wird."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string[] tiere = { \"Hund\", \"Hai\", \"Katze\", \"Hase\", \"Kuh\" };\nvar gruppen = tiere.GroupBy(t => t[0]);\nforeach (var g in gruppen)\n{\n    Console.Write($\"{g.Key}{g.Count()} \");\n}",
+      "options": [
+        "H3 K2",
+        "H1 H1 K1 H1 K1",
+        "H2 K2",
+        "Hund3 Katze2"
+      ],
+      "correctIndex": 0,
+      "explanation": "GroupBy gruppiert nach dem ersten Buchstaben. In der Gruppe H landen Hund, Hai und Hase (3), in K Katze und Kuh (2). Key ist dabei der Buchstabe selbst."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var liste = new List<int> { 2, 4 };\nvar doppelt = liste.Select(x => x * 2);\nliste.Add(10);\nConsole.WriteLine(doppelt.Sum());",
+      "options": [
+        "12",
+        "32",
+        "16",
+        "Eine InvalidOperationException"
+      ],
+      "correctIndex": 1,
+      "explanation": "Select wird verzögert ausgeführt. Erst Sum() löst die Berechnung aus – und zu diesem Zeitpunkt enthält liste schon die 10. Ergebnis: 4 + 8 + 20 = 32. Mit .ToList() direkt nach Select wäre es 12."
+    }
+  ]
+}

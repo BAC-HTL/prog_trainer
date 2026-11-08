@@ -6,13 +6,14 @@
       "description": "Einsteigerfreundlich – ideal für den Start.",
       "icon": "python",
       "kind": "language",
-      "lessons": [
-        "python/01_erstes_programm.json",
-        "python/02_variablen.json",
-        "python/03_eingabe_rechnen.json",
-        "python/04_bedingungen.json",
-        "python/05_schleifen.json"
-      ]
+      "levels": [
+        "python/einsteiger/level.json",
+        "python/fortgeschritten/level.json",
+        "python/profi/level.json",
+        "python/senior/level.json"
+      ],
+      "challenges": "python/challenges.json",
+      "runtime": "python"
     },
     {
       "id": "csharp",
@@ -20,12 +21,14 @@
       "description": "Vielseitig – von Spielen bis Business-Software.",
       "icon": "csharp",
       "kind": "language",
-      "lessons": [
-        "csharp/01_erstes_programm.json",
-        "csharp/02_variablen.json",
-        "csharp/03_eingabe_rechnen.json",
-        "csharp/04_bedingungen.json"
-      ]
+      "levels": [
+        "csharp/einsteiger/level.json",
+        "csharp/fortgeschritten/level.json",
+        "csharp/profi/level.json",
+        "csharp/senior/level.json"
+      ],
+      "challenges": "csharp/challenges.json",
+      "runtime": "csharp"
     },
     {
       "id": "architecture",
@@ -33,7 +36,7 @@
       "description": "Wie man große Programme sinnvoll aufbaut.",
       "icon": "architecture",
       "kind": "concept",
-      "lessons": []
+      "levels": []
     },
     {
       "id": "testing",
@@ -41,7 +44,7 @@
       "description": "Wie man sicherstellt, dass Code funktioniert.",
       "icon": "testing",
       "kind": "concept",
-      "lessons": []
+      "levels": []
     },
     {
       "id": "requirements",
@@ -49,7 +52,7 @@
       "description": "Herausfinden, was die Software können soll.",
       "icon": "requirements",
       "kind": "concept",
-      "lessons": []
+      "levels": []
     }
   ]
 }

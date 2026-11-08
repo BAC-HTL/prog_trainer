@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e5_04_ref_out",
+  "title": "ref und out",
+  "summary": "Mit ref und out Variablen des Aufrufers verändern, mehrere Ergebnisse zurückgeben und Eingaben sicher mit int.TryParse prüfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Du weißt schon: Ein normaler Parameter ist eine Kopie. Was die Methode damit macht, bleibt beim Aufrufer unsichtbar. Manchmal soll eine Methode aber genau die Variable des Aufrufers verändern. Dafür gibt es das Schlüsselwort ref (von „Referenz“). Dann bekommt die Methode keine Kopie, sondern einen Verweis auf die Originalvariable.\n\nref muss an zwei Stellen stehen: bei der Methode vor dem Parameter und beim Aufruf vor dem Argument."
+    },
+    {
+      "type": "code",
+      "content": "int a = 3;\nint b = 8;\nTausche(ref a, ref b);\nConsole.WriteLine($\"a = {a}, b = {b}\");\n// Ausgabe: a = 8, b = 3\n\nvoid Tausche(ref int x, ref int y)\n{\n    int hilf = x;\n    x = y;\n    y = hilf;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Ohne ref würde Tausche nur zwei Kopien vertauschen, und a und b blieben gleich. Eine Variable, die du mit ref übergibst, muss vorher schon einen Wert haben – sonst meldet der Compiler einen Fehler.\n\nDas Gegenstück ist out. Ein out-Parameter dient nur dazu, ein Ergebnis nach außen zu liefern. Der Aufrufer muss vorher keinen Wert hineinlegen, aber die Methode muss dem out-Parameter auf jeden Fall einen Wert zuweisen. So kann eine Methode mehrere Ergebnisse auf einmal liefern:"
+    },
+    {
+      "type": "code",
+      "content": "int[] temperaturen = { 12, 17, 9, 21, 15 };\n\nMinMax(temperaturen, out int kalt, out int warm);\nConsole.WriteLine($\"Tiefstwert: {kalt}, Höchstwert: {warm}\");\n// Ausgabe: Tiefstwert: 9, Höchstwert: 21\n\nvoid MinMax(int[] werte, out int min, out int max)\n{\n    min = werte[0];\n    max = werte[0];\n    foreach (int w in werte)\n    {\n        if (w < min) min = w;\n        if (w > max) max = w;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Mit out int kalt legst du die Variable direkt beim Aufruf an. Du könntest sie auch vorher mit int kalt; deklarieren und dann out kalt schreiben.\n\nDen wichtigsten Einsatz von out kennst du bald auswendig: int.TryParse. Bisher stürzt dein Programm mit int.Parse ab, wenn jemand „zwölf“ statt 12 eintippt. TryParse versucht die Umwandlung und liefert true oder false zurück. Die Zahl selbst kommt über den out-Parameter. Klappt die Umwandlung nicht, ist sie 0.\n\nIm zweiten Beispiel fragst du mit einer Schleife so lange nach, bis eine gültige Zahl kommt."
+    },
+    {
+      "type": "code",
+      "content": "Console.Write(\"Wie alt bist du? \");\nstring eingabe = Console.ReadLine();\n\nif (int.TryParse(eingabe, out int alter))\n{\n    Console.WriteLine($\"In 5 Jahren bist du {alter + 5}.\");\n}\nelse\n{\n    Console.WriteLine($\"\\\"{eingabe}\\\" ist keine Zahl!\");\n}\n// Eingabe:  zwölf\n// Ausgabe: \"zwölf\" ist keine Zahl!"
+    },
+    {
+      "type": "code",
+      "content": "int zahl;\nConsole.Write(\"Zahl: \");\nwhile (!int.TryParse(Console.ReadLine(), out zahl))\n{\n    Console.Write(\"Ungültig, nochmal: \");\n}\nConsole.WriteLine($\"Danke, {zahl}!\");\n// Eingabe: abc, dann 7\n// Ausgabe: Zahl: Ungültig, nochmal: Danke, 7!"
+    },
+    {
+      "type": "text",
+      "content": "Achtung bei Arrays: Ein Array wird nicht kopiert, wenn du es übergibst. Die Methode arbeitet mit demselben Array wie der Aufrufer. Deshalb kann sie die Elemente auch ohne ref verändern:"
+    },
+    {
+      "type": "code",
+      "content": "int[] punkte = { 10, 20, 30 };\nVerdopple(punkte);\nConsole.WriteLine(string.Join(\" \", punkte));\n// Ausgabe: 20 40 60\n\nvoid Verdopple(int[] werte)\n{\n    for (int i = 0; i < werte.Length; i++)\n    {\n        werte[i] = werte[i] * 2;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Zusammengefasst:\n• ohne Schlüsselwort – Kopie, das Original bleibt unverändert (außer bei Array-Elementen)\n• ref – Original wird verändert, muss vorher einen Wert haben\n• out – liefert ein zusätzliches Ergebnis, die Methode muss einen Wert zuweisen\n\nTipp: Für ein einzelnes Ergebnis ist return fast immer die bessere Wahl. Greif zu ref und out nur, wenn es wirklich nötig ist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int a = 5;\nErhoehe(ref a);\nErhoehe(ref a);\nConsole.WriteLine(a);\n\nvoid Erhoehe(ref int z)\n{\n    z += 10;\n}",
+      "options": [
+        "15",
+        "5",
+        "25",
+        "10"
+      ],
+      "correctIndex": 2,
+      "explanation": "Durch ref ändert die Methode direkt die Variable a. Nach dem ersten Aufruf ist a 15, nach dem zweiten 25."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int wert = 10;\nHalbiere(wert);\nConsole.WriteLine(wert);\n\nvoid Halbiere(ref int x)\n{\n    x = x / 2;\n}",
+      "options": [
+        "ref-Parameter dürfen nicht verändert werden",
+        "Beim Aufruf fehlt das Schlüsselwort ref: Halbiere(ref wert);",
+        "wert muss mit out statt mit einem Startwert angelegt werden",
+        "Eine void-Methode darf keinen ref-Parameter haben"
+      ],
+      "correctIndex": 1,
+      "explanation": "ref muss sowohl in der Methode als auch beim Aufruf stehen. So sieht man auch beim Lesen des Aufrufs sofort, dass die Variable verändert werden kann."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "bool ok = int.TryParse(\"12a\", out int zahl);\nConsole.WriteLine($\"{ok} {zahl}\");",
+      "options": [
+        "False 0",
+        "True 12",
+        "False 12",
+        "Das Programm stürzt ab"
+      ],
+      "correctIndex": 0,
+      "explanation": "\"12a\" ist keine gültige Zahl. TryParse stürzt nicht ab wie int.Parse, sondern liefert false und setzt zahl auf 0."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int[] w = { 5, 6, 7 };\nNullen(w);\nConsole.WriteLine(w[0] + w[1]);\n\nvoid Nullen(int[] arr)\n{\n    arr[0] = 0;\n}",
+      "options": [
+        "11",
+        "5",
+        "Der Compiler meldet einen Fehler, weil ref fehlt",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Array wird nicht kopiert – die Methode arbeitet mit demselben Array. Nach dem Aufruf ist w[0] also 0. 0 + 6 = 6."
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "id": "csharp-f4-pruefung",
+  "title": "Abschlussprüfung: Fehler & Dateien",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string[] eingaben = { \"8\", \"x\", \"0\" };\nforeach (string e in eingaben)\n{\n    try\n    {\n        Console.WriteLine(16 / int.Parse(e));\n    }\n    catch (FormatException)\n    {\n        Console.WriteLine(\"F\");\n    }\n    catch (DivideByZeroException)\n    {\n        Console.WriteLine(\"D\");\n    }\n}",
+      "options": [
+        "2 F",
+        "2 F D",
+        "2 D F",
+        "F D"
+      ],
+      "correctIndex": 1,
+      "explanation": "16 / 8 = 2. \"x\" lässt sich nicht umwandeln (FormatException → F). 16 / 0 löst eine DivideByZeroException aus (D). Da try/catch in der Schleife steht, wird jede Eingabe einzeln behandelt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int Test()\n{\n    try\n    {\n        Console.WriteLine(\"try\");\n        return 1;\n    }\n    finally\n    {\n        Console.WriteLine(\"finally\");\n    }\n}\n\nConsole.WriteLine(Test());",
+      "options": [
+        "try 1",
+        "try 1 finally",
+        "finally try 1",
+        "try finally 1"
+      ],
+      "correctIndex": 3,
+      "explanation": "finally läuft sogar dann, wenn der try-Block mit return verlassen wird – und zwar bevor der Wert beim Aufrufer ankommt. Deshalb erscheint \"finally\" vor der 1."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try\n{\n    var d = new Dictionary<string, int>();\n    Console.WriteLine(d[\"Max\"]);\n}\ncatch (KeyNotFoundException)\n{\n    Console.WriteLine(\"Schlüssel fehlt\");\n}\ncatch (Exception)\n{\n    Console.WriteLine(\"Sonstiges\");\n}\nfinally\n{\n    Console.WriteLine(\"Ende\");\n}",
+      "options": [
+        "Schlüssel fehlt\nEnde",
+        "Schlüssel fehlt\nSonstiges\nEnde",
+        "0\nEnde",
+        "Sonstiges\nEnde"
+      ],
+      "correctIndex": 0,
+      "explanation": "Es wird nur der erste passende catch-Block ausgeführt – hier KeyNotFoundException. Der allgemeine Block wird übersprungen, finally läuft immer."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int Wurzel(int x)\n{\n    if (x < 0)\n        throw new ArgumentException(\"negativ\");\n    return (int)Math.Sqrt(x);\n}\n\nint summe = 0;\nint[] werte = { 16, -4, 9 };\ntry\n{\n    foreach (int w in werte)\n        summe += Wurzel(w);\n}\ncatch (ArgumentException ex)\n{\n    Console.Write(ex.Message + \" \");\n}\nConsole.WriteLine(summe);",
+      "options": [
+        "negativ 7",
+        "negativ 4",
+        "7",
+        "negativ 0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Wurzel(16) = 4 wird addiert. Bei -4 wird eine Exception geworfen. Weil try/catch um die ganze Schleife steht, bricht die Schleife ab – die 9 wird nie verarbeitet. summe bleibt 4."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich diese Klasse nicht kompilieren?",
+      "code": "class AlterException : Exception\n{\n    public int Alter { get; }\n    public AlterException(int alter) : base(\"Ungültiges Alter: \" + Alter)\n    {\n        Alter = alter;\n    }\n}",
+      "options": [
+        "Eine Exception darf keine Properties haben",
+        "Exception hat keinen Konstruktor mit string-Parameter",
+        "Im base(...)-Aufruf darf die Property Alter noch nicht verwendet werden – richtig wäre der Parameter alter",
+        "Der Name müsste NeueAlterException lauten"
+      ],
+      "correctIndex": 2,
+      "explanation": "base(...) wird ausgeführt, bevor das Objekt fertig gebaut ist. Dort darfst du noch nicht auf Instanz-Members wie die Property Alter zugreifen (Fehler CS0120). Mit dem Parameter alter funktioniert es."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try\n{\n    throw new ZugException(\"Feld 3\");\n}\ncatch (SpielException ex)\n{\n    Console.WriteLine(\"Spiel: \" + ex.Message);\n}\ncatch (ZugException ex)\n{\n    Console.WriteLine(\"Zug: \" + ex.Message);\n}\n\nclass SpielException : Exception\n{\n    public SpielException(string m) : base(m) { }\n}\n\nclass ZugException : SpielException\n{\n    public ZugException(string m) : base(\"Zug ungültig: \" + m) { }\n}",
+      "options": [
+        "Zug: Zug ungültig: Feld 3",
+        "Spiel: Feld 3",
+        "Der Code kompiliert nicht",
+        "Spiel: Zug ungültig: Feld 3"
+      ],
+      "correctIndex": 2,
+      "explanation": "ZugException erbt von SpielException. Der erste catch-Block fängt also schon alle ZugExceptions – der zweite wäre unerreichbar. Das erkennt der Compiler und meldet Fehler CS0160."
+    },
+    {
+      "question": "Welche Aussage über throw; (ohne Ausdruck) in einem catch-Block ist richtig?",
+      "options": [
+        "Es beendet das gesamte Programm sofort",
+        "Es reicht die gerade gefangene Exception unverändert an den Aufrufer weiter",
+        "Es erzeugt eine neue, leere Exception",
+        "Es ist nur in finally-Blöcken erlaubt"
+      ],
+      "correctIndex": 1,
+      "explanation": "throw; wirft die aktuelle Exception mit allen Informationen erneut. Im Gegensatz zu throw ex; bleibt dabei auch die Information erhalten, wo der Fehler ursprünglich passiert ist."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "File.WriteAllLines(\"t.txt\", new[] { \"a\", \"b\" });\nFile.AppendAllText(\"t.txt\", \"c\\n\");\nFile.WriteAllLines(\"t.txt\", new[] { \"x\" });\nFile.AppendAllText(\"t.txt\", \"y\\n\");\nConsole.WriteLine(string.Join(\"\", File.ReadAllLines(\"t.txt\")));",
+      "options": [
+        "abcxy",
+        "abcy",
+        "xy",
+        "x"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das zweite WriteAllLines überschreibt die Datei komplett. Danach steht nur \"x\" darin, AppendAllText hängt \"y\" an. Ergebnis: xy."
+    },
+    {
+      "question": "Die Datei punkte.txt enthält die Zeilen 5, abc und 7. Was gibt dieser Code aus?",
+      "code": "int summe = 0, fehler = 0;\nforeach (string z in File.ReadAllLines(\"punkte.txt\"))\n{\n    if (int.TryParse(z, out int p))\n        summe += p;\n    else\n        fehler++;\n}\nConsole.WriteLine($\"{summe}/{fehler}\");",
+      "options": [
+        "5/1",
+        "12/0",
+        "Eine FormatException",
+        "12/1"
+      ],
+      "correctIndex": 3,
+      "explanation": "TryParse wirft keine Exception, sondern liefert bei \"abc\" einfach false. 5 + 7 = 12, und es gab 1 fehlerhafte Zeile."
+    },
+    {
+      "question": "Welcher Code liest eine große Datei Zeile für Zeile und schließt sie garantiert wieder?",
+      "options": [
+        "string[] z = File.ReadAllLines(\"log.txt\");",
+        "var r = new StreamReader(\"log.txt\");\nstring z = r.ReadLine();",
+        "File.ReadAllText(\"log.txt\").Split('\\n');",
+        "using (var r = new StreamReader(\"log.txt\"))\n{\n    string z;\n    while ((z = r.ReadLine()) != null) { /* ... */ }\n}"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur der StreamReader liest Zeile für Zeile, ohne die ganze Datei in den Speicher zu laden. Der using-Block garantiert, dass die Datei danach geschlossen wird. Ohne using bleibt sie offen."
+    }
+  ]
+}
