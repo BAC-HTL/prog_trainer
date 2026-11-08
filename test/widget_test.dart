@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prog_trainer/data/content_repository.dart';
 import 'package:prog_trainer/data/progress_store.dart';

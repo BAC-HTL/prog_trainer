@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e3_03_break_continue_verschachtelt",
+  "title": "break, continue und verschachtelte Schleifen",
+  "summary": "Schleifen mit break vorzeitig beenden, mit continue Durchläufe überspringen und Schleifen ineinander verschachteln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "break kennst du schon vom switch. In einer Schleife beendet break die Schleife sofort – egal, was die Bedingung sagt. Das ist praktisch, wenn du etwas suchst und nach dem ersten Treffer aufhören willst:"
+    },
+    {
+      "type": "code",
+      "content": "for (int i = 50; i <= 100; i++)\n{\n    if (i % 7 == 0)\n    {\n        Console.WriteLine($\"Erste Siebenerzahl ab 50: {i}\");\n        break;\n    }\n}\n// Ausgabe: Erste Siebenerzahl ab 50: 56"
+    },
+    {
+      "type": "text",
+      "content": "Mit while (true) baust du absichtlich eine Endlosschleife – und verlässt sie mit break, sobald ein bestimmtes Ereignis eintritt. So kannst du beliebig viele Eingaben lesen, bis jemand „ende“ tippt:"
+    },
+    {
+      "type": "code",
+      "content": "int summe = 0;\n\nwhile (true)\n{\n    Console.Write(\"Zahl (oder ende): \");\n    string eingabe = Console.ReadLine();\n    if (eingabe == \"ende\")\n    {\n        break;\n    }\n    summe += int.Parse(eingabe);\n}\nConsole.WriteLine($\"Summe: {summe}\");\n// Eingaben: 3, 5, 7, ende\n// Ausgabe (nach den Eingaben): Summe: 15"
+    },
+    {
+      "type": "text",
+      "content": "continue beendet nicht die ganze Schleife, sondern nur den aktuellen Durchlauf. Der restliche Code im Block wird übersprungen, und es geht sofort mit dem nächsten Durchlauf weiter.\n\nVorsicht mit continue in einer while-Schleife: Steht das Hochzählen (i++) erst nach dem continue, wird es übersprungen – und du hast eine Endlosschleife. Bei for passiert das nicht, weil der Schritt (i++) immer ausgeführt wird.\n\nIm Beispiel werden alle Zahlen ausgegeben, die nicht durch 3 teilbar sind:"
+    },
+    {
+      "type": "code",
+      "content": "for (int i = 1; i <= 10; i++)\n{\n    if (i % 3 == 0)\n    {\n        continue;   // 3, 6 und 9 überspringen\n    }\n    Console.Write($\"{i} \");\n}\n// Ausgabe: 1 2 4 5 7 8 10"
+    },
+    {
+      "type": "text",
+      "content": "Schleifen kannst du auch ineinander verschachteln. Dabei läuft die innere Schleife bei jedem Durchlauf der äußeren komplett von vorne bis hinten durch. Die äußere Schleife zählt hier die Zeilen, die innere die Sterne pro Zeile. Weil die innere Grenze von zeile abhängt, entsteht ein Dreieck:"
+    },
+    {
+      "type": "code",
+      "content": "for (int zeile = 1; zeile <= 4; zeile++)\n{\n    for (int stern = 1; stern <= zeile; stern++)\n    {\n        Console.Write(\"*\");\n    }\n    Console.WriteLine();\n}\n// Ausgabe:\n// *\n// **\n// ***\n// ****"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: break und continue wirken immer nur auf die innerste Schleife, in der sie stehen. Ein break in der inneren Schleife beendet also nur diese – die äußere läuft normal weiter. Und Achtung: Steht break in einem switch innerhalb einer Schleife, verlässt es nur den switch, nicht die Schleife!"
+    },
+    {
+      "type": "code",
+      "content": "for (int i = 1; i <= 3; i++)\n{\n    for (int j = 1; j <= 3; j++)\n    {\n        if (j == 2)\n        {\n            break;   // beendet nur die innere Schleife\n        }\n        Console.WriteLine($\"i = {i}, j = {j}\");\n    }\n}\n// Ausgabe:\n// i = 1, j = 1\n// i = 2, j = 1\n// i = 3, j = 1"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for (int i = 1; i <= 5; i++)\n{\n    if (i == 3)\n    {\n        continue;\n    }\n    Console.Write(i);\n}",
+      "options": [
+        "12",
+        "1245",
+        "12345",
+        "345"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei i == 3 überspringt continue nur diesen einen Durchlauf. Die Schleife läuft danach mit 4 und 5 weiter. Ergebnis: 1245."
+    },
+    {
+      "question": "Wie viele Sterne gibt dieser Code insgesamt aus?",
+      "code": "for (int i = 0; i < 3; i++)\n{\n    for (int j = 0; j < 4; j++)\n    {\n        Console.Write(\"*\");\n    }\n}",
+      "options": [
+        "7",
+        "4",
+        "12",
+        "16"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die äußere Schleife läuft 3-mal (0, 1, 2). Bei jedem Durchlauf läuft die innere Schleife komplett, also 4-mal. 3 · 4 = 12 Sterne."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for (int a = 1; a <= 2; a++)\n{\n    for (int b = 1; b <= 5; b++)\n    {\n        if (b == 3)\n        {\n            break;\n        }\n        Console.Write($\"{b} \");\n    }\n}",
+      "options": [
+        "1 2 3",
+        "1",
+        "1 2",
+        "1 2 1 2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das break beendet nur die innere Schleife, sobald b den Wert 3 erreicht. Davor werden 1 und 2 ausgegeben. Die äußere Schleife läuft zweimal, also erscheint 1 2 zweimal."
+    },
+    {
+      "question": "Finde den Fehler: Dieses Programm soll 0, 1, 3 und 4 ausgeben. Warum hängt es nach 01?",
+      "code": "int i = 0;\n\nwhile (i < 5)\n{\n    if (i == 2)\n    {\n        continue;\n    }\n    Console.Write(i);\n    i++;\n}",
+      "options": [
+        "Bei i == 2 springt continue zurück, bevor i++ ausgeführt wird – i bleibt für immer 2",
+        "continue darf nur in for-Schleifen verwendet werden",
+        "Statt continue müsste dort break stehen",
+        "Die Bedingung i < 5 ist falsch, es müsste i <= 5 heißen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Sobald i 2 ist, springt continue direkt zur Bedingung zurück – i++ wird übersprungen. i bleibt 2, und das wiederholt sich endlos. Lösung: i++ vor das continue schreiben oder eine for-Schleife verwenden."
+    }
+  ]
+}

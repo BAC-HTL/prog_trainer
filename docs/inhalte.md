@@ -1,26 +1,53 @@
 # Lerninhalte schreiben
 
-Alle Inhalte liegen als JSON-Dateien in `assets/content/`. Für neue Lektionen
+Alle Inhalte liegen als JSON-Dateien in `assets/content/`. Für neue Inhalte
 muss kein Dart-Code geändert werden.
 
-## Neue Lektion hinzufügen
+## Aufbau
 
-1. Datei anlegen, z. B. `assets/content/python/06_listen.json`.
-2. Pfad in `assets/content/index.json` beim passenden Lernpfad unter
-   `lessons` eintragen.
-3. **Neuer Ordner** (z. B. eine neue Sprache)? Den Ordner zusätzlich in
-   `pubspec.yaml` unter `flutter: assets:` eintragen.
-4. `flutter test` ausführen. Der Test prüft alle Dateien automatisch.
+```
+assets/content/
+  index.json                  Lernpfade (Python, C#, Architektur …)
+  python/
+    challenges.json           Herausforderungen für Python
+    einsteiger/
+      level.json              Kapitel dieses Levels
+      e1_01_erstes_programm.json
+      e1_pruefung.json        Abschlussprüfung Kapitel e1
+    fortgeschritten/ profi/ senior/
+  csharp/ …                   gleich aufgebaut
+```
 
-## Aufbau einer Lektion
+## Kapitel (`level.json`)
 
 ```json
 {
-  "id": "python-06",
+  "id": "python-einsteiger",
+  "title": "Einsteiger",
+  "description": "…",
+  "chapters": [
+    {
+      "id": "python-e1",
+      "title": "Erste Schritte",
+      "description": "…",
+      "lessons": ["python/einsteiger/e1_01_erstes_programm.json"],
+      "exam": "python/einsteiger/e1_pruefung.json"
+    }
+  ]
+}
+```
+
+Kapitel ohne Lektionen werden als „Bald verfügbar“ angezeigt.
+
+## Lektion
+
+```json
+{
+  "id": "python-e4_01_listen",
   "title": "Listen",
   "summary": "Mehrere Werte in einer Variable speichern.",
   "sections": [
-    { "type": "text", "content": "Erklärtext ..." },
+    { "type": "text", "content": "Erklärtext …" },
     { "type": "code", "content": "zahlen = [1, 2, 3]\nprint(zahlen[0])" }
   ],
   "quiz": [
@@ -29,39 +56,55 @@ muss kein Dart-Code geändert werden.
       "code": "zahlen = [4, 5, 6]\nprint(zahlen[1])",
       "options": ["4", "5", "6", "Fehler"],
       "correctIndex": 1,
-      "explanation": "Die Zählung beginnt bei 0, also ist zahlen[1] das zweite Element."
+      "explanation": "Die Zählung beginnt bei 0."
     }
   ]
 }
 ```
 
-| Feld | Bedeutung |
-|---|---|
-| `sections[].type` | `text` für Erklärungen, `code` für Code-Beispiele |
-| `quiz[].code` | optional, Code der zur Frage angezeigt wird |
-| `quiz[].correctIndex` | Position der richtigen Antwort, **ab 0 gezählt** |
+`correctIndex` zählt **ab 0**.
 
-## Neuer Lernpfad
-
-In `index.json` einen Eintrag unter `tracks` ergänzen:
+## Abschlussprüfung
 
 ```json
 {
-  "id": "java",
-  "title": "Java",
-  "description": "Kurzbeschreibung",
-  "icon": "code",
-  "kind": "language",
-  "lessons": []
+  "id": "python-e4-pruefung",
+  "title": "Abschlussprüfung: Listen & Strings",
+  "passPercent": 70,
+  "questions": [ /* 10 Fragen im selben Format wie das Quiz */ ]
 }
 ```
 
-`kind` ist `language` (Programmiersprache) oder `concept` (z. B. Testing).
-Lernpfade ohne Lektionen werden als „Bald verfügbar“ angezeigt.
+Die Prüfung wird freigeschaltet, sobald alle Lektionen des Kapitels
+abgeschlossen sind. Wer sie besteht, bekommt ein PDF-Zertifikat.
 
-## Tipps für gute Lektionen
+## Herausforderung (`challenges.json`)
 
-- Kurze Abschnitte, ein Gedanke pro Absatz.
-- Jedes Code-Beispiel vorher wirklich ausführen.
-- Falsche Antworten sollen plausibel sein, z. B. typische Anfängerfehler.
-- Die richtige Antwort nicht immer an dieselbe Position setzen.
+```json
+{
+  "id": "py-001",
+  "title": "Verdoppeln",
+  "level": "einsteiger",
+  "difficulty": "leicht",
+  "points": 10,
+  "description": "Lies eine Zahl ein und gib das Doppelte aus.",
+  "starterCode": "n = int(input())\n",
+  "hints": ["Multipliziere mit 2."],
+  "tests": [ { "stdin": "4", "expected": "8" } ],
+  "solution": "n = int(input())\nprint(n * 2)"
+}
+```
+
+- Eingabe nur über die Standardeingabe: in Python `input()` **ohne** Text, in C# `Console.ReadLine()`.
+- Verglichen wird die Ausgabe zeilenweise. Leerzeichen am Zeilenende werden ignoriert.
+- **C#-Lösungen müssen mit C# 7.3 kompilieren**, weil der Server nur Mono hat. Records, Switch-Ausdrücke usw. gehen dort also nicht.
+- Alle Lösungen prüfen:
+  ```bash
+  python3 tool/verify_challenges.py python
+  python3 tool/verify_challenges.py csharp   # braucht das .NET SDK
+  ```
+
+## Nach jeder Änderung
+
+`flutter test` ausführen. Es prüft, ob alle Dateien existieren, gültig sind
+und in `pubspec.yaml` eingetragen sind.

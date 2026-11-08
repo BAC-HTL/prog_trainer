@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e3_01_while_do",
+  "title": "while- und do-while-Schleifen",
+  "summary": "Code mit while und do-while wiederholen, solange eine Bedingung erfüllt ist, und Zähler mit ++ und += verändern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit einer Schleife lässt du Code mehrmals laufen, ohne ihn zu kopieren. Die while-Schleife wiederholt ihren Block, solange die Bedingung in den runden Klammern true ist. Die Bedingung wird vor jedem Durchlauf geprüft:"
+    },
+    {
+      "type": "code",
+      "content": "int countdown = 3;\n\nwhile (countdown > 0)\n{\n    Console.WriteLine(countdown);\n    countdown = countdown - 1;\n}\nConsole.WriteLine(\"Start!\");\n// Ausgabe:\n// 3\n// 2\n// 1\n// Start!"
+    },
+    {
+      "type": "text",
+      "content": "Weil man in Schleifen ständig Variablen hoch- oder runterzählt, gibt es dafür Kurzschreibweisen:\n• x++ erhöht x um 1 (wie x = x + 1)\n• x-- verringert x um 1\n• x += 5 erhöht x um 5 (wie x = x + 5)\n• Genauso gibt es -=, *= und /=\n\nDamit kannst du zum Beispiel bequem eine Summe bilden:"
+    },
+    {
+      "type": "code",
+      "content": "int zahl = 1;\nint summe = 0;\n\nwhile (zahl <= 5)\n{\n    summe += zahl;   // summe = summe + zahl\n    zahl++;          // zahl = zahl + 1\n}\nConsole.WriteLine($\"1 + 2 + 3 + 4 + 5 = {summe}\");\n// Ausgabe: 1 + 2 + 3 + 4 + 5 = 15"
+    },
+    {
+      "type": "text",
+      "content": "Der häufigste Fehler bei while: Du vergisst, die Variable in der Bedingung zu verändern. Dann bleibt die Bedingung für immer true und das Programm hängt in einer Endlosschleife fest. In der Konsole kannst du so ein Programm mit Strg + C abbrechen."
+    },
+    {
+      "type": "code",
+      "content": "int i = 0;\n\nwhile (i < 3)\n{\n    Console.WriteLine(\"Hallo\");\n    // Achtung: i wird nie erhöht!\n    // i bleibt 0, also ist i < 3 immer true -> Endlosschleife\n}"
+    },
+    {
+      "type": "text",
+      "content": "Die do-while-Schleife prüft die Bedingung erst am Ende. Ihr Block läuft deshalb immer mindestens einmal. Das ist ideal, um eine Eingabe so lange zu wiederholen, bis sie gültig ist. Achte auf den Strichpunkt nach while (...) am Ende!"
+    },
+    {
+      "type": "code",
+      "content": "int note;\n\ndo\n{\n    Console.Write(\"Gib deine Note ein (1-5): \");\n    note = int.Parse(Console.ReadLine());\n} while (note < 1 || note > 5);\n\nConsole.WriteLine($\"Danke, Note {note} gespeichert.\");\n// Eingaben: 7, dann 2\n// Ausgabe:\n// Gib deine Note ein (1-5): Gib deine Note ein (1-5): Danke, Note 2 gespeichert."
+    },
+    {
+      "type": "text",
+      "content": "Der Unterschied zwischen beiden Schleifen zeigt sich, wenn die Bedingung schon am Anfang false ist: Die while-Schleife läuft dann kein einziges Mal, die do-while-Schleife genau einmal."
+    },
+    {
+      "type": "code",
+      "content": "int x = 10;\n\nwhile (x < 5)\n{\n    Console.WriteLine(\"while-Schleife\");\n}\n\ndo\n{\n    Console.WriteLine(\"do-while-Schleife\");\n} while (x < 5);\n// Ausgabe: do-while-Schleife"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int i = 1;\n\nwhile (i < 20)\n{\n    i = i * 2;\n}\nConsole.WriteLine(i);",
+      "options": [
+        "16",
+        "20",
+        "32",
+        "64"
+      ],
+      "correctIndex": 2,
+      "explanation": "i wird bei jedem Durchlauf verdoppelt: 1 → 2 → 4 → 8 → 16 → 32. Bei 16 ist i < 20 noch true, also wird noch einmal verdoppelt. Erst bei 32 ist die Bedingung false."
+    },
+    {
+      "question": "Wie oft wird Hallo ausgegeben?",
+      "code": "int n = 0;\n\ndo\n{\n    Console.WriteLine(\"Hallo\");\n    n++;\n} while (n > 5);",
+      "options": [
+        "Keinmal",
+        "Einmal",
+        "Fünfmal",
+        "Sechsmal"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei do-while läuft der Block zuerst einmal. Danach ist n gleich 1, und 1 > 5 ist false – die Schleife endet. Hallo erscheint also genau einmal."
+    },
+    {
+      "question": "Finde den Fehler: Dieses Programm soll 0, 1 und 2 ausgeben. Was passiert stattdessen?",
+      "code": "int i = 0;\n\nwhile (i < 3)\n{\n    Console.WriteLine(i);\n}",
+      "options": [
+        "Es gibt 0, 1, 2 und 3 aus",
+        "Es lässt sich nicht kompilieren, weil i nicht verändert wird",
+        "Es gibt gar nichts aus",
+        "Es gibt endlos 0 aus, weil i nie erhöht wird"
+      ],
+      "correctIndex": 3,
+      "explanation": "i bleibt immer 0, also ist i < 3 immer true – eine Endlosschleife. Der Compiler merkt das nicht. Die Lösung: i++; in den Schleifenblock schreiben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 5;\nx += 3;\nx--;\nConsole.WriteLine(x);",
+      "options": [
+        "7",
+        "8",
+        "9",
+        "5"
+      ],
+      "correctIndex": 0,
+      "explanation": "x += 3 macht aus 5 eine 8, danach verringert x-- den Wert um 1 auf 7."
+    }
+  ]
+}

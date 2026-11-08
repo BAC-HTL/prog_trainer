@@ -1,31 +1,32 @@
 # Roadmap
 
+## Erledigt
+
+- Lehrplan bis Senior für Python und C#
+- Einsteiger und Fortgeschritten komplett, mit Abschlussprüfungen
+- PDF-Zertifikate pro Kapitel
+- Achievements
+- Herausforderungen mit echter Code-Ausführung und Punkten pro Sprache
+- Android und iOS
+
 ## Als Nächstes
 
-- Lernfortschritt speichern (erledigte Lektionen, Quiz-Ergebnisse)
-- Weitere Lektionen: Listen, Funktionen, Klassen
-- Erste Lektionen zu Testing, Software-Architektur und Requirements Engineering
+- Inhalte für **Profi** und **Senior**
+- Lernpfade Software-Architektur, Testing, Requirements Engineering
+- Python offline: Pyodide in die App packen statt aus dem Internet laden
+- C# ohne Server: Roslyn + .NET-WASM direkt am Gerät
+- Herausforderungen für Profi/Senior
+- Dunkler Modus
 
-## Code am Handy ausführen
+## Code-Ausführung: Hintergrund
 
-Recherche-Stand November 2026:
-
-| Option | Sprache | Offline | Bewertung |
+| Option | Sprache | Offline | Status |
 |---|---|---|---|
-| **Pyodide** in einer WebView | Python | ja | Empfohlen für Version 1. Läuft auf Android und iOS gleich. Die App wird dadurch größer. |
-| serious_python | Python | ja | Echtes CPython, aber für eine Lern-REPL umständlich |
-| Chaquopy | Python | ja | Nur Android |
-| **Judge0** (Server) | C# und viele mehr | nein | Gratis-Plan mit 50 Ausführungen/Tag, selbst hosten kostenlos |
-| Piston (öffentliche API) | viele | nein | Seit Feb. 2026 nur mit Schlüssel, keine Schlüssel für Schulprojekte |
-| Roslyn + .NET-WASM in WebView | C# | ja | Vielversprechend für später, Downloadgröße noch ungeklärt |
-
-**Plan:**
-
-1. Python über Pyodide direkt am Handy ausführen.
-2. C# zuerst über einen Judge0-Server, später möglichst ebenfalls offline
-   über .NET-WASM.
+| **Pyodide** (WebView) | Python | nach erstem Laden | ✅ eingebaut |
+| **Judge0** (Server) | C# (Mono, ≈ C# 7) | nein | ✅ eingebaut, API-Key nötig |
+| Roslyn + .NET-WASM | C# (aktuell) | ja | geplant |
+| Piston | viele | nein | seit 02/2026 keine Keys für Schulprojekte |
 
 !!! info "App Store"
     Apple erlaubt Lern-Apps, Code auszuführen, wenn der Code für Nutzer
-    sichtbar und bearbeitbar ist. Die Laufzeit sollte in der App enthalten
-    sein und nicht nachgeladen werden.
+    sichtbar und bearbeitbar ist.

@@ -1,0 +1,97 @@
+{
+  "id": "csharp-e2_03_ternaer_verschachtelt",
+  "title": "Ternärer Operator und verschachtelte Bedingungen",
+  "summary": "Kurze Entscheidungen mit ? : schreiben und if-Anweisungen ineinander verschachteln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Oft willst du je nach Bedingung einfach einen von zwei Werten haben. Dafür gibt es den ternären Operator ? : (auch Bedingungsoperator genannt):\n\nbedingung ? wertWennTrue : wertWennFalse\n\nIst die Bedingung true, ist das Ergebnis der Wert nach dem ?, sonst der Wert nach dem :."
+    },
+    {
+      "type": "code",
+      "content": "int punkte = 62;\n\n// Lange Version mit if/else:\nstring ergebnis;\nif (punkte >= 50)\n{\n    ergebnis = \"bestanden\";\n}\nelse\n{\n    ergebnis = \"nicht bestanden\";\n}\n\n// Kurze Version mit dem ternären Operator:\nstring ergebnis2 = punkte >= 50 ? \"bestanden\" : \"nicht bestanden\";\n\nConsole.WriteLine(ergebnis);\nConsole.WriteLine(ergebnis2);\n// Ausgabe:\n// bestanden\n// bestanden"
+    },
+    {
+      "type": "text",
+      "content": "Der ternäre Operator liefert einen Wert – er ist also ein Ausdruck und keine Anweisung. Deshalb gilt:\n• Beide Werte müssen zusammenpassen, z. B. zwei strings oder zwei Zahlen.\n• Du kannst ihn nicht verwenden, um einfach Befehle auszuführen. punkte >= 50 ? Console.WriteLine(\"Ja\") : Console.WriteLine(\"Nein\"); lässt sich nicht kompilieren – dafür nimmst du if/else.\n\nWillst du ihn in einem $-String verwenden, musst du ihn in runde Klammern setzen. Sonst hält C# den Doppelpunkt für eine Formatangabe und meldet einen Fehler."
+    },
+    {
+      "type": "code",
+      "content": "int anzahl = 1;\nint a = 8;\nint b = 13;\n\nConsole.WriteLine($\"Im Korb liegt {anzahl} {(anzahl == 1 ? \"Apfel\" : \"Äpfel\")}.\");\n\nint groesser = a > b ? a : b;\nConsole.WriteLine($\"Die größere Zahl ist {groesser}.\");\n// Ausgabe:\n// Im Korb liegt 1 Apfel.\n// Die größere Zahl ist 13."
+    },
+    {
+      "type": "text",
+      "content": "Innerhalb eines if-Blocks darf wieder ein if stehen. Das nennt man verschachtelte Bedingungen. Sie sind praktisch, wenn eine zweite Frage nur dann Sinn ergibt, wenn die erste schon mit Ja beantwortet wurde:"
+    },
+    {
+      "type": "code",
+      "content": "bool hatTicket = true;\nint alter = 12;\n\nif (hatTicket)\n{\n    if (alter >= 16)\n    {\n        Console.WriteLine(\"Viel Spaß im Film!\");\n    }\n    else\n    {\n        Console.WriteLine(\"Der Film ist erst ab 16.\");\n    }\n}\nelse\n{\n    Console.WriteLine(\"Bitte zuerst ein Ticket kaufen.\");\n}\n// Ausgabe: Der Film ist erst ab 16."
+    },
+    {
+      "type": "text",
+      "content": "Rücke den Code innerhalb jedes Blocks ein. So siehst du sofort, welches else zu welchem if gehört.\n\nGibt es im inneren if kein eigenes else, kannst du die Bedingungen oft auch mit && zusammenfassen: if (hatTicket) { if (alter >= 16) { ... } } macht dasselbe wie if (hatTicket && alter >= 16) { ... }.\n\nNoch ein typischer Fehler: Lässt du die geschwungenen Klammern weg, gehört nur die erste Anweisung zum if. Die Einrückung ist C# dabei völlig egal! Setz deshalb am besten immer { }."
+    },
+    {
+      "type": "code",
+      "content": "int temperatur = 15;\n\nif (temperatur > 25)\n    Console.WriteLine(\"Ab ins Freibad!\");\n    Console.WriteLine(\"Sonnencreme nicht vergessen!\");  // gehört NICHT zum if\n\n// Ausgabe: Sonnencreme nicht vergessen!"
+    },
+    {
+      "type": "text",
+      "content": "Auch ternäre Operatoren lassen sich verschachteln. C# prüft die Bedingungen dabei von links nach rechts. Das ist kurz, wird aber schnell unübersichtlich – bei mehr als zwei Fällen ist if/else if meist besser lesbar."
+    },
+    {
+      "type": "code",
+      "content": "int alter = 15;\nstring gruppe = alter < 14 ? \"Kind\" : alter < 18 ? \"Jugendlich\" : \"Erwachsen\";\nConsole.WriteLine(gruppe);\n// Ausgabe: Jugendlich"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int zahl = 14;\nstring art = zahl % 2 == 0 ? \"gerade\" : \"ungerade\";\nConsole.WriteLine(art);",
+      "options": [
+        "ungerade",
+        "gerade",
+        "0",
+        "True"
+      ],
+      "correctIndex": 1,
+      "explanation": "14 % 2 ist 0, also ist die Bedingung true. Der ternäre Operator liefert deshalb den Wert vor dem Doppelpunkt: gerade."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 7;\n\nif (x > 0)\n{\n    if (x > 10)\n    {\n        Console.WriteLine(\"B\");\n    }\n    else\n    {\n        Console.WriteLine(\"C\");\n    }\n}\nelse\n{\n    Console.WriteLine(\"D\");\n}",
+      "options": [
+        "D",
+        "B",
+        "C",
+        "Nichts"
+      ],
+      "correctIndex": 2,
+      "explanation": "x > 0 ist true, also geht es in den äußeren if-Block. Dort ist x > 10 false, deshalb läuft das innere else und gibt C aus. Das äußere else (D) wird übersprungen."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int punkte = 70;\nConsole.WriteLine($\"Bestanden: {punkte >= 50 ? \"ja\" : \"nein\"}\");",
+      "options": [
+        "Der ternäre Operator darf nur mit Zahlen verwendet werden",
+        "Im $-String fehlen runde Klammern um den ternären Operator",
+        "Statt ? muss es ?? heißen",
+        "punkte >= 50 ist kein gültiger Vergleich"
+      ],
+      "correctIndex": 1,
+      "explanation": "Im $-String leitet der Doppelpunkt eine Formatangabe ein. Deshalb muss der ternäre Operator in runde Klammern: {(punkte >= 50 ? \"ja\" : \"nein\")}."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 2;\n\nif (x > 5)\n    Console.WriteLine(\"A\");\n    Console.WriteLine(\"B\");",
+      "options": [
+        "A und B",
+        "A",
+        "Nichts",
+        "B"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ohne geschwungene Klammern gehört nur die erste Zeile zum if. Weil 2 > 5 false ist, wird A übersprungen. Console.WriteLine(\"B\") steht außerhalb des if und läuft immer – trotz Einrückung."
+    }
+  ]
+}

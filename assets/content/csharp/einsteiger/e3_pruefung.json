@@ -1,0 +1,126 @@
+{
+  "id": "csharp-e3-pruefung",
+  "title": "Abschlussprüfung: Schleifen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int n = 10;\nint schritte = 0;\n\nwhile (n > 1)\n{\n    n = n / 2;\n    schritte++;\n}\nConsole.WriteLine(schritte);",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "2"
+      ],
+      "correctIndex": 0,
+      "explanation": "n wird bei jedem Durchlauf ganzzahlig halbiert: 10 → 5 → 2 → 1. Das sind 3 Durchläufe. Bei n = 1 ist n > 1 false."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = 100;\n\ndo\n{\n    x -= 30;\n} while (x > 50);\n\nConsole.WriteLine(x);",
+      "options": [
+        "70",
+        "10",
+        "40",
+        "100"
+      ],
+      "correctIndex": 2,
+      "explanation": "Erster Durchlauf: 100 - 30 = 70, und 70 > 50 ist true. Zweiter Durchlauf: 70 - 30 = 40, und 40 > 50 ist false. Die Schleife endet mit x = 40."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for (int i = 10; i > 0; i -= 3)\n{\n    Console.Write($\"{i} \");\n}",
+      "options": [
+        "10 7 4",
+        "9 6 3",
+        "10 7 4 1 -2",
+        "10 7 4 1"
+      ],
+      "correctIndex": 3,
+      "explanation": "i startet bei 10 und wird jeweils um 3 kleiner: 10, 7, 4, 1. Danach wäre i -2, und -2 > 0 ist false."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int summe = 0;\n\nfor (int i = 1; i <= 10; i++)\n{\n    if (i % 2 == 0)\n    {\n        continue;\n    }\n    summe += i;\n}\nConsole.WriteLine(summe);",
+      "options": [
+        "55",
+        "25",
+        "30",
+        "20"
+      ],
+      "correctIndex": 1,
+      "explanation": "continue überspringt alle geraden Zahlen. Addiert werden nur die ungeraden: 1 + 3 + 5 + 7 + 9 = 25."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int i = 0;\n\nwhile (true)\n{\n    i += 4;\n    if (i > 10)\n    {\n        break;\n    }\n}\nConsole.WriteLine(i);",
+      "options": [
+        "8",
+        "10",
+        "12",
+        "Nichts – es ist eine Endlosschleife"
+      ],
+      "correctIndex": 2,
+      "explanation": "i wächst in Viererschritten: 4, 8, 12. Erst bei 12 ist i > 10 true, und break beendet die Schleife. Danach wird 12 ausgegeben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int zaehler = 0;\n\nfor (int i = 1; i <= 4; i++)\n{\n    for (int j = 1; j <= i; j++)\n    {\n        zaehler++;\n    }\n}\nConsole.WriteLine(zaehler);",
+      "options": [
+        "16",
+        "4",
+        "8",
+        "10"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die innere Schleife läuft so oft, wie i gerade groß ist: 1 + 2 + 3 + 4 = 10 Durchläufe insgesamt."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieser Code nicht kompilieren?",
+      "code": "int x = 0;\n\ndo\n{\n    Console.WriteLine(x);\n    x++;\n} while (x < 5)",
+      "options": [
+        "Nach while (x < 5) fehlt der Strichpunkt",
+        "do-while-Schleifen brauchen eine Zählvariable namens i",
+        "x++ ist innerhalb von do nicht erlaubt",
+        "Die Bedingung muss vor dem do stehen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei der do-while-Schleife steht die Bedingung am Ende, und danach muss ein Strichpunkt folgen: } while (x < 5);"
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for (int i = 1; i <= 3; i++)\n{\n    switch (i)\n    {\n        case 2:\n            Console.Write(\"B\");\n            break;\n        default:\n            Console.Write(i);\n            break;\n    }\n}",
+      "options": [
+        "1",
+        "1B3",
+        "1B",
+        "B"
+      ],
+      "correctIndex": 1,
+      "explanation": "break im switch verlässt nur den switch, nicht die for-Schleife. Deshalb läuft die Schleife ganz durch: 1 (default), B (case 2), 3 (default)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "for (int i = 1; i <= 3; i++)\n{\n    for (int j = 1; j <= 3; j++)\n    {\n        if (i * j >= 4)\n        {\n            break;\n        }\n        Console.Write($\"{i * j} \");\n    }\n}",
+      "options": [
+        "1 2 3",
+        "1 2 3 2 4 6 3 6 9",
+        "1 2 3 2 3",
+        "1 2 3 2"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das break beendet nur die innere Schleife, sobald i * j mindestens 4 ist. Bei i = 1 werden 1, 2, 3 ausgegeben. Bei i = 2 kommt 2, dann ist 2 · 2 = 4 → break. Bei i = 3 kommt 3, dann ist 3 · 2 = 6 → break."
+    },
+    {
+      "question": "In welcher Situation passt eine do-while-Schleife besser als eine while-Schleife?",
+      "options": [
+        "Wenn die Anzahl der Durchläufe vorher genau feststeht",
+        "Wenn die Schleife unter Umständen gar nicht laufen soll",
+        "Wenn der Block mindestens einmal laufen muss, z. B. beim Abfragen einer Eingabe, bis sie gültig ist",
+        "Wenn man break verwenden will"
+      ],
+      "correctIndex": 2,
+      "explanation": "do-while prüft die Bedingung erst am Ende und läuft deshalb immer mindestens einmal – perfekt für Eingabeprüfungen. Für eine feste Anzahl an Durchläufen ist for die richtige Wahl, und break funktioniert in allen Schleifen."
+    }
+  ]
+}
