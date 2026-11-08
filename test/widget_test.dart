@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prog_trainer/data/content_repository.dart';
 import 'package:prog_trainer/data/progress_store.dart';
@@ -106,6 +108,10 @@ class FakeRunner implements CodeRunner {
 }
 
 Future<ProgressStore> pumpApp(WidgetTester tester) async {
+  // Großer Bildschirm, damit alle Buttons ohne Scrollen sichtbar sind.
+  tester.view.physicalSize = const Size(1200, 4000);
+  tester.view.devicePixelRatio = 1;
+  addTearDown(tester.view.reset);
   SharedPreferences.setMockInitialValues({});
   final progress = await ProgressStore.load();
   await tester.pumpWidget(ProgTrainerApp(
@@ -164,7 +170,6 @@ void main() {
 
     await tester.tap(find.text('Verdoppeln'));
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Prüfen'));
     await tester.tap(find.text('Prüfen'));
     await tester.pumpAndSettle();
 
