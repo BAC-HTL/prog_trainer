@@ -74,6 +74,9 @@ class ProgressStore extends ChangeNotifier {
   final Map<String, int> _points = {};
   final Map<String, DateTime> _achievements = {};
 
+  /// Spielmodus: Sprache → Missions-ID → beste Sterne (1–3).
+  final Map<String, Map<String, int>> _missions = {};
+
   /// Wird aufgerufen, wenn ein neues Achievement freigeschaltet wurde.
   void Function(Achievement achievement)? onAchievementUnlocked;
 
@@ -103,6 +106,12 @@ class ProgressStore extends ChangeNotifier {
   int points(String trackId) => _points[trackId] ?? 0;
   int get totalPoints => _points.values.fold(0, (a, b) => a + b);
 
+  int missionStars(String trackId, String missionId) =>
+      _missions[trackId]?[missionId] ?? 0;
+  int missionsSolved(String trackId) => _missions[trackId]?.length ?? 0;
+  int missionStarTotal(String trackId) =>
+      _missions[trackId]?.values.fold<int>(0, (a, b) => a + b) ?? 0;
+
   bool isUnlocked(String achievementId) =>
       _achievements.containsKey(achievementId);
   DateTime? unlockedAt(String achievementId) => _achievements[achievementId];
@@ -120,6 +129,10 @@ class ProgressStore extends ChangeNotifier {
       examsPassedByTrack: byTrack,
       solvedByTrack: _solved.map((k, v) => MapEntry(k, v.length)),
       pointsByTrack: Map.of(_points),
+      missionsSolved:
+          _missions.values.fold<int>(0, (a, m) => a + m.length),
+      perfectMissions: _missions.values
+          .fold<int>(0, (a, m) => a + m.values.where((s) => s >= 3).length),
     );
   }
 
@@ -151,6 +164,19 @@ class ProgressStore extends ChangeNotifier {
     return true;
   }
 
+  /// Speichert das Ergebnis einer Mission. Pro neuem Stern gibt es
+  /// 10 Punkte (in der Sprache der Mission). Gibt die neuen Punkte zurück.
+  Future<int> recordMission(String trackId, String missionId, int stars) async {
+    final map = _missions.putIfAbsent(trackId, () => <String, int>{});
+    final old = map[missionId] ?? 0;
+    if (stars <= old) return 0;
+    map[missionId] = stars;
+    final gained = (stars - old) * 10;
+    _points[trackId] = (_points[trackId] ?? 0) + gained;
+    await _save();
+    return gained;
+  }
+
   Future<void> setUserName(String name) async {
     await _prefs.setString(_nameKey, name.trim());
     notifyListeners();
@@ -168,6 +194,7 @@ class ProgressStore extends ChangeNotifier {
     _solved.clear();
     _points.clear();
     _achievements.clear();
+    _missions.clear();
     await _prefs.remove(_progressKey);
     notifyListeners();
   }
@@ -193,6 +220,7 @@ class ProgressStore extends ChangeNotifier {
       'points': _points,
       'achievements':
           _achievements.map((k, v) => MapEntry(k, v.toIso8601String())),
+      'missions': _missions,
     };
     await _prefs.setString(_progressKey, jsonEncode(data));
     notifyListeners();
@@ -215,6 +243,9 @@ class ProgressStore extends ChangeNotifier {
       });
       (data['achievements'] as Map<String, dynamic>).forEach((k, v) {
         _achievements[k] = DateTime.parse(v as String);
+      });
+      (data['missions'] as Map<String, dynamic>? ?? {}).forEach((k, v) {
+        _missions[k] = Map<String, int>.from(v as Map);
       });
     } catch (e) {
       debugPrint('Fortschritt konnte nicht gelesen werden: $e');

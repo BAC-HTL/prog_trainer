@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prog_trainer/data/content_repository.dart';
 import 'package:prog_trainer/data/progress_store.dart';
+import 'package:prog_trainer/game/mission.dart';
 import 'package:prog_trainer/main.dart';
 import 'package:prog_trainer/models/challenge.dart';
 import 'package:prog_trainer/models/content.dart';
@@ -98,13 +99,42 @@ class FakeRepository extends ContentRepository {
           solution: 'print(int(input()) * 2)',
         ),
       ];
+
+  @override
+  Future<List<Mission>> loadMissions() async => const [
+        Mission(
+          id: 'm01',
+          title: 'Landung',
+          story: 'Fahr zur Basis.',
+          concept: 'Befehle',
+          energy: 10,
+          variants: [
+            MissionVariant(map: ['#####', '#R.Z#', '#####'], dir: 'O'),
+          ],
+          goals: [Goal(type: 'basis')],
+          parEnergy: 2,
+          parLines: {'python': 2, 'csharp': 2},
+          hints: [],
+          starter: {'python': 'robot.vor()\n', 'csharp': 'Robot.Vor();\n'},
+          solution: {'python': '', 'csharp': ''},
+        ),
+      ];
+
+  @override
+  Future<String> loadSimulation(String language) async => '# SIM';
 }
 
 /// Tut so, als würde der Code korrekt laufen.
 class FakeRunner implements CodeRunner {
   @override
-  Future<RunResult> run(String code, {String stdin = ''}) async =>
-      RunResult(stdout: '${int.parse(stdin) * 2}\n');
+  Future<RunResult> run(String code, {String stdin = ''}) async {
+    if (code.contains('_starte(')) {
+      // Spielmodus: Roboter fährt zwei Felder zur Basis.
+      return const RunResult(
+          stdout: '@@START 1 1 O 10\n@@MOVE 2 1 9\nHallo Xeno\n@@MOVE 3 1 8\n');
+    }
+    return RunResult(stdout: '${int.parse(stdin) * 2}\n');
+  }
 }
 
 Future<ProgressStore> pumpApp(WidgetTester tester) async {
@@ -164,7 +194,7 @@ void main() {
   testWidgets('Herausforderung lösen gibt Punkte', (tester) async {
     final progress = await pumpApp(tester);
 
-    await tester.tap(find.text('Herausforderungen').last);
+    await tester.tap(find.text('Aufgaben'));
     await tester.pumpAndSettle();
     expect(find.text('0 Punkte'), findsOneWidget);
 
@@ -176,5 +206,28 @@ void main() {
     expect(find.text('Tests: 1 von 1 bestanden'), findsOneWidget);
     expect(progress.points('python'), 10);
     expect(progress.isUnlocked('challenge_1'), isTrue);
+  });
+
+  testWidgets('Spielmission erfüllen gibt Sterne und Punkte', (tester) async {
+    final progress = await pumpApp(tester);
+
+    await tester.tap(find.text('Spiel'));
+    await tester.pumpAndSettle();
+    expect(find.text('Expedition Xeno-7'), findsOneWidget);
+
+    await tester.tap(find.text('Landung'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Roboter starten'));
+    for (var i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 400));
+    }
+    await tester.pumpAndSettle();
+
+    expect(find.text('Mission erfüllt! 🎉'), findsOneWidget);
+    expect(find.text('+30 Punkte'), findsOneWidget);
+    expect(find.text('Hallo Xeno'), findsOneWidget);
+    expect(progress.missionStars('python', 'm01'), 3);
+    expect(progress.points('python'), 30);
+    expect(progress.isUnlocked('mission_1'), isTrue);
   });
 }

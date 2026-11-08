@@ -1,0 +1,394 @@
+{
+  "missions": [
+    {
+      "id": "m04",
+      "title": "Um die Ecke",
+      "story": "Ein Felsrutsch hat den direkten Weg zur Basis verschüttet. Der Ausweichpfad schlängelt sich um zwei Ecken. Dreh dich an den richtigen Stellen, sonst knallst du gegen den Fels!",
+      "concept": "Drehen mit links/rechts",
+      "energy": 12,
+      "variants": [
+        {
+          "map": [
+            "#########",
+            "#R..#####",
+            "###.#####",
+            "###...Z##",
+            "#########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 7,
+        "lines": {
+          "python": 9,
+          "csharp": 9
+        }
+      },
+      "hints": [
+        "rechts() und links() drehen den Roboter auf der Stelle um 90°. Dabei verbraucht er keine Energie.",
+        "Stell dir vor, du sitzt im Roboter: Nach Süden fahren heißt von Osten aus gesehen rechts abbiegen."
+      ],
+      "starter": {
+        "python": "robot.vor()\nrobot.vor()\n# Jetzt abbiegen: robot.rechts() oder robot.links()?\n",
+        "csharp": "Robot.Vor();\nRobot.Vor();\n// Jetzt abbiegen: Robot.Rechts() oder Robot.Links()?\n"
+      },
+      "solution": {
+        "python": "robot.vor()\nrobot.vor()\nrobot.rechts()\nrobot.vor()\nrobot.vor()\nrobot.links()\nrobot.vor()\nrobot.vor()\nrobot.vor()\n",
+        "csharp": "Robot.Vor();\nRobot.Vor();\nRobot.Rechts();\nRobot.Vor();\nRobot.Vor();\nRobot.Links();\nRobot.Vor();\nRobot.Vor();\nRobot.Vor();\n"
+      }
+    },
+    {
+      "id": "m05",
+      "title": "Die Kraterstufen",
+      "story": "Die Basis liegt oben am Kraterrand, und der einzige Weg dorthin ist eine Treppe aus Felsstufen über einem Lavasee. Jede Stufe sieht genau gleich aus. Warum also jede einzeln programmieren?",
+      "concept": "for-Schleife",
+      "energy": 14,
+      "variants": [
+        {
+          "map": [
+            "########",
+            "######Z#",
+            "#####..#",
+            "####..~#",
+            "###..~~#",
+            "##..~~~#",
+            "#R.~~~~#",
+            "########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 10,
+        "lines": {
+          "python": 5,
+          "csharp": 5
+        }
+      },
+      "hints": [
+        "Eine Stufe besteht aus: vor, links, vor, rechts.",
+        "Zähl die Stufen bis zur Basis und wiederhole das Muster mit for i in range(...) bzw. for (int i = 0; i < ...; i++)."
+      ],
+      "starter": {
+        "python": "# Eine Stufe: vor, links, vor, rechts\nfor i in range(1):\n    robot.vor()\n",
+        "csharp": "// Eine Stufe: Vor, Links, Vor, Rechts\nfor (int i = 0; i < 1; i++)\n{\n    Robot.Vor();\n}\n"
+      },
+      "solution": {
+        "python": "for i in range(5):\n    robot.vor()\n    robot.links()\n    robot.vor()\n    robot.rechts()\n",
+        "csharp": "for (int i = 0; i < 5; i++)\n{\n    Robot.Vor();\n    Robot.Links();\n    Robot.Vor();\n    Robot.Rechts();\n}\n"
+      }
+    },
+    {
+      "id": "m06",
+      "title": "Felsbrocken im Gang",
+      "story": "Im Versorgungsgang zur Basis liegen Felsbrocken – aber jedes Mal woanders, weil der Boden ständig bebt. Prüfe mit dem Sensor, was vor dir liegt: Ist der Weg frei, fahr weiter, sonst weich oben herum aus.",
+      "concept": "if/else mit Sensor",
+      "energy": 20,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "##...#...###",
+            "#R.#...#..Z#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "##########",
+            "#####...##",
+            "#R....#.Z#",
+            "##########"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "###########",
+            "#......####",
+            "#R#..#...Z#",
+            "###########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 13,
+        "lines": {
+          "python": 13,
+          "csharp": 13
+        }
+      },
+      "hints": [
+        "vorne() liefert, was vor dir liegt, z. B. \"fels\", \"boden\" oder \"basis\".",
+        "Ausweichen über die obere Reihe: links, vor, rechts, vor, vor, rechts, vor, links.",
+        "Die Schleife läuft, solange vorne() nicht \"basis\" meldet. Danach fehlt noch ein letzter Schritt."
+      ],
+      "starter": {
+        "python": "while robot.vorne() != \"basis\":\n    # Ist der Weg frei? Sonst musst du ausweichen!\n    robot.vor()\n",
+        "csharp": "while (Robot.Vorne() != \"basis\")\n{\n    // Ist der Weg frei? Sonst musst du ausweichen!\n    Robot.Vor();\n}\n"
+      },
+      "solution": {
+        "python": "while robot.vorne() != \"basis\":\n    if robot.ist_frei():\n        robot.vor()\n    else:\n        robot.links()\n        robot.vor()\n        robot.rechts()\n        robot.vor()\n        robot.vor()\n        robot.rechts()\n        robot.vor()\n        robot.links()\nrobot.vor()\n",
+        "csharp": "while (Robot.Vorne() != \"basis\")\n{\n    if (Robot.IstFrei())\n    {\n        Robot.Vor();\n    }\n    else\n    {\n        Robot.Links();\n        Robot.Vor();\n        Robot.Rechts();\n        Robot.Vor();\n        Robot.Vor();\n        Robot.Rechts();\n        Robot.Vor();\n        Robot.Links();\n    }\n}\nRobot.Vor();\n"
+      }
+    },
+    {
+      "id": "m07",
+      "title": "Nur Kristalle!",
+      "story": "Der Probenspeicher deines Roboters ist für Kristalle gekühlt – Moos und Erz würden darin verderben. Fahr den Gang entlang, scanne jedes Feld und nimm nur die Kristalle mit. Die Proben liegen bei jeder Fahrt woanders.",
+      "concept": "Schleife + if mit scannen()",
+      "energy": 14,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "#RK.MEK.MKZ#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "##########",
+            "#R.EKKM.Z#",
+            "##########"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "###########",
+            "#RMK.E..KZ#",
+            "###########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "alle",
+          "item": "kristall"
+        },
+        {
+          "type": "basis"
+        },
+        {
+          "type": "ohne",
+          "item": "moos"
+        },
+        {
+          "type": "ohne",
+          "item": "erz"
+        }
+      ],
+      "par": {
+        "energy": 9,
+        "lines": {
+          "python": 4,
+          "csharp": 4
+        }
+      },
+      "hints": [
+        "scannen() liefert, was unter dem Roboter liegt, z. B. \"kristall\", \"moos\" oder \"boden\".",
+        "Nach jedem Schritt: scannen und nur bei \"kristall\" aufheben()."
+      ],
+      "starter": {
+        "python": "while robot.ist_frei():\n    robot.vor()\n    # Hier scannen und nur Kristalle aufheben\n",
+        "csharp": "while (Robot.IstFrei())\n{\n    Robot.Vor();\n    // Hier scannen und nur Kristalle aufheben\n}\n"
+      },
+      "solution": {
+        "python": "while robot.ist_frei():\n    robot.vor()\n    if robot.scannen() == \"kristall\":\n        robot.aufheben()\n",
+        "csharp": "while (Robot.IstFrei())\n{\n    Robot.Vor();\n    if (Robot.Scannen() == \"kristall\")\n        Robot.Aufheben();\n}\n"
+      }
+    },
+    {
+      "id": "m08",
+      "title": "Der Lavagraben",
+      "story": "Zwischen dir und der Basis liegt ein Lavafeld, durch das sich ein schmaler Felspfad windet. Ein falscher Schritt und dein Roboter schmilzt! Lass die Sensoren entscheiden: geradeaus, wenn frei, sonst nach links oder rechts drehen.",
+      "concept": "while + verschachteltes if/else",
+      "energy": 25,
+      "variants": [
+        {
+          "map": [
+            "############",
+            "#R..~~~~~~~#",
+            "#~~.~~~...~#",
+            "#~~...~.~.~#",
+            "#~~~~.~.~.Z#",
+            "#~~~~...~~~#",
+            "############"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "##########",
+            "#R.....~~#",
+            "#~~~~~.~~#",
+            "#~~~~~.~~#",
+            "#~~~~~...#",
+            "#~~~~~~~.#",
+            "#~~Z.....#",
+            "##########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 18,
+        "lines": {
+          "python": 8,
+          "csharp": 8
+        }
+      },
+      "hints": [
+        "ist_frei() ist auch dann False, wenn vor dir Lava liegt.",
+        "Ist vorne nicht frei: dreh nach links. Ist es dort auch nicht frei, dreh zweimal nach rechts.",
+        "Wiederhole das, solange scannen() nicht \"basis\" meldet."
+      ],
+      "starter": {
+        "python": "while robot.scannen() != \"basis\":\n    # Nur fahren, wenn vorne keine Lava ist!\n    robot.vor()\n",
+        "csharp": "while (Robot.Scannen() != \"basis\")\n{\n    // Nur fahren, wenn vorne keine Lava ist!\n    Robot.Vor();\n}\n"
+      },
+      "solution": {
+        "python": "while robot.scannen() != \"basis\":\n    if robot.ist_frei():\n        robot.vor()\n    else:\n        robot.links()\n        if not robot.ist_frei():\n            robot.rechts()\n            robot.rechts()\n",
+        "csharp": "while (Robot.Scannen() != \"basis\")\n{\n    if (Robot.IstFrei())\n    {\n        Robot.Vor();\n    }\n    else\n    {\n        Robot.Links();\n        if (!Robot.IstFrei())\n        {\n            Robot.Rechts();\n            Robot.Rechts();\n        }\n    }\n}\n"
+      }
+    },
+    {
+      "id": "m09",
+      "title": "Doppelte Laborschicht",
+      "story": "Die Basis braucht dringend Nachschub: eine Energiezelle für die Heizung und Biogel für die Krankenstation. Sammle Kristall, Moos und zweimal Wasser ein, braue im Labor beide Stoffe und bring sie zur Basis.",
+      "concept": "Schleifen, if und Labor kombinieren",
+      "energy": 25,
+      "variants": [
+        {
+          "map": [
+            "###########",
+            "#R.K..M..Q#",
+            "##~~~~~~#.#",
+            "#Z......L.#",
+            "###########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "herstellen",
+          "item": "energiezelle",
+          "count": 1
+        },
+        {
+          "type": "herstellen",
+          "item": "biogel",
+          "count": 1
+        },
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 18,
+        "lines": {
+          "python": 14,
+          "csharp": 14
+        }
+      },
+      "hints": [
+        "Rezepte: kristall + wasser = energiezelle, moos + wasser = biogel.",
+        "Die Quelle liefert beliebig oft Wasser – du brauchst zwei Portionen, also zweimal aufheben().",
+        "Alles, was beim Scannen nicht \"boden\" ist, kannst du im oberen Gang aufheben."
+      ],
+      "starter": {
+        "python": "# 1. Proben und Wasser einsammeln\nrobot.vor()\n# 2. Ins Labor fahren und zweimal mischen\n# 3. Zur Basis fahren\n",
+        "csharp": "// 1. Proben und Wasser einsammeln\nRobot.Vor();\n// 2. Ins Labor fahren und zweimal mischen\n// 3. Zur Basis fahren\n"
+      },
+      "solution": {
+        "python": "# Proben im oberen Gang einsammeln\nwhile robot.ist_frei():\n    robot.vor()\n    if robot.scannen() != \"boden\":\n        robot.aufheben()\nrobot.aufheben()  # zweites Wasser\n\n# ins Labor\nrobot.rechts()\nrobot.vor()\nrobot.vor()\nrobot.rechts()\nrobot.vor()\nrobot.mischen(\"kristall\", \"wasser\")\nrobot.mischen(\"moos\", \"wasser\")\n\n# zur Basis\nwhile robot.ist_frei():\n    robot.vor()\n",
+        "csharp": "// Proben im oberen Gang einsammeln\nwhile (Robot.IstFrei())\n{\n    Robot.Vor();\n    if (Robot.Scannen() != \"boden\")\n        Robot.Aufheben();\n}\nRobot.Aufheben(); // zweites Wasser\n\n// ins Labor\nRobot.Rechts();\nRobot.Vor();\nRobot.Vor();\nRobot.Rechts();\nRobot.Vor();\nRobot.Mischen(\"kristall\", \"wasser\");\nRobot.Mischen(\"moos\", \"wasser\");\n\n// zur Basis\nwhile (Robot.IstFrei())\n    Robot.Vor();\n"
+      }
+    },
+    {
+      "id": "m10",
+      "title": "Kristalle hinter Felsen",
+      "story": "Hinter jedem Felsbrocken am Lavasee wächst ein Kristall. Das Umfahren eines Felsens ist immer dasselbe Manöver – bring es deinem Roboter einmal als eigene Funktion bei und ruf sie dann so oft auf, wie du sie brauchst.",
+      "concept": "eigene Funktionen",
+      "energy": 20,
+      "variants": [
+        {
+          "map": [
+            "##########",
+            "#.......##",
+            "#R#K#K#KZ#",
+            "#~~~~~~~~#",
+            "##########"
+          ],
+          "dir": "O"
+        },
+        {
+          "map": [
+            "########",
+            "#.....##",
+            "#R#K#KZ#",
+            "#~~~~~~#",
+            "########"
+          ],
+          "dir": "O"
+        }
+      ],
+      "goals": [
+        {
+          "type": "alle",
+          "item": "kristall"
+        },
+        {
+          "type": "basis"
+        }
+      ],
+      "par": {
+        "energy": 13,
+        "lines": {
+          "python": 13,
+          "csharp": 13
+        }
+      },
+      "hints": [
+        "Ein Felsen wird oben umfahren: links, vor, rechts, vor, vor, rechts, vor, links.",
+        "Python: def umfahren(): … – C#: void Umfahren() { … }. Danach reicht ein Aufruf wie umfahren().",
+        "Wie viele Felsen es gibt, ist nicht immer gleich: Wiederhole, solange vorne() nicht \"basis\" meldet."
+      ],
+      "starter": {
+        "python": "def umfahren():\n    # Hier die Befehle, um einen Felsen herumzufahren\n    robot.links()\n\n# Hauptprogramm: umfahren() aufrufen und Kristalle aufheben\numfahren()\n",
+        "csharp": "void Umfahren()\n{\n    // Hier die Befehle, um einen Felsen herumzufahren\n    Robot.Links();\n}\n\n// Hauptprogramm: Umfahren() aufrufen und Kristalle aufheben\nUmfahren();\n"
+      },
+      "solution": {
+        "python": "def umfahren():\n    robot.links()\n    robot.vor()\n    robot.rechts()\n    robot.vor()\n    robot.vor()\n    robot.rechts()\n    robot.vor()\n    robot.links()\n\nwhile robot.vorne() != \"basis\":\n    umfahren()\n    robot.aufheben()\nrobot.vor()\n",
+        "csharp": "void Umfahren()\n{\n    Robot.Links();\n    Robot.Vor();\n    Robot.Rechts();\n    Robot.Vor();\n    Robot.Vor();\n    Robot.Rechts();\n    Robot.Vor();\n    Robot.Links();\n}\n\nwhile (Robot.Vorne() != \"basis\")\n{\n    Umfahren();\n    Robot.Aufheben();\n}\nRobot.Vor();\n"
+      }
+    }
+  ]
+}

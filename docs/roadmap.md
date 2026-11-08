@@ -8,6 +8,7 @@
 - Achievements
 - Herausforderungen mit echter Code-Ausführung und Punkten pro Sprache
 - Android und iOS
+- Spielmodus „Expedition Xeno-7“ mit 16 Missionen
 
 ## Als Nächstes
 
@@ -17,6 +18,7 @@
 - C# ohne Server: Roslyn + .NET-WASM direkt am Gerät
 - Herausforderungen für Profi/Senior
 - Dunkler Modus
+- Weitere Spielmissionen (Profi/Senior), z. B. mit Klassen und Rekursion
 
 ## Code-Ausführung: Hintergrund
 

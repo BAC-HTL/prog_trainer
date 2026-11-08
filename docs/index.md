@@ -19,6 +19,7 @@ Wie man sie installiert, steht unter [Installation](installation.md).
 - **Lektionen.** Jede Lektion hat Erklärungen, Code-Beispiele und ein Quiz mit sofortigem Feedback.
 - **Abschlussprüfung pro Kapitel.** Ab 70 % ist sie bestanden, und es gibt ein **PDF-Zertifikat** mit deinem Namen zum Herunterladen.
 - **Herausforderungen.** Du schreibst echten Code, der ausgeführt und gegen Testfälle geprüft wird. Für gelöste Aufgaben bekommst du Punkte. Punkte und Aufgaben werden **pro Sprache getrennt** geführt.
+- **Spielmodus „Expedition Xeno-7“.** Du steuerst einen Forschungsroboter mit echtem Code, sammelst Proben und braust im Labor neue Stoffe. Jede Mission bringt bis zu 3 Sterne. [Mehr dazu](spiel.md)
 - **Achievements** für Meilensteine wie die erste Lektion, eine fehlerfreie Prüfung oder 500 Punkte.
 
 ## Stand der Inhalte
@@ -30,3 +31,4 @@ Wie man sie installiert, steht unter [Installation](installation.md).
 | Profi | Lehrplan steht | Lehrplan steht |
 | Senior | Lehrplan steht | Lehrplan steht |
 | Herausforderungen | 24 | 24 |
+| Spielmissionen | 16 | 16 |

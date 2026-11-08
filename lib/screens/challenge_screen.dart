@@ -5,6 +5,7 @@ import '../models/challenge.dart';
 import '../models/content.dart';
 import '../runner/code_runner.dart';
 import '../widgets/code_block.dart';
+import '../widgets/code_editor.dart';
 import 'settings_screen.dart';
 
 /// Eine Herausforderung: Code schreiben, ausführen, gegen Tests prüfen.
@@ -30,23 +31,10 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
   List<TestOutcome>? _outcomes;
   int _failedAttempts = 0;
 
-  static const _snippets = ['    ', '(', ')', ':', '"', '=', '[', ']', '{', '}', ';', '+', '<', '>', '.', ','];
-
   @override
   void dispose() {
     _code.dispose();
     super.dispose();
-  }
-
-  void _insert(String text) {
-    final sel = _code.selection;
-    final value = _code.text;
-    final start = sel.isValid ? sel.start : value.length;
-    final end = sel.isValid ? sel.end : value.length;
-    _code.value = TextEditingValue(
-      text: value.replaceRange(start, end, text),
-      selection: TextSelection.collapsed(offset: start + text.length),
-    );
   }
 
   CodeRunner? get _runner {
@@ -162,51 +150,7 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
           else ...[
             Text('Dein Code', style: theme.textTheme.titleSmall),
             const SizedBox(height: 6),
-            Container(
-              decoration: BoxDecoration(
-                color: const Color(0xFF1E1E2E),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextField(
-                controller: _code,
-                maxLines: null,
-                minLines: 10,
-                keyboardType: TextInputType.multiline,
-                autocorrect: false,
-                enableSuggestions: false,
-                smartQuotesType: SmartQuotesType.disabled,
-                smartDashesType: SmartDashesType.disabled,
-                style: const TextStyle(
-                  fontFamily: 'monospace',
-                  fontSize: 14,
-                  color: Color(0xFFCDD6F4),
-                  height: 1.4,
-                ),
-                cursorColor: Colors.white,
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.all(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 6),
-            SizedBox(
-              height: 40,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  for (final s in _snippets)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: ActionChip(
-                        label: Text(s == '    ' ? '⇥' : s,
-                            style: const TextStyle(fontFamily: 'monospace')),
-                        onPressed: () => _insert(s),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            CodeEditor(controller: _code),
             const SizedBox(height: 12),
             Row(
               children: [

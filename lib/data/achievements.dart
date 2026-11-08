@@ -9,6 +9,8 @@ class ProgressStats {
     required this.examsPassedByTrack,
     required this.solvedByTrack,
     required this.pointsByTrack,
+    this.missionsSolved = 0,
+    this.perfectMissions = 0,
   });
 
   final int lessonsCompleted;
@@ -17,6 +19,8 @@ class ProgressStats {
   final Map<String, int> examsPassedByTrack;
   final Map<String, int> solvedByTrack;
   final Map<String, int> pointsByTrack;
+  final int missionsSolved;
+  final int perfectMissions;
 
   int examsIn(String track) => examsPassedByTrack[track] ?? 0;
   int pointsIn(String track) => pointsByTrack[track] ?? 0;
@@ -152,6 +156,27 @@ final List<Achievement> allAchievements = [
     description: 'Sammle 500 Punkte in C#.',
     icon: Icons.military_tech,
     check: (s) => s.pointsIn('csharp') >= 500,
+  ),
+  Achievement(
+    id: 'mission_1',
+    title: 'Erster Einsatz',
+    description: 'Schließe deine erste Spielmission ab.',
+    icon: Icons.smart_toy,
+    check: (s) => s.missionsSolved >= 1,
+  ),
+  Achievement(
+    id: 'mission_perfekt',
+    title: 'Präzisionsarbeit',
+    description: 'Hol 3 Sterne in einer Mission.',
+    icon: Icons.auto_awesome,
+    check: (s) => s.perfectMissions >= 1,
+  ),
+  Achievement(
+    id: 'mission_10',
+    title: 'Expeditionsleiter',
+    description: 'Schließe 10 Spielmissionen ab.',
+    icon: Icons.explore,
+    check: (s) => s.missionsSolved >= 10,
   ),
   Achievement(
     id: 'punkte_1000',
