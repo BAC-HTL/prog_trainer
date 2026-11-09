@@ -21,6 +21,34 @@ jobs:
       - run: python3 tool/verify_challenges.py csharp
       - run: python3 tool/verify_missions.py
 
+  csharp-runtime:
+    name: C#-Laufzeit (WebAssembly) im Browser testen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Laufzeit bauen
+        run: dotnet publish csharp_runtime -c Release -o csharp_runtime/out
+      - name: Größe
+        run: du -sh csharp_runtime/out/wwwroot && du -sh csharp_runtime/out/wwwroot/_framework
+      - name: Playwright installieren
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Im Browser testen
+        run: |
+          python3 -m http.server 8000 --directory csharp_runtime/out/wwwroot &
+          sleep 2
+          node tool/test_csharp_runtime.mjs http://localhost:8000/
+
   android:
     name: Tests + Android
     runs-on: ubuntu-latest

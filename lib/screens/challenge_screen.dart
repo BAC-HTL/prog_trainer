@@ -6,7 +6,6 @@ import '../models/content.dart';
 import '../runner/code_runner.dart';
 import '../widgets/code_block.dart';
 import '../widgets/code_editor.dart';
-import 'settings_screen.dart';
 
 /// Eine Herausforderung: Code schreiben, ausführen, gegen Tests prüfen.
 class ChallengeScreen extends StatefulWidget {
@@ -176,9 +175,8 @@ class _ChallengeScreenState extends State<ChallengeScreen> {
               const LinearProgressIndicator(),
               const SizedBox(height: 4),
               Text(
-                widget.track.runtime == 'python'
-                    ? 'Läuft … (beim ersten Mal wird Python geladen, das dauert etwas)'
-                    : 'Läuft …',
+                'Läuft … (beim ersten Mal wird ${widget.track.title} geladen, '
+                'das dauert etwas)',
                 style: theme.textTheme.bodySmall,
               ),
             ],
@@ -211,20 +209,10 @@ class _RunnerMissing extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('${track.title}-Ausführung einrichten',
+            Text('${track.title}-Ausführung nicht verfügbar',
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
-            const Text(
-                'C#-Code wird auf einem Server (Judge0) kompiliert. Trage in '
-                'den Einstellungen einen kostenlosen API-Key ein, dann kannst '
-                'du hier Code ausführen.'),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
-              ),
-              child: const Text('Zu den Einstellungen'),
-            ),
+            const Text('Für diese Sprache gibt es noch keine Code-Ausführung.'),
           ],
         ),
       ),

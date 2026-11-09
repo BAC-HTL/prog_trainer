@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_services.dart';
-import '../runner/pyodide_runner.dart';
+import '../runner/webview_runner.dart';
 import 'achievements_screen.dart';
 import 'challenges_screen.dart';
 import 'game_screen.dart';
@@ -23,7 +23,10 @@ class _RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final python = AppServices.of(context).runnerFor('python');
+    final services = AppServices.of(context);
+    final runners = [
+      for (final r in ['python', 'csharp']) services.runnerFor(r),
+    ].whereType<WebViewRunner>();
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_tab]),
@@ -50,8 +53,8 @@ class _RootScreenState extends State<RootScreen> {
               ],
             ),
           ),
-          if (python is PyodideRunner)
-            Positioned(left: 0, top: 0, child: PythonRuntimeHost(runner: python)),
+          for (final r in runners)
+            Positioned(left: 0, top: 0, child: RuntimeHost(runner: r)),
         ],
       ),
       bottomNavigationBar: NavigationBar(

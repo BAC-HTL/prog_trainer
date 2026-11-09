@@ -15,3 +15,9 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# C#-Laufzeit
+csharp_runtime/bin/
+csharp_runtime/obj/
+csharp_runtime/out/
+node_modules/

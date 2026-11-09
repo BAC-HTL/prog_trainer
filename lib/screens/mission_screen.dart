@@ -10,7 +10,6 @@ import '../widgets/code_block.dart';
 import '../widgets/code_editor.dart';
 import '../widgets/game_map.dart';
 import 'game_screen.dart';
-import 'settings_screen.dart';
 
 /// Eine Spielmission: Code schreiben, Roboter losschicken, zuschauen.
 class MissionScreen extends StatefulWidget {
@@ -278,7 +277,7 @@ class _MissionScreenState extends State<MissionScreen> {
           ]),
           const SizedBox(height: 6),
           if (runner == null)
-            const _CsharpSetup()
+            const Text('Für diese Sprache gibt es noch keine Code-Ausführung.')
           else ...[
             CodeEditor(controller: _code, minLines: 8),
             const SizedBox(height: 12),
@@ -302,9 +301,8 @@ class _MissionScreenState extends State<MissionScreen> {
             if (_running) ...[
               const SizedBox(height: 8),
               const LinearProgressIndicator(),
-              if (_lang == 'python')
-                Text('Beim ersten Start wird Python geladen, das dauert etwas.',
-                    style: theme.textTheme.bodySmall),
+              Text('Beim ersten Start wird ${widget.track.title} geladen, das dauert etwas.',
+                  style: theme.textTheme.bodySmall),
             ],
           ],
           const SizedBox(height: 8),
@@ -374,33 +372,6 @@ class _OutcomeCard extends StatelessWidget {
                 FilledButton(onPressed: onNext, child: const Text('Nächste Mission')),
               ],
             ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CsharpSetup extends StatelessWidget {
-  const _CsharpSetup();
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('C# wird auf einem Judge0-Server ausgeführt. Trage in den '
-                'Einstellungen einen kostenlosen API-Key ein.'),
-            const SizedBox(height: 8),
-            FilledButton(
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
-              ),
-              child: const Text('Zu den Einstellungen'),
-            ),
           ],
         ),
       ),
