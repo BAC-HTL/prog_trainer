@@ -95,14 +95,8 @@ jobs:
         with:
           dotnet-version: '8.0.x'
       # C#-Laufzeit (Roslyn + .NET als WebAssembly) für die App
-      - run: dotnet publish csharp_runtime -c Release -o csharp_runtime/out
-      - run: |
-          cp -r csharp_runtime/out/wwwroot site/csharp
-          find site/csharp -name '*.br' -delete
-      - uses: actions/download-artifact@v5
-        with:
-          path: site/download
-          merge-multiple: true
+      - run: bash tool/package_csharp_runtime.sh site/csharp
+      # APK und IPA liegen im Release "latest" – nicht doppelt auf Pages.
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site
@@ -119,3 +113,5 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          timeout: 1800000
