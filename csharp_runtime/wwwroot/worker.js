@@ -11,7 +11,9 @@ self.onmessage = (e) => {
   try {
     result = JSON.parse(exports.Runner.Run(code, stdin));
   } catch (err) {
-    result = { stdout: '', stderr: '', error: 'Interner Fehler: ' + err };
+    // Die .NET-Laufzeit ist abgestürzt (z. B. Speichermangel) –
+    // main.js startet den Worker neu und versucht es noch einmal.
+    result = { stdout: '', stderr: '', error: 'CRASH', detail: String(err?.message ?? err) };
   }
   self.postMessage({ type: 'result', ...result });
 };

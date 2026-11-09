@@ -3,8 +3,20 @@
 const status = document.getElementById('status');
 let worker = null;
 let ready = null;
+let runs = 0;
+
+// Jeder Lauf lädt ein neues Assembly, das nie mehr entladen wird. Damit der
+// Speicher am Handy nicht vollläuft, gibt es regelmäßig einen frischen Worker
+// (dauert ~2 s, die Dateien kommen aus dem Cache).
+const RUNS_PER_WORKER = 15;
+
+function stopWorker() {
+  if (worker) worker.terminate();
+  worker = null;
+}
 
 function startWorker() {
+  runs = 0;
   worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
   ready = new Promise((resolve, reject) => {
     worker.onmessage = (e) => {
@@ -21,6 +33,23 @@ function startWorker() {
 
 /** Kompiliert und startet C#-Code. Ergebnis: { stdout, stderr, error }. */
 window.runCSharp = async (code, stdin, timeoutMs = 15000) => {
+  let result = await runOnce(code, stdin, timeoutMs);
+  if (result.error === 'CRASH') {
+    console.log('C#-Laufzeit abgestürzt (' + result.detail + '), Neustart …');
+    stopWorker();
+    result = await runOnce(code, stdin, timeoutMs);
+    if (result.error === 'CRASH') {
+      stopWorker();
+      result = { stdout: '', stderr: '', error: 'Die C#-Laufzeit ist abgestürzt: ' + result.detail };
+    }
+  }
+  delete result.type;
+  delete result.detail;
+  return result;
+};
+
+async function runOnce(code, stdin, timeoutMs) {
+  if (worker && runs >= RUNS_PER_WORKER) stopWorker();
   if (!worker) startWorker();
   try {
     await ready;
@@ -31,6 +60,7 @@ window.runCSharp = async (code, stdin, timeoutMs = 15000) => {
     return { stdout: '', stderr: '', error: 'C# konnte nicht geladen werden (Internet?): ' + e.message };
   }
   const w = worker;
+  runs++;
   return await new Promise((resolve) => {
     const timer = setTimeout(() => {
       // Endlosschleife: Worker beenden, beim nächsten Lauf neu starten.
@@ -44,8 +74,12 @@ window.runCSharp = async (code, stdin, timeoutMs = 15000) => {
         resolve(e.data);
       }
     };
+    w.onerror = (e) => {
+      clearTimeout(timer);
+      resolve({ stdout: '', stderr: '', error: 'CRASH', detail: e.message || 'Worker-Fehler' });
+    };
     w.postMessage({ code, stdin });
   });
-};
+}
 
 startWorker(); // schon im Hintergrund laden
