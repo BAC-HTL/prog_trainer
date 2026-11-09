@@ -20,7 +20,8 @@ try {
   const { getAssemblyExports, getConfig } = await dotnet.create();
   exports = await getAssemblyExports(getConfig().mainAssemblyName);
   // Einmal aufwärmen, damit der erste echte Lauf schneller ist.
-  exports.Runner.Run('Console.Write(1);', '');
+  const warm = JSON.parse(exports.Runner.Run('Console.Write(1);', ''));
+  if (warm.error) console.log('Aufwärmen fehlgeschlagen: ' + warm.error);
   self.postMessage({ type: 'ready' });
 } catch (e) {
   self.postMessage({ type: 'loadError', error: String(e) });

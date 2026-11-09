@@ -31,6 +31,18 @@ public static partial class Runner
     [JSExport]
     public static string Run(string code, string stdin)
     {
+        try
+        {
+            return RunInner(code, stdin);
+        }
+        catch (Exception e)
+        {
+            return Json("", "", "Interner Fehler der C#-Laufzeit: " + e);
+        }
+    }
+
+    static string RunInner(string code, string stdin)
+    {
         references ??= Basic.Reference.Assemblies.Net80.References.All
             .Cast<MetadataReference>()
             .ToList();
