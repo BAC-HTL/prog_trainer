@@ -34,9 +34,9 @@ public static partial class Runner
         references ??= Basic.Reference.Assemblies.Net80.References.All
             .Cast<MetadataReference>()
             .ToList();
-        usingsTree ??= CSharpSyntaxTree.ParseText(GlobalUsings, ParseOptions, "Usings.cs");
+        usingsTree ??= CSharpSyntaxTree.ParseText(GlobalUsings, ParseOptions, "Usings.cs", Encoding.UTF8);
 
-        var tree = CSharpSyntaxTree.ParseText(code, ParseOptions, "Program.cs");
+        var tree = CSharpSyntaxTree.ParseText(code, ParseOptions, "Program.cs", Encoding.UTF8);
         var compilation = CSharpCompilation.Create(
             "DeinProgramm",
             new[] { tree, usingsTree },
