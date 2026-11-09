@@ -59,10 +59,10 @@ public static partial class Runner
                 concurrentBuild: false,
                 optimizationLevel: OptimizationLevel.Release));
 
+        // Ohne PDB: Roslyn würde dafür im Browser auf einen Task warten,
+        // was die Single-Thread-Laufzeit nicht kann.
         using var ms = new MemoryStream();
-        using var pdb = new MemoryStream();
-        var emit = compilation.Emit(ms, pdb, options: new Microsoft.CodeAnalysis.Emit.EmitOptions(
-            debugInformationFormat: Microsoft.CodeAnalysis.Emit.DebugInformationFormat.PortablePdb));
+        var emit = compilation.Emit(ms);
         if (!emit.Success)
         {
             var errors = emit.Diagnostics
@@ -76,12 +76,11 @@ public static partial class Runner
             return Json("", "", "Kompilierfehler:\n" + string.Join("\n", errors));
         }
 
-        var assembly = Assembly.Load(ms.ToArray(), pdb.ToArray());
+        var assembly = Assembly.Load(ms.ToArray());
         var stdout = new StringWriter();
         var stderr = new StringWriter();
         var oldOut = Console.Out;
         var oldErr = Console.Error;
-        var oldIn = Console.In;
         string? error = null;
         try
         {
@@ -107,7 +106,6 @@ public static partial class Runner
         {
             Console.SetOut(oldOut);
             Console.SetError(oldErr);
-            Console.SetIn(oldIn);
         }
         return Json(stdout.ToString(), stderr.ToString(), error);
     }
@@ -117,15 +115,7 @@ public static partial class Runner
         // Die Robotersimulation beendet ein Programm mit RobotFehler – das
         // Ereignis wurde schon ausgegeben, also ist das kein Absturz.
         if (e.GetType().Name == "RobotFehler") return null;
-        var line = "";
-        var trace = e.StackTrace ?? "";
-        var idx = trace.IndexOf("Program.cs:line ", StringComparison.Ordinal);
-        if (idx >= 0)
-        {
-            var digits = new string(trace.Skip(idx + 16).TakeWhile(char.IsDigit).ToArray());
-            if (digits.Length > 0) line = $"Zeile {digits}: ";
-        }
-        return $"Laufzeitfehler – {line}{e.GetType().Name}: {e.Message}";
+        return $"Laufzeitfehler – {e.GetType().Name}: {e.Message}";
     }
 
     static string Json(string stdout, string stderr, string? error)
