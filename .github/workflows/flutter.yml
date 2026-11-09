@@ -38,7 +38,12 @@ jobs:
       - name: Laufzeit bauen
         run: dotnet publish csharp_runtime -c Release -o csharp_runtime/out
       - name: Größe
-        run: du -sh csharp_runtime/out/wwwroot && du -sh csharp_runtime/out/wwwroot/_framework
+        run: |
+          cd csharp_runtime/out/wwwroot/_framework
+          echo "Gesamt: $(du -sh --exclude='*.gz' --exclude='*.br' . | cut -f1)"
+          echo "Gesamt gzip: $(du -ch *.gz | tail -1 | cut -f1)"
+          echo "Gesamt brotli: $(du -ch *.br | tail -1 | cut -f1)"
+          ls -lS --block-size=K | grep -v '\.gz$' | grep -v '\.br$' | head -25
       - name: Playwright installieren
         run: |
           npm install --no-save playwright
