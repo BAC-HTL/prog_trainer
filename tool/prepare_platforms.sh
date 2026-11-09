@@ -12,7 +12,7 @@ flutter create --platforms="$PLATFORMS" --org at.bachtl --project-name prog_trai
 
 MANIFEST=android/app/src/main/AndroidManifest.xml
 if [ -f "$MANIFEST" ] && ! grep -q 'android.permission.INTERNET' "$MANIFEST"; then
-  # Internet wird für Python (Pyodide) und C# (Judge0) gebraucht.
+  # Internet wird beim ersten Start gebraucht, um die Python- und C#-Laufzeit zu laden.
   perl -0pi -e 's#(<manifest[^>]*>)#$1\n    <uses-permission android:name="android.permission.INTERNET"/>#' "$MANIFEST"
 fi
 if [ -f "$MANIFEST" ]; then

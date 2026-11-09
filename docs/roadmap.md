@@ -8,6 +8,7 @@
 - Achievements
 - Herausforderungen mit echter Code-Ausführung und Punkten pro Sprache
 - Android und iOS
+- Python **und** C# laufen direkt am Handy, ohne Anmeldung
 - Spielmodus „Expedition Xeno-7“ mit 16 Missionen
 
 ## Als Nächstes
@@ -15,7 +16,6 @@
 - Inhalte für **Profi** und **Senior**
 - Lernpfade Software-Architektur, Testing, Requirements Engineering
 - Python offline: Pyodide in die App packen statt aus dem Internet laden
-- C# ohne Server: Roslyn + .NET-WASM direkt am Gerät
 - Herausforderungen für Profi/Senior
 - Dunkler Modus
 - Weitere Spielmissionen (Profi/Senior), z. B. mit Klassen und Rekursion
@@ -25,8 +25,7 @@
 | Option | Sprache | Offline | Status |
 |---|---|---|---|
 | **Pyodide** (WebView) | Python | nach erstem Laden | ✅ eingebaut |
-| **Judge0** (Server) | C# (Mono, ≈ C# 7) | nein | ✅ eingebaut, API-Key nötig |
-| Roslyn + .NET-WASM | C# (aktuell) | ja | geplant |
+| **Roslyn + .NET-WASM** (WebView) | C# (aktuell) | nach erstem Laden | ✅ eingebaut, ohne Anmeldung |
 | Piston | viele | nein | seit 02/2026 keine Keys für Schulprojekte |
 
 !!! info "App Store"
