@@ -91,6 +91,14 @@ jobs:
           python-version: '3.12'
       - run: pip install mkdocs-material
       - run: mkdocs build --strict -d site
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '8.0.x'
+      # C#-Laufzeit (Roslyn + .NET als WebAssembly) für die App
+      - run: dotnet publish csharp_runtime -c Release -o csharp_runtime/out
+      - run: |
+          cp -r csharp_runtime/out/wwwroot site/csharp
+          find site/csharp -name '*.br' -delete
       - uses: actions/download-artifact@v5
         with:
           path: site/download

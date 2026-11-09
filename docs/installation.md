@@ -34,12 +34,9 @@ ist unsigniert und muss vor der Installation signiert werden:
 Neue Version herunterladen und drüberinstallieren. Der Fortschritt bleibt
 erhalten.
 
-## C#-Code ausführen
+## Code ausführen – ohne Anmeldung
 
-Python läuft direkt am Handy. C# wird auf einem
-[Judge0](https://judge0.com)-Server kompiliert:
-
-1. Auf [rapidapi.com](https://rapidapi.com) ein Konto anlegen und die API
-   **„Judge0 CE“** mit dem kostenlosen Basic-Plan abonnieren
-   (50 Ausführungen pro Tag).
-2. In der App: **Einstellungen → API-Key** eintragen → Speichern.
+Python und C# laufen **direkt am Handy**. Es braucht kein Konto, keinen
+API-Key und keinen Server. Beim ersten Ausführen lädt die App die jeweilige
+Laufzeit einmalig herunter (Python ca. 10 MB, C# ca. 14 MB). Danach kommt sie
+aus dem Zwischenspeicher, und es geht in Sekundenbruchteilen.

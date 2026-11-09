@@ -13,20 +13,15 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late final ProgressStore _progress = AppServices.of(context).progress;
   late final _name = TextEditingController(text: _progress.userName);
-  late final _url = TextEditingController(text: _progress.judge0Url);
-  late final _key = TextEditingController(text: _progress.judge0Key);
 
   @override
   void dispose() {
     _name.dispose();
-    _url.dispose();
-    _key.dispose();
     super.dispose();
   }
 
   Future<void> _save() async {
     await _progress.setUserName(_name.text);
-    await _progress.setJudge0(_url.text, _key.text);
     if (!mounted) return;
     ScaffoldMessenger.of(context)
         .showSnackBar(const SnackBar(content: Text('Gespeichert')));
@@ -68,37 +63,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(
               labelText: 'Name auf Zertifikaten',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text('C#-Ausführung (Judge0)', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 4),
-          const Text(
-            'C# wird auf einem Judge0-Server kompiliert. Am einfachsten: '
-            'kostenlosen Key für „Judge0 CE“ auf rapidapi.com holen '
-            '(Basic-Plan, 50 Ausführungen pro Tag) und hier eintragen. '
-            'Alternativ die Adresse eines eigenen Judge0-Servers angeben. '
-            'Python läuft direkt am Handy und braucht keinen Key.',
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _url,
-            keyboardType: TextInputType.url,
-            autocorrect: false,
-            decoration: const InputDecoration(
-              labelText: 'Server-Adresse',
-              helperText: 'Standard: $defaultJudge0Url',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _key,
-            autocorrect: false,
-            obscureText: true,
-            decoration: const InputDecoration(
-              labelText: 'API-Key',
               border: OutlineInputBorder(),
             ),
           ),

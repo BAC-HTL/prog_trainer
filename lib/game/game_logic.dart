@@ -19,7 +19,8 @@ String buildProgram(String language, String simSource, String userCode) {
   if (language == 'python') {
     return '$simSource\n_starte(${jsonEncode(userCode)})\n';
   }
-  return 'Robot.Start();\n$userCode\n\n$simSource';
+  // Die C#-Simulation liest Karte und Startwerte beim ersten Robot-Befehl.
+  return '$userCode\n\n$simSource';
 }
 
 class GameEvent {

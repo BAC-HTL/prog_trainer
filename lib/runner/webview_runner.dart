@@ -6,23 +6,53 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import 'code_runner.dart';
 
-/// Führt Python direkt am Handy aus – mit Pyodide (CPython als WebAssembly)
-/// in einer unsichtbaren WebView (offizielles Plugin `webview_flutter`).
-///
-/// Der Code läuft in einem Web Worker. So kann eine Endlosschleife nach dem
-/// Zeitlimit hart abgebrochen werden. Pyodide wird beim ersten Start aus
-/// dem Internet geladen (~10 MB) und danach vom Browser-Cache genutzt.
-///
-/// Die WebView wird erst beim ersten Ausführen erzeugt und über
-/// [PythonRuntimeHost] (1×1 Pixel, unsichtbar) in den Widget-Baum gehängt.
-class PyodideRunner implements CodeRunner {
-  PyodideRunner({this.timeout = const Duration(seconds: 10)});
+/// Adresse der C#-Laufzeit (Roslyn + .NET als WebAssembly, siehe
+/// `csharp_runtime/`). Wird mit der Doku auf GitHub Pages veröffentlicht.
+const csharpRuntimeUrl = 'https://bac-htl.github.io/prog_trainer/csharp/';
 
+/// Führt Code direkt am Handy in einer unsichtbaren WebView aus – ohne
+/// Server und ohne Anmeldung.
+///
+/// * Python: Pyodide (CPython als WebAssembly)
+/// * C#: Roslyn + .NET als WebAssembly
+///
+/// In beiden Fällen läuft der Code in einem Web Worker, den die Seite nach
+/// dem Zeitlimit beendet (Endlosschleifen). Die Laufzeit wird beim ersten
+/// Mal aus dem Internet geladen und danach vom Browser-Cache genutzt.
+///
+/// Die WebView entsteht erst beim ersten Ausführen und wird über
+/// [RuntimeHost] (1×1 Pixel, unsichtbar) in den Widget-Baum gehängt.
+class WebViewRunner implements CodeRunner {
+  WebViewRunner._({
+    required this.label,
+    required this.jsFunction,
+    this.html,
+    this.url,
+    this.timeout = const Duration(seconds: 15),
+  });
+
+  factory WebViewRunner.python() => WebViewRunner._(
+        label: 'Python',
+        jsFunction: 'runPython',
+        html: _pythonHtml,
+        timeout: const Duration(seconds: 10),
+      );
+
+  factory WebViewRunner.csharp() => WebViewRunner._(
+        label: 'C#',
+        jsFunction: 'runCSharp',
+        url: csharpRuntimeUrl,
+      );
+
+  final String label;
+  final String jsFunction;
+  final String? html;
+  final String? url;
+
+  /// Zeitlimit pro Ausführung (wird in der Seite durchgesetzt).
   final Duration timeout;
 
-  static const pyodideUrl = 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/';
-
-  /// Aktueller WebView-Controller (oder `null`, solange Python nie lief).
+  /// Aktueller WebView-Controller (oder `null`, solange nie etwas lief).
   final ValueNotifier<WebViewController?> controller = ValueNotifier(null);
 
   Completer<void>? _ready;
@@ -36,7 +66,7 @@ class PyodideRunner implements CodeRunner {
     final ready = _ready = Completer<void>();
     final c = WebViewController();
     c.setJavaScriptMode(JavaScriptMode.unrestricted);
-    c.addJavaScriptChannel('PyBridge', onMessageReceived: _onMessage);
+    c.addJavaScriptChannel('RunnerBridge', onMessageReceived: _onMessage);
     c.setNavigationDelegate(NavigationDelegate(
       onPageFinished: (_) {
         if (!ready.isCompleted) ready.complete();
@@ -47,7 +77,11 @@ class PyodideRunner implements CodeRunner {
         }
       },
     ));
-    c.loadHtmlString(_html, baseUrl: 'https://prog-trainer.local/');
+    if (html != null) {
+      c.loadHtmlString(html!, baseUrl: 'https://prog-trainer.local/');
+    } else {
+      c.loadRequest(Uri.parse(url!));
+    }
     controller.value = c;
     return c;
   }
@@ -66,31 +100,35 @@ class PyodideRunner implements CodeRunner {
   Future<RunResult> run(String code, {String stdin = ''}) async {
     final c = _ensureController();
     try {
-      await _ready!.future.timeout(const Duration(seconds: 30));
+      await _ready!.future.timeout(const Duration(seconds: 60));
     } catch (e) {
       _reset();
-      return RunResult(error: 'Python-Umgebung konnte nicht starten: $e');
+      return RunResult(
+          error: '$label konnte nicht gestartet werden (Internet?): $e');
     }
 
     final id = _nextId++;
     final completer = _pending[id] = Completer<Map<String, dynamic>>();
     try {
       await c.runJavaScript(
-        'window.runPython(${jsonEncode(code)}, ${jsonEncode(stdin)}, '
-        '${timeout.inMilliseconds}).then(function (r) {'
-        ' r.id = $id; PyBridge.postMessage(JSON.stringify(r)); });',
+        'window.$jsFunction(${jsonEncode(code)}, ${jsonEncode(stdin)}, '
+        '${timeout.inMilliseconds}).then('
+        'function (r) { r.id = $id; RunnerBridge.postMessage(JSON.stringify(r)); },'
+        'function (e) { RunnerBridge.postMessage(JSON.stringify('
+        '{ id: $id, stdout: "", stderr: "", error: String(e) })); });',
       );
     } catch (e) {
       _pending.remove(id);
       return RunResult(error: 'Interner Fehler: $e');
     }
 
-    // Großzügig, weil beim ersten Mal Pyodide heruntergeladen wird.
+    // Großzügig, weil beim ersten Mal die Laufzeit heruntergeladen wird.
     final value = await completer.future.timeout(
-      const Duration(minutes: 2),
+      const Duration(minutes: 5),
       onTimeout: () {
         _pending.remove(id);
-        return {'error': 'Python hat nicht geantwortet (Internet?)'};
+        _reset();
+        return {'error': '$label hat nicht geantwortet (Internet?)'};
       },
     );
     final error = value['error'] as String?;
@@ -105,12 +143,13 @@ class PyodideRunner implements CodeRunner {
     );
   }
 
-  static const _html = '''
+  static const _pythonHtml = '''
 <!doctype html>
 <html><head><meta charset="utf-8"></head><body>
 <script id="worker-src" type="text/worker">
-importScripts("$pyodideUrl" + "pyodide.js");
-const pyReady = loadPyodide({ indexURL: "$pyodideUrl" }).then(
+const PYODIDE = "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/";
+importScripts(PYODIDE + "pyodide.js");
+const pyReady = loadPyodide({ indexURL: PYODIDE }).then(
   (py) => { self.postMessage({ type: "ready" }); return py; },
   (e) => { self.postMessage({ type: "loadError", error: String(e) }); throw e; }
 );
@@ -187,12 +226,12 @@ startWorker(); // Pyodide schon im Hintergrund laden
 ''';
 }
 
-/// Hängt die WebView des [PyodideRunner] unsichtbar in den Widget-Baum,
+/// Hängt die WebView eines [WebViewRunner] unsichtbar in den Widget-Baum,
 /// damit sie auf allen Plattformen zuverlässig JavaScript ausführt.
-class PythonRuntimeHost extends StatelessWidget {
-  const PythonRuntimeHost({super.key, required this.runner});
+class RuntimeHost extends StatelessWidget {
+  const RuntimeHost({super.key, required this.runner});
 
-  final PyodideRunner runner;
+  final WebViewRunner runner;
 
   @override
   Widget build(BuildContext context) {

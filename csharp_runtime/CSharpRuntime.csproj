@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+
+  <!--
+    C#-Laufzeit für die App: der echte C#-Compiler (Roslyn) und .NET als
+    WebAssembly. Läuft in einer WebView direkt am Handy – ohne Server.
+    Wird von GitHub Actions gebaut und auf GitHub Pages unter /csharp/
+    veröffentlicht (siehe .github/workflows/release.yml).
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Roslyn nutzt Reflection: nicht trimmen. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <!-- Kommazahlen immer mit Punkt, unabhängig von der Handy-Sprache. -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <WasmEnableWebcil>true</WasmEnableWebcil>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.*" />
+    <PackageReference Include="Basic.Reference.Assemblies.Net80" Version="1.*" />
+  </ItemGroup>
+
+</Project>

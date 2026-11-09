@@ -2,7 +2,7 @@
 """Prüft alle Spielmissionen.
 
 Für jede Mission und jede Kartenvariante:
-  * Musterlösung in Python UND C# ausführen (C# mit LangVersion 7.3, wie Mono)
+  * Musterlösung in Python UND C# ausführen
   * beide Simulationen müssen exakt dieselben Ereignisse liefern
   * alle Ziele müssen erfüllt sein, ohne Fehler
   * die Musterlösungen müssen 3 Sterne erreichen
@@ -55,7 +55,7 @@ def py_program(code):
 
 
 def cs_program(code):
-    return "Robot.Start();\n" + code + "\n\n" + CS_SIM
+    return code + "\n\n" + CS_SIM
 
 
 def parse_events(stdout):

@@ -5,61 +5,16 @@ Aufruf:
     python3 tool/verify_challenges.py python
     python3 tool/verify_challenges.py csharp   # braucht das .NET SDK
 
-C#-Code wird genauso umgebaut wie in der App (siehe lib/runner/csharp_wrapper.dart)
-und mit LangVersion 7.3 kompiliert, weil der Judge0-Server nur Mono (≈ C# 7) hat.
+C#-Code wird wie in der App (csharp_runtime/) als Programm mit
+Top-Level-Statements und impliziten usings kompiliert.
 """
 import json
 import os
-import re
 import subprocess
 import sys
 import tempfile
 
 BASE = os.path.join(os.path.dirname(__file__), "..", "assets", "content")
-
-DEFAULT_USINGS = [
-    "using System;",
-    "using System.Collections.Generic;",
-    "using System.Linq;",
-    "using System.Text;",
-]
-MAIN_RE = re.compile(r"static\s+(void|int|async\s+Task(<int>)?)\s+Main\s*\(")
-TYPE_RE = re.compile(
-    r"^((public|internal|static|abstract|sealed|partial)\s+)*(class|struct|enum|interface)\s+\w+"
-)
-
-
-def wrap_csharp(code: str) -> str:
-    """Python-Kopie von wrapCSharp() aus lib/runner/csharp_wrapper.dart."""
-    lines = code.replace("\r\n", "\n").split("\n")
-    usings, types, body = [], [], []
-    in_type, depth = False, 0
-    for line in lines:
-        t = line.strip()
-        if (not in_type and t.startswith("using ") and t.endswith(";")
-                and "=" not in t and "(" not in t):
-            usings.append(t)
-            continue
-        if not in_type and TYPE_RE.match(line):
-            in_type, depth = True, 0
-        if in_type:
-            types.append(line)
-            depth += line.count("{") - line.count("}")
-            if depth <= 0 and "}" in line:
-                in_type = False
-            continue
-        body.append(line)
-
-    header = []
-    for u in DEFAULT_USINGS + usings:
-        if u not in header:
-            header.append(u)
-    if MAIN_RE.search(code):
-        return "\n".join(header + body + types) + "\n"
-    out = header + ["", "class Program", "{", "static void Main()", "{"]
-    out += body + ["}", "}", ""] + types
-    return "\n".join(out) + "\n"
-
 
 def normalize(s: str) -> str:
     lines = s.replace("\r\n", "\n").split("\n")
@@ -82,9 +37,10 @@ class CSharpRunner:
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net{major}.0</TargetFramework>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
-    <ImplicitUsings>disable</ImplicitUsings>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <InvariantGlobalization>true</InvariantGlobalization>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
 </Project>
@@ -95,7 +51,7 @@ class CSharpRunner:
 
     def build(self, code):
         with open(os.path.join(self.dir, "Program.cs"), "w") as f:
-            f.write(wrap_csharp(code))
+            f.write(code)
         p = subprocess.run(["dotnet", "build", "-c", "Release", "-o", "out",
                             "--nologo", "-v", "q"], cwd=self.dir,
                            capture_output=True, text=True, timeout=180)

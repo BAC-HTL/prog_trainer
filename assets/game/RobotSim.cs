@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-
 // Roboter-Simulation für den Spielmodus (C#).
 //
 // WICHTIG: Muss sich exakt so verhalten wie robot_sim.py!
 // tool/verify_missions.py prüft das automatisch.
-// Muss mit C# 7.3 kompilieren (Judge0 hat nur Mono). Keine geschweiften
-// Klammern in Strings oder Kommentaren verwenden (der Code-Umbau zählt sie).
-//
-// Ablauf: Die App setzt `Robot.Start();` vor deinen Code und hängt diese
-// Datei an. Karte und Startwerte kommen über die Standardeingabe.
+// Ablauf: Die App hängt diese Datei an deinen Code an. Beim ersten
+// Robot-Befehl werden Karte und Startwerte von der Standardeingabe gelesen.
+// Die Datei darf keine using-Direktiven enthalten (sie steht hinter deinem
+// Code); die üblichen usings sind implizit vorhanden.
 public static class Robot
 {
     const string Richtungen = "NOSW";
@@ -20,8 +16,11 @@ public static class Robot
     static string richtung;
     static List<string> inv = new List<string>();
 
-    public static void Start()
+    static bool gestartet;
+
+    static void Start()
     {
+        gestartet = true;
         string[] kopf = Console.ReadLine().Split(' ');
         var zeilen = new List<char[]>();
         string zeile;
@@ -44,12 +43,12 @@ public static class Robot
     static void Fehler(string code)
     {
         Ev("FEHLER " + code);
-        Console.Out.Flush();
-        Environment.Exit(0);
+        throw new RobotFehler(code);
     }
 
     static void Zaehle()
     {
+        if (!gestartet) Start();
         aktionen++;
         if (aktionen > MaxAktionen) Fehler("LIMIT");
     }
@@ -194,4 +193,9 @@ public static class Robot
         Ev("MIX " + a + " " + b + " " + ergebnis);
         return ergebnis;
     }
+}
+
+public class RobotFehler : Exception
+{
+    public RobotFehler(string code) : base(code) { }
 }

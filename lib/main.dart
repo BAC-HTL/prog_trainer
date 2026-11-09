@@ -4,41 +4,22 @@ import 'app_services.dart';
 import 'data/content_repository.dart';
 import 'data/progress_store.dart';
 import 'runner/code_runner.dart';
-import 'runner/csharp_wrapper.dart';
-import 'runner/judge0_runner.dart';
-import 'runner/pyodide_runner.dart';
+import 'runner/webview_runner.dart';
 import 'screens/root_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final progress = await ProgressStore.load();
-  final python = PyodideRunner();
-
-  CodeRunner? runnerFor(String runtime) {
-    switch (runtime) {
-      case 'python':
-        return python;
-      case 'csharp':
-        final url = progress.judge0Url;
-        final key = progress.judge0Key;
-        if (url.isEmpty || (url.contains('rapidapi') && key.isEmpty)) {
-          return null;
-        }
-        return Judge0Runner(
-          baseUrl: url,
-          apiKey: key,
-          languageId: Judge0Runner.csharpMono,
-          transform: wrapCSharp,
-        );
-      default:
-        return null;
-    }
-  }
+  // Beide Sprachen laufen direkt am Handy – ohne Server, ohne Anmeldung.
+  final runners = <String, CodeRunner>{
+    'python': WebViewRunner.python(),
+    'csharp': WebViewRunner.csharp(),
+  };
 
   runApp(ProgTrainerApp(
     repository: ContentRepository(),
     progress: progress,
-    runnerFor: runnerFor,
+    runnerFor: (runtime) => runners[runtime],
   ));
 }
 

@@ -35,8 +35,7 @@ void main() {
   test('Programm wird je Sprache richtig zusammengebaut', () {
     expect(buildProgram('python', 'SIM', 'robot.vor()\n'),
         'SIM\n_starte("robot.vor()\\n")\n');
-    expect(buildProgram('csharp', 'SIM', 'Robot.Vor();'),
-        'Robot.Start();\nRobot.Vor();\n\nSIM');
+    expect(buildProgram('csharp', 'SIM', 'Robot.Vor();'), 'Robot.Vor();\n\nSIM');
   });
 
   test('Ereignisse abspielen und Ziele prüfen', () {

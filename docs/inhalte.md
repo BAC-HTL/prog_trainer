@@ -97,7 +97,7 @@ abgeschlossen sind. Wer sie besteht, bekommt ein PDF-Zertifikat.
 
 - Eingabe nur über die Standardeingabe: in Python `input()` **ohne** Text, in C# `Console.ReadLine()`.
 - Verglichen wird die Ausgabe zeilenweise. Leerzeichen am Zeilenende werden ignoriert.
-- **C#-Lösungen müssen mit C# 7.3 kompilieren**, weil der Server nur Mono hat. Records, Switch-Ausdrücke usw. gehen dort also nicht.
+- C#-Lösungen werden als Top-Level-Programm mit impliziten usings ausgeführt, wie bei `dotnet new console`. Aktuelle Sprachfeatures (records, switch-Ausdrücke …) sind erlaubt.
 - Alle Lösungen prüfen:
   ```bash
   python3 tool/verify_challenges.py python

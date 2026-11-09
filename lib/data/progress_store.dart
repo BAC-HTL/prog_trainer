@@ -49,8 +49,6 @@ class ExamResult {
       );
 }
 
-const defaultJudge0Url = 'https://judge0-ce.p.rapidapi.com';
-
 /// Speichert den Lernfortschritt lokal auf dem Gerät.
 class ProgressStore extends ChangeNotifier {
   ProgressStore._(this._prefs);
@@ -63,8 +61,6 @@ class ProgressStore extends ChangeNotifier {
 
   static const _progressKey = 'progress_v1';
   static const _nameKey = 'user_name';
-  static const _judge0UrlKey = 'judge0_url';
-  static const _judge0KeyKey = 'judge0_key';
 
   final SharedPreferences _prefs;
 
@@ -83,8 +79,6 @@ class ProgressStore extends ChangeNotifier {
   // ---------- Lesen ----------
 
   String get userName => _prefs.getString(_nameKey) ?? '';
-  String get judge0Url => _prefs.getString(_judge0UrlKey) ?? defaultJudge0Url;
-  String get judge0Key => _prefs.getString(_judge0KeyKey) ?? '';
 
   bool isLessonCompleted(String lessonPath) =>
       _completedLessons.contains(lessonPath);
@@ -179,12 +173,6 @@ class ProgressStore extends ChangeNotifier {
 
   Future<void> setUserName(String name) async {
     await _prefs.setString(_nameKey, name.trim());
-    notifyListeners();
-  }
-
-  Future<void> setJudge0(String url, String key) async {
-    await _prefs.setString(_judge0UrlKey, url.trim());
-    await _prefs.setString(_judge0KeyKey, key.trim());
     notifyListeners();
   }
 

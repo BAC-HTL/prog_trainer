@@ -32,9 +32,7 @@ lib/
     achievements.dart        alle Achievements + Regeln
   runner/
     code_runner.dart         Schnittstelle + Testauswertung
-    pyodide_runner.dart      Python am Gerät (WebView + Web Worker)
-    judge0_runner.dart       Code auf Judge0-Server (C#)
-    csharp_wrapper.dart      Top-Level-Code → Main (für Mono)
+    webview_runner.dart      Python und C# am Gerät (WebView + Web Worker)
   certificates/              PDF-Zertifikat
   game/
     mission.dart             Missionen, Ziele, Rezepte
@@ -49,14 +47,15 @@ lib/
 
 **Spielmodus.** Die Robotersimulation gibt es zweimal mit identischem Verhalten: `assets/game/robot_sim.py` und `assets/game/RobotSim.cs`. Die App hängt die passende Simulation an den Code der Lernenden und übergibt die Karte über die Standardeingabe. Jede Aktion wird als Zeile `@@EREIGNIS …` ausgegeben. Daraus animiert die App den Ablauf und prüft die Ziele. `tool/verify_missions.py` stellt sicher, dass beide Simulationen exakt dieselben Ereignisse liefern.
 
-**C#** wird über die Judge0-API ausgeführt. Der Server hat nur Mono (≈ C# 7), deshalb verpackt `csharp_wrapper.dart` Top-Level-Code automatisch in eine `Main`-Methode.
+**C#** läuft ebenfalls am Gerät: `csharp_runtime/` ist eine kleine .NET-WebAssembly-App mit dem echten C#-Compiler (Roslyn). Sie wird von GitHub Actions gebaut und mit der Doku unter `/csharp/` veröffentlicht. Die App lädt diese Seite in eine unsichtbare WebView. Kompiliert und ausgeführt wird in einem Web Worker, damit Endlosschleifen abgebrochen werden können. Unterstützt wird aktuelles C# mit Top-Level-Statements und den üblichen impliziten usings. Damit der Download kleiner ist, werden die gzip-Dateien (ca. 14 MB statt 43 MB) im Browser entpackt.
 
 ## Tests
 
 | Datei | Prüft |
 |---|---|
 | `test/content_test.dart` | alle Lektionen, Prüfungen, Herausforderungen |
-| `test/logic_test.dart` | Fortschritt, Achievements, C#-Wrapper, Judge0, PDF |
+| `test/logic_test.dart` | Fortschritt, Achievements, Ausgabevergleich, PDF |
+| `tool/test_csharp_runtime.mjs` | C#-Laufzeit in echtem Chromium: Grundfunktionen, alle C#-Lösungen und Missionen |
 | `test/widget_test.dart` | Durchklicken: Lektion → Quiz → Prüfung, Herausforderung lösen |
 | `test/game_test.dart` | Spiellogik und Missionsdateien |
 | `tool/verify_challenges.py` | führt alle Musterlösungen gegen ihre Tests aus |

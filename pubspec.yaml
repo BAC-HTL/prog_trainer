@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.3.0
-  http: ^1.2.0
   pdf: ^3.11.0
   printing: ^5.13.0
   webview_flutter: ^4.10.0

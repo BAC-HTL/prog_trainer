@@ -1,14 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
 import 'package:prog_trainer/certificates/certificate_pdf.dart';
 import 'package:prog_trainer/data/progress_store.dart';
 import 'package:prog_trainer/models/challenge.dart';
 import 'package:prog_trainer/runner/code_runner.dart';
-import 'package:prog_trainer/runner/csharp_wrapper.dart';
-import 'package:prog_trainer/runner/judge0_runner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -16,76 +12,6 @@ void main() {
     test('ignoriert Zeilenende-Leerzeichen und Windows-Umbrüche', () {
       expect(outputMatches('a  \r\nb\n\n', 'a\nb'), isTrue);
       expect(outputMatches('a\nb', 'a\nc'), isFalse);
-    });
-  });
-
-  group('wrapCSharp', () {
-    test('packt Top-Level-Code in Main, Klassen bleiben außen', () {
-      final out = wrapCSharp('using System.IO;\n'
-          'Console.WriteLine(new Hund().Name);\n'
-          '\n'
-          'class Hund\n'
-          '{\n'
-          '    public string Name = "Rex";\n'
-          '}');
-      expect(out, contains('using System;'));
-      expect(out, contains('using System.IO;'));
-      final main = out.indexOf('static void Main()');
-      final call = out.indexOf('Console.WriteLine');
-      final cls = out.indexOf('class Hund');
-      expect(main, lessThan(call));
-      expect(call, lessThan(cls));
-      expect('using System.IO;'.allMatches(out).length, 1);
-    });
-
-    test('lässt Programme mit eigener Main-Methode in Ruhe', () {
-      const code = 'class P { static void Main() { } }';
-      final out = wrapCSharp(code);
-      expect(out, isNot(contains('class Program')));
-    });
-  });
-
-  group('Judge0Runner', () {
-    test('schickt Base64 und wertet Antwort aus', () async {
-      late Map<String, dynamic> sent;
-      late Map<String, String> headers;
-      final client = MockClient((req) async {
-        sent = jsonDecode(req.body) as Map<String, dynamic>;
-        headers = req.headers;
-        return http.Response(
-          jsonEncode({
-            'stdout': base64Encode(utf8.encode('8\n')),
-            'status': {'id': 3, 'description': 'Accepted'},
-          }),
-          200,
-        );
-      });
-      final runner = Judge0Runner(
-        baseUrl: 'https://judge0-ce.p.rapidapi.com/',
-        apiKey: 'KEY',
-        languageId: 51,
-        client: client,
-      );
-      final result = await runner.run('code', stdin: '4');
-      expect(result.ok, isTrue);
-      expect(result.stdout, '8\n');
-      expect(utf8.decode(base64Decode(sent['stdin'] as String)), '4');
-      expect(headers['X-RapidAPI-Key'], 'KEY');
-    });
-
-    test('meldet Kompilierfehler', () async {
-      final client = MockClient((req) async => http.Response(
-            jsonEncode({
-              'compile_output': base64Encode(utf8.encode('error CS1002')),
-              'status': {'id': 6, 'description': 'Compilation Error'},
-            }),
-            200,
-          ));
-      final runner = Judge0Runner(
-          baseUrl: 'https://x.example', apiKey: '', languageId: 51, client: client);
-      final result = await runner.run('x');
-      expect(result.ok, isFalse);
-      expect(result.error, startsWith('Kompilierfehler'));
     });
   });
 
