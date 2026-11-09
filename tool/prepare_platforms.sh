@@ -29,4 +29,8 @@ if [ -f "$PLIST" ]; then
   perl -0pi -e 's#(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)#$1Prog Trainer$2#' "$PLIST"
 fi
 
+# App-Icon aus assets/icon/ erzeugen (Konfiguration in pubspec.yaml).
+flutter pub get
+dart run flutter_launcher_icons
+
 echo "Plattform-Ordner bereit."

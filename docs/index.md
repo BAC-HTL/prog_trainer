@@ -1,5 +1,7 @@
 # Prog Trainer
 
+![Prog Trainer Logo](assets/logo.svg){ width="140" align=right }
+
 Eine Handy-App für **Android und iOS** zum Programmierenlernen. Sie fängt bei
 null an und führt in **Python** und **C#** bis zum Senior-Level.
 
