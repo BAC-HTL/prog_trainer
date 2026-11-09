@@ -17,6 +17,7 @@ markdown_extensions:
 nav:
   - Start & Download: index.md
   - Installation: installation.md
+  - Spielmodus: spiel.md
   - Lerninhalte schreiben: inhalte.md
   - Entwicklung: entwicklung.md
   - Roadmap: roadmap.md

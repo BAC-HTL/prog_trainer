@@ -1,0 +1,68 @@
+{
+  "missions": [
+    {
+      "id": "m01",
+      "title": "Landung",
+      "story": "Dein Forschungsroboter ist gerade auf dem Planeten Xeno-7 gelandet. Die Basis steht nur ein paar Meter östlich. Fahr hin!",
+      "concept": "Befehle nacheinander",
+      "energy": 10,
+      "variants": [
+        { "map": ["#######", "#R...Z#", "#######"], "dir": "O" }
+      ],
+      "goals": [{ "type": "basis" }],
+      "par": { "energy": 4, "lines": { "python": 4, "csharp": 4 } },
+      "hints": ["Jeder vor-Befehl bewegt den Roboter um ein Feld."],
+      "starter": {
+        "python": "robot.vor()\n",
+        "csharp": "Robot.Vor();\n"
+      },
+      "solution": {
+        "python": "robot.vor()\nrobot.vor()\nrobot.vor()\nrobot.vor()\n",
+        "csharp": "Robot.Vor();\nRobot.Vor();\nRobot.Vor();\nRobot.Vor();\n"
+      }
+    },
+    {
+      "id": "m02",
+      "title": "Erste Probe",
+      "story": "Neben der Basis glitzert ein Kristall. Hol ihn, bring ihn ins Labor und mische ihn mit Wasser aus der Quelle zu einer Energiezelle.",
+      "concept": "Labor",
+      "energy": 15,
+      "variants": [
+        { "map": ["#######", "#RK.QL#", "#######"], "dir": "O" }
+      ],
+      "goals": [{ "type": "herstellen", "item": "energiezelle" }],
+      "par": { "energy": 4, "lines": { "python": 7, "csharp": 7 } },
+      "hints": ["aufheben() nimmt auf, was unter dem Roboter liegt.", "mischen geht nur auf dem Labor-Feld."],
+      "starter": {
+        "python": "robot.vor()\n",
+        "csharp": "Robot.Vor();\n"
+      },
+      "solution": {
+        "python": "robot.vor()\nrobot.aufheben()\nrobot.vor()\nrobot.vor()\nrobot.aufheben()\nrobot.vor()\nrobot.mischen(\"kristall\", \"wasser\")\n",
+        "csharp": "Robot.Vor();\nRobot.Aufheben();\nRobot.Vor();\nRobot.Vor();\nRobot.Aufheben();\nRobot.Vor();\nRobot.Mischen(\"kristall\", \"wasser\");\n"
+      }
+    },
+    {
+      "id": "m03",
+      "title": "Unbekannter Tunnel",
+      "story": "Ein Tunnel führt zur Basis, aber die Sensoren wissen nicht, wie lang er ist. Fahr, solange der Weg frei ist.",
+      "concept": "while-Schleife",
+      "energy": 20,
+      "variants": [
+        { "map": ["#####", "#R.Z#", "#####"], "dir": "O" },
+        { "map": ["##########", "#R......Z#", "##########"], "dir": "O" }
+      ],
+      "goals": [{ "type": "basis" }],
+      "par": { "energy": 7, "lines": { "python": 2, "csharp": 2 } },
+      "hints": ["ist_frei() sagt dir, ob vor dem Roboter Platz ist."],
+      "starter": {
+        "python": "robot.vor()\n",
+        "csharp": "Robot.Vor();\n"
+      },
+      "solution": {
+        "python": "while robot.ist_frei():\n    robot.vor()\n",
+        "csharp": "while (Robot.IstFrei())\n    Robot.Vor();\n"
+      }
+    }
+  ]
+}

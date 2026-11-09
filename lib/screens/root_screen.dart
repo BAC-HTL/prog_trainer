@@ -4,6 +4,7 @@ import '../app_services.dart';
 import '../runner/pyodide_runner.dart';
 import 'achievements_screen.dart';
 import 'challenges_screen.dart';
+import 'game_screen.dart';
 import 'home_screen.dart';
 import 'settings_screen.dart';
 
@@ -18,7 +19,7 @@ class RootScreen extends StatefulWidget {
 class _RootScreenState extends State<RootScreen> {
   int _tab = 0;
 
-  static const _titles = ['Lernen', 'Herausforderungen', 'Erfolge'];
+  static const _titles = ['Lernen', 'Herausforderungen', 'Spiel', 'Erfolge'];
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +45,7 @@ class _RootScreenState extends State<RootScreen> {
               children: const [
                 HomeScreen(),
                 ChallengesScreen(),
+                GameScreen(),
                 AchievementsScreen(),
               ],
             ),
@@ -57,8 +59,8 @@ class _RootScreenState extends State<RootScreen> {
         onDestinationSelected: (i) => setState(() => _tab = i),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.school), label: 'Lernen'),
-          NavigationDestination(
-              icon: Icon(Icons.extension), label: 'Herausforderungen'),
+          NavigationDestination(icon: Icon(Icons.extension), label: 'Aufgaben'),
+          NavigationDestination(icon: Icon(Icons.smart_toy), label: 'Spiel'),
           NavigationDestination(icon: Icon(Icons.emoji_events), label: 'Erfolge'),
         ],
       ),

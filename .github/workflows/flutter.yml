@@ -7,7 +7,7 @@ on:
 
 jobs:
   content:
-    name: Herausforderungen prüfen
+    name: Lösungen & Missionen prüfen
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -19,6 +19,7 @@ jobs:
           dotnet-version: '8.0.x'
       - run: python3 tool/verify_challenges.py python
       - run: python3 tool/verify_challenges.py csharp
+      - run: python3 tool/verify_missions.py
 
   android:
     name: Tests + Android
