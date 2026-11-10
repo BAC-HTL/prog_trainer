@@ -1,0 +1,118 @@
+{
+  "id": "pos-j2-theorie-aussagenlogik_pruefung",
+  "title": "Abschlussprüfung: Aussagenlogik",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welcher Ausdruck ist KEINE Aussage im Sinne der Aussagenlogik?",
+      "options": [
+        "12 ist durch 4 teilbar.",
+        "Die Donau fließt durch Wien.",
+        "n ist eine Primzahl.",
+        "2 + 2 = 5"
+      ],
+      "correctIndex": 2,
+      "explanation": "„n ist eine Primzahl“ enthält die offene Variable n – ohne Wert für n ist der Satz weder wahr noch falsch. „2 + 2 = 5“ ist eine (falsche) Aussage."
+    },
+    {
+      "question": "p = 0, q = 1, r = 1. Welche Werte haben A = (p → q) ∧ (q → ¬r) und B = (p → q) ∨ (q → ¬r)?",
+      "options": [
+        "A = 0, B = 1",
+        "A = 1, B = 1",
+        "A = 0, B = 0",
+        "A = 1, B = 0"
+      ],
+      "correctIndex": 0,
+      "explanation": "p → q = 0 → 1 = 1. q → ¬r = 1 → 0 = 0. Also A = 1 ∧ 0 = 0 und B = 1 ∨ 0 = 1."
+    },
+    {
+      "question": "p = q = r = 0. Welchen Wert hat ¬p ∨ q ∧ r – und warum?",
+      "options": [
+        "0, weil von links nach rechts ausgewertet wird",
+        "1, weil ∧ stärker bindet als ∨",
+        "0, weil ∧ stärker bindet als ∨",
+        "1, weil ¬ für den ganzen Ausdruck gilt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Formel bedeutet ¬p ∨ (q ∧ r) = 1 ∨ 0 = 1. Von links nach rechts gelesen hättest du (¬p ∨ q) ∧ r = 0 erhalten. ¬ gilt nur für p."
+    },
+    {
+      "question": "In wie vielen Zeilen ihrer Wahrheitstabelle ist (p ∨ q) → r wahr?",
+      "options": [
+        "6",
+        "3",
+        "7",
+        "5"
+      ],
+      "correctIndex": 3,
+      "explanation": "Falsch ist die Implikation nur, wenn p ∨ q = 1 und r = 0. p ∨ q ist in 3 der 4 pq-Kombinationen wahr, also 3 falsche Zeilen. 8 − 3 = 5."
+    },
+    {
+      "question": "Welche Formel ist eine Kontradiktion (immer falsch)?",
+      "options": [
+        "(p → q) ∨ (q → p)",
+        "p ∧ ¬q",
+        "(p ∨ q) ∧ ¬p",
+        "(p ∧ q) ∧ ¬(p ∨ q)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ist p ∧ q wahr, dann ist auch p ∨ q wahr, also ¬(p ∨ q) falsch – beide Teile können nie gleichzeitig wahr sein. (p → q) ∨ (q → p) ist sogar eine Tautologie."
+    },
+    {
+      "question": "Welche Formel ist äquivalent zu p → q?",
+      "options": [
+        "q → p",
+        "¬p → ¬q",
+        "¬q → ¬p",
+        "¬(p ∧ q)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Kontraposition: p → q ≡ ¬p ∨ q ≡ q ∨ ¬p ≡ ¬q → ¬p. „Wenn es regnet, ist die Straße nass“ heißt auch „Ist die Straße nicht nass, regnet es nicht“."
+    },
+    {
+      "question": "Welche Formel ist äquivalent zu ¬(a ∧ (b ∨ c))?",
+      "options": [
+        "¬a ∨ (¬b ∧ ¬c)",
+        "¬a ∧ (¬b ∨ ¬c)",
+        "¬a ∨ ¬b ∨ ¬c",
+        "(¬a ∨ ¬b) ∧ ¬c"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zweimal De Morgan: ¬(a ∧ X) = ¬a ∨ ¬X und ¬(b ∨ c) = ¬b ∧ ¬c. Ergebnis: ¬a ∨ (¬b ∧ ¬c)."
+    },
+    {
+      "question": "Eine Schleife soll laufen, solange die Eingabe e weder „j“ noch „n“ ist, also solange ¬(e = j ∨ e = n). Welche Bedingung ist gleichwertig?",
+      "code": "wiederhole solange ???\n    e = eingabe(\"j/n? \")",
+      "options": [
+        "e ≠ j ∨ e ≠ n",
+        "e ≠ j ∧ e ≠ n",
+        "e = j ∧ e = n",
+        "¬(e = j) ∨ e = n"
+      ],
+      "correctIndex": 1,
+      "explanation": "De Morgan: ¬(A ∨ B) ≡ ¬A ∧ ¬B, also e ≠ j ∧ e ≠ n. Die Variante mit ∨ ist immer wahr (e kann nicht gleichzeitig j und n sein) – eine Endlosschleife."
+    },
+    {
+      "question": "f ist nur in der Zeile p = 1, q = 0 falsch, sonst wahr. Welche Formel ist die KNF von f?",
+      "options": [
+        "p ∧ ¬q",
+        "p ∨ ¬q",
+        "¬p ∧ q",
+        "¬p ∨ q"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine 0-Zeile ergibt einen Maxterm: Variable mit 1 → negiert, mit 0 → positiv. Aus p = 1, q = 0 wird ¬p ∨ q – das ist genau p → q."
+    },
+    {
+      "question": "Vereinfache (p ∧ q) ∨ (¬p ∧ q) ∨ (p ∧ ¬q).",
+      "options": [
+        "q",
+        "p ∧ q",
+        "p ∨ q",
+        "1 (Tautologie)"
+      ],
+      "correctIndex": 2,
+      "explanation": "(p ∧ q) ∨ (¬p ∧ q) ≡ q ∧ (p ∨ ¬p) ≡ q. Bleibt q ∨ (p ∧ ¬q) ≡ (q ∨ p) ∧ (q ∨ ¬q) ≡ p ∨ q. Probe: Es ist eine DNF mit den 1-Zeilen 01, 10, 11."
+    }
+  ]
+}

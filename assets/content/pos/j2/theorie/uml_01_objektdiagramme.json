@@ -1,0 +1,94 @@
+{
+  "id": "pos-j2-theorie-uml_01_objektdiagramme",
+  "title": "Objektdiagramme",
+  "summary": "Mit Objektdiagrammen zeigst du konkrete Objekte und ihre Werte zu einem Zeitpunkt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die UML (Unified Modeling Language) ist eine standardisierte, grafische Sprache, mit der du Software modellierst – unabhängig davon, ob später in C#, Python oder Java programmiert wird. Diagramme helfen, ein Programm vor dem Codieren zu planen, im Team darüber zu reden und es zu dokumentieren. In diesem Modul lernst du zwei Strukturdiagramme kennen: Objekt- und Klassendiagramme."
+    },
+    {
+      "type": "text",
+      "content": "Ein Objektdiagramm ist eine Momentaufnahme: Es zeigt, welche Objekte es zu einem bestimmten Zeitpunkt gibt und welche Werte ihre Attribute haben. Jedes Objekt ist ein Rechteck. Oben steht „objektname : Klassenname“ (im echten UML-Diagramm unterstrichen), darunter die Attribute in der Form „attribut = wert“."
+    },
+    {
+      "type": "code",
+      "content": "+----------------------+\n| anna : Schueler      |\n+----------------------+\n| name = \"Anna Huber\"  |\n| klasse = \"2AHIF\"     |\n| katalogNr = 3        |\n+----------------------+"
+    },
+    {
+      "type": "text",
+      "content": "Nicht immer brauchst du alle Angaben. Ist der Objektname egal, lässt du ihn weg und schreibst nur „: Klasse“ – ein anonymes Objekt. Ist die Klasse aus dem Zusammenhang klar, darf sie fehlen. Unwichtige Attribute darfst du weglassen.\n\nMethoden stehen nie im Objektdiagramm: Sie gehören zur Klasse und sind für alle Objekte gleich. In unseren Textdiagrammen erkennst du Objekte am Doppelpunkt – die Unterstreichung fehlt."
+    },
+    {
+      "type": "code",
+      "content": "+-----------------+\n| anna : Schueler |  benannt\n+-----------------+\n\n+-----------------+\n| : Schueler      |  anonym\n+-----------------+\n\n+-----------------+\n| anna            |  Klasse\n+-----------------+  weggelassen"
+    },
+    {
+      "type": "text",
+      "content": "Objekte kennen oft andere Objekte. Eine solche Verbindung heißt Link und wird als durchgezogene Linie gezeichnet, optional mit einem Namen. Im Beispiel besuchen Anna und Ben beide dasselbe Klassen-Objekt k2a. Es gibt also nur ein Objekt für die 2AHIF – nicht eine Kopie pro Schüler:in."
+    },
+    {
+      "type": "code",
+      "content": "+---------------+ +---------------+\n| anna:Schueler | | ben:Schueler  |\n+---------------+ +---------------+\n| name = \"Anna\" | | name = \"Ben\"  |\n+---------------+ +---------------+\n        |                 |\n        | besucht         | besucht\n        |                 |\n     +--+-----------------+--+\n     |     k2a : Klasse      |\n     +-----------------------+\n     | name = \"2AHIF\"        |\n     +-----------------------+"
+    },
+    {
+      "type": "text",
+      "content": "Aus Code kannst du direkt ein Objektdiagramm ableiten: Jedes new (bzw. jeder Konstruktoraufruf) erzeugt ein Objekt. Ein Attribut, das auf ein anderes Objekt verweist, zeichnest du als Link und nicht als Attributwert. Typische Fehler: Klassen statt Objekte zeichnen, Methoden eintragen oder für zwei Variablen, die auf dasselbe Objekt zeigen, zwei Kästen zeichnen."
+    },
+    {
+      "type": "code",
+      "content": "// C#\nvar k = new Klasse(\"2AHIF\");\nvar a = new Schueler(\"Anna\", k);\n\n# Python\nk = Klasse(\"2AHIF\")\na = Schueler(\"Anna\", k)\n\nObjektdiagramm danach:\n+---------------+    +----------------+\n| a : Schueler  |----| k : Klasse     |\n+---------------+    +----------------+\n| name = \"Anna\" |    | name = \"2AHIF\" |\n+---------------+    +----------------+"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Objektdiagramm ist eine Momentaufnahme konkreter Objekte. Kopf: „name : Klasse“ (anonym „: Klasse“), darunter „attribut = wert“, keine Methoden. Verbindungen zwischen Objekten sind Links."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Im Kopf eines Kastens in einem Objektdiagramm steht „r1 : Raum“. Was bedeutet das?",
+      "options": [
+        "Ein Objekt r1 der Klasse Raum",
+        "Eine Klasse r1, die von Raum erbt",
+        "Ein Attribut r1 vom Typ Raum",
+        "Eine Methode r1, die einen Raum liefert"
+      ],
+      "correctIndex": 0,
+      "explanation": "Im Kopf eines Objekts steht „objektname : Klassenname“. r1 ist also ein Objekt der Klasse Raum."
+    },
+    {
+      "question": "Was gehört NICHT in ein Objektdiagramm?",
+      "options": [
+        "Attributwerte",
+        "Objektnamen",
+        "Links zwischen Objekten",
+        "Methoden mit Parametern"
+      ],
+      "correctIndex": 3,
+      "explanation": "Methoden gehören zur Klasse und sind für alle Objekte gleich. Ein Objektdiagramm zeigt nur Objekte, Werte und Links."
+    },
+    {
+      "question": "Wie viele Konto-Objekte zeigt ein Objektdiagramm nach diesem Code (C# und Python verhalten sich hier gleich) – und welchen Stand haben sie?",
+      "code": "k1 = new Konto(\"AT01\", 100)\nk2 = k1\nk2.stand = 50",
+      "options": [
+        "2 Objekte: 100 und 50",
+        "1 Objekt: stand = 50",
+        "1 Objekt: stand = 100",
+        "2 Objekte: 50 und 50"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur new erzeugt ein Objekt. k2 = k1 kopiert lediglich den Verweis, beide Variablen zeigen auf dasselbe Objekt. Die Änderung über k2 ist also auch über k1 sichtbar."
+    },
+    {
+      "question": "Was bedeutet „: Schueler“ im Kopf eines Objekt-Kastens?",
+      "options": [
+        "Die Klasse Schueler",
+        "Ein Attribut ohne Namen",
+        "Ein anonymes Objekt der Klasse Schueler",
+        "Ein Fehler – der Objektname ist Pflicht"
+      ],
+      "correctIndex": 2,
+      "explanation": "Fehlt der Name vor dem Doppelpunkt, ist es ein anonymes Objekt. Das ist erlaubt, wenn der Name keine Rolle spielt."
+    }
+  ]
+}

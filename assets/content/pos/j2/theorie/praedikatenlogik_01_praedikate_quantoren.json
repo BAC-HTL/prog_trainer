@@ -1,0 +1,94 @@
+{
+  "id": "pos-j2-theorie-praedikatenlogik_01_praedikate_quantoren",
+  "title": "Prädikate und Quantoren",
+  "summary": "Mit Prädikaten und den Quantoren ∀ und ∃ Aussagen über ganze Mengen machen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Aussagenlogik behandelt jede Aussage als unteilbaren Block. Den Satz „Alle Schüler:innen der 2AHIF haben einen Laptop“ kann sie nur als p abkürzen – sie sieht nicht, dass es um einzelne Personen und eine Eigenschaft geht. Deshalb kann sie auch nicht erklären, warum aus „Alle haben einen Laptop“ folgt, dass Anna einen Laptop hat. Dafür gibt es die Prädikatenlogik."
+    },
+    {
+      "type": "text",
+      "content": "Ein Prädikat ist eine Aussageform mit Variablen, z. B. G(x): „x ist gerade“. Setzt du für x ein konkretes Objekt ein, entsteht eine Aussage. Welche Objekte erlaubt sind, legt die Grundmenge (Individuenbereich) fest. Prädikate können auch mehrstellig sein: K(x, y): „x ist kleiner als y“.\n\nIm Programm entspricht ein Prädikat einer Funktion, die einen Wahrheitswert (bool) zurückgibt, z. B. istGerade(x)."
+    },
+    {
+      "type": "code",
+      "content": "Grundmenge: natürliche Zahlen\n\nG(x): x ist gerade\nG(4)     → wahr\nG(7)     → falsch\nG(x)     → keine Aussage (x offen)\n\nK(x, y): x ist kleiner als y\nK(2, 5)  → wahr\nK(5, 2)  → falsch"
+    },
+    {
+      "type": "text",
+      "content": "Quantoren machen aus einer Aussageform eine Aussage über die ganze Grundmenge:\n• Allquantor ∀x P(x) – „für alle x gilt P(x)“. Wahr, wenn P für jedes Element gilt. Ein einziges Gegenbeispiel macht ihn falsch.\n• Existenzquantor ∃x P(x) – „es gibt (mindestens) ein x mit P(x)“. Wahr, wenn ein Beispiel existiert.\nEine Variable, die von einem Quantor erfasst wird, heißt gebunden, sonst frei. Nur eine Formel ohne freie Variablen ist eine Aussage."
+    },
+    {
+      "type": "code",
+      "content": "Grundmenge: {Anna, Ben, Cem}\nL(x): x hat einen Laptop\n\nAnna: L = 1\nBen:  L = 1\nCem:  L = 0\n\n∀x L(x)   → falsch (Cem)\n∃x L(x)   → wahr   (z. B. Anna)\n∃x ¬L(x)  → wahr   (Cem)"
+    },
+    {
+      "type": "text",
+      "content": "Bei einer endlichen Grundmenge ist ∀ ein großes ∧ und ∃ ein großes ∨: ∀x L(x) bedeutet L(Anna) ∧ L(Ben) ∧ L(Cem). Im Programm prüfst du das mit einer Schleife und einer Merkvariable. Python hat dafür all() und any(), C# die LINQ-Methoden All() und Any().\n\nSonderfall leere Grundmenge: ∀ ist wahr (es gibt kein Gegenbeispiel), ∃ ist falsch (es gibt kein Beispiel)."
+    },
+    {
+      "type": "code",
+      "content": "// ∀x P(x): alle erfüllen P\nalle = wahr\nfür jedes x in liste:\n    wenn nicht P(x):\n        alle = falsch\n\n// ∃x P(x): mindestens eines\neins = falsch\nfür jedes x in liste:\n    wenn P(x):\n        eins = wahr"
+    },
+    {
+      "type": "text",
+      "content": "Bei mehreren Quantoren ist die Reihenfolge entscheidend – ein typischer Fehler! Über den natürlichen Zahlen bedeutet ∀x ∃y K(x, y): „Zu jeder Zahl gibt es eine größere“ (wahr, nimm y = x + 1). ∃y ∀x K(x, y) bedeutet dagegen: „Es gibt eine Zahl, die größer ist als alle“ (falsch, denn y ist nicht kleiner als y). Beim ersten darf y von x abhängen, beim zweiten muss ein einziges y für alle x passen."
+    },
+    {
+      "type": "code",
+      "content": "Grundmenge: natürliche Zahlen\nK(x, y): x < y\n\n∀x ∃y K(x, y)\n  Zu jeder Zahl gibt es eine\n  größere.            → wahr\n\n∃y ∀x K(x, y)\n  Es gibt eine Zahl, die größer\n  als alle ist.       → falsch"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Prädikat wird durch Einsetzen von Objekten zur Aussage. ∀ heißt „für alle“, ∃ heißt „es gibt mindestens ein“. Formeln mit freien Variablen sind keine Aussagen. Die Reihenfolge verschiedener Quantoren darfst du nicht vertauschen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Grundmenge {1, 2, 3, 4}, P(x): x > 2. Welche Werte haben ∀x P(x) und ∃x P(x)?",
+      "options": [
+        "wahr, wahr",
+        "wahr, falsch",
+        "falsch, falsch",
+        "falsch, wahr"
+      ],
+      "correctIndex": 3,
+      "explanation": "1 und 2 sind Gegenbeispiele, also ist ∀x P(x) falsch. 3 (oder 4) ist ein Beispiel, also ist ∃x P(x) wahr."
+    },
+    {
+      "question": "Welcher Ausdruck ist eine Aussage (keine freien Variablen)?",
+      "options": [
+        "∀x G(x)",
+        "x ist gerade",
+        "K(x, 3)",
+        "∃x K(x, y)"
+      ],
+      "correctIndex": 0,
+      "explanation": "In ∀x G(x) ist x durch den Quantor gebunden. In den anderen Ausdrücken bleibt x bzw. y frei."
+    },
+    {
+      "question": "Grundmenge {1, 2, 3}. Welche Formel ist wahr?",
+      "options": [
+        "∀x ∃y (x < y)",
+        "∃x ∀y (x < y)",
+        "∃x ∀y (x ≤ y)",
+        "∀x ∀y (x ≤ y)"
+      ],
+      "correctIndex": 2,
+      "explanation": "x = 1 ist kleiner oder gleich jeder Zahl der Menge. ∀x ∃y (x < y) scheitert an x = 3, ∃x ∀y (x < y) an y = x, ∀x ∀y (x ≤ y) z. B. an x = 3, y = 1."
+    },
+    {
+      "question": "Welche Formel prüft dieser Pseudocode? (N5(s): s hat einen Fünfer)",
+      "code": "ergebnis = falsch\nfür jedes s in klasse:\n    wenn N5(s):\n        ergebnis = wahr",
+      "options": [
+        "∀s N5(s)",
+        "∃s N5(s)",
+        "¬∃s N5(s)",
+        "∀s ¬N5(s)"
+      ],
+      "correctIndex": 1,
+      "explanation": "ergebnis wird wahr, sobald mindestens ein s die Bedingung erfüllt – das ist der Existenzquantor."
+    }
+  ]
+}

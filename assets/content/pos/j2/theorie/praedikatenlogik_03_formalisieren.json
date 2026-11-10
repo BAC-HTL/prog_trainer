@@ -1,0 +1,94 @@
+{
+  "id": "pos-j2-theorie-praedikatenlogik_03_formalisieren",
+  "title": "Formalisieren",
+  "summary": "Alltagssätze und Anforderungen präzise in Prädikatenlogik übersetzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Formalisieren heißt, einen umgangssprachlichen Satz in eine eindeutige Formel zu übersetzen. Das brauchst du später beim Erfassen von Anforderungen, bei Datenbankabfragen und beim Testen. Gehe immer gleich vor:\n1. Grundmenge festlegen (Wer oder was ist gemeint?).\n2. Prädikate definieren und aufschreiben, was sie bedeuten.\n3. Quantoren und Junktoren wählen und die Formel aufbauen."
+    },
+    {
+      "type": "text",
+      "content": "Für die häufigsten Satzmuster gibt es feste Bausteine. Wichtig: Zum Allquantor gehört fast immer →, zum Existenzquantor fast immer ∧."
+    },
+    {
+      "type": "code",
+      "content": "Alle A sind B.\n  ∀x (A(x) → B(x))\nEinige A sind B.\n  ∃x (A(x) ∧ B(x))\nKein A ist B.\n  ∀x (A(x) → ¬B(x))\n  ≡ ¬∃x (A(x) ∧ B(x))\nNicht alle A sind B.\n  ∃x (A(x) ∧ ¬B(x))"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: ∀x (A(x) ∧ B(x)) bedeutet „Alles ist A und B“ – bei der Grundmenge „alle Personen der Schule“ hieße „∀x (S(x) ∧ L(x))“, dass jede Person Schüler:in ist und einen Laptop hat. Und ∃x (A(x) → B(x)) ist schon wahr, sobald es irgendein Objekt gibt, das nicht A ist – das sagt fast nichts aus."
+    },
+    {
+      "type": "code",
+      "content": "Grundmenge: Personen der Schule\nS(x): x ist Schüler:in\nL(x): x ist Lehrkraft\nU(x, y): x unterrichtet y\n\nJede:r Schüler:in wird von\nmindestens einer Lehrkraft\nunterrichtet.\n∀x (S(x) →\n     ∃y (L(y) ∧ U(y, x)))\n\nEs gibt eine Lehrkraft, die\nalle Schüler:innen unterrichtet.\n∃y (L(y) ∧\n     ∀x (S(x) → U(y, x)))"
+    },
+    {
+      "type": "text",
+      "content": "Auch Anforderungen an Software lassen sich so formulieren. Umgangssprache ist oft mehrdeutig („Admins dürfen alles“ – auch, wenn sie gesperrt sind?). Eine Formel zwingt dich, solche Fragen zu klären, und lässt sich später direkt als Testbedingung oder Prüfung im Code umsetzen."
+    },
+    {
+      "type": "code",
+      "content": "Grundmenge: Benutzer:innen\nA(x): x ist Admin\nG(x): x ist gesperrt\nP(x): x darf posten\n\nEs gibt mindestens einen Admin,\nder nicht gesperrt ist.\n∃x (A(x) ∧ ¬G(x))\n\nGesperrte dürfen nicht posten.\n∀x (G(x) → ¬P(x))"
+    },
+    {
+      "type": "text",
+      "content": "Datenbanken arbeiten ebenfalls mit Prädikatenlogik: Die WHERE-Bedingung ist ein Prädikat über die Zeilen. EXISTS (Unterabfrage) entspricht ∃, NOT EXISTS entspricht ¬∃. Einen Allquantor gibt es in SQL nicht direkt – du nutzt die Umformung ∀x ¬P(x) ≡ ¬∃x P(x). „Schüler:innen, bei denen jede Note besser als 5 ist“ wird zu „… bei denen keine Note 5 existiert“. Achtung: Schüler:innen ganz ohne Noten erfüllen das auch (∀ über die leere Menge ist wahr)."
+    },
+    {
+      "type": "code",
+      "content": "-- ∀ Noten von s: note ≠ 5\n-- ≡ ¬∃ Note von s mit note = 5\nSELECT name FROM schueler s\nWHERE NOT EXISTS (\n  SELECT * FROM noten n\n  WHERE n.schueler_id = s.id\n    AND n.note = 5\n);"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Grundmenge und Prädikate zuerst festlegen. „Alle A sind B“ → ∀ mit →, „Einige A sind B“ → ∃ mit ∧. Formeln machen Anforderungen eindeutig und lassen sich direkt in SQL (EXISTS, NOT EXISTS) oder Code (Schleifen, all/any) übersetzen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Grundmenge: alle Tiere. H(x): x ist ein Hund, B(x): x bellt. Wie formalisierst du „Alle Hunde bellen“?",
+      "options": [
+        "∀x (H(x) ∧ B(x))",
+        "∀x (H(x) → B(x))",
+        "∃x (H(x) → B(x))",
+        "∀x (B(x) → H(x))"
+      ],
+      "correctIndex": 1,
+      "explanation": "Für jedes Tier gilt: Wenn es ein Hund ist, dann bellt es. ∀x (H(x) ∧ B(x)) würde behaupten, alle Tiere seien bellende Hunde."
+    },
+    {
+      "question": "S(x): x ist Schüler:in, F(x): x hat Fehlstunden. Welche Formel bedeutet „Manche Schüler:innen haben keine Fehlstunden“?",
+      "options": [
+        "∃x (S(x) → ¬F(x))",
+        "∀x (S(x) → ¬F(x))",
+        "¬∃x (S(x) ∧ F(x))",
+        "∃x (S(x) ∧ ¬F(x))"
+      ],
+      "correctIndex": 3,
+      "explanation": "„Manche“ bedeutet ∃, und zu ∃ gehört ∧. ∃x (S(x) → ¬F(x)) wäre schon wahr, wenn es irgendeine Person gibt, die keine Schüler:in ist."
+    },
+    {
+      "question": "Anna hat die Noten 2 und 5, Ben hat 1 und 3, Cem hat noch keine Noten. Welche Namen liefert die Abfrage?",
+      "code": "SELECT name FROM schueler s\nWHERE NOT EXISTS (\n  SELECT * FROM noten n\n  WHERE n.schueler_id = s.id\n    AND n.note = 5\n);",
+      "options": [
+        "Ben",
+        "Anna",
+        "Ben, Cem",
+        "Anna, Ben, Cem"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei Ben und Cem existiert keine Note 5. Cem hat gar keine Noten – „keine Note ist ein Fünfer“ ist für ihn trotzdem wahr."
+    },
+    {
+      "question": "Grundmenge: Personen und Fächer. S(x): x ist Schüler:in, F(f): f ist ein Fach, B(x, f): x hat f bestanden. Was bedeutet „Es gibt ein Fach, das alle Schüler:innen bestanden haben“?",
+      "options": [
+        "∃f (F(f) ∧ ∀x (S(x) → B(x, f)))",
+        "∀x (S(x) → ∃f (F(f) ∧ B(x, f)))",
+        "∃f ∀x (F(f) ∧ S(x) ∧ B(x, f))",
+        "∀x ∃f (S(x) ∧ F(f) ∧ B(x, f))"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zuerst wird ein Fach gewählt (∃f mit ∧), dann gilt für alle Schüler:innen (∀x mit →), dass sie es bestanden haben. Die zweite Formel erlaubt für jede:n ein anderes Fach."
+    }
+  ]
+}
