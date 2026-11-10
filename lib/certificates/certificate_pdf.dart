@@ -78,7 +78,7 @@ Future<Uint8List> buildCertificate({
                   style: pw.TextStyle(
                       fontSize: 24, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 8),
-              pw.Text(_latin1('$trackTitle · Level $levelTitle'),
+              pw.Text(_latin1('$trackTitle · $levelTitle'),
                   style: const pw.TextStyle(fontSize: 16)),
               pw.SizedBox(height: 8),
               pw.Text('mit $percent % erfolgreich bestanden hat.',

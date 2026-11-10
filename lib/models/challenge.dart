@@ -62,8 +62,8 @@ class ChallengeTest {
 }
 
 const levelTitles = {
-  'einsteiger': 'Einsteiger',
-  'fortgeschritten': 'Fortgeschritten',
+  'einsteiger': '1. Jahrgang',
+  'fortgeschritten': '2. Jahrgang',
   'profi': 'Profi',
   'senior': 'Senior',
 };

@@ -28,12 +28,18 @@ flutter:
     - assets/content/python/
     - assets/content/python/einsteiger/
     - assets/content/python/fortgeschritten/
-    - assets/content/python/profi/
-    - assets/content/python/senior/
     - assets/content/csharp/
     - assets/content/csharp/einsteiger/
     - assets/content/csharp/fortgeschritten/
-    - assets/content/csharp/profi/
-    - assets/content/csharp/senior/
+    - assets/content/pos/j1/python/
+    - assets/content/pos/j1/csharp/
+    - assets/content/pos/j2/python/
+    - assets/content/pos/j2/csharp/
+    - assets/content/pos/j2/theorie/
+    - assets/content/dbi/j1/
+    - assets/content/dbi/j2/
+    - assets/content/nvs/j2/
+    - assets/content/tinf/j1/
+    - assets/content/tinf/j2/
     - assets/game/
     - assets/icon/logo_mark.png

@@ -5,13 +5,6 @@
       "title": "Python",
       "description": "Einsteigerfreundlich – ideal für den Start.",
       "icon": "python",
-      "kind": "language",
-      "levels": [
-        "python/einsteiger/level.json",
-        "python/fortgeschritten/level.json",
-        "python/profi/level.json",
-        "python/senior/level.json"
-      ],
       "challenges": "python/challenges.json",
       "runtime": "python"
     },
@@ -20,39 +13,8 @@
       "title": "C#",
       "description": "Vielseitig – von Spielen bis Business-Software.",
       "icon": "csharp",
-      "kind": "language",
-      "levels": [
-        "csharp/einsteiger/level.json",
-        "csharp/fortgeschritten/level.json",
-        "csharp/profi/level.json",
-        "csharp/senior/level.json"
-      ],
       "challenges": "csharp/challenges.json",
       "runtime": "csharp"
-    },
-    {
-      "id": "architecture",
-      "title": "Software-Architektur",
-      "description": "Wie man große Programme sinnvoll aufbaut.",
-      "icon": "architecture",
-      "kind": "concept",
-      "levels": []
-    },
-    {
-      "id": "testing",
-      "title": "Testing",
-      "description": "Wie man sicherstellt, dass Code funktioniert.",
-      "icon": "testing",
-      "kind": "concept",
-      "levels": []
-    },
-    {
-      "id": "requirements",
-      "title": "Requirements Engineering",
-      "description": "Herausfinden, was die Software können soll.",
-      "icon": "requirements",
-      "kind": "concept",
-      "levels": []
     }
   ]
 }

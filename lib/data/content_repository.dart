@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../game/mission.dart';
 import '../models/challenge.dart';
 import '../models/content.dart';
+import '../models/curriculum.dart';
 
 /// Lädt alle Lerninhalte aus den JSON-Dateien in `assets/content/`.
 class ContentRepository {
@@ -26,16 +27,14 @@ class ContentRepository {
         .toList();
   }
 
-  Future<List<Level>> loadLevels(Track track) async {
-    final levels = await Future.wait(track.levelPaths.map(_json));
-    return levels.map(Level.fromJson).toList();
-  }
+  Future<Curriculum> loadCurriculum() async =>
+      Curriculum.fromJson(await _json('curriculum.json'));
 
   Future<Lesson> loadLesson(String path) async =>
       Lesson.fromJson(await _json(path));
 
-  Future<List<Lesson>> loadLessons(Chapter chapter) =>
-      Future.wait(chapter.lessonPaths.map(loadLesson));
+  Future<List<Lesson>> loadLessons(List<String> paths) =>
+      Future.wait(paths.map(loadLesson));
 
   Future<Exam> loadExam(String path) async => Exam.fromJson(await _json(path));
 
