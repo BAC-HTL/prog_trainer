@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j2-grundlagen_01_uebertragungsmedien",
+  "title": "Übertragungsmedien",
+  "summary": "Kupferkabel, Glasfaser und Funk im Vergleich – und was Bandbreite und Latenz wirklich bedeuten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Damit zwei Geräte Daten austauschen können, brauchen sie ein Übertragungsmedium. Die drei wichtigsten sind Kupferkabel (elektrische Signale), Glasfaser (Lichtsignale) und Funk (elektromagnetische Wellen, z. B. WLAN). Im Klassenzimmer hängt dein PC meist per Kupferkabel am Netz, dein Handy per WLAN – und zwischen Gebäuden liegt oft Glasfaser."
+    },
+    {
+      "type": "text",
+      "content": "Das typische LAN-Kabel ist ein Twisted-Pair-Kabel (TP): vier Paare Kupferadern, die miteinander verdrillt sind. Das Verdrillen verringert Störungen von außen und zwischen den Paaren. Zusätzliche Schirmung (z. B. S/FTP) schützt noch besser. Als Stecker dient RJ45. Wichtig: Ein Ethernet-Kupfersegment darf höchstens 100 m lang sein."
+    },
+    {
+      "type": "code",
+      "content": "Kategorie  typisch für\n---------  -------------------------\nCat 5e     1 Gbit/s\nCat 6      1 Gbit/s (10G nur kurz)\nCat 6A     10 Gbit/s bis 100 m\nCat 7      10 Gbit/s, voll geschirmt\nCat 8      25/40 Gbit/s, max. 30 m"
+    },
+    {
+      "type": "text",
+      "content": "Glasfaser überträgt Licht statt Strom. Vorteile: sehr hohe Datenraten, große Distanzen und keine Störung durch elektromagnetische Felder (z. B. neben Starkstromleitungen in der Werkstätte). Man unterscheidet Multimode-Faser (dickerer Kern, günstiger, für kürzere Strecken wie im Gebäude) und Singlemode-Faser (sehr dünner Kern, für viele Kilometer, z. B. beim Provider). Nachteil: teurer und empfindlicher beim Verlegen."
+    },
+    {
+      "type": "text",
+      "content": "Funk braucht kein Kabel – das ist bequem, hat aber Nachteile: Alle Geräte in einer Funkzelle teilen sich dasselbe Medium, Wände dämpfen das Signal und Nachbarnetze stören. WLAN nutzt vor allem die Frequenzbänder 2,4 GHz (größere Reichweite, aber stark belegt) und 5 GHz (mehr Kanäle, höhere Datenraten, geringere Reichweite); neuere Standards nutzen zusätzlich 6 GHz. Typischer Fehler: Die angegebene WLAN-Maximalrate ist ein Bruttowert – real bekommst du deutlich weniger."
+    },
+    {
+      "type": "text",
+      "content": "Datenraten misst man in Bit pro Sekunde (bit/s), nicht in Byte! 1 Byte = 8 Bit. Die Vorsilben sind dezimal: 1 kbit/s = 1000 bit/s, 1 Mbit/s = 1000 kbit/s, 1 Gbit/s = 1000 Mbit/s. Achte auf Groß-/Kleinschreibung: Mbit/s (Megabit) ist nicht MB/s (Megabyte) – das ist ein Faktor 8."
+    },
+    {
+      "type": "code",
+      "content": "Wie lange dauert der Download von\n250 MB bei 100 Mbit/s (ideal)?\n\n250 MB * 8 = 2000 Mbit\n2000 Mbit / 100 Mbit/s = 20 s"
+    },
+    {
+      "type": "text",
+      "content": "Bandbreite (Datenrate) und Latenz sind zwei verschiedene Dinge. Die Bandbreite sagt, wie viele Bits pro Sekunde durch die Leitung passen – wie die Anzahl der Fahrspuren einer Autobahn. Die Latenz ist die Verzögerung, bis ein Bit am Ziel ankommt – wie die Fahrzeit. Für große Downloads zählt die Bandbreite, für Online-Gaming oder Videotelefonie vor allem eine niedrige Latenz. Die Latenz misst du z. B. mit ping (Angabe in Millisekunden)."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Twisted-Pair-Kupfer ist günstig und Standard im LAN (max. 100 m), Glasfaser überbrückt große Distanzen störungsfrei, Funk ist flexibel, aber ein geteiltes Medium. Datenraten werden in bit/s angegeben (Faktor 8 zu Byte!), und eine hohe Bandbreite bedeutet nicht automatisch eine niedrige Latenz."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie lange dauert der Download einer 500-MB-Datei bei idealen 50 Mbit/s?",
+      "options": [
+        "10 s",
+        "80 s",
+        "8 s",
+        "100 s"
+      ],
+      "correctIndex": 1,
+      "explanation": "500 MB · 8 = 4000 Mbit. 4000 Mbit / 50 Mbit/s = 80 s. Wer den Faktor 8 vergisst, kommt fälschlich auf 10 s."
+    },
+    {
+      "question": "Welche maximale Länge darf ein Ethernet-Kupfersegment (Twisted Pair) haben?",
+      "options": [
+        "10 m",
+        "50 m",
+        "1000 m",
+        "100 m"
+      ],
+      "correctIndex": 3,
+      "explanation": "Für Twisted-Pair-Ethernet gilt eine maximale Segmentlänge von 100 m. Für längere Strecken nimmt man z. B. Glasfaser."
+    },
+    {
+      "question": "Zwischen zwei Schulgebäuden liegen 2 km, und das Kabel verläuft neben Starkstromleitungen. Welches Medium passt am besten?",
+      "options": [
+        "Singlemode-Glasfaser",
+        "Cat 6A Twisted Pair",
+        "WLAN im 2,4-GHz-Band",
+        "Cat 5e mit RJ45"
+      ],
+      "correctIndex": 0,
+      "explanation": "Glasfaser ist unempfindlich gegen elektromagnetische Störungen, und Singlemode-Fasern schaffen viele Kilometer. Kupfer ist auf 100 m begrenzt."
+    },
+    {
+      "question": "Deine Leitung hat 1 Gbit/s, aber im Online-Spiel ruckelt es wegen hoher Verzögerung. Welche Größe ist das Problem?",
+      "options": [
+        "Die Bandbreite",
+        "Die Kabelkategorie",
+        "Die Latenz",
+        "Die Byte-Größe"
+      ],
+      "correctIndex": 2,
+      "explanation": "Verzögerung ist Latenz. Eine hohe Bandbreite hilft bei großen Datenmengen, verringert aber nicht automatisch die Laufzeit der Pakete."
+    }
+  ]
+}

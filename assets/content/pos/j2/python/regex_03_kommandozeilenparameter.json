@@ -1,0 +1,91 @@
+{
+  "id": "pos-j2-python-regex_03_kommandozeilenparameter",
+  "title": "Kommandozeilenparameter",
+  "summary": "Programme mit Parametern aus dem Terminal starten – mit sys.argv und argparse.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Programme startest du im Terminal und gibst ihnen gleich Informationen mit, z. B. pip install requests. Auch deine Python-Programme können solche Kommandozeilenparameter auswerten. Am einfachsten geht das mit sys.argv: einer Liste mit allen Wörtern des Aufrufs. sys.argv[0] ist der Name des Skripts, danach folgen die Parameter."
+    },
+    {
+      "type": "code",
+      "content": "# args.py\nimport sys\n\nprint(sys.argv)\nprint(len(sys.argv))"
+    },
+    {
+      "type": "code",
+      "content": "$ python3 args.py notizen.txt 3\n['args.py', 'notizen.txt', '3']\n3"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: Alle Einträge in sys.argv sind Strings – auch '3'. Zum Rechnen musst du mit int() oder float() umwandeln. Fehlt ein Parameter, gibt sys.argv[1] einen IndexError. Prüfe deshalb zuerst die Anzahl und beende das Programm mit einer Gebrauchsanweisung. sys.exit(1) beendet es mit einem Fehlercode ungleich 0. (Unter Windows heißt der Befehl meist python statt python3.)"
+    },
+    {
+      "type": "code",
+      "content": "# summe.py\nimport sys\n\nif len(sys.argv) != 3:\n    print(\"Aufruf: python3 summe.py a b\")\n    sys.exit(1)\n\na = int(sys.argv[1])\nb = int(sys.argv[2])\nprint(a + b)\n\n# $ python3 summe.py 4 5\n# 9\n# $ python3 summe.py 4\n# Aufruf: python3 summe.py a b"
+    },
+    {
+      "type": "text",
+      "content": "Für mehr als ein, zwei Parameter wird sys.argv schnell unübersichtlich. Das Modul argparse aus der Standardbibliothek nimmt dir viel Arbeit ab:\n• Positionsargumente (z. B. datei) sind Pflicht.\n• Optionen mit - oder -- (z. B. --muster) sind freiwillig und können einen Standardwert haben.\n• action=\"store_true\" macht eine Option zum Schalter (True, wenn angegeben).\n• type=int wandelt automatisch um.\nDazu bekommst du gratis eine Hilfe mit -h und verständliche Fehlermeldungen."
+    },
+    {
+      "type": "code",
+      "content": "# zaehlen.py\nimport argparse\nimport re\n\nparser = argparse.ArgumentParser(\n    description=\"Zählt Treffer in einer Datei\")\nparser.add_argument(\"datei\")\nparser.add_argument(\"-m\", \"--muster\",\n                    default=r\"\\w+\")\nparser.add_argument(\"-v\", \"--verbose\",\n                    action=\"store_true\")\nargs = parser.parse_args()\n\nwith open(args.datei, encoding=\"utf-8\") as f:\n    treffer = re.findall(args.muster, f.read())\n\nprint(len(treffer), \"Treffer\")\nif args.verbose:\n    print(treffer)"
+    },
+    {
+      "type": "code",
+      "content": "# notizen.txt enthält:\n# Raum 214, Stock 2\n# Test am 14.01.\n\n$ python3 zaehlen.py notizen.txt\n8 Treffer\n$ python3 zaehlen.py notizen.txt -m \"\\d+\" -v\n4 Treffer\n['214', '2', '14', '01']\n$ python3 zaehlen.py\nusage: zaehlen.py [-h] [-m MUSTER] [-v] datei\nzaehlen.py: error: the following arguments are required: datei"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: vergessen, dass sys.argv[0] der Skriptname ist (der erste Parameter ist argv[1]), Zahlen nicht umwandeln (\"4\" + \"5\" ergibt \"45\"), oder Muster mit Sonderzeichen im Terminal nicht in Anführungszeichen setzen.\n\nZusammenfassung: sys.argv liefert die Parameter als Liste von Strings. argparse übernimmt Pflicht- und Zusatzparameter, Typumwandlung, Hilfe und Fehlermeldungen – für alles über ein, zwei Parameter die bessere Wahl."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Das Programm p.py wird mit python3 p.py 5 7 gestartet. Was gibt es aus?",
+      "code": "import sys\nprint(sys.argv[1] + sys.argv[2])",
+      "options": [
+        "12",
+        "57",
+        "['5', '7']",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Einträge von sys.argv sind Strings. \"5\" + \"7\" verkettet die Texte zu \"57\"."
+    },
+    {
+      "question": "Was steht in sys.argv[0]?",
+      "options": [
+        "Der Name bzw. Pfad des gestarteten Skripts",
+        "Der erste Parameter nach dem Skriptnamen",
+        "Die Anzahl der Parameter",
+        "Immer der Text \"python3\""
+      ],
+      "correctIndex": 0,
+      "explanation": "sys.argv[0] ist das Skript selbst. Die eigentlichen Parameter beginnen bei sys.argv[1]. Die Anzahl liefert len(sys.argv)."
+    },
+    {
+      "question": "p.py wird mit python3 p.py --anzahl 3 gestartet. Was gibt es aus?",
+      "code": "import argparse\np = argparse.ArgumentParser()\np.add_argument(\"--anzahl\", type=int,\n               default=1)\nargs = p.parse_args()\nprint(args.anzahl * 2)",
+      "options": [
+        "33",
+        "2",
+        "6",
+        "None"
+      ],
+      "correctIndex": 2,
+      "explanation": "Durch type=int wandelt argparse \"3\" in die Zahl 3 um. 3 * 2 ergibt 6. Ohne type=int käme \"33\" heraus."
+    },
+    {
+      "question": "zaehlen.py aus der Lektion wird mit python3 zaehlen.py OHNE Parameter gestartet. Was passiert?",
+      "options": [
+        "Es zählt die Wörter der Tastatureingabe",
+        "Es gibt 0 Treffer aus",
+        "IndexError: list index out of range",
+        "argparse meldet, dass datei fehlt, und beendet das Programm"
+      ],
+      "correctIndex": 3,
+      "explanation": "datei ist ein Positionsargument und damit Pflicht. argparse gibt die Kurzanleitung (usage) und eine Fehlermeldung aus und beendet das Programm."
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "id": "nvs-j2-grundlagen_pruefung",
+  "title": "Abschlussprüfung: Netzwerk-Grundlagen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Backup von 3 GB soll über eine 200-Mbit/s-Leitung übertragen werden. Wie lange dauert das im Idealfall?",
+      "options": [
+        "15 s",
+        "120 s",
+        "1,5 s",
+        "240 s"
+      ],
+      "correctIndex": 1,
+      "explanation": "3 GB · 8 = 24 Gbit = 24000 Mbit. 24000 / 200 = 120 s."
+    },
+    {
+      "question": "Welche Aussage über Bandbreite und Latenz ist richtig?",
+      "options": [
+        "Doppelte Bandbreite halbiert immer die Latenz.",
+        "Latenz wird in Mbit/s gemessen.",
+        "Eine Leitung kann hohe Bandbreite und trotzdem hohe Latenz haben.",
+        "Bandbreite und Latenz sind dasselbe."
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine Satellitenverbindung z. B. kann viele Mbit/s liefern, hat wegen der langen Signalwege aber eine hohe Latenz. Latenz misst man in Millisekunden."
+    },
+    {
+      "question": "Welches Kabel ist für 10 Gbit/s über 90 m im Gebäude geeignet?",
+      "options": [
+        "Cat 5e",
+        "Cat 6A",
+        "Cat 8",
+        "Koaxialkabel aus dem Bus-Netz"
+      ],
+      "correctIndex": 1,
+      "explanation": "Cat 6A ist für 10 Gbit/s bis 100 m spezifiziert. Cat 8 schafft höhere Raten, aber nur bis 30 m; Cat 5e ist für 1 Gbit/s gedacht."
+    },
+    {
+      "question": "Wie viele Verbindungen fehlen, um 5 Geräte, die bereits als Ring verkabelt sind, voll zu vermaschen?",
+      "options": [
+        "5",
+        "10",
+        "4",
+        "0"
+      ],
+      "correctIndex": 0,
+      "explanation": "Vollvermaschung: 5·4/2 = 10 Verbindungen. Der Ring hat bereits 5, also fehlen noch 10 − 5 = 5."
+    },
+    {
+      "question": "Welche Kombination aus Gerät und Hauptaufgabe ist FALSCH?",
+      "options": [
+        "Access Point – bindet WLAN-Geräte ans LAN an",
+        "Firewall – filtert Verkehr nach Regeln",
+        "Modem – wandelt Signale für die Provider-Leitung um",
+        "Switch – verbindet verschiedene IP-Netze"
+      ],
+      "correctIndex": 3,
+      "explanation": "Verschiedene IP-Netze verbindet der Router. Ein (Layer-2-)Switch verbindet Geräte innerhalb desselben Netzes."
+    },
+    {
+      "question": "Welches Protokoll gehört NICHT zur Transportschicht?",
+      "options": [
+        "TCP",
+        "UDP",
+        "IP",
+        "Keines – alle gehören dazu"
+      ],
+      "correctIndex": 2,
+      "explanation": "IP gehört zur Vermittlungsschicht (OSI 3) bzw. Internetschicht im TCP/IP-Modell. TCP und UDP sind Transportprotokolle."
+    },
+    {
+      "question": "Wie heißt die Dateneinheit auf OSI-Schicht 2, und welche Adresse steht in ihrem Header?",
+      "options": [
+        "Paket, IP-Adresse",
+        "Frame, MAC-Adresse",
+        "Segment, Portnummer",
+        "Frame, IP-Adresse"
+      ],
+      "correctIndex": 1,
+      "explanation": "Auf Schicht 2 spricht man von Frames, adressiert wird mit MAC-Adressen. Pakete mit IP-Adressen gehören zu Schicht 3."
+    },
+    {
+      "question": "In welcher Reihenfolge läuft der TCP-3-Way-Handshake ab?",
+      "options": [
+        "SYN, ACK, SYN-ACK",
+        "ACK, SYN, SYN-ACK",
+        "SYN, SYN-ACK, ACK",
+        "SYN-ACK, SYN, ACK"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Client sendet SYN, der Server antwortet mit SYN-ACK, der Client bestätigt mit ACK – dann steht die Verbindung."
+    },
+    {
+      "question": "Welche OSI-Schichten fasst die Anwendungsschicht des TCP/IP-Modells zusammen?",
+      "options": [
+        "5, 6 und 7",
+        "Nur 7",
+        "4 bis 7",
+        "1 und 2"
+      ],
+      "correctIndex": 0,
+      "explanation": "Sitzung (5), Darstellung (6) und Anwendung (7) bilden im TCP/IP-Modell gemeinsam die Anwendungsschicht."
+    },
+    {
+      "question": "Auf einem Server laufen ein Webserver und ein SSH-Server mit derselben IP-Adresse. Woran erkennt das Betriebssystem, welches Programm ein ankommendes Segment bekommt?",
+      "options": [
+        "An der MAC-Adresse",
+        "An der Zielportnummer",
+        "An der Subnetzmaske",
+        "Am TTL-Wert"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die IP-Adresse führt zum Rechner, der Zielport (z. B. 443 oder 22) zur Anwendung."
+    }
+  ]
+}

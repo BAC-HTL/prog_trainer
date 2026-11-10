@@ -1,0 +1,122 @@
+{
+  "id": "pos-j1-python-algorithmen_pruefung",
+  "title": "Abschlussprüfung: Algorithmen & Struktogramme",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein „Algorithmus“ lautet: „Wähle eine zufällige Zahl zwischen 1 und 10 und gib sie aus.“ Welche Eigenschaft eines klassischen Algorithmus ist verletzt?",
+      "options": [
+        "Finitheit",
+        "Terminiertheit",
+        "Determiniertheit",
+        "Ausführbarkeit"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Ablauf ist endlich, ausführbar und endet. Aber bei gleicher (leerer) Eingabe kommen unterschiedliche Ergebnisse heraus – die Determiniertheit fehlt."
+    },
+    {
+      "question": "Was gibt dieser Pseudocode aus?",
+      "code": "n ← 6\nz ← 0\nSOLANGE n > 1\n    WENN n MOD 2 = 0 DANN\n        n ← n / 2\n    SONST\n        n ← 3 * n + 1\n    ENDE WENN\n    z ← z + 1\nENDE SOLANGE\nAUSGABE: z",
+      "options": [
+        "6",
+        "8",
+        "7",
+        "16"
+      ],
+      "correctIndex": 1,
+      "explanation": "n durchläuft 6 → 3 → 10 → 5 → 16 → 8 → 4 → 2 → 1. Das sind 8 Schleifendurchläufe, z wird also 8."
+    },
+    {
+      "question": "Was gibt dieses Struktogramm aus?",
+      "code": "+-----------------------------+\n| s ← 0                       |\n+-----------------------------+\n| für i von 1 bis 6           |\n|   +-------------------------+\n|   |\\      i MOD 3 = 0      /|\n|   |  \\ J              N  /  |\n|   +-----------+-------------+\n|   | s ← s + i | s ← s - 1   |\n+---+-----------+-------------+\n| Ausgabe: s                  |\n+-----------------------------+",
+      "options": [
+        "9",
+        "3",
+        "-4",
+        "5"
+      ],
+      "correctIndex": 3,
+      "explanation": "i=1: -1, i=2: -2, i=3: +3 → 1, i=4: 0, i=5: -1, i=6: +6 → 5."
+    },
+    {
+      "question": "x hat den Wert 10. Wie oft läuft der Körper einer kopfgesteuerten bzw. einer fußgesteuerten Schleife mit der Bedingung „solange x < 5“, wenn der Körper x nur ausgibt?",
+      "options": [
+        "kopfgesteuert 0-mal, fußgesteuert 1-mal",
+        "beide 0-mal",
+        "beide 1-mal",
+        "kopfgesteuert 1-mal, fußgesteuert 0-mal"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die kopfgesteuerte Schleife prüft zuerst: 10 < 5 ist falsch, also kein Durchlauf. Die fußgesteuerte führt den Körper zuerst einmal aus und prüft dann – danach ist Schluss."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def suche(liste, ziel):\n    pos = -1\n    for i in range(len(liste)):\n        if liste[i] == ziel:\n            pos = i\n    return pos\n\nprint(suche([4, 8, 4, 2], 4))",
+      "options": [
+        "0",
+        "2",
+        "-1",
+        "[0, 2]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Hier fehlt das frühe return: Die Schleife läuft immer bis zum Ende, und pos wird bei jedem Treffer überschrieben. Ergebnis ist also die LETZTE Position der 4, nämlich 2."
+    },
+    {
+      "question": "Wie oft wird die while-Schleife durchlaufen?",
+      "code": "liste = list(range(1, 16))  # 1 bis 15\nlinks, rechts = 0, len(liste) - 1\nrunden = 0\nwhile links <= rechts:\n    runden += 1\n    mitte = (links + rechts) // 2\n    if liste[mitte] == 16:\n        break\n    elif liste[mitte] < 16:\n        links = mitte + 1\n    else:\n        rechts = mitte - 1\nprint(runden)",
+      "options": [
+        "15",
+        "3",
+        "4",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "16 ist größer als alle Elemente, links wandert also immer nach rechts: liste[7] = 8 → links = 8; liste[11] = 12 → links = 12; liste[13] = 14 → links = 14; liste[14] = 15 → links = 15. Jetzt ist links > rechts: 4 Durchläufe."
+    },
+    {
+      "question": "In einer binären Suche steht links = mitte statt links = mitte + 1. Was passiert bei der Suche nach 9 in [1, 3, 5, 7, 9]?",
+      "code": "def suche(liste, ziel):\n    links, rechts = 0, len(liste) - 1\n    while links <= rechts:\n        mitte = (links + rechts) // 2\n        if liste[mitte] == ziel:\n            return mitte\n        elif liste[mitte] < ziel:\n            links = mitte\n        else:\n            rechts = mitte - 1\n    return -1\n\nprint(suche([1, 3, 5, 7, 9], 9))",
+      "options": [
+        "9 wird an Index 4 gefunden",
+        "Es wird -1 geliefert",
+        "IndexError",
+        "Endlosschleife"
+      ],
+      "correctIndex": 3,
+      "explanation": "links wird 2, dann 3. Danach ist mitte = (3 + 4) // 2 = 3, und links = mitte ändert nichts mehr. Der Bereich schrumpft nie – die Schleife läuft ewig."
+    },
+    {
+      "question": "Wie viele Tauschvorgänge braucht Bubble Sort, um [4, 3, 2, 1] zu sortieren?",
+      "options": [
+        "3",
+        "6",
+        "4",
+        "10"
+      ],
+      "correctIndex": 1,
+      "explanation": "Durchlauf 1: 3 Tausche → [3, 2, 1, 4]; Durchlauf 2: 2 Tausche → [2, 1, 3, 4]; Durchlauf 3: 1 Tausch → [1, 2, 3, 4]. Insgesamt 3 + 2 + 1 = 6."
+    },
+    {
+      "question": "Insertion Sort sortiert [7, 4, 9, 1, 3]. Wie sieht die Liste aus, nachdem das Element an Index 3 (die 1) eingefügt wurde?",
+      "options": [
+        "[1, 4, 7, 9, 3]",
+        "[1, 3, 4, 7, 9]",
+        "[4, 7, 1, 9, 3]",
+        "[1, 7, 4, 9, 3]"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nach i=1: [4, 7, 9, 1, 3]; i=2: 9 bleibt; i=3: 9, 7 und 4 rutschen nach rechts, 1 kommt nach vorne → [1, 4, 7, 9, 3]. Die 3 ist noch nicht dran."
+    },
+    {
+      "question": "Selection Sort braucht für 10 000 Zahlen etwa 2 Sekunden. Wie lange ungefähr für 20 000 Zahlen?",
+      "options": [
+        "2 Sekunden",
+        "4 Sekunden",
+        "8 Sekunden",
+        "40 Sekunden"
+      ],
+      "correctIndex": 2,
+      "explanation": "Selection Sort hat quadratischen Aufwand: Doppelt so viele Elemente → 2² = 4-mal so viele Vergleiche, also etwa 8 Sekunden."
+    }
+  ]
+}

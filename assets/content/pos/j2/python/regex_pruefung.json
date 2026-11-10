@@ -1,0 +1,123 @@
+{
+  "id": "pos-j2-python-regex_pruefung",
+  "title": "Abschlussprüfung: Reguläre Ausdrücke & Kommandozeile",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\ns = \"Wien und Graz sind Städte\"\nprint(re.findall(r\"[A-Z]\\w*\", s))",
+      "options": [
+        "['Wien', 'Graz']",
+        "['Wien', 'Graz', 'Städte']",
+        "['W', 'G', 'S']",
+        "['Wien', 'und', 'Graz', 'sind', 'Städte']"
+      ],
+      "correctIndex": 1,
+      "explanation": "Gesucht ist ein Großbuchstabe gefolgt von beliebig vielen Wortzeichen. \\w umfasst in Python auch Umlaute, daher wird „Städte“ vollständig gefunden."
+    },
+    {
+      "question": "Welcher Text passt mit fullmatch auf das Muster [1-5][A-Z]H[A-Z]{2,3}?",
+      "options": [
+        "6AHIF",
+        "2aHIF",
+        "2AHINFO",
+        "4BHITM"
+      ],
+      "correctIndex": 3,
+      "explanation": "4BHITM: Jahrgang 4, Parallelklasse B, H, drei Großbuchstaben. 6 liegt außerhalb von 1–5, a ist klein, und INFO hat vier Buchstaben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\nprint(re.sub(r\"(\\w+) (\\w+)\", r\"\\2 \\1\",\n             \"Max Muster\"))",
+      "options": [
+        "Muster Max",
+        "Max Muster",
+        "\\2 \\1",
+        "MusterMax"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die erste Gruppe fängt „Max“, die zweite „Muster“. Im Ersatztext stehen sie in umgekehrter Reihenfolge."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\nprint(re.findall(r\"<.+>\", \"<b>fett</b>\"))",
+      "options": [
+        "['<b>', '</b>']",
+        "['<b>fett</b>']",
+        "['b', '/b']",
+        "[]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Quantoren sind gierig: .+ nimmt so viel wie möglich. Der Treffer reicht deshalb vom ersten < bis zum LETZTEN >."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\nprint(re.match(r\"\\d+\", \"Raum 12\"))",
+      "options": [
+        "12",
+        "Raum 12",
+        "None",
+        "['12']"
+      ],
+      "correctIndex": 2,
+      "explanation": "re.match sucht nur am Anfang des Texts. Dort steht „R“, keine Ziffer – also None. re.search würde 12 finden."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\nprint(re.findall(r\"\\bab\", \"ab abc cab\"))",
+      "options": [
+        "['ab', 'ab', 'ab']",
+        "['ab']",
+        "['ab', 'abc']",
+        "['ab', 'ab']"
+      ],
+      "correctIndex": 3,
+      "explanation": "\\b verlangt eine Wortgrenze vor dem a. Bei „ab“ und „abc“ beginnt das Wort mit ab, bei „cab“ steht das ab mitten im Wort."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\ntests = [\"0664\", \"06641\", \"066412\", \"664\"]\nn = 0\nfor t in tests:\n    if re.fullmatch(r\"0\\d{3,4}\", t):\n        n += 1\nprint(n)",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Muster verlangt eine 0 und danach 3 bis 4 Ziffern, also insgesamt 4–5 Zeichen. Nur \"0664\" und \"06641\" passen."
+    },
+    {
+      "question": "Ein Programm wird mit python3 p.py -v daten.txt gestartet und gibt len(sys.argv) aus. Was erscheint?",
+      "options": [
+        "2",
+        "1",
+        "3",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "sys.argv ist ['p.py', '-v', 'daten.txt'] – der Skriptname zählt mit, also 3."
+    },
+    {
+      "question": "zaehlen.py aus der Lektion wird mit python3 zaehlen.py notizen.txt gestartet. Welchen Wert hat args.verbose?",
+      "options": [
+        "False",
+        "None",
+        "True",
+        "\"\""
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei action=\"store_true\" ist der Standardwert False. True wird es nur, wenn -v oder --verbose angegeben wird."
+    },
+    {
+      "question": "Welche Adresse passt mit fullmatch auf das vereinfachte E-Mail-Muster [\\w.-]+@([\\w-]+\\.)+[a-z]{2,}?",
+      "options": [
+        "anna@htl",
+        "anna@@htl.at",
+        "anna.berger@schule.htl.at",
+        "anna@htl.a"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mehrere Domain-Teile mit Punkt sind durch ([\\w-]+\\.)+ erlaubt. „anna@htl“ hat keinen Punkt, „@@“ ist nicht erlaubt, und die Endung „a“ ist zu kurz."
+    }
+  ]
+}

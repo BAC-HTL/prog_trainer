@@ -1,0 +1,92 @@
+{
+  "id": "tinf-j2-javascript_02_dom_events",
+  "title": "DOM und Events",
+  "summary": "Mit JavaScript HTML-Elemente finden, verändern und auf Klicks reagieren.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wenn der Browser eine HTML-Seite lädt, baut er daraus einen Baum aus Objekten: das DOM (Document Object Model). Jedes Element ist ein Knoten, verschachtelte Elemente sind Kinder. Über das Objekt document kann JavaScript diesen Baum lesen und verändern – der Browser zeigt Änderungen sofort an, ohne die Seite neu zu laden."
+    },
+    {
+      "type": "code",
+      "content": "<h1 id=\"titel\">Stundenplan</h1>\n<ul class=\"faecher\">\n  <li>POS</li>\n  <li class=\"neu\">NVS</li>\n</ul>\n\nDOM-Baum (vereinfacht):\ndocument\n└─ html\n   └─ body\n      ├─ h1#titel\n      └─ ul.faecher\n         ├─ li\n         └─ li.neu"
+    },
+    {
+      "type": "text",
+      "content": "Elemente findest du mit CSS-Selektoren:\n• document.querySelector(\"…\") liefert das ERSTE passende Element – oder null, wenn keines passt.\n• document.querySelectorAll(\"…\") liefert ALLE passenden Elemente als Liste (NodeList), die du mit for…of durchgehen kannst.\n\nDu kannst also alles verwenden, was du aus CSS kennst: #id, .klasse, ul li usw."
+    },
+    {
+      "type": "code",
+      "content": "const titel =\n  document.querySelector(\"#titel\");\nconsole.log(titel.textContent);\n// Stundenplan\n\nconst erstes =\n  document.querySelector(\"li\");\nconsole.log(erstes.textContent);\n// POS\n\nconst alle = document\n  .querySelectorAll(\".faecher li\");\nconsole.log(alle.length);   // 2\n\ndocument.querySelector(\".xyz\");\n// null"
+    },
+    {
+      "type": "text",
+      "content": "Inhalte änderst du mit textContent: Der Text wird genau so angezeigt, wie er ist. innerHTML interpretiert dagegen HTML-Tags. Setzt du damit Benutzereingaben ein, kann jemand fremden Code einschleusen (Cross-Site-Scripting) – nimm für Text daher immer textContent.\n\nFür das Aussehen änderst du am besten Klassen und lässt CSS den Rest erledigen. Das geht mit classList: add() fügt hinzu, remove() entfernt, toggle() schaltet um und contains() prüft."
+    },
+    {
+      "type": "code",
+      "content": "titel.textContent =\n  \"Mein Stundenplan\";\n\nconst neu =\n  document.querySelector(\".neu\");\nneu.classList.add(\"markiert\");\nneu.classList.remove(\"neu\");\nneu.classList.toggle(\"aktiv\");\n\nconsole.log(neu.className);\n// markiert aktiv\nconsole.log(\n  neu.classList.contains(\"aktiv\"));\n// true"
+    },
+    {
+      "type": "text",
+      "content": "Events sind Ereignisse wie click, input, submit oder keydown. Mit addEventListener(\"click\", funktion) meldest du eine Funktion an, die der Browser bei jedem Klick aufruft. Du übergibst die Funktion selbst – du rufst sie nicht auf!\n\nWichtig: Das Skript darf erst laufen, wenn die Elemente existieren. Mit defer im <script>-Tag wartet der Browser, bis das HTML fertig eingelesen ist. Sonst liefert querySelector null und addEventListener erzeugt einen Fehler."
+    },
+    {
+      "type": "code",
+      "content": "<p id=\"anzeige\">0</p>\n<button id=\"plus\">+1</button>\n\n// app.js (mit defer geladen)\nconst anzeige =\n  document.querySelector(\"#anzeige\");\nconst btn =\n  document.querySelector(\"#plus\");\nlet zahl = 0;\n\nbtn.addEventListener(\"click\", () => {\n  zahl++;\n  anzeige.textContent = zahl;\n});"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: addEventListener(\"click\", zeige()) mit Klammern – dann läuft zeige() sofort einmal und beim Klick passiert nichts. Den Punkt oder die Raute im Selektor vergessen (querySelector(\"titel\") sucht ein <titel>-Element). Das Skript ohne defer im <head> laden. innerHTML für Benutzereingaben verwenden.\n\nZusammenfassung: Der Browser baut aus HTML das DOM. Mit querySelector findest du Elemente, mit textContent und classList änderst du sie, mit addEventListener reagierst du auf Ereignisse."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was liefert document.querySelector(\".hinweis\"), wenn kein Element die Klasse hinweis hat?",
+      "options": [
+        "eine leere Liste",
+        "undefined",
+        "null",
+        "einen leeren String"
+      ],
+      "correctIndex": 2,
+      "explanation": "querySelector liefert null, wenn nichts gefunden wird. Greifst du dann z. B. auf .textContent zu, gibt es einen TypeError."
+    },
+    {
+      "question": "Nach dem Laden der Seite erscheint sofort „Info!“ in der Konsole, aber ein Klick auf den Button tut nichts. Warum?",
+      "code": "function zeigeInfo() {\n  console.log(\"Info!\");\n}\nbtn.addEventListener(\n  \"click\", zeigeInfo());",
+      "options": [
+        "click muss großgeschrieben werden",
+        "zeigeInfo() wird sofort aufgerufen; übergeben wird nur ihr Rückgabewert",
+        "console.log funktioniert in Events nicht",
+        "Der Button braucht ein onclick-Attribut"
+      ],
+      "correctIndex": 1,
+      "explanation": "Durch die Klammern wird die Funktion sofort ausgeführt. Übergeben wird ihr Rückgabewert undefined – es wird also kein Listener registriert. Richtig ist addEventListener(\"click\", zeigeInfo)."
+    },
+    {
+      "question": "Welche Klassen hat das Element danach?",
+      "code": "<!-- <p class=\"a b\"> -->\np.classList.toggle(\"b\");\np.classList.add(\"c\");",
+      "options": [
+        "a b c",
+        "b c",
+        "a",
+        "a c"
+      ],
+      "correctIndex": 3,
+      "explanation": "toggle(\"b\") entfernt b, weil b schon vorhanden ist. Danach fügt add(\"c\") c hinzu. Übrig bleiben a und c."
+    },
+    {
+      "question": "Was zeigt der Browser in der Box an?",
+      "code": "box.textContent = \"<b>Hi</b>\";",
+      "options": [
+        "Hi (fett)",
+        "Hi (normal)",
+        "<b>Hi</b> als sichtbarer Text",
+        "nichts"
+      ],
+      "correctIndex": 2,
+      "explanation": "textContent setzt reinen Text. Die spitzen Klammern werden nicht als HTML gelesen, sondern genau so angezeigt: <b>Hi</b>."
+    }
+  ]
+}

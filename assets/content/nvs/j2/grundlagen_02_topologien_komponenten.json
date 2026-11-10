@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j2-grundlagen_02_topologien_komponenten",
+  "title": "Topologien und Netzwerkkomponenten",
+  "summary": "Wie Netze aufgebaut sind (Bus, Stern, Ring, Masche) und welche Geräte welche Aufgabe übernehmen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Topologie beschreibt, wie Geräte in einem Netz miteinander verbunden sind. Man unterscheidet die physische Topologie (wie die Kabel liegen) und die logische Topologie (wie die Daten fließen). Die vier Grundformen sind Bus, Stern, Ring und Masche."
+    },
+    {
+      "type": "code",
+      "content": "Bus:     A---B---C---D  (ein Kabel)\n\nStern:      A   B\n             \\ /\n         C--[SW]--D\n\nRing:    A---B\n         |   |\n         D---C"
+    },
+    {
+      "type": "text",
+      "content": "Bus: Alle Geräte hängen an einem gemeinsamen Kabel. Billig, aber ein Kabelbruch legt das ganze Netz lahm, und es kann immer nur einer senden. Heute praktisch nur noch historisch.\nRing: Jedes Gerät ist mit zwei Nachbarn verbunden, die Daten laufen im Kreis. Fällt eine Verbindung aus, ist der Ring unterbrochen (außer bei Doppelringen).\nStern: Alle Geräte hängen an einem zentralen Gerät (heute ein Switch). Fällt ein Kabel aus, ist nur ein Gerät betroffen – fällt der Switch aus, aber alle. Der Stern ist die Standard-Topologie in jedem LAN, auch in deinem EDV-Saal."
+    },
+    {
+      "type": "text",
+      "content": "Masche: Geräte sind über mehrere Wege verbunden. Bei der Vollvermaschung ist jeder mit jedem verbunden – sehr ausfallsicher, aber teuer: Bei n Geräten brauchst du n·(n−1)/2 Verbindungen. Das Internet ist ein teilvermaschtes Netz aus Routern: Fällt ein Weg aus, gibt es meist einen anderen."
+    },
+    {
+      "type": "code",
+      "content": "Vollvermaschung: n*(n-1)/2 Leitungen\n\nn = 4   ->  4*3/2  =   6\nn = 10  ->  10*9/2 =  45"
+    },
+    {
+      "type": "text",
+      "content": "Die Netzwerkkarte (NIC, Network Interface Card) verbindet ein Gerät mit dem Netz – per Kabel oder als WLAN-Adapter. Jede NIC hat eine weltweit eindeutige Hardware-Adresse, die MAC-Adresse. Ein Switch verbindet Geräte innerhalb eines lokalen Netzes (LAN). Er merkt sich, an welchem Port welche MAC-Adresse hängt, und schickt Daten gezielt nur dorthin. (Sein Vorgänger, der Hub, hat alles an alle Ports kopiert.)"
+    },
+    {
+      "type": "text",
+      "content": "Ein Router verbindet verschiedene Netze miteinander und entscheidet anhand der IP-Adresse, wohin ein Paket weitergeleitet wird – z. B. vom Schulnetz ins Internet. Ein Access Point (AP) bindet WLAN-Geräte an das kabelgebundene Netz an. Eine Firewall filtert den Datenverkehr nach Regeln und blockiert unerwünschte Verbindungen. Ein Modem wandelt Signale für die Leitung des Providers um (z. B. DSL, Kabel oder Glasfaser) – Modulator/Demodulator."
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Die „WLAN-Box“ von zu Hause ist kein einzelnes Gerät, sondern meist Modem, Router, Switch, Access Point und Firewall in einem Gehäuse. In Firmen- und Schulnetzen sind diese Funktionen dagegen oft auf eigene Geräte aufgeteilt, damit man sie besser verwalten und erweitern kann."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Moderne LANs sind physisch als Stern um einen Switch aufgebaut; vermaschte Netze bieten Ausfallsicherheit. Switch = verbindet Geräte im selben Netz (MAC-Adressen), Router = verbindet Netze (IP-Adressen), Access Point = WLAN-Anbindung, Firewall = Filter, Modem = Signalumwandlung zum Provider."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Verbindungen braucht eine Vollvermaschung von 6 Routern?",
+      "options": [
+        "12",
+        "30",
+        "15",
+        "36"
+      ],
+      "correctIndex": 2,
+      "explanation": "n·(n−1)/2 = 6·5/2 = 15. Mit 30 hättest du jede Verbindung doppelt gezählt."
+    },
+    {
+      "question": "In einer Stern-Topologie fällt das Kabel zu einem einzelnen PC aus. Was passiert?",
+      "options": [
+        "Das gesamte Netz fällt aus.",
+        "Nur dieser PC hat keine Verbindung mehr.",
+        "Alle PCs werden langsamer.",
+        "Der Switch startet neu."
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim Stern hat jedes Gerät sein eigenes Kabel zum zentralen Switch. Nur ein Ausfall des Switches selbst würde alle betreffen."
+    },
+    {
+      "question": "Welches Gerät verbindet unterschiedliche Netze und leitet Pakete anhand der IP-Adresse weiter?",
+      "options": [
+        "Router",
+        "Switch",
+        "Access Point",
+        "Netzwerkkarte"
+      ],
+      "correctIndex": 0,
+      "explanation": "Router arbeiten mit IP-Adressen und verbinden Netze. Ein Switch verbindet Geräte innerhalb eines Netzes anhand der MAC-Adressen."
+    },
+    {
+      "question": "Was unterscheidet einen Switch von einem Hub?",
+      "options": [
+        "Der Switch hat mehr Ports.",
+        "Der Switch arbeitet nur mit WLAN.",
+        "Der Hub kann Netze verbinden.",
+        "Der Switch leitet Daten gezielt an den Port mit der Ziel-MAC weiter."
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Hub kopiert alles an alle Ports. Ein Switch lernt, welche MAC-Adresse an welchem Port hängt, und sendet gezielt."
+    }
+  ]
+}

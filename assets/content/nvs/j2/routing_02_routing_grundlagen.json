@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j2-routing_02_routing_grundlagen",
+  "title": "Routing-Grundlagen",
+  "summary": "Routingtabelle, Default Gateway, statische Routen und die Longest-Prefix-Match-Regel.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Routing bedeutet: ein Paket von einem Netz in ein anderes weiterleiten. Ein Router hat in jedem angeschlossenen Netz eine Schnittstelle mit eigener IP-Adresse. Kommt ein Paket an, schaut er auf die Ziel-IP-Adresse und entscheidet mithilfe seiner Routingtabelle, über welche Schnittstelle und an welchen nächsten Router (Next Hop) er es weiterschickt."
+    },
+    {
+      "type": "text",
+      "content": "Ein Eintrag der Routingtabelle enthält mindestens: Zielnetz mit Präfix, Next Hop (oder „direkt verbunden“) und die Ausgangsschnittstelle. Direkt angeschlossene Netze kennt der Router automatisch. Alle anderen Netze muss er entweder statisch (vom Admin eingetragen) oder dynamisch (über ein Routingprotokoll) lernen. Findet er keinen passenden Eintrag, verwirft er das Paket."
+    },
+    {
+      "type": "code",
+      "content": "# Routingtabelle anzeigen\nroute print     (Windows)\nip route        (Linux)\n\ndefault via 192.168.1.1 dev eth0\n192.168.1.0/24 dev eth0 ..."
+    },
+    {
+      "type": "text",
+      "content": "Auch dein PC hat eine Routingtabelle – meist mit nur zwei wichtigen Einträgen: das eigene Netz (direkt erreichbar) und die Default Route 0.0.0.0/0 zum Default Gateway. Das Default Gateway ist der Router, an den der PC alle Pakete für fremde Netze schickt. Es MUSS im selben Subnetz liegen wie der PC – sonst kann der PC es nicht per ARP erreichen. Typischer Fehler: falsches oder fehlendes Gateway → lokale Geräte gehen, das Internet nicht."
+    },
+    {
+      "type": "text",
+      "content": "Passen mehrere Einträge zu einer Ziel-IP, gilt Longest Prefix Match: Der Router nimmt den Eintrag mit dem längsten Präfix, also der genauesten Übereinstimmung. Die Default Route 0.0.0.0/0 passt auf jede Adresse, hat aber das kürzeste Präfix und wird darum nur verwendet, wenn nichts Genaueres passt."
+    },
+    {
+      "type": "code",
+      "content": "Routingtabelle   Next Hop\n---------------  -----------\n0.0.0.0/0        ISP\n10.0.0.0/8       R1\n10.1.0.0/16      R2\n10.1.2.0/24      R3\n\nZiel 10.1.2.7    -> R3  (/24)\nZiel 10.1.9.9    -> R2  (/16)\nZiel 10.200.0.1  -> R1  (/8)\nZiel 8.8.8.8     -> ISP (/0)"
+    },
+    {
+      "type": "text",
+      "content": "Statisches Routing: Der Admin trägt Routen von Hand ein. Das ist einfach und berechenbar, passt sich aber nicht an Ausfälle an und wird in großen Netzen unübersichtlich. Beispiel: R1 hängt am Netz 192.168.1.0/24, R2 am Netz 192.168.2.0/24, dazwischen liegt das Transfernetz 10.0.0.0/30 (R1 = 10.0.0.1, R2 = 10.0.0.2)."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS auf R1\nip route 192.168.2.0 255.255.255.0\n         10.0.0.2\n! (eine Zeile, hier umgebrochen)\n\n! Cisco IOS auf R2 - Rückweg!\nip route 192.168.1.0 255.255.255.0\n         10.0.0.1\n\n# Linux-Pendant\nip route add 192.168.2.0/24\n         via 10.0.0.2"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: die Rückroute vergessen. Kennt R2 den Weg zurück zu 192.168.1.0/24 nicht, kommen Pakete zwar an, aber keine Antworten zurück – ping schlägt trotzdem fehl. Außerdem verringert jeder Router den TTL-Wert (Time To Live) im IP-Header um 1; erreicht er 0, wird das Paket verworfen. So kreisen Pakete bei Routing-Schleifen nicht ewig. Zusammenfassung: Router entscheiden per Routingtabelle, das genaueste Präfix gewinnt, die Default Route fängt den Rest, und Routen braucht es immer in beide Richtungen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Router hat die Einträge 0.0.0.0/0 → ISP, 172.16.0.0/12 → R1, 172.16.4.0/22 → R2. Wohin geht ein Paket an 172.16.6.10?",
+      "options": [
+        "ISP",
+        "R1",
+        "R2",
+        "Es wird verworfen."
+      ],
+      "correctIndex": 2,
+      "explanation": "172.16.6.10 passt zu allen drei Einträgen (172.16.4.0/22 umfasst .4.0–.7.255). Das längste Präfix /22 gewinnt → R2."
+    },
+    {
+      "question": "Ein PC hat 192.168.10.50/24. Welches Default Gateway ist gültig?",
+      "options": [
+        "192.168.11.1",
+        "192.168.10.1",
+        "10.0.0.1",
+        "192.168.10.255"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Gateway muss im eigenen Subnetz liegen und darf nicht Netz- oder Broadcastadresse sein. 192.168.10.255 ist der Broadcast."
+    },
+    {
+      "question": "Was passiert mit einem Paket, wenn sein TTL-Wert beim Weiterleiten 0 erreicht?",
+      "options": [
+        "Es wird verworfen.",
+        "Es wird an das Default Gateway geschickt.",
+        "Der TTL wird wieder auf 64 gesetzt.",
+        "Es wird an alle Ports geflutet."
+      ],
+      "correctIndex": 0,
+      "explanation": "Der TTL verhindert endlos kreisende Pakete. Erreicht er 0, verwirft der Router das Paket und meldet dies üblicherweise per ICMP an den Absender."
+    },
+    {
+      "question": "Auf R1 wurde eine statische Route zum Netz hinter R2 eingetragen, auf R2 aber keine Route zurück. Was beobachtest du beim ping von einem PC hinter R1 zu einem PC hinter R2?",
+      "options": [
+        "ping funktioniert, weil eine Richtung reicht.",
+        "Der Switch flutet die Antwort zurück.",
+        "R2 lernt den Rückweg automatisch aus dem Paket.",
+        "ping schlägt fehl, weil die Antworten nicht zurückfinden."
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Anfrage kommt an, aber R2 weiß nicht, wohin er die Antwort schicken soll. Statische Routen müssen in beide Richtungen eingetragen werden (oder R2 braucht eine passende Default Route)."
+    }
+  ]
+}

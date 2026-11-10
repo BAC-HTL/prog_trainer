@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j2-routing_03_routingprotokolle",
+  "title": "Routingprotokolle und NAT",
+  "summary": "Wie Router Routen automatisch austauschen (RIP, OSPF, BGP) und wie NAT private Adressen ins Internet bringt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "In großen Netzen ist statisches Routing zu aufwendig und reagiert nicht auf Ausfälle. Beim dynamischen Routing tauschen Router über ein Routingprotokoll selbstständig Informationen über erreichbare Netze aus. Fällt eine Leitung aus, berechnen sie neue Wege. Die Zeit, bis alle Router wieder ein einheitliches Bild haben, nennt man Konvergenzzeit."
+    },
+    {
+      "type": "text",
+      "content": "Distanzvektor-Verfahren („Routing by Rumor“): Jeder Router kennt nur die Distanz (Metrik) und die Richtung (Vektor = Nachbar) zu einem Netz. Er schickt seine Routingtabelle regelmäßig an seine Nachbarn, die daraus ihre eigene berechnen. Einfach, aber langsam bei Änderungen; es kann zum „Count to Infinity“-Problem kommen, wenn Router sich gegenseitig veraltete Routen erzählen. Gegenmaßnahmen sind z. B. Split Horizon (eine Route nicht an den Nachbarn zurückmelden, von dem man sie gelernt hat)."
+    },
+    {
+      "type": "text",
+      "content": "Link-State-Verfahren: Jeder Router sammelt Informationen über alle Verbindungen (Links) im Netz und deren Kosten und baut daraus eine vollständige Karte der Topologie. Mit dem Dijkstra-Algorithmus (Shortest Path First) berechnet jeder Router selbst den besten Weg. Bei Änderungen werden nur die Änderungen sofort verteilt. Vorteile: schnelle Konvergenz, keine Routing-Schleifen durch Gerüchte; Nachteil: mehr Speicher und Rechenleistung."
+    },
+    {
+      "type": "code",
+      "content": "Protokoll  Typ            Metrik\n---------  -------------  ----------\nRIP        Distanzvektor  Hop-Anzahl\nOSPF       Link-State     Kosten\n                          (Bandbreite)\nBGP        Pfadvektor     Pfad-\n                          attribute"
+    },
+    {
+      "type": "text",
+      "content": "RIP (Routing Information Protocol) zählt nur Hops (Router auf dem Weg); maximal 15 Hops sind erlaubt, 16 gilt als unerreichbar. Es schickt alle 30 Sekunden Updates und eignet sich nur für kleine Netze. OSPF (Open Shortest Path First) ist ein Link-State-Protokoll für Firmen- und Campusnetze. Die Metrik heißt Kosten und wird aus der Bandbreite berechnet – so wird ein schneller Weg mit mehr Hops einem langsamen kurzen vorgezogen. Große OSPF-Netze werden in Areas gegliedert, die alle an Area 0 (Backbone) hängen."
+    },
+    {
+      "type": "text",
+      "content": "RIP und OSPF sind Interior Gateway Protocols (IGP) für Netze innerhalb einer Organisation, eines sogenannten Autonomen Systems (AS). Zwischen den AS – also zwischen Providern im Internet – kommt BGP (Border Gateway Protocol) zum Einsatz, ein Exterior Gateway Protocol. BGP entscheidet nicht nur nach der kürzesten Strecke, sondern auch nach Regeln (Policies), z. B. Verträgen zwischen Providern. Lernt ein Router dasselbe Netz aus mehreren Quellen, entscheidet bei Cisco die administrative Distanz: direkt verbunden 0, statisch 1, OSPF 110, RIP 120 – kleiner ist vertrauenswürdiger."
+    },
+    {
+      "type": "text",
+      "content": "NAT (Network Address Translation): Private Adressen werden im Internet nicht geroutet. Der Router am Internetzugang ersetzt deshalb die private Quelladresse durch seine öffentliche Adresse. Meist teilen sich alle Geräte eine einzige öffentliche Adresse; unterschieden werden die Verbindungen über die Portnummern. Diese Variante heißt PAT (Port Address Translation) oder NAT-Overload. Der Router merkt sich jede Zuordnung in der NAT-Tabelle und übersetzt Antworten zurück."
+    },
+    {
+      "type": "code",
+      "content": "NAT-Tabelle (öffentl. 203.0.113.5)\nInnen               Außen\n192.168.1.10:50123  203.0.113.5:40001\n192.168.1.11:50123  203.0.113.5:40002\n\nAntwort an :40002 -> 192.168.1.11"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: NAT für eine Sicherheitsfunktion halten. Zwar sind Geräte hinter NAT von außen nicht direkt ansprechbar, aber NAT ersetzt keine Firewall. Will man einen internen Server von außen erreichbar machen, braucht man eine Portweiterleitung. Zusammenfassung: Distanzvektor (RIP) = Routen von Nachbarn übernehmen, Link-State (OSPF) = eigene Topologiekarte + Dijkstra, BGP verbindet die Autonomen Systeme des Internets, und NAT/PAT ermöglicht vielen privaten Geräten den Zugang über eine öffentliche Adresse."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein RIP-Router erhält eine Route mit der Metrik 16. Was bedeutet das?",
+      "options": [
+        "Das Netz ist 16 ms entfernt.",
+        "Das Netz gilt als unerreichbar.",
+        "Die Route hat 16 Mbit/s Bandbreite.",
+        "Es ist die beste mögliche Route."
+      ],
+      "correctIndex": 1,
+      "explanation": "RIP zählt Hops und erlaubt höchstens 15. Die Metrik 16 steht für „unendlich“, also unerreichbar."
+    },
+    {
+      "question": "Welches Merkmal beschreibt ein Link-State-Protokoll wie OSPF?",
+      "options": [
+        "Jeder Router kennt nur die Entfernung zu Netzen über seine Nachbarn.",
+        "Es wird nur zwischen Providern eingesetzt.",
+        "Jeder Router kennt die gesamte Topologie und berechnet mit Dijkstra den besten Weg.",
+        "Die Metrik ist ausschließlich die Hop-Anzahl."
+      ],
+      "correctIndex": 2,
+      "explanation": "Link-State-Router bauen eine vollständige Karte des Netzes auf und berechnen den kürzesten Pfad selbst. Die erste Antwort beschreibt Distanzvektor-Verfahren."
+    },
+    {
+      "question": "Welches Routingprotokoll verbindet die Autonomen Systeme der Provider im Internet?",
+      "options": [
+        "BGP",
+        "OSPF",
+        "RIP",
+        "ARP"
+      ],
+      "correctIndex": 0,
+      "explanation": "BGP ist das Exterior Gateway Protocol des Internets. OSPF und RIP sind IGPs innerhalb einer Organisation, ARP ist gar kein Routingprotokoll."
+    },
+    {
+      "question": "Zwei Schüler-Laptops (192.168.1.10 und 192.168.1.11) surfen gleichzeitig über einen Router mit nur einer öffentlichen IP. Wie unterscheidet der Router die Antworten?",
+      "options": [
+        "Anhand der MAC-Adressen im Internet",
+        "Gar nicht – nur ein Gerät kann surfen",
+        "Anhand der TTL-Werte",
+        "Anhand unterschiedlicher Portnummern in der NAT-Tabelle (PAT)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei PAT bekommt jede Verbindung außen eine eigene Portnummer. Kommt eine Antwort an diesen Port, schlägt der Router in der NAT-Tabelle das interne Gerät nach."
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j2-dienste_01_dhcp_dns",
+  "title": "DHCP und DNS",
+  "summary": "Wie Geräte automatisch eine IP-Konfiguration bekommen und wie Namen in Adressen übersetzt werden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Jedes Gerät braucht eine IP-Konfiguration: IP-Adresse, Subnetzmaske, Default Gateway und DNS-Server. Bei hunderten Laptops und Handys im Schul-WLAN wäre das von Hand unmöglich. DHCP (Dynamic Host Configuration Protocol) vergibt diese Daten automatisch aus einem vom Admin festgelegten Adressbereich (Pool). DHCP nutzt UDP: Port 67 für den Server, Port 68 für den Client."
+    },
+    {
+      "type": "code",
+      "content": "Ablauf: DORA\n\nClient               Server\n  |--- Discover ------>|  Broadcast\n  |<-- Offer ----------|  Angebot\n  |--- Request ------->|  Broadcast\n  |<-- Acknowledge ----|  Bestätigung"
+    },
+    {
+      "type": "text",
+      "content": "Discover: Der Client hat noch keine IP und sucht per Broadcast einen DHCP-Server. Offer: Ein Server bietet eine Adresse an. Request: Der Client fordert das Angebot an – wieder per Broadcast, damit auch andere Server erfahren, welches Angebot gewählt wurde. Acknowledge: Der Server bestätigt, und der Client darf die Adresse verwenden. Weil Broadcasts nicht über Router gehen, braucht man für Server in anderen Netzen einen DHCP-Relay-Agent am Router."
+    },
+    {
+      "type": "text",
+      "content": "Eine Adresse wird nur für eine bestimmte Zeit verliehen – die Lease. Spätestens nach der Hälfte der Lease-Zeit versucht der Client, sie beim Server zu verlängern. Läuft sie ab, ohne verlängert zu werden, wird die Adresse wieder frei. Server und Drucker bekommen meist eine Reservierung (immer dieselbe Adresse für eine bestimmte MAC) oder eine statische Adresse. Bekommt ein Windows-PC keine Antwort, gibt er sich selbst eine 169.254.x.x-Adresse (APIPA)."
+    },
+    {
+      "type": "code",
+      "content": "# Windows\nipconfig /all       # Lease, DHCP-Server\nipconfig /release   # Adresse abgeben\nipconfig /renew     # neu anfordern\n\n# Linux\nip a                # Adresse prüfen"
+    },
+    {
+      "type": "text",
+      "content": "DNS (Domain Name System) übersetzt Namen wie www.example.com in IP-Adressen – wie ein Telefonbuch. DNS ist hierarchisch aufgebaut: Ganz oben steht die Root-Zone („.“), darunter die Top-Level-Domains (z. B. .at, .com), darunter die Second-Level-Domains (z. B. example.com) und weitere Subdomains. Jede Ebene verweist auf die zuständigen Nameserver der nächsten Ebene."
+    },
+    {
+      "type": "text",
+      "content": "Ablauf einer Auflösung: Dein PC fragt seinen DNS-Resolver (z. B. am Router oder beim Provider). Kennt dieser die Antwort nicht aus seinem Cache, fragt er sich durch: Root-Server → Server der TLD → autoritativer Server der Domain. Die Antwort wird für die Dauer des TTL-Werts zwischengespeichert. DNS nutzt Port 53, für normale Abfragen meist UDP."
+    },
+    {
+      "type": "code",
+      "content": "Typ    Bedeutung\n-----  -----------------------------\nA      Name -> IPv4-Adresse\nAAAA   Name -> IPv6-Adresse\nMX     Mailserver der Domain\n       (mit Priorität, klein = zuerst)\nCNAME  Alias -> anderer Name\nNS     zuständiger Nameserver\nPTR    IP -> Name (Reverse Lookup)"
+    },
+    {
+      "type": "code",
+      "content": "# Windows\nnslookup www.example.com\nnslookup -type=MX example.com\nipconfig /flushdns   # Cache leeren\n\n# Linux\ndig www.example.com\ndig example.com MX\ndig example.com AAAA +short"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Ein CNAME zeigt auf einen Namen, nicht auf eine IP-Adresse – für die IP braucht es am Ende immer einen A- oder AAAA-Record. Zusammenfassung: DHCP vergibt per DORA eine IP-Konfiguration auf Zeit (Lease). DNS übersetzt Namen hierarchisch von der Root über die TLD zum autoritativen Server; wichtige Record-Typen sind A, AAAA, MX und CNAME."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Reihenfolge laufen die DHCP-Nachrichten ab?",
+      "options": [
+        "Request, Offer, Discover, Acknowledge",
+        "Offer, Discover, Acknowledge, Request",
+        "Discover, Offer, Request, Acknowledge",
+        "Discover, Request, Offer, Acknowledge"
+      ],
+      "correctIndex": 2,
+      "explanation": "Merkwort DORA: Discover, Offer, Request, Acknowledge."
+    },
+    {
+      "question": "Welcher DNS-Record-Typ liefert die IPv6-Adresse zu einem Namen?",
+      "options": [
+        "AAAA",
+        "A",
+        "MX",
+        "CNAME"
+      ],
+      "correctIndex": 0,
+      "explanation": "A liefert IPv4, AAAA (vier A, weil 4-mal so lange Adresse) liefert IPv6."
+    },
+    {
+      "question": "Was zeigt dieser Befehl an?",
+      "code": "dig example.com MX",
+      "options": [
+        "Die IPv4-Adresse von example.com",
+        "Die Mailserver der Domain example.com",
+        "Den Webserver von example.com",
+        "Den Namen zur IP example.com"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mit dem Typ MX fragst du nach den Mailservern einer Domain. Die Priorität gibt an, welcher zuerst verwendet wird."
+    },
+    {
+      "question": "Ein DHCP-Server steht in einem anderen Subnetz als die Clients. Was wird benötigt, damit die Clients trotzdem Adressen bekommen?",
+      "options": [
+        "Ein CNAME-Record",
+        "Eine längere Lease-Zeit",
+        "Ein zweiter Switch",
+        "Ein DHCP-Relay-Agent auf dem Router"
+      ],
+      "correctIndex": 3,
+      "explanation": "Discover und Request sind Broadcasts, und Broadcasts werden von Routern nicht weitergeleitet. Der Relay-Agent nimmt sie entgegen und leitet sie gezielt an den DHCP-Server weiter."
+    }
+  ]
+}

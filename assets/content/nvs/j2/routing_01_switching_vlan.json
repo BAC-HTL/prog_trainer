@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j2-routing_01_switching_vlan",
+  "title": "Switching und VLANs",
+  "summary": "Wie ein Switch lernt und weiterleitet, was Collision- und Broadcast-Domains sind und wie VLANs ein Netz logisch trennen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Switch arbeitet auf Schicht 2 und leitet Frames anhand der MAC-Adressen weiter. Dafür führt er eine MAC-Adresstabelle (auch CAM-Tabelle): Zu jeder MAC-Adresse steht, an welchem Port sie zuletzt gesehen wurde. Die Tabelle füllt er selbst – ganz ohne Konfiguration."
+    },
+    {
+      "type": "text",
+      "content": "So arbeitet der Switch bei jedem eingehenden Frame:\n1) Lernen: Er trägt die QUELL-MAC mit dem Eingangsport in die Tabelle ein.\n2) Weiterleiten: Steht die ZIEL-MAC in der Tabelle, schickt er den Frame nur an diesen Port.\n3) Fluten: Ist die Ziel-MAC unbekannt oder ist es ein Broadcast (FF:FF:FF:FF:FF:FF), sendet er den Frame an alle Ports außer dem Eingangsport.\nEinträge, die länger nicht benutzt werden, verfallen wieder (Aging)."
+    },
+    {
+      "type": "code",
+      "content": "MAC-Tabelle eines Switches\nMAC-Adresse        Port\n-----------------  ----\n00:1a:2b:3c:4d:01  Fa0/1\n00:1a:2b:3c:4d:02  Fa0/2\n00:1a:2b:3c:4d:07  Fa0/7\n\nFrame an ...:4d:07 -> nur Fa0/7\nFrame an ...:4d:99 -> alle außer\n                      Eingangsport"
+    },
+    {
+      "type": "text",
+      "content": "Eine Kollisionsdomäne ist der Bereich, in dem sich gleichzeitig gesendete Signale stören können. Bei einem Hub teilen sich alle Ports eine Kollisionsdomäne. Ein Switch trennt sie: Jeder Switch-Port ist eine eigene Kollisionsdomäne; mit Vollduplex gibt es dort praktisch gar keine Kollisionen mehr. Eine Broadcast-Domäne ist der Bereich, den ein Broadcast erreicht. Switches leiten Broadcasts weiter – erst ein Router (oder ein VLAN) begrenzt sie."
+    },
+    {
+      "type": "code",
+      "content": "Gerät   Kollisions-   Broadcast-\n        domänen       domänen\n------  ------------  -----------\nHub     1 für alle    1 für alle\nSwitch  1 pro Port    1 (pro VLAN)\nRouter  1 pro Port    1 pro Port"
+    },
+    {
+      "type": "text",
+      "content": "Ein VLAN (Virtual LAN) teilt einen physischen Switch in mehrere logische Netze. Beispiel: An einem Switch im Schulgebäude hängen Lehrer-PCs (VLAN 10) und Schüler-PCs (VLAN 20). Obwohl sie am selben Gerät stecken, sehen sie sich nicht – jedes VLAN ist eine eigene Broadcast-Domäne und üblicherweise ein eigenes IP-Subnetz. Vorteile: mehr Sicherheit, weniger Broadcast-Last, flexible Zuordnung ohne Umstecken."
+    },
+    {
+      "type": "text",
+      "content": "Ein Access-Port gehört genau zu einem VLAN; dort hängen Endgeräte, die vom VLAN nichts wissen. Ein Trunk-Port überträgt mehrere VLANs über ein Kabel, z. B. zwischen zwei Switches oder zum Router. Damit der Empfänger weiß, zu welchem VLAN ein Frame gehört, wird nach IEEE 802.1Q ein 4 Byte großes Tag mit der VLAN-ID (12 Bit, nutzbar 1–4094) eingefügt. Frames im Native VLAN werden auf dem Trunk ohne Tag übertragen."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS (z. B. Packet Tracer)\n(config)# vlan 10\n(config-vlan)# name Lehrer\n(config)# interface fa0/1\n(config-if)# switchport mode access\n(config-if)# switchport access vlan 10\n(config)# interface gi0/1\n(config-if)# switchport mode trunk"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Man erwartet, dass PCs aus VLAN 10 und VLAN 20 miteinander kommunizieren, nur weil sie am selben Switch hängen. Zwischen VLANs braucht es immer einen Router oder einen Layer-3-Switch (Inter-VLAN-Routing). Zusammenfassung: Switches lernen Quell-MACs, leiten gezielt weiter und fluten Unbekanntes; jeder Port ist eine Kollisionsdomäne; VLANs bilden getrennte Broadcast-Domänen; Trunks transportieren getaggte Frames mehrerer VLANs."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Switch bekommt einen Frame an eine MAC-Adresse, die nicht in seiner Tabelle steht. Was macht er?",
+      "options": [
+        "Er verwirft den Frame.",
+        "Er sendet ihn an alle Ports außer dem Eingangsport.",
+        "Er schickt ihn an den Router.",
+        "Er fragt per DNS nach."
+      ],
+      "correctIndex": 1,
+      "explanation": "Unbekannte Ziele werden geflutet. Antwortet das Zielgerät, lernt der Switch dessen Port aus der Quell-MAC."
+    },
+    {
+      "question": "Welche Adresse eines eingehenden Frames trägt ein Switch in seine MAC-Tabelle ein?",
+      "options": [
+        "Die Ziel-MAC",
+        "Die Ziel-IP",
+        "Die Quell-MAC",
+        "Die Quell-IP"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Switch lernt, wo ein Absender sitzt: Quell-MAC + Eingangsport. Mit IP-Adressen arbeitet ein Layer-2-Switch nicht."
+    },
+    {
+      "question": "An einem Switch ohne VLAN-Konfiguration hängen 12 PCs. Wie viele Broadcast-Domänen gibt es?",
+      "options": [
+        "1",
+        "12",
+        "13",
+        "0"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Switch leitet Broadcasts an alle Ports weiter. Ohne VLANs bilden alle 12 PCs eine Broadcast-Domäne (aber 12 Kollisionsdomänen)."
+    },
+    {
+      "question": "Über welchen Port-Typ werden Frames mehrerer VLANs mit 802.1Q-Tag zwischen zwei Switches übertragen?",
+      "options": [
+        "Access-Port",
+        "Konsolen-Port",
+        "Uplink ohne VLAN",
+        "Trunk-Port"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Trunk transportiert mehrere VLANs über ein Kabel; die VLAN-Zugehörigkeit steht im 802.1Q-Tag."
+    }
+  ]
+}

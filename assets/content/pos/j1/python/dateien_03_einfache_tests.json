@@ -1,0 +1,92 @@
+{
+  "id": "pos-j1-python-dateien_03_einfache_tests",
+  "title": "Einfache Tests mit assert",
+  "summary": "Funktionen automatisch überprüfen und sinnvolle Testfälle inklusive Randfällen finden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Logikfehler fällt nur auf, wenn du das Ergebnis mit dem ERWARTETEN Ergebnis vergleichst. Genau das ist ein Test: Du rufst eine Funktion mit einer Eingabe auf, deren richtiges Ergebnis du vorher kennst, und prüfst, ob es herauskommt. Statt das jedes Mal per Hand einzutippen, schreibst du die Tests als Code – dann kannst du sie nach jeder Änderung in Sekunden wiederholen."
+    },
+    {
+      "type": "text",
+      "content": "Das einfachste Werkzeug ist assert. Nach assert steht eine Bedingung. Ist sie wahr, passiert nichts. Ist sie falsch, bricht das Programm mit einem AssertionError ab. Nach einem Komma kannst du eine Meldung angeben, die dann im Fehler erscheint."
+    },
+    {
+      "type": "code",
+      "content": "def quadrat(x):\n    return x * x\n\nassert quadrat(3) == 9\nassert quadrat(-2) == 4\nassert quadrat(0) == 0, \"0² muss 0 sein\"\nprint(\"Alle Tests bestanden\")"
+    },
+    {
+      "type": "text",
+      "content": "Übersichtlich wird es, wenn du die Tests einer Funktion in einer eigenen Testfunktion sammelst, deren Name mit test_ beginnt. Am Ende rufst du alle Testfunktionen auf. (Später lernst du pytest kennen – das findet solche test_-Funktionen automatisch.) Hier deckt ein Test einen versteckten Fehler auf: Der Startwert 0 ist bei lauter negativen Zahlen falsch."
+    },
+    {
+      "type": "code",
+      "content": "def maximum(zahlen):\n    m = 0              # Fehler!\n    for z in zahlen:\n        if z > m:\n            m = z\n    return m\n\ndef test_maximum():\n    assert maximum([3, 8, 1]) == 8\n    assert maximum([5]) == 5\n    assert maximum([-4, -2, -9]) == -2, \\\n        \"nur negative Zahlen\"\n    print(\"test_maximum ok\")\n\ntest_maximum()\n# AssertionError: nur negative Zahlen"
+    },
+    {
+      "type": "text",
+      "content": "Die Kunst ist, gute Testfälle zu finden. Überlege dir VOR dem Testen:\n• Normalfälle – typische Eingaben\n• Randfälle – leere Liste, genau ein Element, 0, negative Zahlen, sehr große Werte, leerer String\n• Grenzwerte – Werte direkt an, unter und über einer Grenze\nGerade an Grenzen passieren die meisten Fehler, etwa durch > statt >=."
+    },
+    {
+      "type": "code",
+      "content": "# ab 50 Punkten bestanden\ndef bestanden(punkte):\n    return punkte >= 50\n\ndef test_bestanden():\n    # Grenze, knapp drunter, knapp drüber\n    assert bestanden(50) == True\n    assert bestanden(49) == False\n    assert bestanden(51) == True\n    # Ränder des Wertebereichs\n    assert bestanden(0) == False\n    assert bestanden(100) == True\n    print(\"test_bestanden ok\")\n\ntest_bestanden()"
+    },
+    {
+      "type": "text",
+      "content": "Vorsicht bei Kommazahlen: Wegen der binären Darstellung ist 0.1 + 0.2 nicht exakt 0.3, und assert 0.1 + 0.2 == 0.3 schlägt fehl. Runde vorher (round(x, 2) == 0.3) oder prüfe, ob der Unterschied winzig ist: abs(x - 0.3) < 0.000001."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler beim Testen:\n• Das erwartete Ergebnis aus der eigenen (fehlerhaften) Funktion abschreiben – dann testest du nichts.\n• Nur den Normalfall testen.\n• Klammern um assert und Meldung: assert (x == 1, \"Text\") prüft ein Tupel, das immer wahr ist – der Test schlägt NIE fehl (Python warnt mit SyntaxWarning).\nZusammenfassung: Erwartung zuerst überlegen, mit assert prüfen, Randfälle und Grenzwerte nicht vergessen. Ein bestandener Test zeigt, dass diese Fälle funktionieren – nicht, dass das Programm fehlerfrei ist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was passiert bei dieser Zeile?",
+      "code": "assert 2 + 2 == 5, \"Rechenfehler!\"",
+      "options": [
+        "Es wird False ausgegeben",
+        "Nichts, das Programm läuft weiter",
+        "SyntaxError",
+        "AssertionError: Rechenfehler!"
+      ],
+      "correctIndex": 3,
+      "explanation": "2 + 2 == 5 ist falsch, also löst assert einen AssertionError mit der angegebenen Meldung aus."
+    },
+    {
+      "question": "Du testest eine Funktion durchschnitt(liste). Welche Kombination enthält die wichtigsten RANDFÄLLE?",
+      "options": [
+        "[1, 2, 3] und [4, 5, 6]",
+        "Eine leere Liste und eine Liste mit genau einem Element",
+        "[10, 20] und [20, 10]",
+        "Nur [2, 4, 6], weil das Ergebnis leicht zu prüfen ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "Randfälle liegen an den Grenzen der möglichen Eingaben. Bei der leeren Liste droht eine Division durch 0, ein Element prüft den kleinsten sinnvollen Fall. Die anderen Optionen sind Normalfälle."
+    },
+    {
+      "question": "Ein Jahr ist ein Schaltjahr, wenn es durch 4 teilbar ist – außer es ist durch 100, aber nicht durch 400 teilbar. Welches assert schlägt bei diesem Code als erstes fehl?",
+      "code": "def schaltjahr(jahr):\n    return jahr % 4 == 0\n\nassert schaltjahr(2024) == True\nassert schaltjahr(2023) == False\nassert schaltjahr(1900) == False\nassert schaltjahr(2000) == True",
+      "options": [
+        "assert schaltjahr(2024) == True",
+        "assert schaltjahr(2023) == False",
+        "assert schaltjahr(1900) == False",
+        "assert schaltjahr(2000) == True"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Funktion prüft nur die Teilbarkeit durch 4. 1900 ist durch 4 teilbar, liefert also True – laut Regel ist 1900 aber kein Schaltjahr. Genau dieser Grenzfall deckt den Fehler auf."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "assert 0.1 + 0.2 == 0.3\nprint(\"ok\")",
+      "options": [
+        "Es wird ok ausgegeben",
+        "AssertionError",
+        "Es wird 0.3 ausgegeben",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "0.1 + 0.2 ergibt in Python 0.30000000000000004 – nicht exakt 0.3. Deshalb schlägt der Vergleich mit == fehl. Kommazahlen vergleichst du besser mit round() oder einer kleinen Toleranz."
+    }
+  ]
+}

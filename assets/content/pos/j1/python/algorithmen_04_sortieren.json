@@ -1,0 +1,94 @@
+{
+  "id": "pos-j1-python-algorithmen_04_sortieren",
+  "title": "Sortieren: Bubble, Selection, Insertion Sort",
+  "summary": "Drei einfache Sortieralgorithmen verstehen, nachprogrammieren und miteinander vergleichen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Sortierte Daten sind überall: Ranglisten, Notenlisten, Telefonbücher – und die binäre Suche funktioniert nur damit. Python kann mit sort() längst selbst sortieren, aber die klassischen Sortieralgorithmen gehören zum Grundwissen jeder Informatikerin und jedes Informatikers. Fast alle beruhen auf zwei Operationen: zwei Elemente vergleichen und zwei Elemente tauschen. Zum Tauschen brauchst du klassisch eine Hilfsvariable; Python erlaubt auch die Kurzform a, b = b, a."
+    },
+    {
+      "type": "text",
+      "content": "Bubble Sort vergleicht immer zwei Nachbarn. Stehen sie falsch herum, werden sie getauscht. Nach dem ersten Durchlauf ist das größte Element ganz hinten angekommen – es „steigt auf“ wie eine Luftblase. Jeder weitere Durchlauf kann daher ein Element früher aufhören. Gab es in einem Durchlauf gar keinen Tausch, ist die Liste fertig sortiert und man kann abbrechen."
+    },
+    {
+      "type": "code",
+      "content": "def bubble_sort(a):\n    n = len(a)\n    for i in range(n - 1):\n        getauscht = False\n        for j in range(n - 1 - i):\n            if a[j] > a[j + 1]:\n                hilf = a[j]\n                a[j] = a[j + 1]\n                a[j + 1] = hilf\n                getauscht = True\n        if not getauscht:\n            break\n\nz = [5, 1, 4, 2, 8]\nbubble_sort(z)\nprint(z)  # [1, 2, 4, 5, 8]\n# Durchlauf 1: [1, 4, 2, 5, 8]\n# Durchlauf 2: [1, 2, 4, 5, 8]\n# Durchlauf 3: kein Tausch → Ende"
+    },
+    {
+      "type": "text",
+      "content": "Selection Sort (Sortieren durch Auswahl) teilt die Liste gedanklich in einen sortierten Teil vorne und einen unsortierten Teil hinten. In jedem Durchlauf sucht er das kleinste Element im unsortierten Teil und tauscht es an dessen erste Stelle. So wächst der sortierte Teil um ein Element pro Durchlauf."
+    },
+    {
+      "type": "code",
+      "content": "def selection_sort(a):\n    n = len(a)\n    for i in range(n - 1):\n        min_pos = i\n        for j in range(i + 1, n):\n            if a[j] < a[min_pos]:\n                min_pos = j\n        a[i], a[min_pos] = a[min_pos], a[i]\n\nz = [29, 10, 14, 37, 13]\nselection_sort(z)\nprint(z)  # [10, 13, 14, 29, 37]\n# i=0: [10, 29, 14, 37, 13]\n# i=1: [10, 13, 14, 37, 29]\n# i=2: [10, 13, 14, 37, 29]\n# i=3: [10, 13, 14, 29, 37]"
+    },
+    {
+      "type": "text",
+      "content": "Insertion Sort (Sortieren durch Einfügen) funktioniert wie das Ordnen von Spielkarten in der Hand: Du nimmst die nächste Karte und schiebst sie von rechts nach links an die richtige Stelle. Dazu werden alle größeren Elemente im sortierten Teil um eine Position nach rechts verschoben, dann wird das Element in die Lücke gesetzt."
+    },
+    {
+      "type": "code",
+      "content": "def insertion_sort(a):\n    for i in range(1, len(a)):\n        wert = a[i]\n        j = i - 1\n        while j >= 0 and a[j] > wert:\n            a[j + 1] = a[j]\n            j -= 1\n        a[j + 1] = wert\n\nz = [7, 4, 9, 1]\ninsertion_sort(z)\nprint(z)  # [1, 4, 7, 9]\n# i=1: [4, 7, 9, 1]\n# i=2: [4, 7, 9, 1]  (9 bleibt)\n# i=3: [1, 4, 7, 9]"
+    },
+    {
+      "type": "text",
+      "content": "Alle drei Verfahren sortieren direkt in der Liste (ohne zweite Liste) und brauchen bei n Elementen im Normalfall rund n²/2 Vergleiche: Doppelt so viele Elemente bedeuten etwa viermal so viel Arbeit (quadratischer Aufwand). Die Unterschiede liegen im Detail, siehe Tabelle. In der Praxis verwendest du sort() bzw. sorted(): Pythons eingebautes Verfahren (Timsort) ist bei großen Listen um ein Vielfaches schneller."
+    },
+    {
+      "type": "code",
+      "content": "          |Bubble |Selection|Insertion\n----------+-------+---------+---------\nVergleiche| ~n²/2 | ~n²/2   | ~n²/2\nsortierte | n-1   | ~n²/2   | n-1\nEingabe   |(Flag) |(immer!) |\nTausche   | viele | max. n-1| schiebt\nStärke    |einfach| wenige  | fast\n          |       | Tausche | sortiert"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Die innere Schleife läuft eins zu weit (range(n) statt range(n - 1 - i)) – dann greift a[j + 1] über das Listenende hinaus und es gibt einen IndexError. Oder der Tausch ohne Hilfsvariable (a[j] = a[j + 1]; a[j + 1] = a[j]) überschreibt einen Wert. Zusammenfassung: Bubble Sort tauscht Nachbarn, Selection Sort wählt das Minimum, Insertion Sort fügt ein. Alle sind quadratisch, Insertion Sort ist bei fast sortierten Daten am schnellsten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie sieht die Liste [6, 2, 9, 1, 5] nach dem ERSTEN Durchlauf von Bubble Sort aus?",
+      "options": [
+        "[1, 2, 5, 6, 9]",
+        "[2, 6, 1, 5, 9]",
+        "[2, 6, 9, 1, 5]",
+        "[1, 6, 2, 9, 5]"
+      ],
+      "correctIndex": 1,
+      "explanation": "6>2 tauschen → [2,6,9,1,5]; 6<9 bleibt; 9>1 tauschen → [2,6,1,9,5]; 9>5 tauschen → [2,6,1,5,9]. Die 9 ist ganz nach hinten „aufgestiegen“."
+    },
+    {
+      "question": "Wie sieht [29, 10, 14, 37, 13] nach ZWEI Durchläufen von Selection Sort aus?",
+      "options": [
+        "[10, 13, 14, 37, 29]",
+        "[10, 14, 29, 13, 37]",
+        "[10, 29, 14, 37, 13]",
+        "[10, 13, 29, 37, 14]"
+      ],
+      "correctIndex": 0,
+      "explanation": "Durchlauf 1: Minimum 10 nach vorne → [10, 29, 14, 37, 13]. Durchlauf 2: Minimum im Rest ist 13, es wird mit der 29 getauscht → [10, 13, 14, 37, 29]."
+    },
+    {
+      "question": "Eine Liste ist schon fast sortiert, nur ein Element steht an der falschen Stelle. Welches Verfahren eignet sich am besten?",
+      "options": [
+        "Selection Sort",
+        "Bubble Sort ohne Abbruch-Flag",
+        "Insertion Sort",
+        "Alle drei sind gleich schnell"
+      ],
+      "correctIndex": 2,
+      "explanation": "Insertion Sort muss bei fast sortierten Daten kaum etwas verschieben und braucht nur knapp n Vergleiche. Selection Sort und Bubble Sort ohne Flag machen immer rund n²/2 Vergleiche."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "a = [3, 1, 2]\nn = len(a)\nfor i in range(n - 1):\n    for j in range(n - i):\n        if a[j] > a[j + 1]:\n            a[j], a[j + 1] = a[j + 1], a[j]\nprint(a)",
+      "options": [
+        "Die Liste wird korrekt sortiert",
+        "IndexError: list index out of range",
+        "Endlosschleife",
+        "Die Liste bleibt unverändert"
+      ],
+      "correctIndex": 1,
+      "explanation": "Im ersten Durchlauf (i = 0) läuft j bis n - 1. Dann greift a[j + 1] auf a[n] zu – diesen Index gibt es nicht. Richtig wäre range(n - 1 - i)."
+    }
+  ]
+}

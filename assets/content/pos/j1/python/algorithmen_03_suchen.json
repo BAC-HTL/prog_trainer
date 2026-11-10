@@ -1,0 +1,90 @@
+{
+  "id": "pos-j1-python-algorithmen_03_suchen",
+  "title": "Suchen: linear und binär",
+  "summary": "Zwei Basisalgorithmen, um ein Element in einer Liste zu finden, und warum Sortieren so viel Zeit sparen kann.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Suchen ist eine der häufigsten Aufgaben in der Informatik: einen Namen in der Klassenliste finden, einen Kontakt im Handy, ein Produkt im Webshop. Die Aufgabe: Gegeben ist eine Liste und ein gesuchter Wert. Gesucht ist die Position (Index) des Werts – oder die Meldung „nicht gefunden“. Dafür liefert man üblicherweise -1 zurück, weil das nie ein gültiger Index ist."
+    },
+    {
+      "type": "text",
+      "content": "Die lineare Suche ist der einfachste Ansatz: Du gehst die Liste von vorne nach hinten durch und vergleichst jedes Element mit dem gesuchten Wert. Beim ersten Treffer hörst du sofort auf. Die Liste muss dafür nicht sortiert sein."
+    },
+    {
+      "type": "code",
+      "content": "def lineare_suche(liste, ziel):\n    for i in range(len(liste)):\n        if liste[i] == ziel:\n            return i\n    return -1\n\nnamen = [\"Lea\", \"Tom\", \"Ali\", \"Mia\"]\nprint(lineare_suche(namen, \"Ali\"))  # 2\nprint(lineare_suche(namen, \"Max\"))  # -1"
+    },
+    {
+      "type": "text",
+      "content": "Aufwand der linearen Suche bei n Elementen: Im besten Fall steht das Gesuchte ganz vorne (1 Vergleich), im schlechtesten Fall ganz hinten oder gar nicht in der Liste (n Vergleiche). Verdoppelt sich die Liste, verdoppelt sich auch die Arbeit – man spricht von linearem Aufwand. Übrigens: Pythons in-Operator und liste.index() arbeiten intern genauso."
+    },
+    {
+      "type": "text",
+      "content": "Die binäre Suche ist viel schneller, funktioniert aber NUR bei sortierten Listen. Die Idee kennst du vom Zahlenraten (1 bis 100): Du schaust in die Mitte. Ist der gesuchte Wert größer, suchst du nur noch in der rechten Hälfte weiter, sonst in der linken. Mit jedem Schritt halbiert sich der Suchbereich. links und rechts markieren die Grenzen des Bereichs, der noch in Frage kommt."
+    },
+    {
+      "type": "code",
+      "content": "def binaere_suche(liste, ziel):\n    links = 0\n    rechts = len(liste) - 1\n    while links <= rechts:\n        mitte = (links + rechts) // 2\n        if liste[mitte] == ziel:\n            return mitte\n        elif liste[mitte] < ziel:\n            links = mitte + 1\n        else:\n            rechts = mitte - 1\n    return -1\n\nz = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]\nprint(binaere_suche(z, 23))  # 5\nprint(binaere_suche(z, 7))   # -1"
+    },
+    {
+      "type": "code",
+      "content": "Suche 23 in der Liste z (Index 0–9):\nlinks | rechts | mitte | z[mitte]\n------+--------+-------+---------\n  0   |   9    |   4   | 16 < 23\n  5   |   9    |   7   | 56 > 23\n  5   |   6    |   5   | 23 ✓\n→ gefunden an Index 5 nach 3 Vergleichen"
+    },
+    {
+      "type": "text",
+      "content": "Weil sich der Bereich jedes Mal halbiert, braucht die binäre Suche höchstens etwa log₂(n) + 1 Vergleiche: bei 1 000 Elementen höchstens 10, bei 1 000 000 Elementen höchstens 20 – die lineare Suche bräuchte im schlechtesten Fall eine Million! Dafür muss die Liste vorher sortiert sein, was selbst Zeit kostet. Bei kleinen oder unsortierten Listen, die nur einmal durchsucht werden, ist die lineare Suche daher oft die bessere Wahl."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler bei der binären Suche:\n• Die Liste ist nicht sortiert – dann liefert die Suche falsche Ergebnisse, ohne zu melden.\n• while links < rechts statt <= – dann wird das letzte verbleibende Element nie geprüft.\n• links = mitte statt mitte + 1 – der Bereich wird nicht kleiner, das Programm hängt in einer Endlosschleife.\nZusammenfassung: Linear – einfach, für jede Liste, bis zu n Vergleiche. Binär – nur sortiert, aber nur rund log₂(n) Vergleiche."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def suche(liste, ziel):\n    for i in range(len(liste)):\n        if liste[i] == ziel:\n            return i\n    return -1\n\nprint(suche([7, 3, 9, 3, 5], 3))",
+      "options": [
+        "1",
+        "3",
+        "[1, 3]",
+        "-1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die lineare Suche bricht beim ersten Treffer mit return ab. Die erste 3 steht an Index 1."
+    },
+    {
+      "question": "Eine Liste hat 50 Elemente. Wie viele Vergleiche braucht die lineare Suche, wenn der gesuchte Wert NICHT in der Liste ist?",
+      "options": [
+        "1",
+        "25",
+        "6",
+        "50"
+      ],
+      "correctIndex": 3,
+      "explanation": "Um sicher zu sein, dass der Wert fehlt, muss jedes der 50 Elemente geprüft werden. Das ist der schlechteste Fall der linearen Suche."
+    },
+    {
+      "question": "Die binäre Suche (wie in der Lektion) sucht 42 in [3, 8, 15, 21, 30, 42, 57]. Mit welchen Elementen wird der Reihe nach verglichen?",
+      "options": [
+        "21, 30, 42",
+        "21, 42",
+        "30, 42",
+        "3, 8, 15, 21, 30, 42"
+      ],
+      "correctIndex": 1,
+      "explanation": "links = 0, rechts = 6 → mitte = 3 (21 < 42) → links = 4. Dann mitte = (4 + 6) // 2 = 5 → 42 gefunden. Es sind nur 2 Vergleiche."
+    },
+    {
+      "question": "Wie viele Vergleiche braucht die binäre Suche bei einer sortierten Liste mit 100 Elementen höchstens?",
+      "options": [
+        "50",
+        "7",
+        "10",
+        "100"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Bereich halbiert sich: 100 → 50 → 25 → 12 → 6 → 3 → 1. Spätestens im 7. Schritt ist nur noch ein Element übrig (log₂(100) ≈ 6,6, also höchstens 7 Vergleiche)."
+    }
+  ]
+}

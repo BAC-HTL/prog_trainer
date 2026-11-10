@@ -1,0 +1,91 @@
+{
+  "id": "pos-j2-python-listen_01_verkettete_listen",
+  "title": "Verkettete Listen",
+  "summary": "Daten als Kette von Knoten speichern – einfach und doppelt verkettet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Python-Liste speichert ihre Elemente direkt hintereinander im Speicher. Fügst du vorne etwas ein, müssen alle anderen Elemente um einen Platz nach hinten rücken. Eine verkettete Liste funktioniert anders: Jedes Element steckt in einem Knoten, und jeder Knoten kennt seinen Nachfolger – wie bei einer Schnitzeljagd, bei der jeder Hinweis verrät, wo der nächste liegt."
+    },
+    {
+      "type": "code",
+      "content": "class Knoten:\n    def __init__(self, wert):\n        self.wert = wert\n        self.next = None\n\na = Knoten(\"Mo\")\nb = Knoten(\"Di\")\na.next = b          # a zeigt auf b\nprint(a.next.wert)  # Di\nprint(b.next)       # None"
+    },
+    {
+      "type": "text",
+      "content": "Die Liste selbst merkt sich nur den ersten Knoten, den Kopf (head). Der letzte Knoten zeigt auf None. Zum Durchlaufen startest du beim Kopf und gehst mit akt = akt.next weiter, bis akt None ist. Vorne einfügen ist schnell: Der neue Knoten zeigt auf den alten Kopf und wird selbst zum Kopf. Hinten einfügen musst du erst bis zum letzten Knoten laufen – und an den Sonderfall „Liste leer“ denken."
+    },
+    {
+      "type": "code",
+      "content": "class Knoten:\n    def __init__(self, wert):\n        self.wert = wert\n        self.next = None\n\nclass VerketteteListe:\n    def __init__(self):\n        self.head = None\n\n    def vorne_einfuegen(self, wert):\n        neu = Knoten(wert)\n        neu.next = self.head\n        self.head = neu\n\n    def hinten_einfuegen(self, wert):\n        neu = Knoten(wert)\n        if self.head is None:\n            self.head = neu\n            return\n        akt = self.head\n        while akt.next is not None:\n            akt = akt.next\n        akt.next = neu\n\n    def ausgeben(self):\n        akt = self.head\n        while akt is not None:\n            print(akt.wert, end=\" \")\n            akt = akt.next\n        print()\n\nl = VerketteteListe()\nl.hinten_einfuegen(2)\nl.hinten_einfuegen(3)\nl.vorne_einfuegen(1)\nl.ausgeben()    # 1 2 3"
+    },
+    {
+      "type": "text",
+      "content": "Löschen: Du suchst den Knoten VOR dem zu löschenden Knoten und biegst seinen next-Zeiger auf den übernächsten Knoten um. Der gelöschte Knoten ist dann nicht mehr erreichbar, Python räumt ihn automatisch weg. Sonderfall: Soll der Kopf gelöscht werden, wird einfach head auf den zweiten Knoten gesetzt. Vergisst du die Sonderfälle, greifst du schnell auf None.wert zu – das gibt einen AttributeError."
+    },
+    {
+      "type": "code",
+      "content": "# Methode der Klasse VerketteteListe\n    def loeschen(self, wert):\n        if self.head is None:\n            return\n        if self.head.wert == wert:\n            self.head = self.head.next\n            return\n        akt = self.head\n        while akt.next is not None:\n            if akt.next.wert == wert:\n                akt.next = akt.next.next\n                return\n            akt = akt.next\n\nl = VerketteteListe()\nfor tag in [\"Mo\", \"Di\", \"Mi\", \"Do\"]:\n    l.hinten_einfuegen(tag)\nl.loeschen(\"Mi\")\nl.loeschen(\"Mo\")\nl.ausgeben()    # Di Do\n"
+    },
+    {
+      "type": "text",
+      "content": "Bei einer doppelt verketteten Liste kennt jeder Knoten zusätzlich seinen Vorgänger (prev). Vorteile: Du kannst auch rückwärts durchlaufen, und ein bekannter Knoten lässt sich direkt entfernen, weil du seinen Vorgänger kennst. Nachteile: mehr Speicher pro Knoten, und bei jedem Einfügen und Löschen musst du doppelt so viele Zeiger richtig setzen."
+    },
+    {
+      "type": "code",
+      "content": "class DKnoten:\n    def __init__(self, wert):\n        self.wert = wert\n        self.prev = None\n        self.next = None\n\na, b, c = DKnoten(1), DKnoten(2), DKnoten(3)\na.next, b.prev = b, a\nb.next, c.prev = c, b\n\nakt = c              # Ende (tail)\nwhile akt is not None:\n    print(akt.wert, end=\" \")\n    akt = akt.prev   # 3 2 1"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine verkettete Liste besteht aus Knoten mit Wert und Zeiger auf den Nachfolger (doppelt verkettet: auch auf den Vorgänger). Vorne einfügen und löschen geht ohne Verschieben, dafür gibt es keinen direkten Zugriff per Index – du musst immer vom Kopf aus durchlaufen. Verkettete Knoten sind die Grundlage für Stack, Queue und Bäume."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "a, b, c = Knoten(1), Knoten(2), Knoten(3)\na.next = b\nb.next = c\nprint(a.next.next.wert)",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "None"
+      ],
+      "correctIndex": 2,
+      "explanation": "a.next ist b, und b.next ist c. a.next.next.wert ist also der Wert von c."
+    },
+    {
+      "question": "Warum ist vorne Einfügen bei einer verketteten Liste schnell?",
+      "options": [
+        "Es werden nur der neue Knoten und head geändert, nichts wird verschoben",
+        "Weil Python die Liste automatisch sortiert",
+        "Weil verkettete Listen weniger Speicher brauchen",
+        "Weil man per Index direkt auf jedes Element zugreift"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der neue Knoten zeigt auf den alten Kopf und wird zum neuen Kopf – egal wie lang die Liste ist."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert hier?",
+      "code": "l = VerketteteListe()\nprint(l.head.wert)",
+      "options": [
+        "None wird ausgegeben",
+        "AttributeError",
+        "IndexError",
+        "0 wird ausgegeben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Liste ist leer, head ist None. None hat kein Attribut wert, daher AttributeError: 'NoneType' object has no attribute 'wert'."
+    },
+    {
+      "question": "Welchen Vorteil hat eine doppelt verkettete Liste gegenüber einer einfach verketteten?",
+      "options": [
+        "Sie braucht weniger Speicher",
+        "Man kann per Index direkt auf Elemente zugreifen",
+        "Einfügen ist einfacher, weil weniger Zeiger gesetzt werden",
+        "Man kann sie auch rückwärts durchlaufen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jeder Knoten kennt seinen Vorgänger (prev). Dafür kostet sie mehr Speicher und es sind mehr Zeiger zu pflegen."
+    }
+  ]
+}

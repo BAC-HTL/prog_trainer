@@ -1,0 +1,95 @@
+{
+  "id": "tinf-j2-webapps_03_datenanbindung",
+  "title": "Daten laden mit fetch und JSON",
+  "summary": "Daten per fetch als JSON vom Server holen, REST verstehen und den Weg von der Datenbank bis zur Anzeige nachvollziehen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Moderne Webapps laden nicht bei jedem Klick eine ganz neue Seite. Stattdessen holt JavaScript im Hintergrund nur die Daten vom Server und baut sie ins DOM ein. Als Datenformat wird fast immer JSON (JavaScript Object Notation) verwendet.\n\nJSON-Regeln: Objekte in { }, Arrays in [ ], Schlüssel IMMER in doppelten Anführungszeichen. Erlaubte Werte: Strings (\"…\"), Zahlen, true/false, null, Objekte und Arrays. Keine Kommentare, kein Komma nach dem letzten Element, keine einfachen Anführungszeichen."
+    },
+    {
+      "type": "code",
+      "content": "const text = '{\"klasse\": \"2AHIF\",' +\n  ' \"schueler\": 24,' +\n  ' \"faecher\": [\"AM\", \"POS\"]}';\n\nconst daten = JSON.parse(text);\nconsole.log(daten.faecher[1]);\n// POS\n\nconst neu = { titel: \"Test\",\n  datum: \"2026-11-27\" };\nconsole.log(JSON.stringify(neu));\n// {\"titel\":\"Test\",\"datum\":\"2026-11-27\"}"
+    },
+    {
+      "type": "text",
+      "content": "JSON.parse() macht aus einem JSON-String ein JavaScript-Objekt, JSON.stringify() wandelt umgekehrt ein Objekt in einen String um, den du verschicken kannst.\n\nREST ist eine verbreitete Idee, wie man eine Web-API gestaltet: Jede Ressource (z. B. Schüler:innen) hat eine eigene URL. Was du damit machen willst, sagt die HTTP-Methode. Antworten kommen als JSON mit passendem Statuscode."
+    },
+    {
+      "type": "code",
+      "content": "Methode URL               Aktion\nGET    /api/schueler     alle lesen\nGET    /api/schueler/7   einen lesen\nPOST   /api/schueler     neu anlegen\nPUT    /api/schueler/7   ändern\nDELETE /api/schueler/7   löschen"
+    },
+    {
+      "type": "text",
+      "content": "Mit fetch(url) schickt JavaScript einen Request. Weil die Antwort etwas dauert, liefert fetch ein Promise – ein „Versprechen“ auf ein späteres Ergebnis. Mit await wartest du darauf; await darf nur in einer async-Funktion stehen.\n\nAchtung: fetch wirft nur bei Netzwerkfehlern (z. B. Server nicht erreichbar) einen Fehler. Bei 404 oder 500 klappt fetch ganz normal! Deshalb prüfst du response.ok (true bei Status 200–299). Den Body liest du mit await response.json().\n\nNeue Elemente erzeugst du mit document.createElement(\"li\") und hängst sie mit append() ein."
+    },
+    {
+      "type": "code",
+      "content": "async function ladeTermine() {\n  const url =\n    \"/api/termine?klasse=2AHIF\";\n  const antwort = await fetch(url);\n  if (!antwort.ok) {\n    throw new Error(\n      \"HTTP \" + antwort.status);\n  }\n  const termine =\n    await antwort.json();\n\n  const liste = document\n    .querySelector(\"#termine\");\n  for (const t of termine) {\n    const li =\n      document.createElement(\"li\");\n    li.textContent =\n      t.datum + \": \" + t.titel;\n    liste.append(li);\n  }\n}\n\nladeTermine().catch((fehler) => {\n  console.log(\"Fehler:\",\n    fehler.message);\n});"
+    },
+    {
+      "type": "code",
+      "content": "// Neuen Termin anlegen (POST)\nasync function speichere(termin) {\n  const antwort = await fetch(\n    \"/api/termine\", {\n      method: \"POST\",\n      headers: {\"Content-Type\":\n        \"application/json\"},\n      body: JSON.stringify(termin)\n    });\n  return antwort.status;\n}\n\nspeichere({ titel: \"Test POS\",\n  datum: \"2026-11-27\" })\n  .then((s) => console.log(s));\n// 201, wenn alles klappt"
+    },
+    {
+      "type": "text",
+      "content": "Woher kommen die Daten? Der Browser greift NIE direkt auf die Datenbank zu – dann wären Zugangsdaten für alle sichtbar. Der Ablauf ist immer: Browser → Backend → Datenbank → Backend → Browser.\n\nDas Backend fügt Werte aus der Anfrage nicht als Text ins SQL ein, sondern verwendet Platzhalter (?, Prepared Statements). Sonst könnte jemand über die URL eigenen SQL-Code einschleusen (SQL-Injection)."
+    },
+    {
+      "type": "code",
+      "content": "Browser (JS)\n  │ GET /api/termine?klasse=2AHIF\n  ▼\nBackend\n  │ SELECT datum, titel\n  │ FROM termine\n  │ WHERE klasse = ?\n  │ ORDER BY datum\n  ▼\nDatenbank → liefert die Zeilen\n  ▼\nBackend: Zeilen → JSON\n  │ 200 OK\n  │ Content-Type: application/json\n  ▼\nBrowser: await antwort.json()\n  → pro Termin ein <li> ins DOM"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: response.ok nicht prüfen, await vergessen (dann hast du ein Promise statt der Daten), ungültiges JSON mit einfachen Anführungszeichen oder Komma am Ende schreiben und Daten mit innerHTML statt textContent einfügen.\n\nZusammenfassung: Daten reisen als JSON. REST ordnet Ressourcen URLs zu und nutzt die HTTP-Methoden als Aktionen. fetch + await + response.json() holt die Daten, das Backend liest sie per SQL aus der Datenbank, und JavaScript zeigt sie im DOM an."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welcher Text ist gültiges JSON?",
+      "options": [
+        "{'name': 'Lea', 'alter': 16}",
+        "{name: \"Lea\", alter: 16}",
+        "{\"name\": \"Lea\", \"alter\": 16,}",
+        "{\"name\": \"Lea\", \"alter\": 16}"
+      ],
+      "correctIndex": 3,
+      "explanation": "In JSON müssen Schlüssel und Strings in doppelten Anführungszeichen stehen, und nach dem letzten Element darf kein Komma folgen."
+    },
+    {
+      "question": "Der Server antwortet mit 404. Was gibt der Code aus?",
+      "code": "const r = await fetch(\n  \"/api/gibtsnicht\");\nconsole.log(r.ok, r.status);",
+      "options": [
+        "Es wird ein Fehler geworfen, nichts ausgegeben",
+        "false 404",
+        "true 404",
+        "undefined undefined"
+      ],
+      "correctIndex": 1,
+      "explanation": "fetch wirft bei 404 keinen Fehler – die Antwort kommt ja an. response.ok ist aber false, weil der Status nicht im Bereich 200–299 liegt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "const obj = JSON.parse(\n  '{\"a\": [1, 2, 3]}');\nconsole.log(obj.a.length);",
+      "options": [
+        "3",
+        "1",
+        "undefined",
+        "Fehler: kein gültiges JSON"
+      ],
+      "correctIndex": 0,
+      "explanation": "JSON.parse erzeugt ein Objekt mit dem Array a = [1, 2, 3]. Seine Länge ist 3."
+    },
+    {
+      "question": "Nach REST: Mit welcher Anfrage löschst du den Schüler mit der ID 7?",
+      "options": [
+        "GET /api/schueler/delete?id=7",
+        "POST /api/schueler/7",
+        "DELETE /api/schueler/7",
+        "DELETE /api/schueler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Ressource wird über ihre URL /api/schueler/7 angesprochen, die Aktion über die Methode DELETE."
+    }
+  ]
+}

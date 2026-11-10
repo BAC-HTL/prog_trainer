@@ -1,0 +1,96 @@
+{
+  "id": "pos-j2-python-regex_02_regex_anwenden",
+  "title": "Reguläre Ausdrücke anwenden",
+  "summary": "Mit re.search, findall, sub und fullmatch suchen, ersetzen und Eingaben prüfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "re.search(muster, text) sucht den ERSTEN Treffer irgendwo im Text. Das Ergebnis ist ein Match-Objekt oder None, wenn nichts gefunden wurde. Mit group() bekommst du den gefundenen Text, mit group(1), group(2) … den Inhalt der Gruppen. Prüfe immer zuerst auf None – sonst gibt es einen AttributeError."
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nm = re.search(r\"(\\d+)\\.(\\d+)\\.\",\n              \"Test am 14.01. um 8\")\nif m:\n    print(m.group())    # 14.01.\n    print(m.group(1))   # 14\n    print(m.group(2))   # 01\n\nprint(re.search(r\"\\d\", \"keine\"))  # None"
+    },
+    {
+      "type": "text",
+      "content": "Zum Prüfen von Eingaben nimmst du re.fullmatch: Es gibt nur dann ein Match-Objekt zurück, wenn der GESAMTE Text zum Muster passt. Typischer Fehler: Validieren mit search – dann wird auch „abc1100xyz“ als Postleitzahl akzeptiert. re.match prüft übrigens nur den Anfang des Texts, nicht das Ende."
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nplz = r\"\\d{4}\"\nprint(re.search(plz, \"PLZ 1100\"))\n# <re.Match object; span=(4, 8), match='1100'>\nprint(re.fullmatch(plz, \"PLZ 1100\"))\n# None\nprint(re.fullmatch(plz, \"1100\") is not None)\n# True"
+    },
+    {
+      "type": "text",
+      "content": "re.sub(muster, ersatz, text) ersetzt alle Treffer. Im Ersatztext verweist \\1, \\2 … auf die Gruppen – damit kannst du Teile umstellen. Praktisch zum Aufräumen von Eingaben oder zum Anonymisieren."
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nprint(re.sub(r\"\\s+\", \" \", \"Hallo   Welt !\"))\n# Hallo Welt !\nprint(re.sub(r\"\\d\", \"*\", \"PIN 4711\"))\n# PIN ****\ndatum = \"Test am 14.01.2027\"\nprint(re.sub(r\"(\\d{2})\\.(\\d{2})\\.(\\d{4})\",\n             r\"\\3-\\2-\\1\", datum))\n# Test am 2027-01-14"
+    },
+    {
+      "type": "text",
+      "content": "Validierung in der Praxis: Ein Muster soll alle gültigen Eingaben annehmen und die ungültigen ablehnen. Die folgenden Muster sind bewusst vereinfacht:\n• Telefonnummer: beginnt mit +43 oder 0, dann eine Vorwahl mit 3–4 Ziffern, optional Leerzeichen oder /, dann 4–8 Ziffern.\n• Klassenbezeichnung wie 2AHIF: Jahrgang 1–5, Buchstabe der Parallelklasse, H, Abteilungskürzel mit 2–3 Großbuchstaben.\n• Matrikelnummer: hier angenommen genau 8 Ziffern.\n• E-Mail: Name, @, mindestens eine Domain mit Punkt, Endung mit mindestens 2 Buchstaben.\nEchte E-Mail-Regeln sind viel komplizierter. In der Praxis prüft man nur grob und schickt dann eine Bestätigungsmail."
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nTEL = r\"(\\+43|0)\\d{3,4}[ /]?\\d{4,8}\"\n\ndef ist_telefon(s):\n    return re.fullmatch(TEL, s) is not None\n\nprint(ist_telefon(\"0664 1234567\"))   # True\nprint(ist_telefon(\"+436641234567\"))  # True\nprint(ist_telefon(\"0664/123456\"))    # True\nprint(ist_telefon(\"06641\"))          # False\nprint(ist_telefon(\"Tel 06641234567\")) # False"
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nKLASSE = r\"[1-5][A-Z]H[A-Z]{2,3}\"\nMATNR = r\"\\d{8}\"\nMAIL = r\"[\\w.-]+@([\\w-]+\\.)+[a-z]{2,}\"\n\ndef ok(muster, s):\n    return bool(re.fullmatch(muster, s))\n\nprint(ok(KLASSE, \"2AHIF\"))   # True\nprint(ok(KLASSE, \"2ahif\"))   # False\nprint(ok(MATNR, \"12345678\"))  # True\nprint(ok(MAIL, \"max.muster@htl-wien.at\"))\n# True\nprint(ok(MAIL, \"max@schule\"))  # False"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung:\n• re.search – erster Treffer irgendwo (oder None)\n• re.findall – Liste aller Treffer\n• re.sub – Treffer ersetzen, \\1 für Gruppen\n• re.fullmatch – ganzer Text muss passen, ideal zum Validieren\nTeste jedes Muster mit gültigen UND ungültigen Beispielen – gerade die Grenzfälle verraten Fehler."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\nprint(re.fullmatch(r\"\\d{4}\", \"1100 Wien\"))",
+      "options": [
+        "None",
+        "1100",
+        "True",
+        "['1100']"
+      ],
+      "correctIndex": 0,
+      "explanation": "fullmatch verlangt, dass der GANZE Text aus genau vier Ziffern besteht. \" Wien\" passt nicht dazu, daher None."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\nprint(re.sub(r\"[aeiou]\", \"_\", \"Matura\"))",
+      "options": [
+        "M_t_ra",
+        "_a_u_a",
+        "M_t_r_",
+        "Matura"
+      ],
+      "correctIndex": 2,
+      "explanation": "sub ersetzt JEDEN Treffer, also alle drei Vokale a, u und a."
+    },
+    {
+      "question": "Warum verwendet man zum Prüfen einer Eingabe re.fullmatch statt re.search?",
+      "options": [
+        "fullmatch ist schneller",
+        "Bei search würde auch ein passender TEIL der Eingabe genügen",
+        "search kann keine Quantoren",
+        "fullmatch ignoriert Groß- und Kleinschreibung"
+      ],
+      "correctIndex": 1,
+      "explanation": "search findet einen Treffer irgendwo im Text. Eine Eingabe wie \"abc1234xyz\" würde also als gültig durchgehen. fullmatch prüft den ganzen Text."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\nm = re.search(r\"(\\d+)\\.(\\d+)\", \"Note: 1.5\")\nprint(m.group(2))",
+      "options": [
+        "1",
+        "Note",
+        "1.5",
+        "5"
+      ],
+      "correctIndex": 3,
+      "explanation": "group(1) ist die erste Klammer (1), group(2) die zweite Klammer (5)."
+    }
+  ]
+}

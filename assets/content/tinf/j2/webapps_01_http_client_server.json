@@ -1,0 +1,94 @@
+{
+  "id": "tinf-j2-webapps_01_http_client_server",
+  "title": "HTTP: Client und Server",
+  "summary": "Wie Browser und Webserver mit Requests, Responses, Statuscodes und Headern kommunizieren.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im Web gilt das Client-Server-Prinzip: Der Client (meist der Browser, aber auch eine App) schickt eine Anfrage, der Server schickt eine Antwort. Die Sprache dafür ist HTTP (HyperText Transfer Protocol). HTTP ist zustandslos: Jede Anfrage steht für sich, der Server „erinnert“ sich nicht automatisch an die vorige. Ohne Angabe verwendet HTTP den Port 80, HTTPS den Port 443.\n\nWelche Ressource du willst, steht in der URL (Uniform Resource Locator)."
+    },
+    {
+      "type": "code",
+      "content": "https://example.com:8080/suche?q=usb#top\n\nhttps        Schema (Protokoll)\nexample.com  Host (Domain)\n8080         Port\n/suche       Pfad\nq=usb        Query (nach dem ?)\ntop          Fragment (nach dem #)"
+    },
+    {
+      "type": "text",
+      "content": "Mehrere Query-Parameter trennst du mit &, z. B. ?klasse=2AHIF&seite=2. Das Fragment (#…) schickt der Browser gar nicht an den Server – es springt nur zu einer Stelle in der Seite.\n\nEine HTTP-Anfrage (Request) besteht aus:\n1. Startzeile: Methode, Pfad, HTTP-Version\n2. Header-Zeilen: Name: Wert\n3. einer Leerzeile\n4. optional einem Body (z. B. Formulardaten)\nDie Antwort (Response) ist gleich aufgebaut, nur steht in der Startzeile ein Statuscode."
+    },
+    {
+      "type": "code",
+      "content": "GET /termine?klasse=2AHIF HTTP/1.1\nHost: www.example.com\nAccept: text/html\n\n--- Antwort ---\n\nHTTP/1.1 200 OK\nContent-Type: text/html;\n  charset=utf-8\nContent-Length: 1532\n\n<!DOCTYPE html>\n<html lang=\"de\">…"
+    },
+    {
+      "type": "text",
+      "content": "Die Methode sagt, was der Client will:\n• GET – Daten lesen (z. B. eine Seite laden). Kein Body, Parameter stehen in der URL.\n• POST – Daten schicken, um etwas Neues anzulegen (z. B. Formular absenden).\n• PUT – eine Ressource ersetzen/ändern.\n• DELETE – eine Ressource löschen.\n\nGET darf auf dem Server nichts verändern. Passwörter gehören nie in die URL, denn URLs landen im Browserverlauf und in Server-Logs.\n\nIn der Antwort zeigt der Statuscode, wie die Anfrage ausgegangen ist. Die erste Ziffer verrät die Klasse: 2 heißt Erfolg, 4 heißt, die Anfrage war falsch (z. B. Tippfehler im Pfad → 404), 5 heißt, der Server hat ein Problem (z. B. ein Absturz im Server-Code → 500)."
+    },
+    {
+      "type": "code",
+      "content": "1xx  Info (selten zu sehen)\n2xx  Erfolg\n  200 OK\n  201 Created (neu angelegt)\n  204 No Content\n3xx  Umleitung\n  301 Moved Permanently\n  302 Found (vorübergehend)\n  304 Not Modified (Cache)\n4xx  Fehler beim Client\n  400 Bad Request\n  401 Unauthorized (nicht\n      angemeldet)\n  403 Forbidden (keine Rechte)\n  404 Not Found\n5xx  Fehler beim Server\n  500 Internal Server Error\n  503 Service Unavailable"
+    },
+    {
+      "type": "text",
+      "content": "Header liefern Zusatzinfos. Wichtige Beispiele:\n• Host – welcher Server gemeint ist (Pflicht bei HTTP/1.1)\n• Content-Type – Art des Bodys, z. B. text/html oder application/json\n• Content-Length – Größe des Bodys in Byte\n• Location – Ziel einer Umleitung (bei 3xx)\n• Set-Cookie / Cookie – Cookies setzen bzw. mitschicken\n• User-Agent – welcher Browser anfragt"
+    },
+    {
+      "type": "text",
+      "content": "HTTP überträgt alles im Klartext. Jeder im selben WLAN oder ein Router unterwegs könnte mitlesen – auch Passwörter. HTTPS ist HTTP über eine verschlüsselte TLS-Verbindung:\n• Verschlüsselung: Inhalt, Pfad, Query und Header sind für Dritte nicht lesbar.\n• Integrität: Unterwegs kann niemand unbemerkt etwas verändern.\n• Echtheit: Ein Zertifikat einer vertrauenswürdigen Zertifizierungsstelle beweist, dass du wirklich mit example.com sprichst.\nSichtbar bleiben aber z. B. die IP-Adressen und meist der Domainname. HTTPS ist heute Standard für jede Website."
+    },
+    {
+      "type": "code",
+      "content": "Im Browser: F12 → Netzwerk (Network)\nSeite neu laden, Anfrage anklicken:\n\nRequest URL: https://…/index.html\nRequest Method: GET\nStatus Code: 200 OK\n\nResponse Headers:\n  content-type: text/html\n\nIn der Konsole (Shell):\ncurl -i https://example.com\n# -i zeigt auch die Header"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: 401 und 403 verwechseln (401 = nicht angemeldet, 403 = angemeldet, aber keine Berechtigung), denken, dass GET-Daten „versteckt“ sind, und annehmen, dass HTTPS die besuchte Domain vollständig verbirgt.\n\nZusammenfassung: Der Client schickt einen Request (Methode, Pfad, Header, Body), der Server antwortet mit Statuscode, Headern und Body. HTTPS verschlüsselt diese Kommunikation mit TLS und prüft die Identität des Servers per Zertifikat."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Formular legt per POST einen neuen Termin an. Welcher Statuscode passt am besten zur erfolgreichen Antwort?",
+      "options": [
+        "404 Not Found",
+        "301 Moved Permanently",
+        "500 Internal Server Error",
+        "201 Created"
+      ],
+      "correctIndex": 3,
+      "explanation": "201 Created bedeutet: Die Anfrage war erfolgreich und eine neue Ressource wurde angelegt. 200 OK wäre auch noch erfolgreich, 201 ist aber genauer."
+    },
+    {
+      "question": "Welcher Teil dieser URL ist der Query-String?",
+      "code": "https://example.com/api/schueler\n  ?klasse=2AHIF&seite=2#liste",
+      "options": [
+        "/api/schueler",
+        "klasse=2AHIF&seite=2",
+        "liste",
+        "example.com"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Query-String steht nach dem ? und vor dem #. Mehrere Parameter werden mit & getrennt. /api/schueler ist der Pfad, liste das Fragment."
+    },
+    {
+      "question": "Lea ist im Schulportal angemeldet, öffnet aber die Verwaltungsseite für Lehrkräfte. Welcher Statuscode passt?",
+      "options": [
+        "401 Unauthorized",
+        "404 Not Found",
+        "403 Forbidden",
+        "400 Bad Request"
+      ],
+      "correctIndex": 2,
+      "explanation": "Lea ist angemeldet, hat aber keine Berechtigung: 403 Forbidden. 401 würde bedeuten, dass sie gar nicht angemeldet ist."
+    },
+    {
+      "question": "Woran erkennt der Empfänger, wo bei einer HTTP-Nachricht die Header enden und der Body beginnt?",
+      "options": [
+        "An einer Leerzeile",
+        "Am Header Body-Start",
+        "Am Zeichen #",
+        "Der Body steht immer in der ersten Zeile"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nach dem letzten Header folgt eine Leerzeile. Alles danach ist der Body; seine Länge steht z. B. in Content-Length."
+    }
+  ]
+}

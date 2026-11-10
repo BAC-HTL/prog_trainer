@@ -1,0 +1,95 @@
+{
+  "id": "pos-j2-python-rekursion_03_rekursive_algorithmen",
+  "title": "Rekursive Algorithmen",
+  "summary": "Fibonacci, schnelles Potenzieren, Binärsuche und die Türme von Hanoi – und was sie über Effizienz verraten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Fibonacci-Folge: fib(0) = 0, fib(1) = 1, und jede weitere Zahl ist die Summe der beiden vorherigen. Die naive Umsetzung ruft sich zweimal auf. Das Problem: Dieselben Werte werden immer wieder neu berechnet – fib(5) berechnet fib(3) zweimal und fib(2) dreimal. Die Anzahl der Aufrufe wächst exponentiell. Abhilfe schafft Memoization: Bereits berechnete Ergebnisse merkst du dir in einem Dictionary."
+    },
+    {
+      "type": "code",
+      "content": "aufrufe = 0\n\ndef fib(n):\n    global aufrufe\n    aufrufe += 1\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(20))    # 6765\nprint(aufrufe)    # 21891"
+    },
+    {
+      "type": "code",
+      "content": "memo = {}\n\ndef fib_m(n):\n    if n < 2:\n        return n\n    if n in memo:\n        return memo[n]\n    memo[n] = fib_m(n - 1) + fib_m(n - 2)\n    return memo[n]\n\nprint(fib_m(80))  # 23416728348467685"
+    },
+    {
+      "type": "text",
+      "content": "Schnelles Potenzieren: x hoch n braucht naiv n Multiplikationen. Schlauer: Bei geradem n gilt xⁿ = (x^(n/2))², bei ungeradem n gilt xⁿ = x · x^(n−1). Damit halbiert sich n spätestens bei jedem zweiten Schritt – für n = 1000 reichen 16 Aufrufe statt 1000 Multiplikationen."
+    },
+    {
+      "type": "code",
+      "content": "def potenz(x, n):\n    if n == 0:\n        return 1\n    if n % 2 == 0:\n        h = potenz(x, n // 2)\n        return h * h\n    return x * potenz(x, n - 1)\n\nprint(potenz(2, 10))   # 1024"
+    },
+    {
+      "type": "text",
+      "content": "Binärsuche rekursiv: In einer SORTIERTEN Liste vergleichst du das gesuchte Element mit der Mitte. Ist es kleiner, suchst du links weiter, sonst rechts. Statt die Liste mit Slicing zu kopieren, übergibst du die Grenzen li und re. Ist li > re, ist der Bereich leer – das Element fehlt."
+    },
+    {
+      "type": "code",
+      "content": "def suche(liste, ziel, li, re):\n    if li > re:\n        return -1          # nicht da\n    mitte = (li + re) // 2\n    if liste[mitte] == ziel:\n        return mitte\n    if ziel < liste[mitte]:\n        return suche(liste, ziel,\n                     li, mitte - 1)\n    return suche(liste, ziel,\n                 mitte + 1, re)\n\npunkte = [12, 25, 31, 47, 58, 63, 77]\nprint(suche(punkte, 58, 0, 6))  # 4\nprint(suche(punkte, 50, 0, 6))  # -1"
+    },
+    {
+      "type": "text",
+      "content": "Türme von Hanoi: n Scheiben sollen von Stab A nach C, nie darf eine größere auf einer kleineren liegen. Rekursive Idee: Verschiebe n − 1 Scheiben auf den Hilfsstab, dann die größte Scheibe ans Ziel, dann die n − 1 Scheiben vom Hilfsstab aufs Ziel. Das braucht 2ⁿ − 1 Züge – bei 3 Scheiben also 7."
+    },
+    {
+      "type": "code",
+      "content": "def hanoi(n, von, nach, hilf):\n    if n == 0:\n        return\n    hanoi(n - 1, von, hilf, nach)\n    print(von, \"->\", nach)\n    hanoi(n - 1, hilf, nach, von)\n\nhanoi(2, \"A\", \"C\", \"B\")\n# A -> B\n# A -> C\n# B -> C"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Rekursion ist elegant, aber nicht automatisch effizient. Mehrfache Aufrufe mit denselben Werten (Fibonacci) kosten exponentiell viel Zeit – Memoization hilft. Halbiert ein Algorithmus das Problem bei jedem Schritt (Potenz, Binärsuche), ist er sehr schnell. Achte bei der Binärsuche darauf, dass die Liste sortiert ist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def potenz(x, n):\n    if n == 0:\n        return 1\n    if n % 2 == 0:\n        h = potenz(x, n // 2)\n        return h * h\n    return x * potenz(x, n - 1)\n\nprint(potenz(3, 4))",
+      "options": [
+        "12",
+        "81",
+        "64",
+        "7"
+      ],
+      "correctIndex": 1,
+      "explanation": "potenz(3, 4) = potenz(3, 2)² = (potenz(3, 1)²)² = (3²)² = 81."
+    },
+    {
+      "question": "Wie viele Züge braucht man bei den Türmen von Hanoi mit 4 Scheiben mindestens?",
+      "options": [
+        "8",
+        "16",
+        "15",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Formel lautet 2ⁿ − 1. Für n = 4 ergibt das 16 − 1 = 15 Züge."
+    },
+    {
+      "question": "Warum ist die naive rekursive Fibonacci-Funktion so langsam?",
+      "options": [
+        "Dieselben Werte werden immer wieder neu berechnet",
+        "Python kann keine großen Zahlen addieren",
+        "Der Basisfall wird nie erreicht",
+        "Rekursive Funktionen sind grundsätzlich langsam"
+      ],
+      "correctIndex": 0,
+      "explanation": "fib(n) ruft fib(n - 1) und fib(n - 2) auf, die wiederum dieselben kleineren Werte berechnen. Die Aufrufe wachsen exponentiell. Memoization verhindert das."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def suche(l, z, li, re):\n    if li > re:\n        return -1\n    m = (li + re) // 2\n    if l[m] == z:\n        return m\n    if z < l[m]:\n        return suche(l, z, li, m - 1)\n    return suche(l, z, m + 1, re)\n\nprint(suche([3, 8, 15, 21, 30], 9, 0, 4))",
+      "options": [
+        "0",
+        "1",
+        "IndexError",
+        "-1"
+      ],
+      "correctIndex": 3,
+      "explanation": "9 ist nicht in der Liste. Die Grenzen nähern sich, bis li > re gilt, dann liefert der Basisfall -1."
+    }
+  ]
+}

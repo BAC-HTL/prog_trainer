@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j2-adressierung_01_mac_ip",
+  "title": "MAC- und IPv4-Adressen, ARP",
+  "summary": "Die zwei Adressarten im LAN, private IPv4-Bereiche und wie ARP sie miteinander verbindet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im Netz gibt es zwei Arten von Adressen, die zusammenarbeiten: Die MAC-Adresse (Schicht 2) ist fest der Netzwerkkarte zugeordnet und gilt nur im lokalen Netz. Die IP-Adresse (Schicht 3) ist logisch, wird vom Admin oder per DHCP vergeben und ermöglicht die Kommunikation über Netzgrenzen hinweg – vergleichbar mit Seriennummer des Handys und Telefonnummer."
+    },
+    {
+      "type": "text",
+      "content": "Eine MAC-Adresse ist 48 Bit lang und wird als 6 Bytes in Hexadezimal geschrieben, getrennt durch Doppelpunkte oder Bindestriche. Die ersten 3 Bytes sind die OUI (Organizationally Unique Identifier) und kennzeichnen den Hersteller, die letzten 3 Bytes vergibt der Hersteller selbst. Die Adresse FF:FF:FF:FF:FF:FF ist die Broadcast-MAC – ein Frame daran geht an alle Geräte im LAN."
+    },
+    {
+      "type": "code",
+      "content": "# Windows: MAC = \"Physische Adresse\"\nipconfig /all\n\n# Linux: MAC steht nach link/ether\nip a\n\n  link/ether 08:00:27:4e:66:a1\n             |------| |------|\n               OUI    Gerät"
+    },
+    {
+      "type": "text",
+      "content": "Eine IPv4-Adresse ist 32 Bit lang und wird als vier Dezimalzahlen (Oktette, je 0–255) geschrieben: Punktdezimalschreibweise. Jede Adresse besteht aus einem Netzanteil und einem Hostanteil. Welcher Teil welcher ist, sagt die Subnetzmaske: Wo in der Maske eine 1 steht, gehört das Bit zum Netz."
+    },
+    {
+      "type": "code",
+      "content": "IP:    192.168.10.25\nMaske: 255.255.255.0   (= /24)\n\n11000000.10101000.00001010.00011001\n11111111.11111111.11111111.00000000\n|------- Netzanteil ------| |Host-|\n\nNetz: 192.168.10.0, Host: .25"
+    },
+    {
+      "type": "text",
+      "content": "Für interne Netze sind private Adressbereiche reserviert (RFC 1918). Sie werden im Internet nicht geroutet – deshalb können Tausende Schulen intern dieselben Adressen nutzen. Am Übergang ins Internet übersetzt der Router sie in eine öffentliche Adresse (NAT, kommt später). Typischer Fehler: 172.32.0.1 für privat halten – der Bereich endet bei 172.31.255.255."
+    },
+    {
+      "type": "code",
+      "content": "Private IPv4-Bereiche:\n10.0.0.0    - 10.255.255.255  /8\n172.16.0.0  - 172.31.255.255  /12\n192.168.0.0 - 192.168.255.255 /16\n\nSonderadressen:\n127.0.0.1    Loopback (eigener PC)\n169.254.x.x  APIPA/Link-Local"
+    },
+    {
+      "type": "text",
+      "content": "Ein PC kennt die IP-Adresse seines Ziels, braucht für den Ethernet-Frame aber die MAC-Adresse. Dafür gibt es ARP (Address Resolution Protocol): Der PC fragt per Broadcast „Wer hat 192.168.10.1? Sag es 192.168.10.25!“. Nur das Gerät mit dieser IP antwortet per Unicast mit seiner MAC-Adresse. Das Ergebnis wird im ARP-Cache zwischengespeichert. Liegt das Ziel in einem anderen Netz, fragt der PC per ARP nach der MAC-Adresse seines Routers (Default Gateway)."
+    },
+    {
+      "type": "code",
+      "content": "# ARP-Cache anzeigen\narp -a          (Windows)\nip neigh        (Linux)"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: MAC-Adresse = 48 Bit, hexadezimal, fest an der NIC, nur lokal gültig. IPv4-Adresse = 32 Bit, Netz- und Hostanteil laut Subnetzmaske. Private Bereiche: 10/8, 172.16/12, 192.168/16. ARP ermittelt zur IP-Adresse die passende MAC-Adresse per Broadcast-Anfrage."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche dieser Adressen ist eine private IPv4-Adresse?",
+      "options": [
+        "172.32.1.1",
+        "11.0.0.1",
+        "192.169.0.10",
+        "172.20.5.9"
+      ],
+      "correctIndex": 3,
+      "explanation": "172.20.5.9 liegt im Bereich 172.16.0.0–172.31.255.255. 172.32.1.1 und 192.169.0.10 liegen knapp außerhalb der privaten Bereiche."
+    },
+    {
+      "question": "Wie viele Bit hat eine MAC-Adresse?",
+      "options": [
+        "32",
+        "48",
+        "64",
+        "128"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine MAC-Adresse hat 6 Bytes = 48 Bit. 32 Bit hat IPv4, 128 Bit IPv6."
+    },
+    {
+      "question": "Wie wird eine ARP-Anfrage („Wer hat 192.168.1.1?“) versendet?",
+      "options": [
+        "Als Broadcast an FF:FF:FF:FF:FF:FF",
+        "Als Unicast an den Router",
+        "Per DNS-Abfrage",
+        "Gar nicht – die MAC steht in der IP-Adresse"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Fragende kennt die Ziel-MAC ja noch nicht, darum fragt er alle per Broadcast. Die Antwort kommt per Unicast zurück."
+    },
+    {
+      "question": "Dein Laptop zeigt die Adresse 169.254.23.7. Was bedeutet das am wahrscheinlichsten?",
+      "options": [
+        "Der Laptop ist mit dem Internet verbunden.",
+        "Es ist eine öffentliche Adresse.",
+        "Der Laptop hat sich selbst eine Adresse gegeben, weil er keine zugewiesen bekommen hat.",
+        "Es ist die Loopback-Adresse."
+      ],
+      "correctIndex": 2,
+      "explanation": "169.254.x.x ist eine selbst vergebene Link-Local-Adresse (APIPA). Sie deutet meist darauf hin, dass kein DHCP-Server erreichbar war."
+    }
+  ]
+}

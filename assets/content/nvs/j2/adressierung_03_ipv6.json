@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j2-adressierung_03_ipv6",
+  "title": "IPv6",
+  "summary": "Aufbau von IPv6-Adressen, die Kurzschreibweise, Präfixe und die wichtigsten Adresstypen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "IPv4 bietet nur rund 4,3 Milliarden Adressen (2^32) – zu wenig für alle Handys, PCs und IoT-Geräte weltweit. IPv6 verwendet daher 128 Bit lange Adressen. Das ergibt 2^128 Adressen, so viele, dass NAT im Prinzip nicht mehr nötig ist und jedes Gerät eine weltweit eindeutige Adresse bekommen kann."
+    },
+    {
+      "type": "text",
+      "content": "Eine IPv6-Adresse wird in 8 Blöcke zu je 16 Bit geteilt. Jeder Block wird als 4 Hexadezimalziffern geschrieben, die Blöcke sind durch Doppelpunkte getrennt. Der Bereich 2001:db8::/32 ist für Dokumentation und Beispiele reserviert – den verwenden wir hier."
+    },
+    {
+      "type": "code",
+      "content": "2001:0db8:0000:0000:0000:ff00:0042:8329\n\nBlock 1: 2001  Block 5: 0000\nBlock 2: 0db8  Block 6: ff00\nBlock 3: 0000  Block 7: 0042\nBlock 4: 0000  Block 8: 8329\n\n8 Blöcke x 16 Bit = 128 Bit"
+    },
+    {
+      "type": "text",
+      "content": "Damit Adressen kürzer werden, gibt es zwei Regeln: 1) Führende Nullen in einem Block dürfen weggelassen werden (0db8 → db8, 0042 → 42, 0000 → 0). 2) Eine zusammenhängende Folge von Null-Blöcken darf durch :: ersetzt werden – aber nur EINMAL pro Adresse, sonst wüsste man nicht, wie viele Nullen wohin gehören. Gibt es mehrere gleich lange Null-Folgen, kürzt man laut Empfehlung die erste."
+    },
+    {
+      "type": "code",
+      "content": "lang:\n2001:0db8:0000:0000:0000:ff00:0042:8329\nRegel 1:\n2001:db8:0:0:0:ff00:42:8329\nRegel 2:\n2001:db8::ff00:42:8329\n\nungültig: 2001:db8::1::2"
+    },
+    {
+      "type": "text",
+      "content": "Auch bei IPv6 gibt es ein Präfix wie bei CIDR: 2001:db8:abcd:12::/64 heißt, die ersten 64 Bit bilden das Netz. In LANs ist /64 der Standard – die hinteren 64 Bit sind die Interface-ID des Geräts. Ein Provider gibt einem Kunden typischerweise ein größeres Präfix wie /48 oder /56, aus dem man eigene /64-Subnetze bildet. Aus einem /48 entstehen 2^16 = 65536 /64-Subnetze."
+    },
+    {
+      "type": "code",
+      "content": "Typ                Präfix\n-----------------  ----------\nGlobal Unicast     2000::/3\nLink-Local         fe80::/10\nUnique Local       fc00::/7\n                   (fd00::/8)\nMulticast          ff00::/8\nLoopback           ::1/128"
+    },
+    {
+      "type": "text",
+      "content": "Global-Unicast-Adressen sind weltweit erreichbar (vergleichbar mit öffentlichen IPv4-Adressen). Link-Local-Adressen (fe80::) hat jede IPv6-Schnittstelle automatisch; sie gelten nur im eigenen Netzsegment und werden nicht geroutet. Unique-Local-Adressen (fd..) entsprechen den privaten IPv4-Bereichen. Wichtig: IPv6 kennt keinen Broadcast mehr – stattdessen gibt es Multicast, z. B. ff02::1 für alle Knoten im lokalen Segment. ARP wird durch das Neighbor Discovery Protocol (NDP) ersetzt."
+    },
+    {
+      "type": "code",
+      "content": "# IPv6-Adressen anzeigen\nipconfig        (Windows)\nip -6 a         (Linux)\n\n# Loopback per IPv6 testen\nping ::1"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: IPv6-Adressen haben 128 Bit in 8 Hex-Blöcken. Führende Nullen dürfen weg, :: ersetzt genau einmal eine Folge von Null-Blöcken. LAN-Subnetze sind üblicherweise /64. Wichtige Typen: Global Unicast (2000::/3), Link-Local (fe80::/10), Unique Local (fd00::/8), Multicast (ff00::/8) – Broadcast gibt es nicht mehr."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie lautet die korrekte Kurzschreibweise von 2001:0db8:0000:0000:0000:0000:0000:0001?",
+      "options": [
+        "2001:db8:0:1",
+        "2001:db8::1",
+        "2001:db8::0:1::",
+        "21:db8::1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Führende Nullen fallen weg (0db8 → db8), die sechs Null-Blöcke werden durch :: ersetzt. Bei 21 wären unerlaubterweise Nullen in der Mitte entfernt worden."
+    },
+    {
+      "question": "Welche Adresse ist ungültig?",
+      "options": [
+        "fe80::1",
+        "2001:db8:0:0:1::1",
+        "2001:db8::1::2",
+        "::1"
+      ],
+      "correctIndex": 2,
+      "explanation": ":: darf nur einmal vorkommen. Bei 2001:db8::1::2 wäre nicht eindeutig, wie viele Null-Blöcke an welcher Stelle fehlen."
+    },
+    {
+      "question": "Wie viele /64-Subnetze kann man aus einem /48-Präfix bilden?",
+      "options": [
+        "16",
+        "64",
+        "48",
+        "65536"
+      ],
+      "correctIndex": 3,
+      "explanation": "64 − 48 = 16 Bit stehen für Subnetze zur Verfügung: 2^16 = 65536."
+    },
+    {
+      "question": "Was für eine Adresse ist fe80::a00:27ff:fe4e:66a1?",
+      "options": [
+        "Link-Local – nur im lokalen Segment gültig",
+        "Global Unicast – weltweit erreichbar",
+        "Multicast an alle Router",
+        "Loopback"
+      ],
+      "correctIndex": 0,
+      "explanation": "Adressen aus fe80::/10 sind Link-Local. Jede IPv6-Schnittstelle hat automatisch eine solche Adresse; sie wird nicht geroutet."
+    }
+  ]
+}

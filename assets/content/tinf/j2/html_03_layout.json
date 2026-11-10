@@ -1,0 +1,95 @@
+{
+  "id": "tinf-j2-html_03_layout",
+  "title": "Layout mit Flexbox, Grid und Media Queries",
+  "summary": "Elemente nebeneinander, untereinander und im Raster anordnen – passend für Handy und PC.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ohne Layout-Regeln stehen Block-Elemente wie <div>, <p> oder <section> untereinander, Inline-Elemente wie <a> oder <strong> fließen im Text mit. Für Seitenlayouts gibt es heute zwei Werkzeuge:\n• Flexbox – eindimensional: Elemente in einer Zeile ODER einer Spalte anordnen (z. B. Navigation, Kartenreihe).\n• Grid – zweidimensional: Zeilen UND Spalten gleichzeitig (z. B. Galerie, Seitenraster).\nAlte Tricks wie Tabellen-Layouts oder float brauchst du dafür nicht mehr."
+    },
+    {
+      "type": "code",
+      "content": "<nav class=\"menu\">\n  <a href=\"#\">Start</a>\n  <a href=\"#\">Abteilungen</a>\n  <a href=\"#\">Kontakt</a>\n</nav>\n\n.menu {\n  display: flex;\n  gap: 1rem;\n  justify-content: center;\n  align-items: center;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Flexbox-Begriffe: Das Element mit display: flex ist der Container, seine direkten Kinder sind die Items.\n• flex-direction: row (Standard, waagrecht) oder column (senkrecht) legt die Hauptachse fest.\n• justify-content verteilt die Items entlang der Hauptachse: flex-start, center, space-between …\n• align-items richtet sie quer dazu aus.\n• gap setzt Abstände zwischen den Items.\n• flex-wrap: wrap erlaubt einen Umbruch in die nächste Zeile.\n• flex: 1 bei den Items verteilt den freien Platz gleichmäßig."
+    },
+    {
+      "type": "code",
+      "content": ".karten {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 1rem;\n}\n.karte {\n  flex: 1 1 200px;\n  /* wachsen, schrumpfen,\n     Startbreite 200px */\n}"
+    },
+    {
+      "type": "text",
+      "content": "Grid: Mit display: grid und grid-template-columns legst du Spalten fest. Die Einheit fr (fraction) teilt den freien Platz auf: 1fr 2fr heißt „ein Drittel und zwei Drittel“. repeat(3, 1fr) ergibt drei gleich breite Spalten. Mit grid-column: span 2 erstreckt sich ein Item über zwei Spalten. Die Items füllen das Raster zeilenweise von links nach rechts."
+    },
+    {
+      "type": "code",
+      "content": ".galerie {\n  display: grid;\n  grid-template-columns:\n    repeat(3, 1fr);\n  gap: 10px;\n}\n.galerie .gross {\n  grid-column: span 2;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Responsive Design heißt: Die Seite passt sich der Bildschirmbreite an. Grundlagen dafür sind das viewport-Meta-Tag im <head>, relative Einheiten (%, rem, fr) und Bilder mit max-width: 100%.\n\nMit Media Queries gibst du CSS nur unter einer Bedingung an, z. B. @media (min-width: 600px). Bewährt hat sich „Mobile First“: Zuerst schreibst du das Layout fürs Handy (eine Spalte), dann erweiterst du es für breitere Bildschirme."
+    },
+    {
+      "type": "code",
+      "content": "img {\n  max-width: 100%;\n}\n.galerie {\n  display: grid;\n  grid-template-columns: 1fr;\n}\n@media (min-width: 600px) {\n  .galerie {\n    grid-template-columns:\n      repeat(2, 1fr);\n  }\n}\n@media (min-width: 900px) {\n  .galerie {\n    grid-template-columns:\n      repeat(3, 1fr);\n  }\n}"
+    },
+    {
+      "type": "code",
+      "content": "/* Ganz ohne Media Query:\n   so viele Spalten (mind. 200px)\n   wie hineinpassen */\n.galerie {\n  display: grid;\n  gap: 1rem;\n  grid-template-columns:\n    repeat(auto-fit,\n      minmax(200px, 1fr));\n}"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: display: flex beim Item statt beim Container setzen, justify-content und align-items verwechseln (bei flex-direction: column tauschen die Achsen!), das viewport-Meta-Tag vergessen (dann zoomt das Handy die Seite winzig klein) und feste Breiten wie width: 1200px verwenden.\n\nZusammenfassung: Flexbox für eine Richtung, Grid für Raster. Responsive Design mit relativen Einheiten, Mobile First und Media Queries mit min-width."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Container hat display: flex (flex-direction: row). Mit welcher Eigenschaft verteilst du die Items waagrecht, z. B. mit gleichem Abstand dazwischen?",
+      "options": [
+        "align-items",
+        "justify-content",
+        "flex-wrap",
+        "grid-template-columns"
+      ],
+      "correctIndex": 1,
+      "explanation": "justify-content wirkt entlang der Hauptachse. Bei row ist das die Waagrechte. align-items richtet die Items quer dazu aus."
+    },
+    {
+      "question": "Der Grid-Container ist 600px breit, es gibt keinen gap. Wie breit sind die beiden Spalten?",
+      "code": ".raster {\n  display: grid;\n  width: 600px;\n  grid-template-columns: 1fr 2fr;\n}",
+      "options": [
+        "300px und 300px",
+        "400px und 200px",
+        "100px und 200px",
+        "200px und 400px"
+      ],
+      "correctIndex": 3,
+      "explanation": "1fr + 2fr = 3 Teile. 600px / 3 = 200px pro Teil. Die erste Spalte bekommt 1 Teil (200px), die zweite 2 Teile (400px)."
+    },
+    {
+      "question": "Welche Farbe hat .box in einem 500px breiten Browserfenster?",
+      "code": ".box { color: red; }\n\n@media (min-width: 768px) {\n  .box { color: blue; }\n}",
+      "options": [
+        "blau",
+        "rot",
+        "zuerst rot, dann blau",
+        "schwarz"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Media Query gilt erst ab 768px Breite. Bei 500px trifft sie nicht zu, also bleibt die Farbe rot."
+    },
+    {
+      "question": "Ein Grid mit grid-template-columns: repeat(3, 1fr) enthält 7 Items. Wie viele Zeilen entstehen?",
+      "options": [
+        "2",
+        "7",
+        "3",
+        "1"
+      ],
+      "correctIndex": 2,
+      "explanation": "Pro Zeile passen 3 Items: 3 + 3 + 1. Das siebte Item beginnt eine dritte Zeile."
+    }
+  ]
+}
