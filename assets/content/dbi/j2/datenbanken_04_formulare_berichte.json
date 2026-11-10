@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j2-datenbanken_04_formulare_berichte",
+  "title": "Formulare und Berichte",
+  "summary": "Mit Formularen bequem und fehlerarm Daten eingeben und mit Berichten Daten gruppiert und druckfertig ausgeben – z. B. in Access oder LibreOffice Base.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Nicht jede:r im Sekretariat soll SQL tippen müssen. Desktop-Datenbanken wie Microsoft Access oder LibreOffice Base bieten deshalb grafische Werkzeuge: Tabellen, Abfragen, Formulare und Berichte. Im Hintergrund arbeiten sie trotzdem mit Tabellen und SQL."
+    },
+    {
+      "type": "text",
+      "content": "Ein Formular ist eine Eingabemaske für einen Datensatz – wie ein Online-Formular. Es besteht aus Steuerelementen:\n• Textfeld – für Namen, Zahlen\n• Kombinationsfeld/Listenfeld – Auswahl aus einer Liste, z. B. der Klasse\n• Kontrollkästchen – Ja/Nein-Werte\n• Schaltflächen – Speichern, nächster Datensatz"
+    },
+    {
+      "type": "text",
+      "content": "Ein Kombinationsfeld ist ideal für Fremdschlüssel: Die Benutzerin wählt „2AHIT“ aus, gespeichert wird aber die klasse_id 1. Ein Unterformular zeigt eine 1:n-Beziehung: oben die Schülerin (1), darunter eine Tabelle mit all ihren Noten (n)."
+    },
+    {
+      "type": "code",
+      "content": "+-------------------------------+\n| Schüler:in                    |\n| Vorname:  [Anna          ]    |\n| Nachname: [Berger        ]    |\n| Klasse:   [2AHIT        v]    |\n|  +-------------------------+  |\n|  | Fach | Note |           |  |\n|  | AM   | 2    |           |  |\n|  | DBI  | 1    |           |  |\n|  +-------------------------+  |\n| [Speichern]  [<]  [>]         |\n+-------------------------------+"
+    },
+    {
+      "type": "text",
+      "content": "Eingabevalidierung verhindert falsche Daten. Am sichersten sind Regeln direkt in der Tabelle, denn sie gelten für jedes Formular und jeden SQL-Befehl: Pflichtfelder (NOT NULL), Standardwerte (DEFAULT) und Prüfregeln (CHECK). In Access heißen die entsprechenden Feldeigenschaften u. a. „Eingabe erforderlich“, „Standardwert“ und „Gültigkeitsregel“ mit einer „Gültigkeitsmeldung“."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE anmeldung (\n  id       INTEGER PRIMARY KEY,\n  name     VARCHAR(50) NOT NULL,\n  email    VARCHAR(100) NOT NULL,\n  personen INTEGER DEFAULT 1\n    CHECK (personen BETWEEN 1 AND 4)\n);\n\n-- personen = 5 → Fehler (CHECK)\n-- ohne email   → Fehler (NOT NULL)\n-- ohne personen → wird 1 (DEFAULT)"
+    },
+    {
+      "type": "text",
+      "content": "Ein Bericht (Report) bereitet Daten zum Lesen oder Drucken auf: Klassenlisten, Notenübersichten, Zeugnisse. Berichte können Datensätze gruppieren (z. B. nach Klasse), innerhalb der Gruppe sortieren und pro Gruppe Summen, Anzahl oder Durchschnitt anzeigen. In LibreOffice Base gibt es dafür den Report-Builder, in Access den Berichtsassistenten."
+    },
+    {
+      "type": "text",
+      "content": "Hinter einem gruppierten Bericht steckt das, was SQL mit GROUP BY macht: Alle Zeilen mit gleichem Wert werden zu einer Gruppe zusammengefasst, und COUNT oder AVG werden pro Gruppe berechnet. Wichtig: Jede Spalte im SELECT muss entweder in GROUP BY stehen oder in einer Aggregatfunktion."
+    },
+    {
+      "type": "code",
+      "content": "SELECT k.bezeichnung,\n       COUNT(*) AS anzahl\nFROM schueler s\nJOIN klassen k\n  ON s.klasse_id = k.klasse_id\nGROUP BY k.bezeichnung\nORDER BY k.bezeichnung;\n\n-- 2AHIT | 3\n-- 2BHIT | 2"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Validierung nur im Formular (wer direkt in die Tabelle schreibt, umgeht sie), Fremdschlüssel als freies Textfeld statt Auswahlliste und Berichte direkt auf ungefilterte Tabellen statt auf passende Abfragen. Zusammenfassung: Formulare = Eingabe, Berichte = Ausgabe, Regeln gehören in die Tabelle."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Warum verwendet man in einem Formular für die Klasse ein Kombinationsfeld statt eines Textfelds?",
+      "options": [
+        "Weil Textfelder keine Zahlen speichern können",
+        "Weil nur gültige Klassen auswählbar sind und der passende Fremdschlüssel gespeichert wird",
+        "Weil Kombinationsfelder weniger Speicher brauchen",
+        "Weil Berichte sonst nicht funktionieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Auswahlliste zeigt nur existierende Klassen an. So entstehen keine Tippfehler wie „2AHTI“, und es wird die richtige klasse_id gespeichert."
+    },
+    {
+      "question": "Was passiert bei diesem Befehl, wenn die Spalte note mit CHECK (note BETWEEN 1 AND 5) definiert ist?",
+      "code": "INSERT INTO noten\nVALUES (9, 1, 'E', 6);",
+      "options": [
+        "Der Datensatz wird mit Note 5 gespeichert",
+        "Der Datensatz wird gespeichert, nur das Formular warnt",
+        "Die Note wird auf NULL gesetzt",
+        "Das DBMS lehnt den Datensatz ab"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die CHECK-Regel gilt direkt in der Tabelle. 6 liegt nicht zwischen 1 und 5, daher wird der INSERT abgelehnt – egal ob er aus einem Formular oder einem SQL-Befehl kommt."
+    },
+    {
+      "question": "Welches Ergebnis liefert diese Abfrage für das Fach DBI? (DBI-Noten: 1, 3, 2, 1)",
+      "code": "SELECT fach, AVG(note) AS schnitt\nFROM noten\nGROUP BY fach\nORDER BY fach;",
+      "options": [
+        "1.75",
+        "7",
+        "4",
+        "2"
+      ],
+      "correctIndex": 0,
+      "explanation": "GROUP BY fach bildet pro Fach eine Gruppe. Für DBI: (1 + 3 + 2 + 1) / 4 = 7 / 4 = 1,75."
+    },
+    {
+      "question": "Du brauchst eine druckbare Klassenliste, gruppiert nach Klasse mit der Anzahl der Schüler:innen pro Klasse. Was erstellst du?",
+      "options": [
+        "Ein Formular mit Unterformular",
+        "Eine neue Tabelle",
+        "Einen Bericht mit Gruppierung nach Klasse",
+        "Einen zusätzlichen Primärschlüssel"
+      ],
+      "correctIndex": 2,
+      "explanation": "Berichte sind für die Ausgabe gedacht und können gruppieren, sortieren und pro Gruppe zählen. Formulare dienen der Eingabe."
+    }
+  ]
+}

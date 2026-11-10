@@ -17,3 +17,21 @@ IconData trackIcon(String name) {
       return Icons.school;
   }
 }
+
+/// Icon für ein Fach aus curriculum.json.
+IconData subjectIcon(String name) {
+  switch (name) {
+    case 'code':
+      return Icons.code;
+    case 'storage':
+      return Icons.storage;
+    case 'lan':
+      return Icons.lan;
+    case 'memory':
+      return Icons.memory;
+    case 'assignment':
+      return Icons.assignment;
+    default:
+      return Icons.school;
+  }
+}

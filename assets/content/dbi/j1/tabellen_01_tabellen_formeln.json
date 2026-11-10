@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j1-tabellen_01_tabellen_formeln",
+  "title": "Tabellen, Bezüge und Formeln",
+  "summary": "Zellen und Formeln verstehen und relative, absolute und gemischte Bezüge richtig einsetzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Tabellenkalkulationen wie Excel (Microsoft) oder Calc (LibreOffice) bestehen aus Zellen in Spalten (A, B, C …) und Zeilen (1, 2, 3 …). Jede Zelle hat eine Adresse, den Zellbezug: B3 ist Spalte B, Zeile 3. Ein Bereich wird mit Doppelpunkt angegeben: A1:C4 sind alle Zellen von A1 bis C4."
+    },
+    {
+      "type": "text",
+      "content": "Eine Formel beginnt immer mit =. Sie rechnet mit Zahlen und Zellbezügen. Ändert sich ein Wert in einer Zelle, rechnet die Formel automatisch neu. Operatoren: + − * / und ^ (hoch). Es gilt Punkt- vor Strichrechnung, Klammern haben Vorrang. Im deutschsprachigen Office ist das Komma das Dezimalzeichen (2,5)."
+    },
+    {
+      "type": "code",
+      "content": "A1 = 4    B1 = 3\n\n=A1+B1*2      → 10\n=(A1+B1)*2    → 14\n=A1^2         → 16\n\nOhne = ist es nur Text:\nA1+B1         → A1+B1"
+    },
+    {
+      "type": "text",
+      "content": "Relative Bezüge: Kopierst du eine Formel (z. B. mit dem Ausfüllkästchen rechts unten an der Zelle), passen sich die Bezüge an. Eine Zeile nach unten → alle Zeilennummern +1, eine Spalte nach rechts → alle Spaltenbuchstaben +1. Genau das willst du meistens, z. B. für Menge × Preis in jeder Zeile."
+    },
+    {
+      "type": "code",
+      "content": "C2: =A2*B2\n\nnach unten kopiert → C3: =A3*B3\nnach rechts kopiert → D2: =B2*C2"
+    },
+    {
+      "type": "text",
+      "content": "Absolute Bezüge: Manchmal soll eine Formel immer auf dieselbe Zelle zeigen, z. B. auf den Steuersatz in E1. Dann setzt du $ vor Spalte und Zeile: $E$1. Dieser Bezug ändert sich beim Kopieren nicht. Excel: F4 schaltet zwischen den Varianten um, Calc: Umschalt+F4."
+    },
+    {
+      "type": "code",
+      "content": "E1: 20 %   (Umsatzsteuer)\nB2: 10      B3: 4,50   (Netto)\n\nC2: =B2*(1+$E$1)        → 12\nkopiert nach C3:\nC3: =B3*(1+$E$1)        → 5,4\n\nOhne $ stünde in C3 E2 –\ndie Zelle ist leer → falsch!"
+    },
+    {
+      "type": "text",
+      "content": "Gemischte Bezüge fixieren nur einen Teil: $A2 hält die Spalte A fest (Zeile wandert), B$1 hält die Zeile 1 fest (Spalte wandert). Klassisches Beispiel ist das Einmaleins: Die Zahlen stehen in Spalte A und in Zeile 1, eine einzige Formel in B2 wird über die ganze Tabelle kopiert."
+    },
+    {
+      "type": "code",
+      "content": "    A   B    C    D\n1       1    2    3\n2   1   =$A2*B$1\n3   2\n\nB2 → C2: =$A2*C$1\nB2 → B3: =$A3*B$1"
+    },
+    {
+      "type": "text",
+      "content": "Formatierung ändert nur die Anzeige, nicht den Wert. Steht in A1 der Wert 2,456 und zeigst du eine Nachkommastelle, siehst du 2,5 – gerechnet wird aber mit 2,456 (=A1*10 ergibt 24,56). Das Prozentformat zeigt 0,2 als 20 %. Typische Fehlermeldungen: #DIV/0! (Division durch 0 oder leere Zelle), #NAME? (Tippfehler im Funktionsnamen), #BEZUG! (englisch #REF!, Zelle gelöscht).\n\nZusammenfassung: Formeln beginnen mit =, Punkt vor Strich gilt. Relativ (A1) wandert beim Kopieren mit, absolut ($A$1) bleibt fix, gemischt ($A1 oder A$1) fixiert nur Spalte oder Zeile. Formate ändern die Anzeige, nicht den gespeicherten Wert."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was ist das Ergebnis der Formel, wenn A1 = 4 und B1 = 3?",
+      "code": "=A1+B1*2-1",
+      "options": [
+        "9",
+        "13",
+        "10",
+        "4"
+      ],
+      "correctIndex": 0,
+      "explanation": "Punkt vor Strich: zuerst B1*2 = 6, dann 4 + 6 − 1 = 9."
+    },
+    {
+      "question": "In C3 steht =A1+B$1. Du kopierst die Zelle nach D5 (1 Spalte nach rechts, 2 Zeilen nach unten). Welche Formel steht in D5?",
+      "options": [
+        "=A1+B$1",
+        "=B3+C$1",
+        "=B3+C$3",
+        "=A3+B$1"
+      ],
+      "correctIndex": 1,
+      "explanation": "A1 ist relativ: Spalte +1, Zeile +2 → B3. Bei B$1 ist die Zeile fixiert, nur die Spalte wandert → C$1."
+    },
+    {
+      "question": "In B2 steht der Wert 0,15 mit dem Format Prozent. Was zeigt die Zelle an?",
+      "options": [
+        "0,15 %",
+        "1,5 %",
+        "150 %",
+        "15 %"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das Prozentformat multipliziert die Anzeige mit 100 und hängt % an. Der gespeicherte Wert bleibt 0,15."
+    },
+    {
+      "question": "Finde den Fehler: Die Formel in C2 wird nach unten kopiert. Ab C3 kommen falsche Ergebnisse. Warum?",
+      "code": "E1: 20 %\nC2: =B2*(1+E1)",
+      "options": [
+        "Es fehlt eine Klammer",
+        "B2 müsste absolut sein: $B$2",
+        "Der Bezug auf den Steuersatz E1 müsste absolut sein: $E$1",
+        "Formeln dürfen nicht kopiert werden"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beim Kopieren wird aus E1 → E2, E3 … Diese Zellen sind leer. Mit $E$1 zeigt jede Kopie auf den Steuersatz."
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "id": "tinf-j2-webapps_pruefung",
+  "title": "Abschlussprüfung: Webapplikationen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Nach dem Login antwortet der Server mit 302 Found. Welcher Header sagt dem Browser, welche Seite er als Nächstes laden soll?",
+      "options": [
+        "Content-Type",
+        "Host",
+        "Location",
+        "Accept"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei Umleitungen (3xx) steht das Ziel im Header Location. Der Browser lädt diese Adresse automatisch."
+    },
+    {
+      "question": "Welche Teile dieser URL werden an den Server geschickt?",
+      "code": "https://example.com/noten\n  ?fach=POS#oben",
+      "options": [
+        "nur example.com",
+        "Host, Pfad und Query – das Fragment nicht",
+        "die ganze URL inklusive #oben",
+        "nur /noten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Fragment (#oben) bleibt im Browser und dient nur zum Springen in der Seite. Host (im Header Host), Pfad und Query gehen an den Server."
+    },
+    {
+      "question": "Im Backend-Code tritt beim Laden der Termine eine unbehandelte Exception auf. Welchen Statuscode bekommt der Browser typischerweise?",
+      "options": [
+        "404",
+        "403",
+        "200",
+        "500"
+      ],
+      "correctIndex": 3,
+      "explanation": "5xx bedeutet: Fehler am Server. 500 Internal Server Error ist der übliche Code, wenn der Server-Code abstürzt."
+    },
+    {
+      "question": "Du rufst https://example.com/suche?q=geheim auf. Was kann jemand im selben WLAN trotz HTTPS meist noch erkennen?",
+      "options": [
+        "Den Suchbegriff geheim",
+        "Dass du mit example.com bzw. dessen IP-Adresse kommunizierst",
+        "Den kompletten Pfad /suche",
+        "Die Cookies"
+      ],
+      "correctIndex": 1,
+      "explanation": "TLS verschlüsselt Pfad, Query, Header, Cookies und Body. Sichtbar bleiben IP-Adressen und meist der Domainname."
+    },
+    {
+      "question": "Ein Onlineshop speichert den Warenkorb in einer Session. Wo liegen die Warenkorb-Daten?",
+      "options": [
+        "Am Server – der Browser hat nur die Session-ID im Cookie",
+        "Im Cookie im Browser",
+        "Im Fragment der URL",
+        "Im HTML der Seite"
+      ],
+      "correctIndex": 0,
+      "explanation": "Session-Daten liegen am Server. Der Browser schickt nur die Session-ID mit, damit der Server die richtige Session findet."
+    },
+    {
+      "question": "Was bewirkt das Cookie-Attribut HttpOnly?",
+      "options": [
+        "Der Cookie wird nur über HTTP, nicht über HTTPS geschickt",
+        "Der Cookie wird nach einer Stunde gelöscht",
+        "JavaScript im Browser kann den Cookie nicht auslesen",
+        "Der Cookie gilt nur für eine Seite"
+      ],
+      "correctIndex": 2,
+      "explanation": "HttpOnly-Cookies werden zwar mitgeschickt, sind aber für JavaScript (document.cookie) unsichtbar. Das schützt die Session-ID, falls fremdes Skript in die Seite gelangt. Für „nur HTTPS“ gibt es Secure."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "console.log(JSON.stringify(\n  { a: 1, b: [true, null] }));",
+      "options": [
+        "{\"a\":1,\"b\":[true,null]}",
+        "{a:1,b:[true,null]}",
+        "{'a':1,'b':[true,null]}",
+        "[object Object]"
+      ],
+      "correctIndex": 0,
+      "explanation": "JSON.stringify setzt alle Schlüssel in doppelte Anführungszeichen und lässt Leerzeichen weg. true und null bleiben ohne Anführungszeichen."
+    },
+    {
+      "question": "Ein Schüler zieht um. Nach REST: Mit welcher Anfrage änderst du die Adresse von Schüler 7?",
+      "options": [
+        "GET /api/schueler/7?adresse=neu",
+        "PUT /api/schueler/7",
+        "POST /api/schueler/7/delete",
+        "DELETE /api/schueler/7"
+      ],
+      "correctIndex": 1,
+      "explanation": "PUT auf die URL der Ressource ändert sie. Die neuen Daten stehen als JSON im Body. GET darf nichts verändern."
+    },
+    {
+      "question": "Warum verwendet das Backend WHERE klasse = ? statt den Wert aus der URL direkt in den SQL-String einzufügen?",
+      "options": [
+        "Weil SQL keine Strings kennt",
+        "Damit die Abfrage schneller tippt",
+        "Damit JSON automatisch entsteht",
+        "Um SQL-Injection zu verhindern"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beim Platzhalter wird der Wert getrennt vom SQL-Befehl übergeben und nie als SQL-Code ausgeführt. So kann niemand über die URL eigenen SQL-Code einschleusen."
+    },
+    {
+      "question": "Was ist an diesem Code falsch?",
+      "code": "async function lade() {\n  const antwort = fetch(\"/api/t\");\n  const daten = antwort.json();\n  console.log(daten.length);\n}",
+      "options": [
+        "fetch braucht immer ein zweites Argument",
+        "Ohne await sind antwort und daten Promises statt der echten Werte",
+        "json() gibt es nur bei POST",
+        "Nichts, der Code gibt die Anzahl aus"
+      ],
+      "correctIndex": 1,
+      "explanation": "fetch() und json() liefern Promises. Ohne await steht in antwort ein Promise; antwort.json ist darauf nicht definiert, und der Code scheitert mit einem TypeError. Richtig: await fetch(…) und await antwort.json()."
+    }
+  ]
+}

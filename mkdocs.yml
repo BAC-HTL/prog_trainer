@@ -24,6 +24,7 @@ markdown_extensions:
 nav:
   - Start & Download: index.md
   - Installation: installation.md
+  - Lehrplan: lehrplan.md
   - Spielmodus: spiel.md
   - Lerninhalte schreiben: inhalte.md
   - Entwicklung: entwicklung.md

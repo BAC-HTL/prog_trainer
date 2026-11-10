@@ -1,0 +1,95 @@
+{
+  "id": "pos-j2-python-regex_01_regulaere_ausdruecke",
+  "title": "Reguläre Ausdrücke",
+  "summary": "Textmuster mit Zeichenklassen, Quantoren, Ankern und Gruppen beschreiben.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein regulärer Ausdruck (Regex) ist ein Muster, das beschreibt, wie ein Text aussehen soll – zum Beispiel „vier Ziffern“ für eine österreichische Postleitzahl. In Python steckt das im Modul re. re.findall(muster, text) liefert eine Liste aller Treffer. Schreib Muster immer als Raw-String r\"…\", damit Python Backslashes wie in \\d nicht selbst umdeutet."
+    },
+    {
+      "type": "text",
+      "content": "Zeichenklassen stehen für EIN Zeichen aus einer Auswahl:\n• [abc] – a, b oder c\n• [a-z], [0-9] – Bereiche\n• [^0-9] – alles außer Ziffern (^ am Anfang verneint)\n• \\d – Ziffer, \\w – Buchstabe, Ziffer oder _, \\s – Leerraum\n• . – beliebiges Zeichen außer Zeilenumbruch\nGroßbuchstaben verneinen: \\D ist „keine Ziffer“."
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nprint(re.findall(r\"[aeiou]\", \"Informatik\"))\n# ['o', 'a', 'i']\nprint(re.findall(r\"\\d\", \"2AHIF, 3BHIF\"))\n# ['2', '3']\nprint(re.findall(r\"[A-Z]\", \"Wien ist OK\"))\n# ['W', 'O', 'K']"
+    },
+    {
+      "type": "text",
+      "content": "Quantoren legen fest, wie oft das Zeichen davor vorkommen darf:\n• * – beliebig oft (auch 0-mal)\n• + – mindestens einmal\n• ? – 0- oder 1-mal (optional)\n• {n} – genau n-mal, {n,m} – n- bis m-mal\nQuantoren sind „gierig“: Sie nehmen so viele Zeichen wie möglich."
+    },
+    {
+      "type": "code",
+      "content": "import re\n\ntext = \"Raum 214, Stock 2\"\nprint(re.findall(r\"\\d+\", text))\n# ['214', '2']\n\nplz = \"1100 Wien, 4020 Linz\"\nprint(re.findall(r\"\\d{4}\", plz))\n# ['1100', '4020']\n\nprint(re.findall(r\"Fotos?\", \"Foto Fotos\"))\n# ['Foto', 'Fotos']"
+    },
+    {
+      "type": "text",
+      "content": "Anker passen nicht auf ein Zeichen, sondern auf eine Position:\n• ^ – Anfang des Texts\n• $ – Ende des Texts\n• \\b – Wortgrenze\nAnker sind wichtig für Prüfungen: Ohne ^ und $ passt \\d{4} auch auf einen Teil von „12345“."
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nprint(re.findall(r\"^\\d+\", \"12 Äpfel 34\"))\n# ['12']\nprint(re.findall(r\"\\d+$\", \"12 Äpfel 34\"))\n# ['34']\nprint(re.findall(r\"\\bPOS\\b\",\n                 \"POS und POSIX\"))\n# ['POS']"
+    },
+    {
+      "type": "text",
+      "content": "Runde Klammern bilden Gruppen. Damit kannst du einen Quantor auf mehrere Zeichen anwenden, z. B. (ha)+, und Teile eines Treffers herausholen. Hat ein Muster Gruppen, liefert findall nur deren Inhalt (bei mehreren Gruppen als Tupel). Der senkrechte Strich | bedeutet „oder“. Willst du ein Sonderzeichen wie . oder + wörtlich suchen, setzt du einen Backslash davor: \\. bzw. \\+."
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nnoten = \"Schnitt 1.5 und 2.25\"\nprint(re.findall(r\"(\\d+)\\.(\\d+)\", noten))\n# [('1', '5'), ('2', '25')]\n\nprint(re.findall(r\"Mo|Di\", \"Mo Mi Di\"))\n# ['Mo', 'Di']\nprint(re.findall(r\"(?:ha)+\", \"hahaha!\"))\n# ['hahaha']  (?: ) = Gruppe ohne Merken"
+    },
+    {
+      "type": "code",
+      "content": "# Spickzettel\n[abc]     eines von a, b, c\n[^0-9]    keine Ziffer\n\\d \\w \\s  Ziffer, Wortzeichen, Leerraum\n.         beliebiges Zeichen\n* + ?     0+, 1+, 0 oder 1\n{n,m}     n bis m Wiederholungen\n^ $ \\b    Anfang, Ende, Wortgrenze\n( ) |     Gruppe, oder\n\\.        wörtlicher Punkt"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\ns = \"3 Äpfel, 12 Birnen\"\nprint(re.findall(r\"\\d+\", s))",
+      "options": [
+        "['3', '1', '2']",
+        "['3', '12']",
+        "['312']",
+        "[3, 12]"
+      ],
+      "correctIndex": 1,
+      "explanation": "\\d+ fasst zusammenhängende Ziffern zu einem Treffer zusammen. findall liefert immer Strings, keine ints."
+    },
+    {
+      "question": "Welches Muster passt NUR auf Texte, die aus genau vier Ziffern bestehen?",
+      "options": [
+        "\\d{4}",
+        "\\d+",
+        "^\\d{4}$",
+        "^\\d{4}"
+      ],
+      "correctIndex": 2,
+      "explanation": "Erst ^ und $ verankern das Muster am Anfang und am Ende. \\d{4} allein würde auch in „Haus 12345“ etwas finden."
+    },
+    {
+      "question": "Was bedeutet die Zeichenklasse [^0-9]?",
+      "options": [
+        "Ein Zeichen, das keine Ziffer ist",
+        "Eine Ziffer am Anfang des Texts",
+        "Eine beliebige Anzahl von Ziffern",
+        "Die Zeichen ^, 0 und 9"
+      ],
+      "correctIndex": 0,
+      "explanation": "Steht ^ als erstes Zeichen INNERHALB eckiger Klammern, verneint es die Klasse. Außerhalb ist ^ ein Anker für den Textanfang."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import re\nprint(re.findall(r\"a.c\", \"abc a.c ac aXc\"))",
+      "options": [
+        "['a.c']",
+        "['abc', 'a.c']",
+        "['abc', 'a.c', 'ac', 'aXc']",
+        "['abc', 'a.c', 'aXc']"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Punkt passt auf genau EIN beliebiges Zeichen. „ac“ hat zwischen a und c kein Zeichen und passt daher nicht."
+    }
+  ]
+}

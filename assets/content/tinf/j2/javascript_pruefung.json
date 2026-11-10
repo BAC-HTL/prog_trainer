@@ -1,0 +1,124 @@
+{
+  "id": "tinf-j2-javascript_pruefung",
+  "title": "Abschlussprüfung: JavaScript-Grundlagen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "const arr = [5, 8, 2];\nlet m = arr[0];\nfor (const v of arr) {\n  if (v > m) {\n    m = v;\n  }\n}\nconsole.log(m);",
+      "options": [
+        "5",
+        "2",
+        "8",
+        "15"
+      ],
+      "correctIndex": 2,
+      "explanation": "m startet mit 5. Die Schleife findet 8 als größeren Wert, 2 ist kleiner. Ausgegeben wird das Maximum 8."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "let k = 0;\nfor (let i = 0; i < 5; i++) {\n  k += i;\n}\nconsole.log(k);",
+      "options": [
+        "15",
+        "10",
+        "4",
+        "5"
+      ],
+      "correctIndex": 1,
+      "explanation": "i läuft von 0 bis 4 (i < 5). Summe: 0 + 1 + 2 + 3 + 4 = 10."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "function f(a, b) {\n  return a + b;\n}\nconsole.log(f(1));",
+      "options": [
+        "1",
+        "undefined",
+        "Fehler: zu wenige Argumente",
+        "NaN"
+      ],
+      "correctIndex": 3,
+      "explanation": "b bekommt keinen Wert und ist undefined. 1 + undefined ergibt NaN. JavaScript meldet keinen Fehler bei fehlenden Argumenten."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "console.log(\"3\" * \"4\", \"3\" + \"4\");",
+      "options": [
+        "12 34",
+        "34 12",
+        "12 7",
+        "NaN 34"
+      ],
+      "correctIndex": 0,
+      "explanation": "* wandelt beide Strings in Zahlen um: 3 · 4 = 12. + hängt Strings zusammen: \"34\"."
+    },
+    {
+      "question": "Welche Klassen hat das Element am Ende? (Am Anfang hat es keine Klasse.)",
+      "code": "el.classList.add(\"x\");\nel.classList.toggle(\"x\");\nel.classList.toggle(\"y\");",
+      "options": [
+        "x y",
+        "x",
+        "y",
+        "keine"
+      ],
+      "correctIndex": 2,
+      "explanation": "add(\"x\") fügt x hinzu, toggle(\"x\") entfernt es wieder, toggle(\"y\") fügt y hinzu. Übrig bleibt y."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "<ul class=\"liste\">\n  <li>A</li><li>B</li>\n</ul>\n<ul><li>C</li></ul>\n\nconsole.log(document\n  .querySelectorAll(\".liste li\")\n  .length);",
+      "options": [
+        "3",
+        "1",
+        "2",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Selektor .liste li trifft nur die li-Elemente innerhalb von .liste. Das dritte li steht in einer anderen Liste."
+    },
+    {
+      "question": "Ein Skript steht ohne defer im <head> und ruft document.querySelector(\"#btn\").addEventListener(…) auf. Was passiert?",
+      "options": [
+        "Alles funktioniert, der Browser wartet automatisch",
+        "Der Button wird doppelt angezeigt",
+        "Das Event wird beim Laden einmal ausgelöst",
+        "TypeError, weil querySelector noch null liefert"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ohne defer läuft das Skript, bevor der Body eingelesen ist. Der Button existiert noch nicht, querySelector liefert null, und null.addEventListener wirft einen TypeError."
+    },
+    {
+      "question": "Das Feld #alter enthält 16. Was wird ausgegeben?",
+      "code": "const alter = document\n  .querySelector(\"#alter\").value;\nconsole.log(alter + 1);",
+      "options": [
+        "17",
+        "161",
+        "NaN",
+        "16"
+      ],
+      "correctIndex": 1,
+      "explanation": "value ist immer ein String: \"16\" + 1 ergibt \"161\". Richtig wäre Number(…value) + 1."
+    },
+    {
+      "question": "Mit welcher Bedingung erkennst du zuverlässig, dass in ein Namensfeld nichts (oder nur Leerzeichen) eingegeben wurde?",
+      "options": [
+        "name === null",
+        "name.trim() === \"\"",
+        "Number.isNaN(Number(name))",
+        "name == 0"
+      ],
+      "correctIndex": 1,
+      "explanation": "value ist nie null, sondern ein String. trim() entfernt Leerzeichen; bleibt ein leerer String, wurde nichts eingegeben."
+    },
+    {
+      "question": "Warum reagierst du besser auf submit beim <form> als auf click beim Absende-Button?",
+      "options": [
+        "submit wird auch beim Absenden mit der Enter-Taste ausgelöst",
+        "click funktioniert bei Buttons nicht",
+        "submit lädt die Seite nie neu",
+        "Nur bei submit gibt es ein event-Objekt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Formular kann auch per Enter abgeschickt werden. Das submit-Event deckt alle Wege ab. Neu laden würde die Seite trotzdem – dafür brauchst du preventDefault()."
+    }
+  ]
+}

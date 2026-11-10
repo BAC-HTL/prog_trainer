@@ -1,0 +1,95 @@
+{
+  "id": "pos-j1-python-algorithmen_02_struktogramme",
+  "title": "Struktogramme",
+  "summary": "Abläufe mit Nassi-Shneiderman-Diagrammen grafisch darstellen und in Python umsetzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Struktogramm (Nassi-Shneiderman-Diagramm, genormt in DIN 66261) stellt einen Algorithmus grafisch dar. Es besteht nur aus Rechtecken, die von oben nach unten gelesen werden. Jeder Block hat genau einen Eingang oben und einen Ausgang unten – Sprünge kreuz und quer gibt es nicht. Struktogramme sind bei Tests und Schularbeiten in POS sehr beliebt, weil sie unabhängig von der Programmiersprache sind. Das einfachste Element ist die Anweisung: ein Rechteck mit einem Schritt. Mehrere Anweisungen untereinander bilden eine Sequenz, die genau in dieser Reihenfolge ausgeführt wird."
+    },
+    {
+      "type": "code",
+      "content": "+------------------------------+\n| Eingabe: breite, hoehe       |\n+------------------------------+\n| flaeche ← breite * hoehe     |\n+------------------------------+\n| Ausgabe: flaeche             |\n+------------------------------+\n\n# Python:\nbreite = float(input(\"Breite: \"))\nhoehe = float(input(\"Höhe: \"))\nflaeche = breite * hoehe\nprint(flaeche)"
+    },
+    {
+      "type": "text",
+      "content": "Die Verzweigung (Alternative) zeichnest du mit einem Dreieck: In der Mitte steht die Bedingung, links der Ja-Zweig (J), rechts der Nein-Zweig (N). Darunter liegen die beiden Spalten mit den Anweisungen. Braucht ein Zweig keine Anweisung, bleibt er leer (oft mit ∅ markiert) – in Python fällt dann einfach das else weg."
+    },
+    {
+      "type": "code",
+      "content": "+------------------------------+\n|\\        punkte >= 50        /|\n|  \\ J                    N /  |\n+--------------+---------------+\n| Ausgabe:     | Ausgabe:      |\n| \"bestanden\"  | \"nicht        |\n|              |  bestanden\"   |\n+--------------+---------------+\n\n# Python:\nif punkte >= 50:\n    print(\"bestanden\")\nelse:\n    print(\"nicht bestanden\")"
+    },
+    {
+      "type": "text",
+      "content": "Bei Schleifen unterscheidest du zwei Arten:\n• Kopfgesteuert: Die Bedingung steht oben und wird VOR jedem Durchlauf geprüft. Ist sie gleich am Anfang falsch, läuft der Körper kein einziges Mal. In Python: while. Die Zählschleife („für i von 1 bis 5“) ist ein Sonderfall und wird zu for i in range(1, 6).\n• Fußgesteuert: Die Bedingung steht unten. Der Körper läuft mindestens einmal. Der eingerückte Schleifenkörper hängt wie ein Haken am linken Rand."
+    },
+    {
+      "type": "code",
+      "content": "+------------------------------+\n| summe ← 0                    |\n+------------------------------+\n| i ← 1                        |\n+------------------------------+\n| solange i <= 5               |\n|   +--------------------------+\n|   | summe ← summe + i        |\n|   +--------------------------+\n|   | i ← i + 1                |\n+---+--------------------------+\n| Ausgabe: summe               |\n+------------------------------+\n\n# Python:\nsumme = 0\ni = 1\nwhile i <= 5:\n    summe += i\n    i += 1\nprint(summe)  # 15"
+    },
+    {
+      "type": "text",
+      "content": "Python hat keine eigene fußgesteuerte Schleife (kein do-while wie C#). Du baust sie mit while True und einem break am Ende nach. Typisches Beispiel ist die Eingabeprüfung: Die Note wird mindestens einmal abgefragt und so lange wiederholt, bis sie gültig ist. Achtung: Im Struktogramm steht unten die Wiederholungsbedingung („solange ungültig“), im Python-Code prüfst du beim break das Gegenteil („gültig → aufhören“)."
+    },
+    {
+      "type": "code",
+      "content": "+---+--------------------------+\n|   | Eingabe: note            |\n|   +--------------------------+\n| solange note < 1             |\n| oder note > 5                |\n+------------------------------+\n| Ausgabe: note                |\n+------------------------------+\n\n# Python:\nwhile True:\n    note = int(input(\"Note: \"))\n    if note >= 1 and note <= 5:\n        break\nprint(note)"
+    },
+    {
+      "type": "code",
+      "content": "Mehrfachauswahl (in Python: match):\n+------------------------------+\n|\\            note            /|\n|  \\ 1    | 2       | sonst  / |\n+---------+---------+----------+\n| Ausgabe:| Ausgabe:| Ausgabe: |\n| \"Sehr   | \"Gut\"   | \"Weiter  |\n|  gut\"   |         |  üben\"   |\n+---------+---------+----------+\n\nmatch note:\n    case 1:\n        print(\"Sehr gut\")\n    case 2:\n        print(\"Gut\")\n    case _:\n        print(\"Weiter üben\")"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: J und N vertauscht, die Bedingung einer fußgesteuerten Schleife falsch herum ins Python übernommen oder Anweisungen, die eigentlich NACH der Schleife kommen, in den Schleifenkörper gezeichnet. Zusammenfassung: Sequenz, Verzweigung, Mehrfachauswahl, kopf- und fußgesteuerte Schleife reichen aus, um jeden Algorithmus darzustellen. Blöcke dürfen beliebig ineinander verschachtelt werden."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieses Struktogramm aus?",
+      "code": "+-----------------------------+\n| x ← 1                       |\n+-----------------------------+\n| solange x < 20              |\n|   +-------------------------+\n|   | x ← x * 3               |\n+---+-------------------------+\n| Ausgabe: x                  |\n+-----------------------------+",
+      "options": [
+        "9",
+        "20",
+        "27",
+        "81"
+      ],
+      "correctIndex": 2,
+      "explanation": "x: 1 → 3 → 9 → 27. Bei x = 27 ist die Bedingung x < 20 falsch, die Schleife endet. Ausgegeben wird 27 – der Wert, der die Grenze zuerst überschreitet."
+    },
+    {
+      "question": "Welches Struktogramm-Element garantiert, dass der Schleifenkörper mindestens einmal ausgeführt wird?",
+      "options": [
+        "Kopfgesteuerte Schleife",
+        "Fußgesteuerte Schleife",
+        "Zählschleife",
+        "Mehrfachauswahl"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei der fußgesteuerten Schleife steht die Bedingung unten – sie wird erst NACH dem ersten Durchlauf geprüft. Kopfgesteuerte Schleifen und Zählschleifen können null Durchläufe haben."
+    },
+    {
+      "question": "Was wird bei t = 10 ausgegeben?",
+      "code": "+-----------------------------+\n|\\          t > 25           /|\n|  \\ J                   N  / |\n+-------------+---------------+\n| Ausgabe:    |\\    t < 10   /|\n| \"heiß\"      | \\ J      N /  |\n|             +-------+-------+\n|             | Aus.: | Aus.: |\n|             |\"kalt\" |\"mild\" |\n+-------------+-------+-------+",
+      "options": [
+        "\"mild\"",
+        "\"kalt\"",
+        "\"heiß\"",
+        "Nichts"
+      ],
+      "correctIndex": 0,
+      "explanation": "t > 25 ist falsch → Nein-Zweig. Dort ist t < 10 ebenfalls falsch, denn 10 ist nicht kleiner als 10 → wieder Nein-Zweig: \"mild\"."
+    },
+    {
+      "question": "Wie setzt du eine fußgesteuerte Schleife „Körper; solange x < 0“ in Python um?",
+      "options": [
+        "while x < 0:\n    Körper",
+        "while True:\n    Körper\n    if x >= 0:\n        break",
+        "while True:\n    Körper\n    if x < 0:\n        break",
+        "for x in range(0):\n    Körper"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Körper muss zuerst einmal laufen. Danach wird abgebrochen, sobald die Wiederholungsbedingung x < 0 NICHT mehr gilt, also bei x >= 0. Variante 1 ist kopfgesteuert und läuft eventuell gar nicht."
+    }
+  ]
+}

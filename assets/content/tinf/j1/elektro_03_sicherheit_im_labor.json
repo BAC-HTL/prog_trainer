@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-elektro_03_sicherheit_im_labor",
+  "title": "Sicherheit im Labor",
+  "summary": "Gefahren durch Strom erkennen, die 5 Sicherheitsregeln anwenden, Bauteile vor ESD schützen und im Notfall richtig handeln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im Werkstätten- und Laborunterricht arbeitest du mit Netzteilen, Messgeräten und offenen Schaltungen. Strom ist unsichtbar – darum braucht es feste Regeln. Gefährlich ist der Strom, der durch den Körper fließt. Wie schlimm die Folgen sind, hängt von Stromstärke, Einwirkdauer, Weg durch den Körper (z. B. Hand–Hand über das Herz) und der Stromart ab."
+    },
+    {
+      "type": "text",
+      "content": "Schon wenige zehn Milliampere Wechselstrom können lebensgefährlich sein: Muskeln verkrampfen (man kann nicht mehr loslassen), das Herz kann aus dem Takt kommen (Herzkammerflimmern). Dazu kommen Verbrennungen und Folgeunfälle wie Stürze. Als gefährlich gelten Berührungsspannungen über 50 V Wechselspannung bzw. 120 V Gleichspannung – die Steckdose mit 230 V liegt also klar darüber."
+    },
+    {
+      "type": "text",
+      "content": "Weitere Gefahren im IT-Labor:\n• Netzteile enthalten Kondensatoren, die auch nach dem Ausstecken noch geladen sein können – PC-Netzteile daher nie öffnen.\n• Lithium-Akkus können bei Beschädigung oder Kurzschluss überhitzen und brennen.\n• Kurzschlüsse erzeugen hohe Ströme, Hitze und Funken.\n• Beschädigte Kabel und Stecker sind sofort zu melden und nicht zu benutzen."
+    },
+    {
+      "type": "text",
+      "content": "Bevor jemand an elektrischen Anlagen arbeitet, gelten die 5 Sicherheitsregeln – in genau dieser Reihenfolge. Sie sind in der Elektrotechnik verbindlich und kommen garantiert bei Prüfungen vor."
+    },
+    {
+      "type": "code",
+      "content": "Die 5 Sicherheitsregeln\n\n1. Freischalten\n2. Gegen Wiedereinschalten\n   sichern\n3. Spannungsfreiheit\n   feststellen\n4. Erden und kurzschließen\n5. Benachbarte, unter\n   Spannung stehende Teile\n   abdecken oder abschranken"
+    },
+    {
+      "type": "text",
+      "content": "ESD (elektrostatische Entladung): Wenn du über Teppich gehst, lädst du dich auf. Bei der Berührung eines Bauteils entlädt sich diese Spannung schlagartig. Für dich harmlos, für RAM, CPU oder Mainboard oft tödlich – und zwar schon bei Entladungen, die du gar nicht spürst. Der Schaden zeigt sich manchmal erst Wochen später."
+    },
+    {
+      "type": "text",
+      "content": "So schützt du Bauteile vor ESD:\n• ESD-Armband tragen und mit dem Erdungspunkt verbinden\n• auf einer ESD-Matte arbeiten\n• Bauteile in antistatischen Beuteln lagern\n• Platinen nur am Rand anfassen, nie an Kontakten\n• vorher geerdetes Metall berühren"
+    },
+    {
+      "type": "text",
+      "content": "Die Laborordnung (Praktikumsordnung) deiner Schule regelt den Alltag. Typische Punkte: Arbeiten nur mit Erlaubnis der Lehrkraft, kein Essen und Trinken am Arbeitsplatz, Arbeitsplatz ordentlich halten, Schäden sofort melden, Schaltungen erst nach Kontrolle unter Spannung setzen. Merk dir außerdem, wo der Not-Aus-Taster, der Feuerlöscher und die Fluchtwege sind."
+    },
+    {
+      "type": "text",
+      "content": "Im Notfall: Bei einem Stromunfall zuerst an den Eigenschutz denken – Stromkreis unterbrechen (Not-Aus, Sicherung), erst dann die Person berühren. Notruf: Rettung 144, Feuerwehr 122, Euro-Notruf 112. Bei einem Brand an elektrischen Geräten nie Wasser verwenden, solange Spannung anliegt – geeignet ist ein CO₂-Löscher, der keine Rückstände hinterlässt. Ist der Brand nicht sofort beherrschbar: Raum verlassen, Tür schließen, Alarm auslösen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Strom durch den Körper ist gefährlich. Die 5 Sicherheitsregeln: Freischalten, sichern, Spannungsfreiheit feststellen, erden und kurzschließen, abdecken. Bauteile mit ESD-Armband und -Matte schützen. Laborordnung einhalten, Not-Aus kennen, bei Elektrobränden CO₂ statt Wasser."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was ist die erste der 5 Sicherheitsregeln?",
+      "options": [
+        "Spannungsfreiheit feststellen",
+        "Erden und kurzschließen",
+        "Freischalten",
+        "Abdecken"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst wird freigeschaltet, dann gegen Wiedereinschalten gesichert, danach die Spannungsfreiheit festgestellt."
+    },
+    {
+      "question": "Warum trägt man beim Einbau von RAM ein ESD-Armband?",
+      "options": [
+        "Damit statische Ladung abgeleitet wird und keine Entladung das Bauteil beschädigt",
+        "Damit man keinen Stromschlag von 230 V bekommt",
+        "Damit der RAM schneller läuft",
+        "Weil es die Laborordnung als Schmuck vorschreibt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Armband verbindet dich mit dem Erdpotenzial. So entsteht keine schlagartige Entladung über empfindliche Bauteile. Vor Netzspannung schützt es nicht."
+    },
+    {
+      "question": "Ein Mitschüler hängt an einem defekten Gerät fest und verkrampft. Was tust du zuerst?",
+      "options": [
+        "Ihn sofort wegziehen",
+        "Wasser über das Gerät schütten",
+        "Ein Foto für die Dokumentation machen",
+        "Den Not-Aus drücken bzw. den Strom abschalten"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eigenschutz geht vor: Erst den Stromkreis unterbrechen, sonst wirst du selbst Teil des Stromkreises. Danach Notruf 144 und Erste Hilfe."
+    },
+    {
+      "question": "Ein Monitor fängt an zu brennen und ist noch eingesteckt. Welches Löschmittel ist geeignet?",
+      "options": [
+        "Wasser aus dem Waschbecken",
+        "CO₂-Löscher",
+        "Eine nasse Decke",
+        "Ein Getränk"
+      ],
+      "correctIndex": 1,
+      "explanation": "Wasser leitet und ist bei anliegender Spannung gefährlich. Ein CO₂-Löscher erstickt den Brand ohne Rückstände."
+    }
+  ]
+}

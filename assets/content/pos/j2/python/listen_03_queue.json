@@ -1,0 +1,95 @@
+{
+  "id": "pos-j2-python-listen_03_queue",
+  "title": "Queue (Warteschlange)",
+  "summary": "Das FIFO-Prinzip mit collections.deque umsetzen und typische Anwendungen kennen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Queue (Warteschlange) funktioniert wie die Schlange beim Buffet: Wer zuerst kommt, wird zuerst bedient – First In, First Out (FIFO). Neue Elemente kommen hinten dazu (enqueue), entnommen wird vorne (dequeue). Beispiele: Druckerwarteschlange, Tickets im Support, Nachrichten, die der Reihe nach verarbeitet werden."
+    },
+    {
+      "type": "text",
+      "content": "Mit einer normalen Liste geht das: append() hängt hinten an, pop(0) nimmt vorne weg. Das Problem: pop(0) muss alle restlichen Elemente um einen Platz nach vorne verschieben. Bei langen Warteschlangen wird das spürbar langsam."
+    },
+    {
+      "type": "code",
+      "content": "schlange = []\nschlange.append(\"Anna\")\nschlange.append(\"Ben\")\nschlange.append(\"Cem\")\nprint(schlange.pop(0))  # Anna\nprint(schlange)         # ['Ben', 'Cem']"
+    },
+    {
+      "type": "text",
+      "content": "Besser ist collections.deque (gesprochen „deck“, double-ended queue). Sie ist an beiden Enden schnell: append() und popleft() für eine Queue, dazu gibt es auch appendleft() und pop(). Mit len() und if q: prüfst du, ob noch etwas drin ist."
+    },
+    {
+      "type": "code",
+      "content": "from collections import deque\n\nq = deque()\nq.append(\"Anna\")     # hinten anstellen\nq.append(\"Ben\")\nq.append(\"Cem\")\nprint(q.popleft())    # Anna\nprint(q[0])           # Ben (vorne)\nprint(len(q))         # 2"
+    },
+    {
+      "type": "text",
+      "content": "Wie beim Stack gilt: Entnehmen aus einer leeren Queue löst einen IndexError aus. Darum arbeitet man eine Queue meist mit while q: ab – die Schleife läuft genau so lange, wie noch Elemente da sind."
+    },
+    {
+      "type": "code",
+      "content": "from collections import deque\n\ndrucker = deque([\"Referat.pdf\",\n                 \"Laborprotokoll.pdf\"])\ndrucker.append(\"Lebenslauf.pdf\")\n\nwhile drucker:\n    auftrag = drucker.popleft()\n    print(\"Drucke\", auftrag)\n# Drucke Referat.pdf\n# Drucke Laborprotokoll.pdf\n# Drucke Lebenslauf.pdf"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Anwendungen: Das Betriebssystem verteilt Rechenzeit reihum an wartende Prozesse (Round Robin) – wer seine Zeit verbraucht hat, stellt sich hinten wieder an. Mit deque(maxlen=n) bekommst du einen Puffer fester Größe: Ist er voll, fällt beim Anhängen vorne automatisch das älteste Element heraus – praktisch für „die letzten 3 Messwerte“."
+    },
+    {
+      "type": "code",
+      "content": "from collections import deque\n\nletzte = deque(maxlen=3)\nfor temp in [21, 22, 24, 23, 25]:\n    letzte.append(temp)\nprint(list(letzte))   # [24, 23, 25]\nprint(sum(letzte) / len(letzte))  # 24.0"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Queue arbeitet nach FIFO, ein Stack nach LIFO. In Python verwendest du für Queues collections.deque mit append() und popleft() statt list.pop(0). Leere Queues prüfst du mit if q: bzw. while q:, sonst droht ein IndexError."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from collections import deque\nq = deque([1, 2, 3])\nq.append(4)\nq.popleft()\nprint(q.popleft())",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Queue enthält zuerst 1, 2, 3, dann wird 4 hinten angehängt. Das erste popleft() entfernt 1, das zweite liefert 2."
+    },
+    {
+      "question": "Warum verwendet man für eine Queue deque statt einer Liste mit pop(0)?",
+      "options": [
+        "pop(0) verschiebt alle restlichen Elemente, popleft() bei deque nicht",
+        "Listen können keine Strings speichern",
+        "pop(0) gibt es in Python nicht",
+        "deque sortiert die Elemente automatisch"
+      ],
+      "correctIndex": 0,
+      "explanation": "deque ist an beiden Enden schnell. Bei einer Liste muss pop(0) alle anderen Elemente nach vorne rücken."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from collections import deque\nd = deque(maxlen=2)\nfor x in \"ABC\":\n    d.append(x)\nprint(list(d))",
+      "options": [
+        "['A', 'B']",
+        "['A', 'B', 'C']",
+        "['B', 'C']",
+        "IndexError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die deque fasst nur 2 Elemente. Beim Anhängen von C fällt vorne das älteste Element A heraus."
+    },
+    {
+      "question": "In welcher Situation brauchst du eine Queue?",
+      "options": [
+        "Die letzte Eingabe rückgängig machen",
+        "Prüfen, ob Klammern richtig verschachtelt sind",
+        "Den Aufrufstapel einer rekursiven Funktion verwalten",
+        "Druckaufträge in der Reihenfolge ihres Eintreffens abarbeiten"
+      ],
+      "correctIndex": 3,
+      "explanation": "Druckaufträge werden nach FIFO abgearbeitet: Wer zuerst kommt, wird zuerst gedruckt. Die anderen drei Beispiele sind typische Stack-Anwendungen."
+    }
+  ]
+}

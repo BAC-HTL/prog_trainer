@@ -7,37 +7,51 @@ muss kein Dart-Code geändert werden.
 
 ```
 assets/content/
-  index.json                  Lernpfade (Python, C#, Architektur …)
-  python/
-    challenges.json           Herausforderungen für Python
-    einsteiger/
-      level.json              Kapitel dieses Levels
-      e1_01_erstes_programm.json
-      e1_pruefung.json        Abschlussprüfung Kapitel e1
-    fortgeschritten/ profi/ senior/
-  csharp/ …                   gleich aufgebaut
+  curriculum.json             der Lehrplan: Stufen, Fächer, Themen, Module
+  index.json                  Programmiersprachen (für Herausforderungen und Spiel)
+  pos/j1/python/ …            neue Inhalte: <fach>/<stufe>/[<sprache>/]
+  dbi/j2/, nvs/j2/, tinf/j1/ …
+  python/, csharp/            ältere Programmier-Lektionen und Herausforderungen
 ```
 
-## Kapitel (`level.json`)
+## Modul im Lehrplan (`curriculum.json`)
+
+Sprachunabhängiges Modul:
 
 ```json
 {
-  "id": "python-einsteiger",
-  "title": "Einsteiger",
-  "description": "…",
-  "chapters": [
-    {
-      "id": "python-e1",
-      "title": "Erste Schritte",
-      "description": "…",
-      "lessons": ["python/einsteiger/e1_01_erstes_programm.json"],
-      "exam": "python/einsteiger/e1_pruefung.json"
-    }
-  ]
+  "id": "nvs-j2-adressierung",
+  "stage": "j2",
+  "subject": "NVS",
+  "semester": 3,
+  "title": "Adressierung & Subnetting",
+  "description": "MAC- und IP-Adressen, Subnetze, IPv6.",
+  "topics": ["netzwerke"],
+  "lessons": ["nvs/j2/adressierung_01_mac_ip.json"],
+  "exam": "nvs/j2/adressierung_pruefung.json"
 }
 ```
 
-Kapitel ohne Lektionen werden als „Bald verfügbar“ angezeigt.
+Programmier-Modul mit einer Variante pro Sprache:
+
+```json
+{
+  "id": "pos-j2-rekursion",
+  "stage": "j2", "subject": "POS", "semester": 3,
+  "title": "Rekursion", "description": "…", "topics": ["programmieren", "algorithmen"],
+  "variants": {
+    "python": { "id": "pos-j2-rekursion-python", "lessons": ["…"], "exam": "…" },
+    "csharp": { "id": "pos-j2-rekursion-csharp", "lessons": ["…"], "exam": "…" }
+  }
+}
+```
+
+- `stage`: `j1`–`j5`, `junior`, `senior` oder `expert`.
+- `subject`: `POS`, `DBI`, `NVS`, `TINF` oder `SYP`.
+- `topics`: Themen für den Filter. Die Liste aller Themen steht oben in `curriculum.json`.
+- Die `id` eines Moduls bzw. einer Variante ist der Schlüssel für Prüfungsergebnis und Zertifikat. Sie darf sich später nicht mehr ändern.
+- Module ohne `lessons` erscheinen als „Bald verfügbar“.
+- Neue Ordner müssen in `pubspec.yaml` unter `flutter: assets:` eingetragen werden.
 
 ## Lektion
 

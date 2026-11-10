@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../app_services.dart';
 import '../data/progress_store.dart';
 import '../models/content.dart';
+import '../models/curriculum.dart';
 import '../widgets/certificate_button.dart';
 import '../widgets/code_block.dart';
 import '../widgets/option_tile.dart';
@@ -10,16 +11,9 @@ import '../widgets/option_tile.dart';
 /// Abschlussprüfung eines Kapitels. Anders als im Quiz gibt es erst am Ende
 /// eine Auswertung.
 class ExamScreen extends StatefulWidget {
-  const ExamScreen({
-    super.key,
-    required this.track,
-    required this.level,
-    required this.chapter,
-  });
+  const ExamScreen({super.key, required this.chapter});
 
-  final Track track;
-  final Level level;
-  final Chapter chapter;
+  final ChapterContext chapter;
 
   @override
   State<ExamScreen> createState() => _ExamScreenState();
@@ -50,15 +44,18 @@ class _ExamScreenState extends State<ExamScreen> {
     ].length;
     final percent = (correct * 100 / exam.questions.length).round();
     final result = ExamResult(
-      trackId: widget.track.id,
-      trackTitle: widget.track.title,
-      levelTitle: widget.level.title,
+      trackId: widget.chapter.trackId,
+      trackTitle: widget.chapter.trackTitle,
+      levelTitle: widget.chapter.levelTitle,
+      subject: widget.chapter.subjectId,
       chapterTitle: widget.chapter.title,
       percent: percent,
       passed: percent >= exam.passPercent,
       date: DateTime.now(),
     );
-    await AppServices.of(context).progress.recordExam(widget.chapter.id, result);
+    await AppServices.of(context)
+        .progress
+        .recordExam(widget.chapter.chapterId, result);
     if (!mounted) return;
     setState(() => _result = result);
   }

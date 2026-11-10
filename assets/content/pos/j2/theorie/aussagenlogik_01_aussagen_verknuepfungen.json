@@ -1,0 +1,93 @@
+{
+  "id": "pos-j2-theorie-aussagenlogik_01_aussagen_verknuepfungen",
+  "title": "Aussagen und Verknüpfungen",
+  "summary": "Was eine Aussage ist und wie du Aussagen mit ¬, ∧, ∨, →, ↔ verknüpfst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Aussagenlogik ist die Grundlage für jede Bedingung in deinen Programmen. Eine Aussage ist ein Satz, der eindeutig entweder wahr oder falsch ist – ein Drittes gibt es nicht. Wahr schreiben wir als 1, falsch als 0.\n\nKeine Aussagen sind Fragen, Befehle, Geschmacksurteile und Sätze mit einer offenen Variable wie „x > 3“: Ob der stimmt, hängt von x ab."
+    },
+    {
+      "type": "code",
+      "content": "Graz liegt in der Steiermark.\n  → Aussage, wahr (1)\n7 ist eine gerade Zahl.\n  → Aussage, falsch (0)\nHast du die Hausübung?\n  → keine Aussage (Frage)\nSpeichere die Datei!\n  → keine Aussage (Befehl)\nPOS ist das beste Fach.\n  → keine Aussage (Meinung)\nx > 3\n  → keine Aussage (x offen)"
+    },
+    {
+      "type": "text",
+      "content": "Einfache Aussagen kürzen wir mit Aussagevariablen wie p, q, r ab. Mit Junktoren (Verknüpfungen) baust du daraus zusammengesetzte Aussagen. Die wichtigsten:\n• Negation ¬p: dreht den Wahrheitswert um.\n• Konjunktion p ∧ q: nur wahr, wenn beide wahr sind.\n• Disjunktion p ∨ q: wahr, wenn mindestens eine wahr ist.\nDas Wort „aber“ bedeutet logisch dasselbe wie „und“."
+    },
+    {
+      "type": "code",
+      "content": "Formel  gesprochen\n¬p      nicht p\np ∧ q   p und q\np ∨ q   p oder q (oder beide)\np ⊕ q   entweder p oder q\np → q   wenn p, dann q\np ↔ q   p genau dann, wenn q"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Das logische „oder“ (∨) ist inklusiv. „Ich lerne heute Mathe oder POS“ ist auch dann wahr, wenn du beides lernst. Meinst du „entweder … oder“ (genau eine der beiden), verwendest du das exklusive Oder p ⊕ q (XOR). Im Alltag ist oft das exklusive gemeint („Suppe oder Salat zum Menü“), in der Logik gilt aber immer das inklusive."
+    },
+    {
+      "type": "text",
+      "content": "Die Implikation p → q („wenn p, dann q“) ist nur in einem Fall falsch: wenn p wahr und q falsch ist. Denk an ein Versprechen: „Wenn du eine 1 schreibst, bekommst du ein Eis.“ Gebrochen ist es nur, wenn du eine 1 schreibst und kein Eis bekommst. Schreibst du keine 1, ist das Versprechen nicht verletzt – egal ob es ein Eis gibt.\n\nDie Biimplikation p ↔ q („genau dann, wenn“) ist wahr, wenn p und q denselben Wert haben."
+    },
+    {
+      "type": "code",
+      "content": "p: Es ist Schultag.\nq: Der Wecker läutet.\nr: Es sind Ferien.\n\nWenn Schultag ist, läutet der\nWecker.                 p → q\n\nEs ist kein Schultag, aber der\nWecker läutet.         ¬p ∧ q\n\nEntweder ist Schultag oder es\nsind Ferien.            p ⊕ r\n\nDer Wecker läutet genau dann,\nwenn Schultag ist.      q ↔ p"
+    },
+    {
+      "type": "text",
+      "content": "Wie bei Punkt- vor Strichrechnung gibt es eine Bindungsstärke: ¬ bindet am stärksten, dann ∧, dann ∨, dann → und zuletzt ↔. Die Formel ¬p ∧ q ∨ r bedeutet also ((¬p) ∧ q) ∨ r. Python (not, and, or) und C# (!, &&, ||) halten sich an dieselbe Reihenfolge. Für → gibt es keinen eigenen Operator – du schreibst ¬p ∨ q. Im Zweifel: Klammern setzen, das macht Formeln und Code lesbarer."
+    },
+    {
+      "type": "code",
+      "content": "Logik   Python     C#\n¬p      not p      !p\np ∧ q   p and q    p && q\np ∨ q   p or q     p || q\np ↔ q   p == q     p == q\np ⊕ q   p != q     p != q\np → q   not p or q !p || q\n\n# Python: ¬p ∧ q ∨ r\np, q, r = True, False, True\nprint(not p and q or r)  # True\n\n// C#: dieselbe Bindung\nbool p = true, q = false, r = true;\nConsole.WriteLine(!p && q || r);\n// True"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Aussage ist eindeutig wahr (1) oder falsch (0). Mit ¬, ∧, ∨, ⊕, → und ↔ verknüpfst du Aussagen. ∨ ist inklusiv, ⊕ ist „entweder oder“, p → q ist nur bei „p wahr, q falsch“ falsch. Bindung: ¬ vor ∧ vor ∨ vor → vor ↔."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welcher Satz ist eine Aussage im Sinne der Aussagenlogik?",
+      "options": [
+        "Ist heute Montag?",
+        "Schließ bitte das Fenster!",
+        "x + 2 = 5",
+        "Linz liegt an der Donau."
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur „Linz liegt an der Donau.“ ist eindeutig wahr oder falsch. Frage und Befehl haben keinen Wahrheitswert, bei x + 2 = 5 hängt er von x ab."
+    },
+    {
+      "question": "p ist wahr, q ist falsch, r ist wahr. Welchen Wert hat (p ∨ q) ∧ ¬r?",
+      "options": [
+        "wahr (1)",
+        "falsch (0)",
+        "nicht bestimmbar",
+        "wahr, weil p wahr ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "p ∨ q = 1 ∨ 0 = 1, ¬r = ¬1 = 0, also 1 ∧ 0 = 0."
+    },
+    {
+      "question": "In welchem Fall ist die Implikation p → q falsch?",
+      "options": [
+        "p wahr, q falsch",
+        "p falsch, q wahr",
+        "p falsch, q falsch",
+        "p wahr, q wahr"
+      ],
+      "correctIndex": 0,
+      "explanation": "p → q ist nur falsch, wenn die Voraussetzung p wahr ist und die Folgerung q falsch. In allen anderen Fällen ist die Implikation wahr."
+    },
+    {
+      "question": "p = 1, q = 1, r = 0. Welchen Wert hat ¬p ∧ q ∨ r?",
+      "options": [
+        "1, weil q wahr ist",
+        "1, weil ∨ zuerst ausgewertet wird",
+        "0",
+        "nicht eindeutig ohne Klammern"
+      ],
+      "correctIndex": 2,
+      "explanation": "¬ bindet am stärksten, dann ∧, dann ∨: ((¬1) ∧ 1) ∨ 0 = (0 ∧ 1) ∨ 0 = 0 ∨ 0 = 0. Die Bindungsregeln machen die Formel eindeutig."
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "pos-j1-csharp-dateien_01_textdateien",
+  "title": "Textdateien lesen und schreiben",
+  "summary": "Mit File und StreamReader/StreamWriter Daten in Textdateien speichern und wieder einlesen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher sind alle Daten weg, sobald dein Programm endet. Willst du einen Highscore, eine Notenliste oder ein Protokoll aufheben, speicherst du sie in einer Textdatei.\n\nDie einfachsten Werkzeuge dafür stecken in der Klasse File (Namensraum System.IO, in modernen Projekten automatisch eingebunden):\n• File.WriteAllText(pfad, text) – schreibt den Text in die Datei. Gibt es die Datei schon, wird sie überschrieben!\n• File.AppendAllText(pfad, text) – hängt Text hinten an (legt die Datei bei Bedarf an).\n• File.ReadAllText(pfad) – liest die ganze Datei als einen string.\n\nEinen Zeilenumbruch musst du selbst mit \\n anhängen. Ein Pfad ohne Ordner wie \"log.txt\" bezieht sich auf das Arbeitsverzeichnis – startest du aus Visual Studio, ist das meist der Ordner bin\\Debug\\net8.0 deines Projekts."
+    },
+    {
+      "type": "code",
+      "content": "File.WriteAllText(\"log.txt\", \"Start\\n\");\nFile.AppendAllText(\"log.txt\", \"Test 1 ok\\n\");\nFile.AppendAllText(\"log.txt\", \"Test 2 ok\\n\");\n\nstring inhalt = File.ReadAllText(\"log.txt\");\nConsole.Write(inhalt);\n// Ausgabe:\n// Start\n// Test 1 ok\n// Test 2 ok"
+    },
+    {
+      "type": "text",
+      "content": "Meist willst du mit einzelnen Zeilen arbeiten. File.ReadAllLines(pfad) liefert ein string-Array – ein Element pro Zeile, ohne Zeilenumbruch. Das Gegenstück File.WriteAllLines(pfad, array) schreibt jedes Element in eine eigene Zeile.\n\nZusammen mit Split und int.Parse kannst du so einfache Tabellen verarbeiten. Ein verbreitetes Format ist CSV: eine Zeile pro Datensatz, die Werte durch ein Trennzeichen getrennt (im deutschsprachigen Excel meist der Strichpunkt)."
+    },
+    {
+      "type": "code",
+      "content": "string[] daten =\n    { \"Lena;1\", \"Jonas;3\", \"Mia;2\" };\nFile.WriteAllLines(\"noten.csv\", daten);\n\nstring[] zeilen =\n    File.ReadAllLines(\"noten.csv\");\nint summe = 0;\nforeach (string zeile in zeilen)\n{\n    string[] teile = zeile.Split(';');\n    string name = teile[0];\n    int note = int.Parse(teile[1]);\n    Console.WriteLine($\"{name}: {note}\");\n    summe += note;\n}\nint schnitt = summe / zeilen.Length;\nConsole.WriteLine($\"Schnitt: {schnitt}\");\n// Ausgabe:\n// Lena: 1\n// Jonas: 3\n// Mia: 2\n// Schnitt: 2"
+    },
+    {
+      "type": "text",
+      "content": "File.ReadAllLines lädt die ganze Datei auf einmal in den Speicher. Bei sehr großen Dateien (z. B. Server-Logs) liest du besser Zeile für Zeile mit einem StreamReader. ReadLine() liefert die nächste Zeile, EndOfStream wird true, wenn alles gelesen ist. Zum Schreiben gibt es den StreamWriter mit Write und WriteLine – wie bei Console.\n\nEin Stream hält die Datei offen. Mit using sorgst du dafür, dass sie am Ende des Blocks garantiert geschlossen wird – auch wenn ein Fehler auftritt. Vergisst du das, bleibt die Datei gesperrt und beim StreamWriter landet der Text womöglich nie in der Datei, weil er noch im Zwischenspeicher (Puffer) liegt."
+    },
+    {
+      "type": "code",
+      "content": "using (StreamWriter writer =\n       new StreamWriter(\"einkauf.txt\"))\n{\n    writer.WriteLine(\"Milch\");\n    writer.WriteLine(\"Brot\");\n    writer.WriteLine(\"Äpfel\");\n}   // Datei wird hier geschlossen\n\nusing (StreamReader reader =\n       new StreamReader(\"einkauf.txt\"))\n{\n    int nr = 1;\n    while (!reader.EndOfStream)\n    {\n        string zeile = reader.ReadLine();\n        Console.WriteLine($\"{nr}. {zeile}\");\n        nr++;\n    }\n}\n// Ausgabe:\n// 1. Milch\n// 2. Brot\n// 3. Äpfel"
+    },
+    {
+      "type": "text",
+      "content": "Liest du eine Datei, die es nicht gibt, stürzt dein Programm mit einer FileNotFoundException ab. Prüfe deshalb vorher mit File.Exists(pfad).\n\nVorsicht bei Windows-Pfaden: Im string \"C:\\temp\\noten.txt\" sind \\t und \\n Escape-Sequenzen (Tabulator und Zeilenumbruch) – der Pfad ist kaputt. Schreib stattdessen einen verbatim-string mit @ davor oder verdopple die Backslashes."
+    },
+    {
+      "type": "code",
+      "content": "string pfad = \"highscore.txt\";\nif (File.Exists(pfad))\n{\n    string[] liste = File.ReadAllLines(pfad);\n    Console.WriteLine($\"{liste.Length} Einträge\");\n}\nelse\n{\n    Console.WriteLine(\"Noch kein Highscore.\");\n}\n\n// Windows-Pfade richtig schreiben:\nstring p1 = @\"C:\\temp\\noten.txt\";\nstring p2 = \"C:\\\\temp\\\\noten.txt\";"
+    },
+    {
+      "type": "text",
+      "content": "Weitere typische Fehler:\n• WriteAllText statt AppendAllText – der alte Inhalt ist weg.\n• Beim Einlesen vergessen, dass alles strings sind – zum Rechnen brauchst du int.Parse.\n• Die Datei im falschen Ordner suchen (Arbeitsverzeichnis!).\n\nZusammenfassung:\n• Schnell & einfach: File.WriteAllText, AppendAllText, ReadAllText, WriteAllLines, ReadAllLines.\n• Zeilenweise & für große Dateien: StreamReader / StreamWriter – immer mit using.\n• Vor dem Lesen mit File.Exists prüfen, Windows-Pfade mit @\"…\" schreiben."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "File.WriteAllText(\"t.txt\", \"A\");\nFile.AppendAllText(\"t.txt\", \"B\");\nFile.WriteAllText(\"t.txt\", \"C\");\nFile.AppendAllText(\"t.txt\", \"D\");\nConsole.WriteLine(File.ReadAllText(\"t.txt\"));",
+      "options": [
+        "ABCD",
+        "D",
+        "CD",
+        "AB"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das zweite WriteAllText überschreibt die Datei komplett – „AB“ ist weg, danach steht nur „C“ drin. AppendAllText hängt „D“ an. Ergebnis: CD."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "File.WriteAllText(\"z.txt\", \"1\\n2\\n3\\n\");\nstring[] z = File.ReadAllLines(\"z.txt\");\nConsole.WriteLine(z.Length + int.Parse(z[2]));",
+      "options": [
+        "7",
+        "6",
+        "4",
+        "33"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Datei enthält drei Zeilen. Der Zeilenumbruch am Ende erzeugt keine zusätzliche leere Zeile, also hat z drei Elemente. z[2] ist \"3\", mit int.Parse wird daraus die Zahl 3. 3 + 3 = 6."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string[] w = { \"Hund\", \"Ei\", \"Katze\", \"\" };\nFile.WriteAllLines(\"w.txt\", w);\nint n = 0;\nusing (StreamReader r =\n       new StreamReader(\"w.txt\"))\n{\n    while (!r.EndOfStream)\n    {\n        string zeile = r.ReadLine();\n        if (zeile.Length > 2) n++;\n    }\n}\nConsole.WriteLine(n);",
+      "options": [
+        "3",
+        "4",
+        "1",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "WriteAllLines schreibt vier Zeilen: „Hund“, „Ei“, „Katze“ und eine leere Zeile. Der StreamReader liest alle vier, aber nur „Hund“ (4 Zeichen) und „Katze“ (5 Zeichen) sind länger als 2 Zeichen."
+    },
+    {
+      "question": "Warum findet dieses Programm unter Windows die Datei C:\\temp\\noten.txt nicht, obwohl sie existiert?",
+      "code": "string pfad = \"C:\\temp\\noten.txt\";\nstring text = File.ReadAllText(pfad);\nConsole.WriteLine(text);",
+      "options": [
+        "\\t und \\n werden als Tabulator und Zeilenumbruch gelesen – richtig wäre @\"C:\\temp\\noten.txt\"",
+        "ReadAllText kann keine Dateien mit der Endung .txt lesen",
+        "Pfade müssen immer mit / statt mit \\ geschrieben werden, sonst gibt es einen Compilerfehler",
+        "Vor dem Lesen muss die Datei mit File.Exists geöffnet werden"
+      ],
+      "correctIndex": 0,
+      "explanation": "In normalen strings leitet \\ eine Escape-Sequenz ein: \\t ist ein Tabulator, \\n ein Zeilenumbruch. Der Pfad enthält also Steuerzeichen statt Ordnernamen. Mit @ davor (verbatim-string) wird \\ als normales Zeichen behandelt. File.Exists prüft nur, ob es die Datei gibt – öffnen tut es sie nicht."
+    }
+  ]
+}

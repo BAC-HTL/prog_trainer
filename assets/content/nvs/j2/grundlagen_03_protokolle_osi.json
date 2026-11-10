@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j2-grundlagen_03_protokolle_osi",
+  "title": "Protokolle, OSI- und TCP/IP-Modell",
+  "summary": "Wie Kommunikation in Schichten aufgeteilt ist, was Kapselung bedeutet und wann TCP oder UDP verwendet wird.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Protokoll ist eine Vereinbarung, wie Geräte miteinander kommunizieren: Format der Nachrichten, Reihenfolge, Reaktion auf Fehler. Damit nicht ein riesiges Protokoll alles regeln muss, teilt man die Aufgaben in Schichten. Jede Schicht nutzt die Dienste der darunterliegenden und bietet der darüberliegenden eigene Dienste an."
+    },
+    {
+      "type": "code",
+      "content": "OSI-Modell        Beispiele\n--------------    ---------------\n7 Anwendung       HTTP, DNS, SMTP\n6 Darstellung     Kodierung, TLS*\n5 Sitzung         Sitzungsverwaltung\n4 Transport       TCP, UDP\n3 Vermittlung     IP, ICMP; Router\n2 Sicherung       Ethernet; Switch\n1 Bitübertragung  Kabel, Funk, Hub\n\n* Zuordnung je nach Literatur"
+    },
+    {
+      "type": "text",
+      "content": "Merkhilfe von unten nach oben (1–7): „Please Do Not Throw Salami Pizza Away“ – Physical, Data Link, Network, Transport, Session, Presentation, Application. Das TCP/IP-Modell, nach dem das Internet tatsächlich funktioniert, fasst die Schichten zu vier zusammen: OSI 5–7 bilden die Anwendungsschicht, OSI 1–2 die Netzzugangsschicht."
+    },
+    {
+      "type": "code",
+      "content": "TCP/IP-Modell     entspricht OSI\n---------------   --------------\nAnwendung         7, 6, 5\nTransport         4\nInternet          3\nNetzzugang        2, 1"
+    },
+    {
+      "type": "text",
+      "content": "Kapselung: Beim Senden fügt jede Schicht ihre eigenen Steuerinformationen (Header) zu den Daten hinzu und reicht alles nach unten weiter. Beim Empfänger entfernt jede Schicht „ihren“ Header wieder (Entkapselung). Die Dateneinheiten heißen je nach Schicht Segment (Schicht 4, bei UDP Datagramm), Paket (Schicht 3), Frame (Schicht 2) und Bits (Schicht 1)."
+    },
+    {
+      "type": "code",
+      "content": "             [HTTP-Daten]\n       [TCP][HTTP-Daten]       Segment\n    [IP][TCP][HTTP-Daten]      Paket\n[ETH][IP][TCP][HTTP-Daten][FCS] Frame"
+    },
+    {
+      "type": "text",
+      "content": "Auf Schicht 4 gibt es zwei wichtige Protokolle. TCP ist verbindungsorientiert und zuverlässig: Vor der Übertragung wird mit dem 3-Way-Handshake (SYN, SYN-ACK, ACK) eine Verbindung aufgebaut, verlorene Segmente werden neu gesendet und die Reihenfolge stimmt. UDP ist verbindungslos: kein Handshake, keine Bestätigung – dafür schneller und mit weniger Overhead. TCP nimmt man für Webseiten, E-Mail und Dateiübertragung, UDP für Videotelefonie, Online-Spiele, DNS-Abfragen oder Streaming, wo ein verlorenes Paket weniger stört als eine Verzögerung."
+    },
+    {
+      "type": "text",
+      "content": "Ports adressieren die Anwendung auf einem Gerät: Die IP-Adresse bringt das Paket zum richtigen Rechner, die Portnummer (0–65535) zum richtigen Programm. Bekannte Dienste nutzen feste Ports (Well-known Ports 0–1023), der Client verwendet einen zufälligen hohen Quellport. IP-Adresse + Port nennt man Socket, z. B. 192.168.1.10:443."
+    },
+    {
+      "type": "code",
+      "content": "Port  Prot.  Dienst\n----  -----  -------------\n22    TCP    SSH\n53    UDP*   DNS\n80    TCP    HTTP\n443   TCP    HTTPS\n67/68 UDP    DHCP\n\n* DNS nutzt bei Bedarf auch TCP"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Das OSI-Modell hat 7 Schichten, das TCP/IP-Modell 4. Beim Senden wird Header um Header „eingepackt“ (Kapselung). TCP ist zuverlässig und verbindungsorientiert, UDP schnell und verbindungslos. Ports bestimmen, welche Anwendung die Daten bekommt. Typischer Fehler: Router (Schicht 3) und Switch (Schicht 2) verwechseln."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Auf welcher OSI-Schicht arbeitet ein klassischer Switch, der anhand von MAC-Adressen weiterleitet?",
+      "options": [
+        "Schicht 1",
+        "Schicht 2",
+        "Schicht 3",
+        "Schicht 4"
+      ],
+      "correctIndex": 1,
+      "explanation": "MAC-Adressen und Frames gehören zur Sicherungsschicht (Schicht 2). Router arbeiten mit IP-Adressen auf Schicht 3."
+    },
+    {
+      "question": "In welcher Reihenfolge werden die Header beim Senden einer Webseite außen herum gepackt (von innen nach außen)?",
+      "options": [
+        "Ethernet, IP, TCP",
+        "IP, TCP, Ethernet",
+        "TCP, Ethernet, IP",
+        "TCP, IP, Ethernet"
+      ],
+      "correctIndex": 3,
+      "explanation": "Zuerst kommt der TCP-Header (Schicht 4) um die HTTP-Daten, dann der IP-Header (Schicht 3), ganz außen der Ethernet-Header (Schicht 2)."
+    },
+    {
+      "question": "Für welche Anwendung ist UDP besser geeignet als TCP?",
+      "options": [
+        "Videotelefonie",
+        "Download eines Installers",
+        "Versand einer E-Mail",
+        "Abruf einer Webseite"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei Echtzeit-Anwendungen ist eine geringe Verzögerung wichtiger als die Wiederholung verlorener Pakete. Ein neu gesendetes Videobild käme ohnehin zu spät."
+    },
+    {
+      "question": "Ein Browser verbindet sich mit 10.0.0.5:443. Wofür steht die 443?",
+      "options": [
+        "Die Nummer der Netzwerkkarte",
+        "Die Subnetzmaske",
+        "Den Port des HTTPS-Dienstes",
+        "Die Paketgröße in Byte"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nach dem Doppelpunkt steht die Portnummer. 443 ist der Standardport für HTTPS."
+    }
+  ]
+}

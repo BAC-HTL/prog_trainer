@@ -1,0 +1,93 @@
+{
+  "id": "pos-j2-theorie-praedikatenlogik_02_aequivalenzen_schluesse",
+  "title": "Äquivalenzen und Schlüsse",
+  "summary": "Quantoren richtig verneinen und gültige Schlüsse von Fehlschlüssen unterscheiden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Was ist das Gegenteil von „Alle haben die Hausübung gemacht“? Nicht „Niemand hat sie gemacht“, sondern „Mindestens eine:r hat sie nicht gemacht“. Ein einziges Gegenbeispiel genügt, um eine Allaussage zu widerlegen. Umgekehrt ist „Es gibt niemanden, der zu spät kommt“ dasselbe wie „Alle kommen nicht zu spät“."
+    },
+    {
+      "type": "code",
+      "content": "¬∀x P(x) ≡ ∃x ¬P(x)\n¬∃x P(x) ≡ ∀x ¬P(x)\n\nNicht alle Ampeln sind grün.\n≡ Mindestens eine Ampel ist\n  nicht grün.\n\nEs gibt keinen Fünfer.\n≡ Jede Note ist kein Fünfer."
+    },
+    {
+      "type": "text",
+      "content": "Merkregel: Die Negation wandert nach innen und dreht dabei jeden Quantor um (∀ ↔ ∃). Das ist De Morgan im Großen, denn ∀ ist ein großes ∧ und ∃ ein großes ∨. Typischer Fehler: „Nicht alle Ampeln sind grün“ als „Alle Ampeln sind nicht grün“ übersetzen. Bei Formeln mit Implikation wendest du danach die Aussagenlogik an: ¬(S → H) ≡ S ∧ ¬H."
+    },
+    {
+      "type": "code",
+      "content": "  ¬∀x ∃y K(x, y)\n≡ ∃x ¬∃y K(x, y)\n≡ ∃x ∀y ¬K(x, y)\n\n  ¬∀x (S(x) → H(x))\n≡ ∃x ¬(S(x) → H(x))\n≡ ∃x (S(x) ∧ ¬H(x))\nNicht alle Schüler:innen haben\ndie HÜ ≡ Es gibt eine:n\nSchüler:in ohne HÜ."
+    },
+    {
+      "type": "text",
+      "content": "∀ darfst du auf ein ∧ verteilen, ∃ auf ein ∨. Umgekehrt geht das nicht! Beispiel über den natürlichen Zahlen: „Jede Zahl ist gerade oder ungerade“ ist wahr, aber „Jede Zahl ist gerade oder jede Zahl ist ungerade“ ist falsch. Genauso gibt es eine gerade und eine ungerade Zahl, aber keine Zahl, die beides ist."
+    },
+    {
+      "type": "code",
+      "content": "Äquivalent:\n∀x (P(x) ∧ Q(x))\n  ≡ ∀x P(x) ∧ ∀x Q(x)\n∃x (P(x) ∨ Q(x))\n  ≡ ∃x P(x) ∨ ∃x Q(x)\n\nNICHT äquivalent:\n∀x (P(x) ∨ Q(x))\n  ≢ ∀x P(x) ∨ ∀x Q(x)\n∃x (P(x) ∧ Q(x))\n  ≢ ∃x P(x) ∧ ∃x Q(x)"
+    },
+    {
+      "type": "text",
+      "content": "Ein Schluss besteht aus Prämissen (Voraussetzungen) und einer Konklusion (Folgerung). Er ist gültig, wenn die Konklusion in jeder denkbaren Situation wahr ist, in der alle Prämissen wahr sind. Ob die Prämissen tatsächlich stimmen, ist dafür egal – es geht nur um die Form. Die beiden wichtigsten gültigen Schlussformen sind Modus ponens und Modus tollens."
+    },
+    {
+      "type": "code",
+      "content": "H(x): x gibt die HÜ ab\nZ(x): x bekommt ein Plus\nP1:  ∀x (H(x) → Z(x))\n\nModus ponens        ✔ gültig\nP2: H(Lena)\nK:  Z(Lena)\n\nModus tollens       ✔ gültig\nP2: ¬Z(Tom)\nK:  ¬H(Tom)\n\nFehlschluss         ✘ ungültig\nP2: Z(Max)\nK:  H(Max)"
+    },
+    {
+      "type": "text",
+      "content": "Der letzte Schluss ist ein klassischer Fehlschluss (Bejahung der Folgerung): Max könnte sein Plus auch für eine gute Mitarbeit bekommen haben. Ebenso ungültig ist die Verneinung der Voraussetzung: Aus ¬H(Max) folgt nicht ¬Z(Max). Um einen Schluss als ungültig zu entlarven, genügt ein Gegenbeispiel – eine Situation, in der alle Prämissen wahr sind und die Konklusion falsch ist."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Negierte Quantoren drehen sich um: ¬∀ ≡ ∃¬ und ¬∃ ≡ ∀¬. ∀ verteilt sich auf ∧, ∃ auf ∨ – nicht umgekehrt. Gültig sind Modus ponens (aus P → Q und P folgt Q) und Modus tollens (aus P → Q und ¬Q folgt ¬P). Ein Gegenbeispiel zeigt, dass ein Schluss ungültig ist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was ist die Negation von „Alle Schüler:innen haben die Matura bestanden“?",
+      "options": [
+        "Kein:e Schüler:in hat bestanden.",
+        "Alle haben nicht bestanden.",
+        "Mindestens ein:e Schüler:in hat nicht bestanden.",
+        "Mindestens ein:e Schüler:in hat bestanden."
+      ],
+      "correctIndex": 2,
+      "explanation": "¬∀x B(x) ≡ ∃x ¬B(x): Es genügt ein:e Schüler:in, die/der nicht bestanden hat."
+    },
+    {
+      "question": "Welche Formel ist äquivalent zu ¬∃x (P(x) ∧ Q(x))?",
+      "options": [
+        "∃x (¬P(x) ∧ ¬Q(x))",
+        "∀x (¬P(x) ∧ ¬Q(x))",
+        "∃x (¬P(x) ∨ ¬Q(x))",
+        "∀x (¬P(x) ∨ ¬Q(x))"
+      ],
+      "correctIndex": 3,
+      "explanation": "Zuerst ¬∃ → ∀¬, dann De Morgan: ¬(P ∧ Q) ≡ ¬P ∨ ¬Q."
+    },
+    {
+      "question": "Prämissen: ∀x (A(x) → B(x)) und ¬B(c). Was folgt gültig?",
+      "options": [
+        "A(c)",
+        "¬A(c)",
+        "B(c)",
+        "Über A(c) folgt nichts."
+      ],
+      "correctIndex": 1,
+      "explanation": "Modus tollens: Wäre A(c) wahr, müsste auch B(c) wahr sein. B(c) ist aber falsch, also ist A(c) falsch."
+    },
+    {
+      "question": "Welches Formelpaar ist NICHT äquivalent?",
+      "options": [
+        "∃x (P(x) ∧ Q(x)) und ∃x P(x) ∧ ∃x Q(x)",
+        "¬∀x P(x) und ∃x ¬P(x)",
+        "∀x (P(x) ∧ Q(x)) und ∀x P(x) ∧ ∀x Q(x)",
+        "¬∃x P(x) und ∀x ¬P(x)"
+      ],
+      "correctIndex": 0,
+      "explanation": "Gibt es ein P-Element und ein (anderes) Q-Element, muss es noch kein Element geben, das beides ist. ∃ lässt sich nicht auf ∧ verteilen."
+    }
+  ]
+}

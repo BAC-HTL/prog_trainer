@@ -18,9 +18,13 @@ class ExamResult {
     required this.percent,
     required this.passed,
     required this.date,
+    this.subject,
   });
 
   final String trackId;
+
+  /// Fach (POS, DBI, NVS, TINF, SYP) – für das Achievement „Allrounder“.
+  final String? subject;
   final String trackTitle;
   final String levelTitle;
   final String chapterTitle;
@@ -36,6 +40,7 @@ class ExamResult {
         'percent': percent,
         'passed': passed,
         'date': date.toIso8601String(),
+        if (subject != null) 'subject': subject,
       };
 
   factory ExamResult.fromJson(Map<String, dynamic> json) => ExamResult(
@@ -46,6 +51,7 @@ class ExamResult {
         percent: json['percent'] as int,
         passed: json['passed'] as bool,
         date: DateTime.parse(json['date'] as String),
+        subject: json['subject'] as String?,
       );
 }
 
@@ -61,6 +67,7 @@ class ProgressStore extends ChangeNotifier {
 
   static const _progressKey = 'progress_v1';
   static const _nameKey = 'user_name';
+  static const _languageKey = 'pos_language';
 
   final SharedPreferences _prefs;
 
@@ -79,6 +86,14 @@ class ProgressStore extends ChangeNotifier {
   // ---------- Lesen ----------
 
   String get userName => _prefs.getString(_nameKey) ?? '';
+
+  /// Bevorzugte Programmiersprache für Programmier-Module.
+  String get language => _prefs.getString(_languageKey) ?? 'python';
+
+  Future<void> setLanguage(String language) async {
+    await _prefs.setString(_languageKey, language);
+    notifyListeners();
+  }
 
   bool isLessonCompleted(String lessonPath) =>
       _completedLessons.contains(lessonPath);
@@ -113,14 +128,19 @@ class ProgressStore extends ChangeNotifier {
   ProgressStats get stats {
     final passed = _exams.values.where((e) => e.passed);
     final byTrack = <String, int>{};
+    final bySubject = <String, int>{};
     for (final e in passed) {
       byTrack[e.trackId] = (byTrack[e.trackId] ?? 0) + 1;
+      final subject = e.subject ??
+          (e.trackId == 'python' || e.trackId == 'csharp' ? 'POS' : null);
+      if (subject != null) bySubject[subject] = (bySubject[subject] ?? 0) + 1;
     }
     return ProgressStats(
       lessonsCompleted: _completedLessons.length,
       examsPassed: passed.length,
       perfectExams: passed.where((e) => e.percent == 100).length,
       examsPassedByTrack: byTrack,
+      examsPassedBySubject: bySubject,
       solvedByTrack: _solved.map((k, v) => MapEntry(k, v.length)),
       pointsByTrack: Map.of(_points),
       missionsSolved:

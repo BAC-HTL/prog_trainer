@@ -1,0 +1,122 @@
+{
+  "id": "dbi-j2-datenbanken_pruefung",
+  "title": "Abschlussprüfung: Erste Datenbanken",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Aussage über Primärschlüssel ist richtig?",
+      "options": [
+        "Ein Primärschlüssel darf leer sein, solange er eindeutig ist",
+        "Eine Tabelle kann beliebig viele Primärschlüssel haben",
+        "Ein Primärschlüssel ist eindeutig und darf nie NULL sein; er kann auch aus mehreren Spalten bestehen",
+        "Der Nachname ist immer ein guter Primärschlüssel"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein PK identifiziert jeden Datensatz eindeutig und ist nie leer. Es gibt genau einen PK pro Tabelle, er kann aber zusammengesetzt sein – wie in Zwischentabellen."
+    },
+    {
+      "question": "Welcher Datentyp passt für den Preis eines Schulbuchs (z. B. 24,90 €)?",
+      "options": [
+        "DECIMAL(6,2)",
+        "INTEGER",
+        "VARCHAR(10)",
+        "DATE"
+      ],
+      "correctIndex": 0,
+      "explanation": "Geldbeträge sind exakte Kommazahlen. DECIMAL(6,2) speichert bis zu 6 Stellen, davon 2 Nachkommastellen. Mit VARCHAR könnte man nicht rechnen."
+    },
+    {
+      "question": "Eine Datenbank speichert Bücher und Autor:innen. Ein Buch kann mehrere Autor:innen haben, eine Autorin mehrere Bücher schreiben. Wie viele Tabellen brauchst du mindestens?",
+      "options": [
+        "1",
+        "2",
+        "4",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "m:n-Beziehung → Tabelle buch, Tabelle autor und eine Zwischentabelle buch_autor mit zwei Fremdschlüsseln: 3 Tabellen."
+    },
+    {
+      "question": "David (schueler_id 4) hat noch eine Note in der Tabelle noten. Was passiert bei diesem Befehl (ohne ON DELETE CASCADE)?",
+      "code": "DELETE FROM schueler\nWHERE schueler_id = 4;",
+      "options": [
+        "David und seine Note werden gelöscht",
+        "Das DBMS verweigert das Löschen wegen der referentiellen Integrität",
+        "Nur David wird gelöscht, die Note bleibt ohne Besitzer",
+        "Die Note wird auf 1 gesetzt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Note verweist per Fremdschlüssel auf David. Würde er gelöscht, zeigte der FK ins Leere. Das DBMS lehnt das daher ab."
+    },
+    {
+      "question": "Was liefert diese Abfrage? (schueler in Klasse 1: Anna Berger, Ben Huber, Eva Gruber)",
+      "code": "SELECT nachname\nFROM schueler\nWHERE klasse_id = 1\n  AND vorname <> 'Ben'\nORDER BY nachname DESC;",
+      "options": [
+        "Gruber, Berger",
+        "Berger, Gruber",
+        "Huber, Gruber, Berger",
+        "Berger, Gruber, Huber"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ben wird durch vorname <> 'Ben' herausgefiltert. Übrig bleiben Berger und Gruber, DESC sortiert absteigend: Gruber vor Berger."
+    },
+    {
+      "question": "Wie viele Zeilen zählt diese Abfrage? (AM-Noten: Anna 2, Ben 4, Clara 1, David 5)",
+      "code": "SELECT COUNT(*)\nFROM schueler s\nJOIN noten n\n  ON s.schueler_id = n.schueler_id\nWHERE n.fach = 'AM'\n  AND n.note < 3;",
+      "options": [
+        "1",
+        "4",
+        "3",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur Noten kleiner als 3 zählen: Anna (2) und Clara (1). Ergebnis 2."
+    },
+    {
+      "question": "Welches Ergebnis liefert die Abfrage? (2AHIT: Anna AM 2, Ben AM 4 – 2BHIT: Clara AM 1, David AM 5)",
+      "code": "SELECT k.bezeichnung, AVG(n.note)\nFROM klassen k\nJOIN schueler s\n  ON k.klasse_id = s.klasse_id\nJOIN noten n\n  ON s.schueler_id = n.schueler_id\nWHERE n.fach = 'AM'\nGROUP BY k.bezeichnung\nORDER BY k.bezeichnung;",
+      "options": [
+        "2AHIT 3 und 2BHIT 3",
+        "2AHIT 6 und 2BHIT 6",
+        "2AHIT 2 und 2BHIT 2",
+        "Nur eine Zeile: 3"
+      ],
+      "correctIndex": 0,
+      "explanation": "Pro Klasse wird eine Gruppe gebildet: (2 + 4) / 2 = 3 und (1 + 5) / 2 = 3. GROUP BY liefert eine Zeile pro Klasse."
+    },
+    {
+      "question": "Die Tabelle klassen hat 2 Zeilen, die Tabelle noten 8 Zeilen. Was liefert diese Abfrage, bei der die Verknüpfungsbedingung fehlt?",
+      "code": "SELECT COUNT(*) FROM klassen, noten;",
+      "options": [
+        "8",
+        "10",
+        "16",
+        "2"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ohne Bedingung wird jede Zeile mit jeder kombiniert (Kreuzprodukt): 2 × 8 = 16 Zeilen."
+    },
+    {
+      "question": "Wo sollte die Regel „Note muss zwischen 1 und 5 liegen“ am besten festgelegt werden?",
+      "options": [
+        "Nur im Formular, damit die Tabelle einfach bleibt",
+        "Im Bericht, der die Noten anzeigt",
+        "In einer Notiz für das Sekretariat",
+        "In der Tabelle (CHECK bzw. Gültigkeitsregel), damit sie für alle Eingabewege gilt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Regeln in der Tabelle greifen bei jedem Formular, jedem Import und jedem SQL-Befehl. Formularprüfungen kann man umgehen."
+    },
+    {
+      "question": "Welches Element passt, um zu einer Klasse alle zugehörigen Schüler:innen direkt darunter einzugeben?",
+      "options": [
+        "Ein Bericht mit Summenfeld",
+        "Ein Formular mit Unterformular",
+        "Ein zusätzlicher Primärschlüssel",
+        "Ein Kontrollkästchen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Unterformular bildet die 1:n-Beziehung ab: oben der eine Datensatz (Klasse), darunter die vielen zugehörigen (Schüler:innen)."
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "id": "pos-j2-theorie-aussagenlogik_03_normalformen_umformungen",
+  "title": "Normalformen und Umformungen",
+  "summary": "Formeln mit Gesetzen und De Morgan vereinfachen und in DNF oder KNF bringen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit Äquivalenzumformungen ersetzt du eine Formel Schritt für Schritt durch eine gleichwertige – ohne jedes Mal eine ganze Wahrheitstabelle zu zeichnen. Das Ziel ist meist, eine Formel (oder eine if-Bedingung) kürzer und verständlicher zu machen. Werkzeug sind die folgenden Gesetze; jedes davon kannst du mit einer Wahrheitstabelle nachprüfen."
+    },
+    {
+      "type": "code",
+      "content": "Kommutativ  p ∧ q ≡ q ∧ p\n            p ∨ q ≡ q ∨ p\nAssoziativ  (p∧q)∧r ≡ p∧(q∧r)\nDistributiv p∧(q∨r) ≡ (p∧q)∨(p∧r)\n            p∨(q∧r) ≡ (p∨q)∧(p∨r)\nDoppelte ¬  ¬¬p ≡ p\nIdempotenz  p ∧ p ≡ p,  p ∨ p ≡ p\nAbsorption  p ∨ (p ∧ q) ≡ p\n            p ∧ (p ∨ q) ≡ p\nKomplement  p ∧ ¬p ≡ 0, p ∨ ¬p ≡ 1\nNeutral     p ∧ 1 ≡ p,  p ∨ 0 ≡ p\nImplikation p → q ≡ ¬p ∨ q"
+    },
+    {
+      "type": "text",
+      "content": "Beim Vereinfachen schreibst du pro Zeile genau eine Umformung und notierst das verwendete Gesetz daneben. So findest du Fehler schnell. Im Beispiel klammerst du p mit dem Distributivgesetz aus; übrig bleibt q ∨ ¬q, was immer 1 ist."
+    },
+    {
+      "type": "code",
+      "content": "  (p ∧ q) ∨ (p ∧ ¬q)\n≡ p ∧ (q ∨ ¬q)   Distributiv\n≡ p ∧ 1          Komplement\n≡ p              Neutral\n\nIm Code (Pseudocode):\nwenn (x und y) oder (x und nicht y)\n→ kürzer: wenn x"
+    },
+    {
+      "type": "text",
+      "content": "Die Regeln von De Morgan sagen dir, wie du eine Negation in eine Klammer hineinziehst: Jedes Glied wird negiert und ∧ wird zu ∨ (und umgekehrt). Alltagsbeispiel: „Nicht (Hausübung gemacht und Heft dabei)“ heißt „Hausübung nicht gemacht oder Heft nicht dabei“.\n\nTypischer Fehler: ¬(p ∧ q) als ¬p ∧ ¬q schreiben – das Zeichen muss wechseln! Im Code brauchst du De Morgan ständig, etwa bei der Eingabeprüfung: Die Negation von note ≥ 1 ist note < 1 (nicht note ≤ 1)."
+    },
+    {
+      "type": "code",
+      "content": "¬(p ∧ q) ≡ ¬p ∨ ¬q\n¬(p ∨ q) ≡ ¬p ∧ ¬q\n\nGültige Note: 1 ≤ note ≤ 5\n\n# Python\nif not (note >= 1 and note <= 5):\nif note < 1 or note > 5:\n\n// C#\nif (!(note >= 1 && note <= 5))\nif (note < 1 || note > 5)\n\nJe zwei Zeilen sind gleichwertig."
+    },
+    {
+      "type": "text",
+      "content": "Normalformen sind einheitliche Schreibweisen. Ein Literal ist eine Variable oder ihre Negation (p, ¬p).\n• DNF (disjunktive Normalform): ODER von UND-Termen. Für jede Zeile mit Ergebnis 1 bildest du einen Minterm: Variable mit 1 → p, mit 0 → ¬p. Alle Minterme verbindest du mit ∨.\n• KNF (konjunktive Normalform): UND von ODER-Termen. Für jede Zeile mit Ergebnis 0 bildest du einen Maxterm: Variable mit 0 → p, mit 1 → ¬p. Alle Maxterme verbindest du mit ∧.\nSo kannst du aus jeder Wahrheitstabelle eine Formel ablesen – Beispiel XOR:"
+    },
+    {
+      "type": "code",
+      "content": "p q | p⊕q\n0 0 |  0\n0 1 |  1\n1 0 |  1\n1 1 |  0\n1-Zeilen: 01, 10 / 0-Zeilen: 00, 11\n\nDNF (je 1-Zeile ein Minterm):\n(¬p ∧ q) ∨ (p ∧ ¬q)\n\nKNF (je 0-Zeile ein Maxterm):\nZeile 00 → (p ∨ q)\nZeile 11 → (¬p ∨ ¬q)\n(p ∨ q) ∧ (¬p ∨ ¬q)"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Äquivalenzumformungen verändern die Form, nie den Wahrheitswert. De Morgan: Negation hinein, Zeichen tauschen. DNF liest du an den 1-Zeilen ab, KNF an den 0-Zeilen. In Programmen hilft das, verschachtelte Bedingungen zu vereinfachen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Formel ist äquivalent zu ¬(p ∨ q)?",
+      "options": [
+        "¬p ∨ ¬q",
+        "¬p ∧ ¬q",
+        "p ∧ q",
+        "¬p ∨ q"
+      ],
+      "correctIndex": 1,
+      "explanation": "De Morgan: Negation in die Klammer ziehen und ∨ zu ∧ tauschen: ¬p ∧ ¬q."
+    },
+    {
+      "question": "Welche Bedingung ist für alle ganzen Zahlen x, y gleichwertig zu ¬(x > 0 ∧ y > 0)?",
+      "options": [
+        "x < 0 ∨ y < 0",
+        "x ≤ 0 ∧ y ≤ 0",
+        "x < 0 ∧ y < 0",
+        "x ≤ 0 ∨ y ≤ 0"
+      ],
+      "correctIndex": 3,
+      "explanation": "De Morgan macht aus ∧ ein ∨, und die Negation von x > 0 ist x ≤ 0. Mit x < 0 würdest du den Fall x = 0 übersehen."
+    },
+    {
+      "question": "Vereinfache p ∨ (p ∧ q).",
+      "options": [
+        "p",
+        "q",
+        "p ∧ q",
+        "p ∨ q"
+      ],
+      "correctIndex": 0,
+      "explanation": "Absorptionsgesetz: Ist p wahr, ist das Ganze wahr; ist p falsch, ist auch p ∧ q falsch. Das Ergebnis hängt also nur von p ab."
+    },
+    {
+      "question": "Eine Formel f ist genau in den Zeilen pq = 00 und pq = 11 wahr. Welche Formel ist die DNF von f?",
+      "options": [
+        "(p ∧ ¬q) ∨ (¬p ∧ q)",
+        "(p ∨ q) ∧ (¬p ∨ ¬q)",
+        "(¬p ∧ ¬q) ∨ (p ∧ q)",
+        "¬p ∧ q"
+      ],
+      "correctIndex": 2,
+      "explanation": "Pro 1-Zeile ein Minterm: 00 → ¬p ∧ ¬q, 11 → p ∧ q, verbunden mit ∨. Das ist p ↔ q."
+    }
+  ]
+}

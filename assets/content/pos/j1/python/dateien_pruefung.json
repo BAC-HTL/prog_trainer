@@ -1,0 +1,125 @@
+{
+  "id": "pos-j1-python-dateien_pruefung",
+  "title": "Abschlussprüfung: Textdateien, Tests & Fehlersuche",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "daten.txt enthält genau den Text a, b und c in drei Zeilen, nach dem c steht KEIN Zeilenumbruch. Was gibt der Code aus?",
+      "code": "with open(\"daten.txt\", encoding=\"utf-8\") as f:\n    print(len(f.read()))",
+      "options": [
+        "3",
+        "6",
+        "4",
+        "5"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Inhalt ist \"a\\nb\\nc\": drei Buchstaben und zwei Zeilenumbrüche, also 5 Zeichen. Auch \\n zählt als Zeichen."
+    },
+    {
+      "question": "Was steht nach diesem Code in log.txt?",
+      "code": "with open(\"log.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"Start\\n\")\nwith open(\"log.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"Ende\\n\")\nwith open(\"log.txt\", encoding=\"utf-8\") as f:\n    print(repr(f.read()))",
+      "options": [
+        "Start\\nEnde\\n",
+        "Start\\n",
+        "Die Datei ist leer",
+        "Ende\\n"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jedes open mit \"w\" leert die Datei. Der zweite Block überschreibt also \"Start\". Zum Anhängen bräuchtest du \"a\"."
+    },
+    {
+      "question": "noten.txt enthält die Zeilen Anna;2, Ben;5 und Cem;4. Was gibt der Code aus?",
+      "code": "schlecht = []\nwith open(\"noten.txt\", encoding=\"utf-8\") as f:\n    for zeile in f:\n        teile = zeile.strip().split(\";\")\n        if int(teile[1]) > 3:\n            schlecht.append(teile[0])\nprint(schlecht)",
+      "options": [
+        "['Ben', 'Cem']",
+        "['Ben']",
+        "[]",
+        "ValueError"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei jeder Zeile wird mit strip() das \\n entfernt und mit split(\";\") geteilt. Note 5 und 4 sind größer als 3, also kommen Ben und Cem in die Liste."
+    },
+    {
+      "question": "Die Datei neu.txt existiert noch nicht. Welche Aussage stimmt?",
+      "options": [
+        "open(\"neu.txt\", \"a\") legt sie an, open(\"neu.txt\", \"r\") führt zu FileNotFoundError",
+        "Beide Modi \"a\" und \"r\" legen die Datei an",
+        "Beide Modi führen zu FileNotFoundError",
+        "\"r\" legt sie an, \"a\" führt zu FileNotFoundError"
+      ],
+      "correctIndex": 0,
+      "explanation": "\"w\" und \"a\" erzeugen eine fehlende Datei. Zum Lesen muss sie aber schon existieren – sonst gibt es einen FileNotFoundError."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(\"Start\")\nprint(\"Ende\"",
+      "options": [
+        "Start",
+        "Start, danach SyntaxError",
+        "Nichts – SyntaxError, das Programm startet gar nicht",
+        "Start und Ende"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Klammer bei print(\"Ende\" wird nie geschlossen. Syntaxfehler werden vor dem Start erkannt, daher wird auch Zeile 1 nicht ausgeführt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(\"Start\")\nx = 10\npirnt(x)",
+      "options": [
+        "Nichts – NameError vor dem Start",
+        "Start, danach NameError",
+        "Start und 10",
+        "SyntaxError"
+      ],
+      "correctIndex": 1,
+      "explanation": "pirnt ist ein Tippfehler, aber syntaktisch ein gültiger Funktionsaufruf. Der Fehler fällt erst beim Ausführen von Zeile 3 auf – ein Laufzeitfehler (NameError). Start wurde da schon ausgegeben."
+    },
+    {
+      "question": "Ein:e Nutzer:in tippt bei diesem Programm 3,5 ein. Was passiert?",
+      "code": "zahl = int(input(\"Zahl: \"))\nprint(zahl * 2)",
+      "options": [
+        "Es wird 7.0 ausgegeben",
+        "Es wird 6 ausgegeben",
+        "ValueError: invalid literal for int()",
+        "TypeError"
+      ],
+      "correctIndex": 2,
+      "explanation": "int() kann nur ganze Zahlen ohne Komma umwandeln. \"3,5\" ist keine gültige Ganzzahl → ValueError. Das ist ein Laufzeitfehler, der von der Eingabe abhängt."
+    },
+    {
+      "question": "Die Funktion soll zählen, wie viele Werte über dem Grenzwert liegen. Was geben die Debug-Ausgaben aus und wo liegt der Fehler?",
+      "code": "def zaehle_ueber(werte, grenze):\n    anzahl = 0\n    for i in range(len(werte) - 1):\n        print(f\"DEBUG {i=}\")\n        if werte[i] > grenze:\n            anzahl += 1\n    return anzahl\n\nprint(zaehle_ueber([5, 7, 9], 4))",
+      "options": [
+        "3 Debug-Zeilen, Ergebnis 2 – alles korrekt",
+        "2 Debug-Zeilen, Ergebnis 2 – der letzte Wert wird nie geprüft",
+        "3 Debug-Zeilen, Ergebnis 1 – der Vergleich ist falsch",
+        "IndexError, weil i zu groß wird"
+      ],
+      "correctIndex": 1,
+      "explanation": "range(len(werte) - 1) liefert nur i = 0 und 1. Die 9 an Index 2 wird nie angeschaut, daher nur 2 Debug-Zeilen. Korrekt wäre 3 (5, 7 und 9 sind über 4). Das print-Debugging zeigt sofort, dass i nie 2 wird."
+    },
+    {
+      "question": "rabatt(betrag) soll ab einem Einkauf von 100 € (inklusive) 10 % abziehen. Mit welchen Testwerten prüfst du die Grenze am besten?",
+      "options": [
+        "50 und 150",
+        "0 und 1000",
+        "99.99, 100 und 100.01",
+        "100 und 200"
+      ],
+      "correctIndex": 2,
+      "explanation": "Grenzwerte testest du direkt an, knapp unter und knapp über der Grenze. So fällt ein > statt >= sofort auf. 50/150 oder 0/1000 liegen weit weg von der Grenze."
+    },
+    {
+      "question": "Wie verhält sich dieser Test?",
+      "code": "def verdoppeln(x):\n    return x * 2\n\nassert (verdoppeln(2) == 5, \"falsch\")\nprint(\"Test bestanden?\")",
+      "options": [
+        "Er schlägt nie fehl, weil ein nicht leeres Tupel immer wahr ist",
+        "Er schlägt fehl, weil 2 * 2 nicht 5 ist",
+        "TypeError, assert erlaubt keine Klammern",
+        "Er gibt \"falsch\" aus und läuft weiter"
+      ],
+      "correctIndex": 0,
+      "explanation": "Durch die Klammern prüft assert das Tupel (False, \"falsch\"). Ein nicht leeres Tupel gilt als wahr – der Test kann nie fehlschlagen. Python warnt mit einer SyntaxWarning. Richtig: assert verdoppeln(2) == 5, \"falsch\""
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "id": "pos-j1-csharp-algorithmen_01_algorithmus_pseudocode",
+  "title": "Algorithmus und Pseudocode",
+  "summary": "Was ein Algorithmus ist, welche Eigenschaften er braucht und wie du ihn in Pseudocode beschreibst und in C# umsetzt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Algorithmus ist eine genaue Schritt-für-Schritt-Anleitung, die ein Problem löst. Du kennst das aus dem Alltag: eine Wegbeschreibung zur Schule, ein Kochrezept oder die Anleitung zum Anmelden im WLAN der HTL.\n\nEin Computer ist allerdings sehr „dumm“: Er macht nur genau das, was dasteht. Deshalb muss ein Algorithmus so präzise sein, dass auch jemand ohne Mitdenken – oder eben ein Computer – ihn ausführen kann."
+    },
+    {
+      "type": "text",
+      "content": "Damit eine Anleitung als Algorithmus gilt, braucht sie diese Eigenschaften:\n• Endlichkeit (Finitheit) – die Beschreibung hat endlich viele Schritte.\n• Terminiertheit – er kommt nach endlich vielen Schritten zu einem Ende.\n• Eindeutigkeit (Determiniertheit) – jeder Schritt ist klar; gleiche Eingabe liefert immer das gleiche Ergebnis.\n• Ausführbarkeit – jeder Schritt ist wirklich machbar.\n• Allgemeinheit – er löst eine ganze Klasse von Aufgaben, z. B. das Maximum von beliebig vielen Zahlen, nicht nur von 3, 8 und 5."
+    },
+    {
+      "type": "text",
+      "content": "Bevor du programmierst, planst du den Algorithmus – unabhängig von der Programmiersprache. Dafür gibt es Pseudocode: eine Mischung aus Umgangssprache und Programm-Schreibweise. Pseudocode hat keine feste Norm, wichtig ist nur, dass er eindeutig ist. Häufige Schreibweisen:\n• EINGABE / AUSGABE\n• x ← 5 bedeutet „x bekommt den Wert 5“ (Zuweisung)\n• = ist in Pseudocode ein Vergleich, kein Zuweisen\n• WENN … DANN … SONST, SOLANGE …, FÜR i ← 1 BIS n\n\nViele Algorithmen folgen dem EVA-Prinzip: Eingabe → Verarbeitung → Ausgabe."
+    },
+    {
+      "type": "code",
+      "content": "ALGORITHMUS Maximum\n  EINGABE: zahlen (n Werte, n ≥ 1)\n  max ← zahlen[0]\n  FÜR i ← 1 BIS n - 1\n    WENN zahlen[i] > max DANN\n      max ← zahlen[i]\n    ENDE WENN\n  ENDE FÜR\n  AUSGABE max"
+    },
+    {
+      "type": "text",
+      "content": "Aus gutem Pseudocode wird fast Zeile für Zeile ein C#-Programm. Achte beim Übersetzen auf die Grenzen: „FÜR i ← 1 BIS n - 1“ schließt n - 1 mit ein. In C# schreibst du daher i < zahlen.Length (gleichbedeutend mit i <= zahlen.Length - 1). Ein falsches <= zahlen.Length führt zu einer IndexOutOfRangeException."
+    },
+    {
+      "type": "code",
+      "content": "int[] zahlen = { 12, 45, 7, 45, 30 };\n\nint max = zahlen[0];\nfor (int i = 1; i < zahlen.Length; i++)\n{\n    if (zahlen[i] > max)\n    {\n        max = zahlen[i];\n    }\n}\nConsole.WriteLine(max);   // 45"
+    },
+    {
+      "type": "text",
+      "content": "Ob ein Algorithmus stimmt, prüfst du am besten mit einem Schreibtischtest: Du spielst ihn mit Papier und Stift durch und notierst nach jedem Schritt alle Variablen in einer Tabelle (Trace-Tabelle).\n\nBeispiel: Der Euklidische Algorithmus berechnet den größten gemeinsamen Teiler (ggT) zweier Zahlen – praktisch etwa zum Kürzen von Brüchen. MOD steht für den Rest der Division (in C# %)."
+    },
+    {
+      "type": "code",
+      "content": "ALGORITHMUS ggT\n  EINGABE a, b  (ganze Zahlen > 0)\n  SOLANGE b ≠ 0\n    rest ← a MOD b\n    a ← b\n    b ← rest\n  ENDE SOLANGE\n  AUSGABE a\n\nSchreibtischtest für a = 48, b = 18:\nSchritt |  a |  b | rest\n--------+----+----+-----\nStart   | 48 | 18 |  -\n1       | 18 | 12 | 12\n2       | 12 |  6 |  6\n3       |  6 |  0 |  0\nAusgabe: 6"
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(Ggt(48, 18));  // 6\nConsole.WriteLine(Ggt(17, 5));   // 1\nConsole.WriteLine(Ggt(12, 36));  // 12\n\nint Ggt(int a, int b)\n{\n    while (b != 0)\n    {\n        int rest = a % b;\n        a = b;\n        b = rest;\n    }\n    return a;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler beim Entwerfen:\n• Ungenaue Schritte wie „berechne das Ergebnis“ – das ist nicht ausführbar.\n• Eine Schleife, deren Bedingung nie falsch wird – der Algorithmus terminiert nicht.\n• Grenzen falsch übersetzt (BIS ist inklusive!).\n• Sonderfälle vergessen, z. B. ein leeres Array beim Maximum.\n\nZusammenfassung: Ein Algorithmus ist eine endliche, eindeutige und ausführbare Anleitung, die sicher zu einem Ende kommt. Pseudocode hilft dir beim Planen, der Schreibtischtest beim Überprüfen – erst dann wird programmiert."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Eigenschaft eines Algorithmus verletzt dieser Pseudocode?",
+      "code": "x ← 1\nSOLANGE x > 0\n  x ← x + 1\nENDE SOLANGE\nAUSGABE x",
+      "options": [
+        "Eindeutigkeit",
+        "Ausführbarkeit",
+        "Allgemeinheit",
+        "Terminiertheit"
+      ],
+      "correctIndex": 3,
+      "explanation": "x startet bei 1 und wird nur größer, die Bedingung x > 0 bleibt also immer wahr. Die Schleife endet nie – der Ablauf kommt nicht nach endlich vielen Schritten zu einem Ende."
+    },
+    {
+      "question": "Was gibt dieser Pseudocode aus?",
+      "code": "summe ← 0\nFÜR i ← 1 BIS 4\n  WENN i MOD 2 = 0 DANN\n    summe ← summe + i\n  ENDE WENN\nENDE FÜR\nAUSGABE summe",
+      "options": [
+        "4",
+        "10",
+        "6",
+        "3"
+      ],
+      "correctIndex": 2,
+      "explanation": "i läuft von 1 bis 4 (inklusive). Nur für gerade i (2 und 4) wird addiert: 0 + 2 + 4 = 6."
+    },
+    {
+      "question": "Wie oft läuft die while-Schleife bei Ggt(84, 36) und was ist das Ergebnis?",
+      "code": "int Ggt(int a, int b)\n{\n    while (b != 0)\n    {\n        int rest = a % b;\n        a = b;\n        b = rest;\n    }\n    return a;\n}",
+      "options": [
+        "2-mal, Ergebnis 12",
+        "3-mal, Ergebnis 12",
+        "2-mal, Ergebnis 6",
+        "1-mal, Ergebnis 36"
+      ],
+      "correctIndex": 0,
+      "explanation": "1. Durchlauf: rest = 84 % 36 = 12, a = 36, b = 12. 2. Durchlauf: rest = 36 % 12 = 0, a = 12, b = 0. Jetzt ist b == 0, die Schleife endet nach 2 Durchläufen und liefert 12."
+    },
+    {
+      "question": "Welche C#-Schleife setzt „FÜR i ← 1 BIS 10“ korrekt um?",
+      "options": [
+        "for (int i = 1; i < 10; i++)",
+        "for (int i = 0; i < 10; i++)",
+        "for (int i = 1; i <= 10; i++)",
+        "for (int i = 1; i <= 11; i++)"
+      ],
+      "correctIndex": 2,
+      "explanation": "BIS ist inklusive: i nimmt die Werte 1, 2, …, 10 an. Das entspricht i = 1 und i <= 10. Die Variante mit i = 0 und i < 10 läuft zwar auch 10-mal, aber mit den Werten 0 bis 9."
+    }
+  ]
+}

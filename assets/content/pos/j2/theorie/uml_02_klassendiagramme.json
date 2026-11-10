@@ -1,0 +1,91 @@
+{
+  "id": "pos-j2-theorie-uml_02_klassendiagramme",
+  "title": "Klassendiagramme",
+  "summary": "Klassen mit Attributen, Methoden und Sichtbarkeiten in UML darstellen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Klassendiagramm ist der Bauplan deines Programms. Es zeigt keine konkreten Werte, sondern beschreibt, welche Attribute und Methoden alle Objekte einer Klasse haben. Jede Klasse ist ein Rechteck mit drei Bereichen: oben der Klassenname (Substantiv, Einzahl, großgeschrieben), in der Mitte die Attribute, unten die Methoden (in UML „Operationen“)."
+    },
+    {
+      "type": "code",
+      "content": "+-----------------------------+\n|          Schueler           |\n+-----------------------------+\n| - name : String             |\n| - katalogNr : int           |\n| - geburtsjahr : int         |\n+-----------------------------+\n| + Schueler(name : String)   |\n| + getName() : String        |\n| + alterIn(jahr : int) : int |\n+-----------------------------+"
+    },
+    {
+      "type": "text",
+      "content": "Die Schreibweise ist sprachunabhängig: Der Typ steht nach dem Namen, getrennt durch einen Doppelpunkt – anders als in C#. Bei Methoden stehen die Parameter in der Klammer, der Rückgabetyp nach der Klammer. Liefert eine Methode nichts zurück, lässt du den Rückgabetyp weg (oder schreibst void). Ein Startwert folgt nach einem =. Statische Attribute und Methoden (gehören der Klasse, nicht dem Objekt) werden unterstrichen."
+    },
+    {
+      "type": "code",
+      "content": "Attribut:\nSichtbarkeit name : Typ = Start\n  - punkte : int = 0\n  - aktiv : bool\n\nMethode:\nSichtbarkeit name(p : Typ) : Typ\n  + addPunkte(p : int)\n  + istBestanden() : bool\n  + max(a : int, b : int) : int"
+    },
+    {
+      "type": "text",
+      "content": "Das Zeichen vor jedem Eintrag ist die Sichtbarkeit. Sie legt fest, wer darauf zugreifen darf. Nach dem Prinzip der Kapselung sind Attribute meist private (-) und werden nur über öffentliche Methoden (+) gelesen oder geändert – so kann die Klasse z. B. verhindern, dass ein Kontostand beliebig überschrieben wird. protected (#) wird erst bei der Vererbung wichtig."
+    },
+    {
+      "type": "code",
+      "content": "Zeichen Name       sichtbar für\n   +    public     alle\n   -    private    nur die Klasse\n   #    protected  Klasse und\n                   Unterklassen\n   ~    package    gleiches Paket"
+    },
+    {
+      "type": "text",
+      "content": "Vom Diagramm zum Code: Jede Klasse wird zu einer class, jedes Attribut zu einem Feld, jede Methode zu einer Methode. Die Namenskonventionen der Sprache darfst du dabei anwenden (in C# beginnen Methoden mit Großbuchstaben, in Python schreibt man get_stand). private setzt du in C# mit dem Schlüsselwort private um; Python kennt kein echtes private – üblich ist ein Unterstrich-Präfix, zwei Unterstriche erschweren den Zugriff von außen zusätzlich."
+    },
+    {
+      "type": "code",
+      "content": "+-------------------------+\n|          Konto          |\n+-------------------------+\n| - stand : double        |\n+-------------------------+\n| + einzahlen(b : double) |\n| + getStand() : double   |\n+-------------------------+\n\n// C#\nclass Konto\n{\n    private double stand;\n    public void Einzahlen(double b)\n    { stand += b; }\n    public double GetStand()\n    { return stand; }\n}\n\n# Python\nclass Konto:\n    def __init__(self):\n        self.__stand = 0.0\n    def einzahlen(self, b):\n        self.__stand += b\n    def get_stand(self):\n        return self.__stand"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Typ vor den Namen schreiben („int punkte“), Sichtbarkeit vergessen, konkrete Werte (wie im Objektdiagramm) eintragen oder Klassennamen in der Mehrzahl verwenden („Schuelers“).\n\nZusammenfassung: Ein Klassendiagramm hat drei Bereiche – Name, Attribute, Methoden. Schreibweise: „Sichtbarkeit name : Typ“ bzw. „Sichtbarkeit name(param : Typ) : Rückgabetyp“. Sichtbarkeiten: + public, - private, # protected, ~ package."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was beschreibt die Zeile „# farbe : String“ in einem Klassendiagramm?",
+      "options": [
+        "Ein privates Attribut farbe",
+        "Einen Kommentar zum Attribut farbe",
+        "Ein protected-Attribut farbe vom Typ String",
+        "Eine öffentliche Methode farbe()"
+      ],
+      "correctIndex": 2,
+      "explanation": "# steht für protected: Die Klasse selbst und ihre Unterklassen dürfen zugreifen. Ohne Klammern ist es ein Attribut."
+    },
+    {
+      "question": "Welche Zeile ist korrekte UML-Notation für eine öffentliche Methode berechne, die einen int x bekommt und einen double liefert?",
+      "options": [
+        "+ double berechne(int x)",
+        "+ berechne(x : int) : double",
+        "- berechne(x : int) : double",
+        "+ berechne(int : x) : double"
+      ],
+      "correctIndex": 1,
+      "explanation": "In UML steht der Typ nach dem Namen: Parameter „x : int“, Rückgabetyp nach der Klammer. - wäre private."
+    },
+    {
+      "question": "Wie viele Einträge (Attribute und Methoden inkl. Konstruktor) darf eine beliebige fremde Klasse direkt verwenden?",
+      "code": "+-----------------------+\n|        Ticket         |\n+-----------------------+\n| - preis : double      |\n| # ermaessigt : bool   |\n| + nummer : int        |\n+-----------------------+\n| + Ticket(p : double)  |\n| + getPreis() : double |\n| - runden() : double   |\n| # rabatt() : double   |\n+-----------------------+",
+      "options": [
+        "3",
+        "2",
+        "4",
+        "5"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nur public (+) ist für alle sichtbar: nummer, Ticket(…) und getPreis(). # ist nur für Unterklassen, - nur für Ticket selbst."
+    },
+    {
+      "question": "Welche UML-Zeile passt zu diesem Attribut?",
+      "code": "// C#\nprivate bool aktiv = true;\n\n# Python (im Konstruktor)\nself.__aktiv = True",
+      "options": [
+        "+ aktiv : bool = true",
+        "- bool aktiv = true",
+        "- aktiv = true",
+        "- aktiv : bool = true"
+      ],
+      "correctIndex": 3,
+      "explanation": "private → -, dann Name, Doppelpunkt, Typ und Startwert: „- aktiv : bool = true“. „- aktiv = true“ wäre die Schreibweise im Objektdiagramm."
+    }
+  ]
+}

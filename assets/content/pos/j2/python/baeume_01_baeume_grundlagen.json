@@ -1,0 +1,96 @@
+{
+  "id": "pos-j2-python-baeume_01_baeume_grundlagen",
+  "title": "Bäume: Grundlagen",
+  "summary": "Begriffe rund um Bäume kennen und Binärbäume rekursiv durchlaufen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Daten sind hierarchisch aufgebaut: Ordner enthalten Unterordner, ein Turnierplan verzweigt sich, ein Rechenausdruck besteht aus Teilausdrücken. Dafür verwendet man Bäume. Ein Baum besteht aus Knoten, die durch Kanten verbunden sind. In der Informatik wächst er von oben nach unten: Ganz oben steht die Wurzel."
+    },
+    {
+      "type": "code",
+      "content": "        A\n       / \\\n      B   C\n     / \\   \\\n    D   E   F"
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Begriffe am Beispiel oben:\n• Wurzel: A – der einzige Knoten ohne Elternknoten\n• Kinder: B und C sind Kinder von A, A ist ihr Elternknoten\n• Blätter: D, E, F – Knoten ohne Kinder\n• Innere Knoten: A, B, C\n• Teilbaum: B mit D und E ist selbst wieder ein Baum\n• Tiefe eines Knotens: Anzahl der Kanten bis zur Wurzel (D hat Tiefe 2)\n• Höhe des Baums: längster Weg von der Wurzel zu einem Blatt, hier 2\nAchtung: Manche Bücher zählen bei der Höhe Knoten statt Kanten – dann wäre sie 3."
+    },
+    {
+      "type": "text",
+      "content": "In einem Binärbaum hat jeder Knoten höchstens zwei Kinder: ein linkes und ein rechtes. Die Knotenklasse ähnelt der verketteten Liste – nur mit zwei Verweisen statt einem. Fehlt ein Kind, steht dort None."
+    },
+    {
+      "type": "code",
+      "content": "class Knoten:\n    def __init__(self, wert):\n        self.wert = wert\n        self.links = None\n        self.rechts = None\n\na = Knoten(\"A\")\na.links = Knoten(\"B\")\na.rechts = Knoten(\"C\")\na.links.links = Knoten(\"D\")\na.links.rechts = Knoten(\"E\")\na.rechts.rechts = Knoten(\"F\")\n\nprint(a.links.rechts.wert)  # E\nprint(a.rechts.links)       # None"
+    },
+    {
+      "type": "text",
+      "content": "Durchlaufen (Traversieren) heißt, jeden Knoten genau einmal zu besuchen. Weil jeder Teilbaum wieder ein Baum ist, geht das wunderbar rekursiv – Basisfall ist der leere Baum (None). Die drei klassischen Reihenfolgen unterscheiden sich nur darin, WANN die Wurzel ausgegeben wird:\n• Preorder: Wurzel – links – rechts\n• Inorder: links – Wurzel – rechts\n• Postorder: links – rechts – Wurzel"
+    },
+    {
+      "type": "code",
+      "content": "def preorder(k):\n    if k is None:\n        return\n    print(k.wert, end=\" \")\n    preorder(k.links)\n    preorder(k.rechts)\n\ndef inorder(k):\n    if k is None:\n        return\n    inorder(k.links)\n    print(k.wert, end=\" \")\n    inorder(k.rechts)\n\ndef postorder(k):\n    if k is None:\n        return\n    postorder(k.links)\n    postorder(k.rechts)\n    print(k.wert, end=\" \")\n\npreorder(a)   # A B D E C F\nprint()\ninorder(a)    # D B E A C F\nprint()\npostorder(a)  # D E B F C A"
+    },
+    {
+      "type": "text",
+      "content": "Wofür braucht man welche Reihenfolge? Preorder eignet sich, um eine Ordnerstruktur von oben nach unten auszugeben oder einen Baum zu kopieren. Postorder brauchst du, wenn zuerst die Kinder fertig sein müssen – etwa beim Löschen eines Ordners mit Inhalt oder beim Berechnen der Größe eines Ordners. Auch die Höhe berechnest du rekursiv: 1 + die größere Höhe der beiden Teilbäume."
+    },
+    {
+      "type": "code",
+      "content": "def hoehe(k):\n    if k is None:\n        return -1\n    return 1 + max(hoehe(k.links),\n                   hoehe(k.rechts))\n\ndef anzahl(k):\n    if k is None:\n        return 0\n    return (1 + anzahl(k.links)\n              + anzahl(k.rechts))\n\nprint(hoehe(a))    # 2\nprint(anzahl(a))   # 6"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Den Basisfall k is None vergessen – dann folgt ein AttributeError beim Zugriff auf None.links.\n\nZusammenfassung: Ein Baum hat eine Wurzel, innere Knoten und Blätter. In einem Binärbaum hat jeder Knoten höchstens zwei Kinder. Pre-, In- und Postorder durchlaufen den Baum rekursiv und unterscheiden sich nur im Zeitpunkt, zu dem die Wurzel besucht wird."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Reihenfolge gibt inorder die Knoten dieses Baums aus?",
+      "code": "      1\n     / \\\n    2   3\n   /   / \\\n  4   5   6",
+      "options": [
+        "1 2 4 3 5 6",
+        "4 2 1 5 3 6",
+        "4 2 5 6 3 1",
+        "1 2 3 4 5 6"
+      ],
+      "correctIndex": 1,
+      "explanation": "Inorder: links – Wurzel – rechts. Links von 1 liegt der Teilbaum 2 mit Kind 4, das ergibt 4 2. Dann kommt 1, dann der rechte Teilbaum: 5 3 6."
+    },
+    {
+      "question": "Wie viele Blätter hat dieser Baum?",
+      "code": "      1\n     / \\\n    2   3\n   /   / \\\n  4   5   6",
+      "options": [
+        "3",
+        "2",
+        "4",
+        "6"
+      ],
+      "correctIndex": 0,
+      "explanation": "Blätter sind Knoten ohne Kinder: 4, 5 und 6. Knoten 2 hat ein Kind und ist daher kein Blatt."
+    },
+    {
+      "question": "Welche Höhe hat dieser Baum, wenn die Kanten gezählt werden?",
+      "code": "      1\n     / \\\n    2   3\n   /   / \\\n  4   5   6",
+      "options": [
+        "1",
+        "3",
+        "2",
+        "6"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der längste Weg von der Wurzel zu einem Blatt, z. B. 1 → 2 → 4, hat 2 Kanten."
+    },
+    {
+      "question": "Du willst einen Ordner samt Inhalt löschen. Ein Ordner darf erst gelöscht werden, wenn er leer ist. Welche Traversierung passt?",
+      "options": [
+        "Preorder",
+        "Inorder",
+        "Zufällige Reihenfolge",
+        "Postorder"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei Postorder werden zuerst alle Kinder (Unterordner und Dateien) besucht und erst danach der Knoten selbst."
+    }
+  ]
+}

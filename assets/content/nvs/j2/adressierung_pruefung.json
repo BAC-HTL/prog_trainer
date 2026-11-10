@@ -1,0 +1,117 @@
+{
+  "id": "nvs-j2-adressierung_pruefung",
+  "title": "Abschlussprüfung: Adressierung & Subnetting",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Angabe zum Host 172.20.47.3/22 ist richtig?",
+      "options": [
+        "Netz 172.20.44.0, Broadcast 172.20.47.255",
+        "Netz 172.20.47.0, Broadcast 172.20.47.255",
+        "Netz 172.20.40.0, Broadcast 172.20.43.255",
+        "Netz 172.20.44.0, Broadcast 172.20.48.255"
+      ],
+      "correctIndex": 0,
+      "explanation": "/22 → Maske 255.255.252.0, Block im 3. Oktett 256 − 252 = 4. Netze: 40, 44, 48 … 47 liegt im Block 44–47. Broadcast = 172.20.47.255."
+    },
+    {
+      "question": "Wie viele nutzbare Hosts hat das Netz 10.16.0.0/12?",
+      "options": [
+        "4094",
+        "65534",
+        "1048574",
+        "16777214"
+      ],
+      "correctIndex": 2,
+      "explanation": "32 − 12 = 20 Hostbits. 2^20 − 2 = 1 048 574."
+    },
+    {
+      "question": "Das Netz 192.168.20.0/24 wird in 8 gleich große Subnetze geteilt. Wie lautet die Netzadresse des dritten Subnetzes?",
+      "options": [
+        "192.168.20.32",
+        "192.168.20.96",
+        "192.168.20.3",
+        "192.168.20.64"
+      ],
+      "correctIndex": 3,
+      "explanation": "8 = 2^3 → 3 Bits leihen → /27, Blockgröße 32. Subnetze: .0, .32, .64 … Das dritte beginnt bei .64."
+    },
+    {
+      "question": "Eine Verbindung zwischen zwei Routern braucht genau 2 Host-Adressen. Welches ist laut Formel 2^h − 2 das kleinste passende Präfix?",
+      "options": [
+        "/30",
+        "/29",
+        "/28",
+        "/32"
+      ],
+      "correctIndex": 0,
+      "explanation": "/30 hat 4 Adressen, davon 2 nutzbar – genau passend. /29 hätte 6 nutzbare Adressen. Ein /32 enthält nur eine einzige Adresse."
+    },
+    {
+      "question": "PC A hat 192.168.1.70/26, PC B hat 192.168.1.130/26. Was gilt?",
+      "options": [
+        "Beide sind im selben Netz.",
+        "A ist im Netz .64, B im Netz .128 – verschiedene Netze.",
+        "A ist im Netz .0, B im Netz .128.",
+        "B hat eine ungültige Adresse."
+      ],
+      "correctIndex": 1,
+      "explanation": "Blockgröße 64: A (70) liegt im Netz .64–.127, B (130) im Netz .128–.191. Sie brauchen einen Router, um miteinander zu sprechen."
+    },
+    {
+      "question": "Welche Adresse kann einem Host im Netz 192.168.1.192/28 zugewiesen werden?",
+      "options": [
+        "192.168.1.192",
+        "192.168.1.207",
+        "192.168.1.200",
+        "192.168.1.208"
+      ],
+      "correctIndex": 2,
+      "explanation": "/28 → Block 16: .192 bis .207. .192 ist die Netzadresse, .207 der Broadcast, .208 gehört schon zum nächsten Netz. Nutzbar: .193 bis .206."
+    },
+    {
+      "question": "PC 1 schickt Daten an einen Server in einem anderen Netz. Nach welcher MAC-Adresse fragt PC 1 per ARP?",
+      "options": [
+        "Nach der MAC des Servers",
+        "Nach der MAC des Default Gateways",
+        "Nach FF:FF:FF:FF:FF:FF",
+        "Nach gar keiner – ARP wird nur im Internet verwendet"
+      ],
+      "correctIndex": 1,
+      "explanation": "MAC-Adressen gelten nur lokal. Für Ziele in anderen Netzen wird der Frame an den Router (Default Gateway) adressiert, deshalb fragt PC 1 nach dessen MAC."
+    },
+    {
+      "question": "Welche Adresse liegt NICHT in einem privaten IPv4-Bereich?",
+      "options": [
+        "10.255.0.1",
+        "172.31.200.1",
+        "192.168.255.254",
+        "172.15.0.1"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der private 172er-Bereich reicht von 172.16.0.0 bis 172.31.255.255. 172.15.0.1 liegt davor und ist öffentlich."
+    },
+    {
+      "question": "Wie lautet die Kurzform von 2001:0db8:0000:0000:0001:0000:0000:0001 nach der Empfehlung (erste längste Null-Folge kürzen)?",
+      "options": [
+        "2001:db8:0:0:1::1",
+        "2001:db8::1:0:0:1",
+        "2001:db8::1::1",
+        "2001:db8:0:0:1:0:0:1 ist nicht kürzbar"
+      ],
+      "correctIndex": 1,
+      "explanation": "Es gibt zwei gleich lange Null-Folgen (je 2 Blöcke). Laut Empfehlung wird die erste durch :: ersetzt. Zweimal :: ist verboten."
+    },
+    {
+      "question": "Welche Aussage über IPv6 ist FALSCH?",
+      "options": [
+        "Eine Adresse hat 128 Bit.",
+        "fe80::/10 sind Link-Local-Adressen.",
+        "Mit ff02::1 erreicht man alle Knoten im lokalen Segment.",
+        "Die Broadcastadresse eines /64 ist die letzte Adresse im Netz."
+      ],
+      "correctIndex": 3,
+      "explanation": "IPv6 kennt keinen Broadcast mehr. Aufgaben, für die IPv4 Broadcast nutzt, übernimmt bei IPv6 Multicast."
+    }
+  ]
+}

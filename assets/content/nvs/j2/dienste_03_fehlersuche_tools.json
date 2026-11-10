@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j2-dienste_03_fehlersuche_tools",
+  "title": "Systematische Fehlersuche im Netzwerk",
+  "summary": "Netzwerkprobleme Schicht für Schicht eingrenzen und dabei ping, tracert/traceroute, ipconfig/ip, nslookup/dig und netstat/ss gezielt einsetzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "„Das Internet geht nicht!“ – Wer jetzt wahllos Einstellungen ändert, verliert Zeit. Besser ist ein systematisches Vorgehen entlang des Schichtenmodells, meist von unten nach oben (Bottom-up): Erst prüfen, ob die physische Verbindung steht, dann die IP-Konfiguration, dann die Erreichbarkeit von Gateway und Internet und zuletzt Namensauflösung und Anwendung. Jeder Schritt grenzt die Fehlerquelle weiter ein."
+    },
+    {
+      "type": "code",
+      "content": "Schicht   Prüfung\n--------  ------------------------------\n1 Physik  Kabel steckt? Link-LED? WLAN?\n2/3 IP    ipconfig / ip a: Adresse ok?\n3 lokal   ping Default Gateway\n3 extern  ping einer öffentlichen IP\n7 DNS     nslookup / dig\n7 Dienst  Browser, Port erreichbar?"
+    },
+    {
+      "type": "text",
+      "content": "Schritt 1 und 2: Kabel und Link-LED kontrollieren bzw. ob das WLAN verbunden ist. Dann die IP-Konfiguration ansehen. Hat der PC eine 169.254.x.x-Adresse, hat DHCP nicht funktioniert. Stimmen Adresse, Maske, Gateway und DNS-Server? Typischer Fehler: ein falsch eingetipptes Gateway bei statischer Konfiguration."
+    },
+    {
+      "type": "code",
+      "content": "# Windows\nipconfig /all\n\n# Linux\nip a           # Adressen\nip route       # Default Gateway\ncat /etc/resolv.conf   # DNS"
+    },
+    {
+      "type": "text",
+      "content": "ping schickt ICMP-Echo-Requests und wartet auf Echo-Replies. Er zeigt, ob ein Ziel erreichbar ist, und misst die Antwortzeit (Latenz). Sinnvolle Reihenfolge: ping 127.0.0.1 (eigener TCP/IP-Stack), ping zum Default Gateway (lokales Netz), ping zu einer öffentlichen IP-Adresse (Routing ins Internet), ping zu einem Namen (DNS). Achtung: Windows sendet standardmäßig 4 Pakete, Linux pingt endlos bis Strg+C – mit -c 4 begrenzt du es. Außerdem blockieren manche Firewalls ICMP, ein fehlgeschlagener ping beweist also nicht immer, dass das Ziel „tot“ ist."
+    },
+    {
+      "type": "code",
+      "content": "# Windows\nping 192.168.1.1\ntracert www.example.com\n\n# Linux\nping -c 4 192.168.1.1\ntraceroute www.example.com"
+    },
+    {
+      "type": "text",
+      "content": "tracert (Windows) bzw. traceroute (Linux) zeigt alle Router auf dem Weg zum Ziel. Der Trick nutzt den TTL-Wert: Das erste Paket hat TTL 1 und wird vom ersten Router verworfen, der eine ICMP-Fehlermeldung zurückschickt – so kennt man Hop 1. Dann TTL 2, 3 usw. Zeilen mit * * * bedeuten, dass ein Hop nicht geantwortet hat (oft gefiltert). So siehst du, ab welchem Router es hakt."
+    },
+    {
+      "type": "text",
+      "content": "Funktioniert ping 8.8.8.8, aber ping www.example.com meldet, dass der Host nicht gefunden wurde, liegt ein DNS-Problem vor. Mit nslookup (Windows) oder dig (Linux) prüfst du gezielt die Namensauflösung und kannst auch einen anderen DNS-Server angeben, um den eigenen auszuschließen."
+    },
+    {
+      "type": "code",
+      "content": "nslookup www.example.com\nnslookup www.example.com 1.1.1.1\n\ndig www.example.com\ndig @1.1.1.1 www.example.com"
+    },
+    {
+      "type": "text",
+      "content": "Läuft das Netz, aber ein bestimmter Dienst nicht, hilft der Blick auf offene Verbindungen und lauschende Ports: netstat -an (Windows) bzw. ss -tuln (Linux; t = TCP, u = UDP, l = lauschend, n = numerisch). So siehst du z. B., ob dein Webserver wirklich auf Port 80 lauscht. Zusammenfassung: von unten nach oben prüfen – Physik, IP-Konfiguration, Gateway, Internet, DNS, Dienst. Jedes Werkzeug beantwortet eine bestimmte Frage, und gemeinsam grenzen sie den Fehler ein."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "ping 8.8.8.8 funktioniert, ping www.example.com meldet „Host nicht gefunden“. Wo liegt das Problem am wahrscheinlichsten?",
+      "options": [
+        "Beim Kabel",
+        "Beim Default Gateway",
+        "Bei der Namensauflösung (DNS)",
+        "Bei der MAC-Adresse"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Verbindung ins Internet funktioniert (IP-ping klappt). Nur der Name kann nicht aufgelöst werden – das ist ein DNS-Problem."
+    },
+    {
+      "question": "Ein PC zeigt bei ipconfig die Adresse 169.254.88.12. Was solltest du als Nächstes prüfen?",
+      "options": [
+        "Die DNS-Records",
+        "Ob ein DHCP-Server erreichbar ist (Kabel/WLAN, DHCP-Dienst)",
+        "Die Routingtabelle des ISP",
+        "Die HTTP-Statuscodes"
+      ],
+      "correctIndex": 1,
+      "explanation": "169.254.x.x (APIPA) vergibt sich der PC selbst, wenn kein DHCP-Server antwortet. Also Verbindung und DHCP prüfen."
+    },
+    {
+      "question": "Welchen Wert nutzt traceroute, um die einzelnen Router auf dem Weg zu ermitteln?",
+      "options": [
+        "Die Portnummer",
+        "Die MAC-Adresse",
+        "Die Subnetzmaske",
+        "Den TTL-Wert"
+      ],
+      "correctIndex": 3,
+      "explanation": "traceroute sendet Pakete mit TTL 1, 2, 3 … Jeder Router, bei dem der TTL auf 0 fällt, verwirft das Paket und meldet sich per ICMP zurück."
+    },
+    {
+      "question": "Mit welchem Linux-Befehl prüfst du, ob auf deinem Server ein Dienst auf TCP-Port 22 lauscht?",
+      "options": [
+        "ss -tuln",
+        "dig localhost",
+        "ip route",
+        "traceroute 22"
+      ],
+      "correctIndex": 0,
+      "explanation": "ss -tuln listet lauschende TCP- und UDP-Ports numerisch auf. Unter Windows wäre netstat -an das Gegenstück."
+    }
+  ]
+}

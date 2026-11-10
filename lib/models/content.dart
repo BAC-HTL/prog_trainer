@@ -1,20 +1,16 @@
-/// Datenmodelle für die Lerninhalte.
+/// Datenmodelle für Lektionen, Quizfragen und Prüfungen.
 ///
-/// Aufbau: Track (z. B. Python) → Level (Einsteiger … Senior) → Kapitel →
-/// Lektionen + Abschlussprüfung. Alles liegt als JSON unter `assets/content/`.
+/// Wie die Lektionen im Lehrplan angeordnet sind, beschreibt
+/// `curriculum.dart` (Datei `assets/content/curriculum.json`).
 library;
 
-enum TrackKind { language, concept }
-
-/// Ein Lernpfad, z. B. "Python" oder "Software-Architektur".
+/// Eine Programmiersprache mit Herausforderungen und Spielmodus.
 class Track {
   const Track({
     required this.id,
     required this.title,
     required this.description,
     required this.icon,
-    required this.kind,
-    required this.levelPaths,
     this.challengesPath,
     this.runtime,
   });
@@ -23,10 +19,6 @@ class Track {
   final String title;
   final String description;
   final String icon;
-  final TrackKind kind;
-
-  /// Pfade relativ zu `assets/content/`, z. B. `python/einsteiger/level.json`.
-  final List<String> levelPaths;
 
   /// Datei mit den Herausforderungen dieser Sprache (falls vorhanden).
   final String? challengesPath;
@@ -34,7 +26,6 @@ class Track {
   /// Welche Laufzeit Code dieses Tracks ausführt (`python`, `csharp`).
   final String? runtime;
 
-  bool get isAvailable => levelPaths.isNotEmpty;
   bool get hasChallenges => challengesPath != null;
 
   factory Track.fromJson(Map<String, dynamic> json) {
@@ -43,65 +34,8 @@ class Track {
       title: json['title'] as String,
       description: json['description'] as String,
       icon: json['icon'] as String? ?? 'code',
-      kind: json['kind'] == 'concept' ? TrackKind.concept : TrackKind.language,
-      levelPaths: List<String>.from(json['levels'] as List? ?? const []),
       challengesPath: json['challenges'] as String?,
       runtime: json['runtime'] as String?,
-    );
-  }
-}
-
-/// Eine Stufe innerhalb eines Tracks, z. B. "Einsteiger".
-class Level {
-  const Level({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.chapters,
-  });
-
-  final String id;
-  final String title;
-  final String description;
-  final List<Chapter> chapters;
-
-  factory Level.fromJson(Map<String, dynamic> json) {
-    return Level(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String? ?? '',
-      chapters: (json['chapters'] as List)
-          .map((c) => Chapter.fromJson(c as Map<String, dynamic>))
-          .toList(),
-    );
-  }
-}
-
-/// Ein Kapitel mit mehreren Lektionen und einer Abschlussprüfung.
-class Chapter {
-  const Chapter({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.lessonPaths,
-    this.examPath,
-  });
-
-  final String id;
-  final String title;
-  final String description;
-  final List<String> lessonPaths;
-  final String? examPath;
-
-  bool get isAvailable => lessonPaths.isNotEmpty;
-
-  factory Chapter.fromJson(Map<String, dynamic> json) {
-    return Chapter(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String? ?? '',
-      lessonPaths: List<String>.from(json['lessons'] as List? ?? const []),
-      examPath: json['exam'] as String?,
     );
   }
 }

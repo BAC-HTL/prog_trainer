@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j2-javascript_01_js_grundlagen",
+  "title": "JavaScript-Grundlagen",
+  "summary": "Variablen, Typen, Operatoren, Verzweigungen, Schleifen, Funktionen und Arrays in JavaScript.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "JavaScript (JS) ist die Programmiersprache des Browsers. HTML liefert die Struktur, CSS das Aussehen, JS das Verhalten. Du bindest ein Skript am besten im <head> mit <script src=\"app.js\" defer></script> ein. Ausgaben siehst du mit console.log(…) in den Entwicklertools (F12 → Konsole). Reine Logik kannst du auch ohne Browser mit Node.js testen: node app.js.\n\nVariablen legst du mit let (Wert darf sich ändern) oder const (Wert bleibt fix) an. Verwende standardmäßig const und nur bei Bedarf let. Das alte var solltest du nicht mehr verwenden."
+    },
+    {
+      "type": "code",
+      "content": "const schule = \"HTL\";\nlet punkte = 10;\npunkte = punkte + 5;\nconsole.log(punkte);   // 15\n\nlet x;\nconsole.log(x);    // undefined\n\nconsole.log(typeof 42);    // number\nconsole.log(typeof \"42\");  // string\nconsole.log(typeof true);  // boolean"
+    },
+    {
+      "type": "text",
+      "content": "JS kennt u. a. diese Typen: number (ganze und Kommazahlen gemeinsam), string (Text in \"…\" oder '…'), boolean (true/false), undefined (noch kein Wert) und null (bewusst „kein Wert“). Arrays und Objekte kommen dazu.\n\nOperatoren: + - * / sowie % (Rest der Division, 7 % 3 ist 1). Vergleiche (<, >, <=, >=) liefern true oder false, verknüpft wird mit && (und), || (oder) und ! (nicht).\n\nAchtung: JS wandelt Typen oft automatisch um. Ist bei + ein String beteiligt, wird zusammengehängt statt gerechnet. Und == vergleicht erst NACH einer Typumwandlung, === dagegen Wert UND Typ. Weil == zu Überraschungen wie 0 == \"\" führt, verwendest du immer === und !==."
+    },
+    {
+      "type": "code",
+      "content": "console.log(\"5\" + 3);   // \"53\"\nconsole.log(\"5\" - 3);   // 2\nconsole.log(\"5\" * \"2\"); // 10\n\nconsole.log(5 == \"5\");   // true\nconsole.log(5 === \"5\");  // false\nconsole.log(0 == \"\");    // true\nconsole.log(0 === \"\");   // false"
+    },
+    {
+      "type": "text",
+      "content": "Verzweigungen schreibst du mit if, else if und else – die Bedingung steht in runden Klammern, der Block in geschwungenen. Für Schleifen gibt es die klassische for-Schleife (Startwert; Bedingung; Schritt) und die while-Schleife, die läuft, solange die Bedingung true ist."
+    },
+    {
+      "type": "code",
+      "content": "const note = 2;\nif (note === 1) {\n  console.log(\"Sehr gut\");\n} else if (note <= 4) {\n  console.log(\"Bestanden\");\n} else {\n  console.log(\"Nicht genügend\");\n}\n// Bestanden\n\nfor (let i = 1; i <= 3; i++) {\n  console.log(\"Runde \" + i);\n}\n\nlet n = 1;\nwhile (n < 100) {\n  n = n * 2;\n}\nconsole.log(n);  // 128"
+    },
+    {
+      "type": "text",
+      "content": "Funktionen fassen Code zusammen: function name(parameter) { … return wert; }. Kürzer geht es mit Pfeilfunktionen: const doppelt = (x) => x * 2;\n\nArrays speichern Listen: [2, 1, 3]. Der Index beginnt bei 0, length liefert die Anzahl, push() hängt hinten an. Mit for…of gehst du alle Elemente eines Arrays durch."
+    },
+    {
+      "type": "code",
+      "content": "const noten = [2, 1, 3];\nnoten.push(4);\nconsole.log(noten.length); // 4\nconsole.log(noten[0]);     // 2\nconsole.log(noten[4]);  // undefined\n\nfunction schnitt(liste) {\n  let summe = 0;\n  for (const n of liste) {\n    summe += n;\n  }\n  return summe / liste.length;\n}\nconsole.log(schnitt(noten)); // 2.5\n\nconst doppelt = (x) => x * 2;\nconsole.log(doppelt(21));    // 42"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: == statt === verwenden, eine const-Variable neu zuweisen (TypeError), Zahlen als Strings addieren (\"4\" + 2 ergibt \"42\") und beim Array-Index bei 1 statt bei 0 beginnen. Ein Zugriff außerhalb des Arrays liefert übrigens keinen Fehler, sondern undefined.\n\nZusammenfassung: const/let für Variablen, === für Vergleiche, if/else für Entscheidungen, for/while/for…of für Wiederholungen, Funktionen mit return und Arrays mit Index ab 0."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "let a = \"4\";\nlet b = 2;\nconsole.log(a + b);",
+      "options": [
+        "6",
+        "42",
+        "8",
+        "NaN"
+      ],
+      "correctIndex": 1,
+      "explanation": "a ist ein String. Bei + mit einem String wird zusammengehängt: \"4\" + 2 ergibt \"42\"."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "console.log(0 === \"0\", 0 == \"0\");",
+      "options": [
+        "true true",
+        "false false",
+        "true false",
+        "false true"
+      ],
+      "correctIndex": 3,
+      "explanation": "=== vergleicht auch den Typ: number ist nicht string, also false. == wandelt \"0\" in 0 um, daher true."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "const x = 1;\nx = 2;",
+      "options": [
+        "x ist danach 2",
+        "TypeError: Zuweisung an eine Konstante",
+        "x ist danach 1, ohne Fehler",
+        "x ist danach undefined"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine mit const angelegte Variable darf nicht neu zugewiesen werden. JS wirft einen TypeError (Assignment to constant variable)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "let s = 0;\nfor (let i = 1; i <= 4; i++) {\n  if (i % 2 === 0) {\n    s += i;\n  }\n}\nconsole.log(s);",
+      "options": [
+        "10",
+        "4",
+        "6",
+        "2"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur gerade i (i % 2 === 0) werden addiert: 2 + 4 = 6."
+    }
+  ]
+}

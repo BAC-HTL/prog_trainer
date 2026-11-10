@@ -1,0 +1,94 @@
+{
+  "id": "pos-j2-theorie-uml_03_beziehungen_vererbung",
+  "title": "Beziehungen und Vererbung",
+  "summary": "Assoziation, Multiplizitäten, Aggregation, Komposition, Vererbung und Interfaces im Klassendiagramm.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Klassen stehen selten allein. Eine Assoziation („kennt“, „besucht“, „gehört zu“) zeichnest du als durchgezogene Linie zwischen zwei Klassen, optional mit Namen und Leserichtung (▸). An die Enden schreibst du Multiplizitäten: Sie sagen, wie viele Objekte der Klasse an diesem Ende mit einem Objekt der anderen Seite verbunden sind. Die Zahl steht also bei der Klasse, die gezählt wird. Typischer Fehler: die Seiten verwechseln. Ein Pfeil an der Linie (gerichtete Assoziation) zeigt, dass nur eine Seite die andere kennt.\n\nIm Code wird eine Assoziation zu einem Attribut: bei 1 oder 0..1 ein Verweis auf ein Objekt der anderen Klasse, bei * eine Liste (z. B. List<Schueler> in C#, eine list in Python)."
+    },
+    {
+      "type": "code",
+      "content": "+----------+ besucht ▸ +--------+\n| Schueler |-----------| Klasse |\n+----------+ *       1 +--------+\n\nEin Schueler besucht genau 1\nKlasse. Eine Klasse wird von\nbeliebig vielen (*) Schuelern\nbesucht.\n\n1     genau eins\n0..1  keins oder eins\n*     beliebig viele (0..*)\n1..*  mindestens eins\n2..4  zwei bis vier"
+    },
+    {
+      "type": "text",
+      "content": "Aggregation und Komposition sind besondere „Teil-Ganzes“-Assoziationen. Die Raute sitzt immer beim Ganzen.\n• Aggregation (leere Raute ◇): Die Teile existieren auch ohne das Ganze. Wird die Klasse aufgelöst, gibt es die Schüler:innen weiterhin.\n• Komposition (volle Raute ◆): Die Teile gehören zu genau einem Ganzen und leben nur mit ihm. Wird eine Rechnung gelöscht, verschwinden auch ihre Positionen."
+    },
+    {
+      "type": "code",
+      "content": "Aggregation (leere Raute ◇):\n+--------+ 0..1     * +----------+\n| Klasse |◇-----------| Schueler |\n+--------+            +----------+\n\nKomposition (volle Raute ◆):\n+----------+ 1   1..* +----------+\n| Rechnung |◆---------| Position |\n+----------+          +----------+"
+    },
+    {
+      "type": "text",
+      "content": "Vererbung („ist ein“) zeichnest du als Linie mit leerem Dreieck, das auf die Oberklasse zeigt. Die Unterklasse übernimmt alle Attribute und Methoden und kann eigene ergänzen. Hier wird # (protected) wichtig: Schueler darf name direkt verwenden, svNr (private) nicht. Eine abstrakte Klasse – kursiv oder mit {abstract} markiert – dient nur als Vorlage: Von ihr gibt es keine direkten Objekte."
+    },
+    {
+      "type": "code",
+      "content": "      +----------------------+\n      |  Person {abstract}   |\n      +----------------------+\n      | # name : String      |\n      | - svNr : String      |\n      +----------------------+\n      | + getName() : String |\n      +----------------------+\n                 △\n                 |\n        +--------+---------+\n        |                  |\n+-----------------+ +-----------------+\n|    Schueler     | |     Lehrer      |\n+-----------------+ +-----------------+\n| - katNr : int   | | - fach : String |\n+-----------------+ +-----------------+\n\n// C#\nclass Schueler : Person { … }\n# Python\nclass Schueler(Person): …"
+    },
+    {
+      "type": "text",
+      "content": "Ein Interface legt nur fest, welche Methoden es geben muss, nicht wie sie funktionieren. Es wird mit «interface» über dem Namen gekennzeichnet. Eine Klasse, die das Interface realisiert (implementiert), verbindest du mit einer gestrichelten Linie und leerem Dreieck zum Interface. Sie muss alle Methoden des Interfaces selbst umsetzen. In C# beginnen Interface-Namen üblicherweise mit I; Python hat keine eigenen Interfaces und verwendet dafür abstrakte Basisklassen."
+    },
+    {
+      "type": "code",
+      "content": "+-------------------+\n|    «interface»    |\n|     Bewertbar     |\n+-------------------+\n| + note() : int    |\n+-------------------+\n          △\n          :\n          :  (gestrichelt)\n+-------------------+\n|     Pruefung      |\n+-------------------+\n| - punkte : int    |\n+-------------------+\n| + note() : int    |\n+-------------------+\n\n// C#\nclass Pruefung : IBewertbar { … }"
+    },
+    {
+      "type": "code",
+      "content": "A ------- B  Assoziation\nA ------> B  Assoziation, nur\n             A kennt B\nA ◇------ B  Aggregation\n             (A ist das Ganze)\nA ◆------ B  Komposition\n             (A ist das Ganze)\nA ------▷ B  Vererbung\n             (A erbt von B)\nA - - - ▷ B  Realisierung\n             (A implementiert B)"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Assoziationen verbinden Klassen, Multiplizitäten (1, 0..1, *, 1..*) stehen bei der gezählten Klasse. Aggregation ◇ und Komposition ◆ sind Teil-Ganzes-Beziehungen, die Raute sitzt beim Ganzen; nur bei der Komposition hängt das Leben der Teile am Ganzen. Vererbung: durchgezogene Linie mit leerem Dreieck zur Oberklasse. Interface: gestrichelte Linie mit leerem Dreieck."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Kunden gehören laut Diagramm zu einer Bestellung?",
+      "code": "+-------+ 1      * +------------+\n| Kunde |----------| Bestellung |\n+-------+          +------------+",
+      "options": [
+        "beliebig viele",
+        "genau 1",
+        "mindestens 1",
+        "0 oder 1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die 1 steht beim Kunden: Zu einer Bestellung gehört genau ein Kunde. Das * beim Ende Bestellung heißt: Ein Kunde kann beliebig viele Bestellungen haben."
+    },
+    {
+      "question": "Ein Buch besteht aus Kapiteln. Ein Kapitel gehört zu genau einem Buch und existiert nicht ohne es. Welche Beziehung passt?",
+      "options": [
+        "Assoziation ohne Raute",
+        "Aggregation (◇)",
+        "Komposition (◆)",
+        "Vererbung"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Lebensdauer der Teile hängt am Ganzen und jedes Teil gehört zu genau einem Ganzen – das ist eine Komposition, volle Raute beim Buch."
+    },
+    {
+      "question": "Person hat „# name : String“ und „- svNr : String“. Schueler erbt von Person. Auf welche Attribute darf eine Methode von Schueler direkt zugreifen?",
+      "options": [
+        "name und svNr",
+        "nur svNr",
+        "keines von beiden",
+        "nur name"
+      ],
+      "correctIndex": 3,
+      "explanation": "protected (#) ist in Unterklassen sichtbar, private (-) nur in Person selbst. Auf svNr kommt Schueler nur über öffentliche Methoden von Person heran."
+    },
+    {
+      "question": "Wie verbindest du eine Klasse mit einem Interface, das sie implementiert?",
+      "options": [
+        "Gestrichelte Linie mit leerem Dreieck beim Interface",
+        "Durchgezogene Linie mit leerem Dreieck bei der Klasse",
+        "Durchgezogene Linie mit voller Raute beim Interface",
+        "Gestrichelte Linie mit voller Raute bei der Klasse"
+      ],
+      "correctIndex": 0,
+      "explanation": "Realisierung = gestrichelte Linie, leeres Dreieck zeigt auf das Interface. Die durchgezogene Variante wäre Vererbung."
+    }
+  ]
+}

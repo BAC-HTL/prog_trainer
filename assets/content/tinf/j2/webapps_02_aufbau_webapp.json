@@ -1,0 +1,94 @@
+{
+  "id": "tinf-j2-webapps_02_aufbau_webapp",
+  "title": "Aufbau einer Webapplikation",
+  "summary": "Frontend und Backend, statische und dynamische Seiten, Templates sowie Cookies und Sessions.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Webapplikation besteht aus zwei Teilen:\n• Frontend – läuft im Browser: HTML, CSS und JavaScript. Es zeigt Daten an und nimmt Eingaben entgegen.\n• Backend – läuft am Server: Es verarbeitet Anfragen, prüft Berechtigungen, rechnet und greift auf die Datenbank zu. Typische Sprachen sind Python (z. B. Flask, Django), C# (ASP.NET Core), Java, PHP oder JavaScript mit Node.js.\nDie Datenbank speichert die Daten dauerhaft und wird nur vom Backend direkt angesprochen."
+    },
+    {
+      "type": "code",
+      "content": "┌─────────┐  HTTP   ┌─────────┐\n│ Browser │ ──────► │ Backend │\n│Frontend │ ◄────── │ (Server)│\n└─────────┘         └────┬────┘\n                         │ SQL\n                    ┌────┴────┐\n                    │Datenbank│\n                    └─────────┘"
+    },
+    {
+      "type": "text",
+      "content": "Statische Seiten liegen als fertige Dateien am Server und sind für alle gleich – z. B. das Impressum oder ein Lageplan der Schule. Der Webserver schickt die Datei einfach aus.\n\nDynamische Seiten erzeugt das Backend bei jeder Anfrage neu, je nachdem, wer fragt und was gerade in der Datenbank steht – z. B. deine Notenübersicht oder der Stundenplan mit aktuellen Supplierungen."
+    },
+    {
+      "type": "text",
+      "content": "Damit das Backend nicht jedes Stück HTML mühsam als String zusammenbauen muss, gibt es Templates: HTML-Dateien mit Platzhaltern. Die Template-Engine füllt die Platzhalter mit Daten und liefert fertiges HTML. Beispiel: Jinja2 (in Python mit Flask). {{ … }} gibt einen Wert aus, {% … %} steht für Logik wie Schleifen. Gute Template-Engines maskieren Sonderzeichen wie < automatisch – das schützt vor eingeschleustem HTML."
+    },
+    {
+      "type": "code",
+      "content": "<!-- Template termine.html -->\n<h1>Termine der {{ klasse }}</h1>\n<ul>\n{% for t in termine %}\n  <li>{{ t.datum }}: {{ t.titel }}</li>\n{% endfor %}\n</ul>\n\n<!-- erzeugtes HTML -->\n<h1>Termine der 2AHIF</h1>\n<ul>\n  <li>20.11.: Schularbeit AM</li>\n  <li>27.11.: Test POS</li>\n</ul>"
+    },
+    {
+      "type": "text",
+      "content": "HTTP ist zustandslos – woher weiß der Server bei der nächsten Anfrage, dass du schon angemeldet bist? Mit Cookies: Der Server schickt im Header Set-Cookie einen kleinen Text (Name=Wert). Der Browser speichert ihn und schickt ihn bei jeder weiteren Anfrage an diese Website im Header Cookie automatisch mit."
+    },
+    {
+      "type": "text",
+      "content": "Bei einer Session speichert der Server die eigentlichen Daten (z. B. „angemeldet als Lea“, Warenkorb) bei sich. Im Cookie steht nur eine lange, zufällige Session-ID. Kommt die ID mit der nächsten Anfrage zurück, schlägt der Server die passende Session nach. Beim Logout löscht der Server die Session – die ID ist danach wertlos."
+    },
+    {
+      "type": "code",
+      "content": "1) Login\nPOST /login\n  Body: user=lea&pw=…\n← 302 Found\n  Location: /noten\n  Set-Cookie: sid=a8f3k2…;\n    HttpOnly; Secure\n\n2) Nächste Anfrage\nGET /noten\n  Cookie: sid=a8f3k2…\n← 200 OK  (Noten von Lea)\n\nServer intern:\n  sid a8f3k2… → Benutzer lea"
+    },
+    {
+      "type": "text",
+      "content": "Sicherheitsgrundlagen für Cookies: HttpOnly verhindert, dass JavaScript den Cookie lesen kann. Secure sorgt dafür, dass er nur über HTTPS geschickt wird. SameSite schränkt ein, ob er bei Anfragen von fremden Websites mitgeschickt wird. Passwörter oder Noten speicherst du nie im Cookie – alles, was im Browser liegt, kann der Benutzer lesen und verändern."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Rechte im Frontend prüfen statt im Backend (Buttons ausblenden ist kein Schutz), vertrauliche Daten im Cookie speichern und vergessen, dass ohne Cookie bzw. Session jede Anfrage für den Server „fremd“ ist.\n\nZusammenfassung: Frontend im Browser, Backend am Server, Daten in der Datenbank. Dynamische Seiten entstehen oft mit Templates. Cookies transportieren eine Session-ID, die eigentlichen Session-Daten liegen am Server."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Bei einer Session-basierten Anmeldung: Was steht im Cookie im Browser?",
+      "options": [
+        "Benutzername und Passwort",
+        "Nur eine zufällige Session-ID",
+        "Die ganze Notenliste",
+        "Die IP-Adresse des Servers"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Cookie enthält nur die Session-ID. Die Daten dazu (wer angemeldet ist usw.) speichert der Server."
+    },
+    {
+      "question": "Welche Seite ist typischerweise dynamisch?",
+      "options": [
+        "Das Impressum",
+        "Ein PDF mit der Hausordnung",
+        "Die Notenübersicht nach dem Login",
+        "Das Logo als PNG-Datei"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Notenübersicht ist für jede Person anders und hängt vom aktuellen Datenbankinhalt ab. Sie wird bei jeder Anfrage neu erzeugt."
+    },
+    {
+      "question": "Wie viele <li>-Elemente erzeugt dieses Template, wenn faecher = [\"AM\", \"POS\", \"NVS\"] ist?",
+      "code": "<ul>\n{% for f in faecher %}\n  <li>{{ f }}</li>\n{% endfor %}\n</ul>",
+      "options": [
+        "1",
+        "0",
+        "4",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Schleife läuft einmal pro Element der Liste. Drei Fächer ergeben drei <li>-Elemente."
+    },
+    {
+      "question": "Mit welchem Response-Header legt der Server einen Cookie im Browser an?",
+      "options": [
+        "Set-Cookie",
+        "Cookie",
+        "Location",
+        "Content-Type"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Server setzt Cookies mit Set-Cookie. Der Browser schickt sie danach im Request-Header Cookie zurück."
+    }
+  ]
+}

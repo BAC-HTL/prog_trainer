@@ -1,0 +1,96 @@
+{
+  "id": "tinf-j2-html_02_css",
+  "title": "CSS: Selektoren, Box-Modell und Kaskade",
+  "summary": "Mit CSS gestaltest du HTML: Farben, Schriften, Abstände – und du lernst, welche Regel gewinnt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "HTML legt die Struktur fest, CSS (Cascading Style Sheets) das Aussehen. So kannst du das Design einer ganzen Website in einer Datei ändern. Die CSS-Datei bindest du im <head> mit <link rel=\"stylesheet\" href=\"style.css\"> ein.\n\nEine CSS-Regel besteht aus einem Selektor (welche Elemente?) und Deklarationen in geschwungenen Klammern. Jede Deklaration ist ein Paar aus Eigenschaft und Wert, abgeschlossen mit einem Strichpunkt: h1 { color: navy; }"
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigsten Selektoren:\n• Element: p – alle Absätze\n• Klasse: .hinweis – alle Elemente mit class=\"hinweis\" (beliebig oft verwendbar)\n• ID: #logo – das eine Element mit id=\"logo\" (pro Seite eindeutig)\n• Nachfahre: nav a – alle Links innerhalb von nav\n• Gruppe: h1, h2 – beide bekommen dieselbe Regel\n• Pseudoklasse: a:hover – Link, über dem die Maus ist"
+    },
+    {
+      "type": "code",
+      "content": "p {\n  color: #333;\n}\n.hinweis {\n  background: lightyellow;\n}\n#logo {\n  width: 120px;\n}\nnav a {\n  text-decoration: none;\n}\nh1, h2 {\n  font-family: Arial, sans-serif;\n}\na:hover {\n  color: crimson;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Box-Modell: Für den Browser ist jedes Element ein Rechteck aus vier Schichten – von innen nach außen:\n• content – der Inhalt (width/height)\n• padding – Innenabstand\n• border – Rahmen\n• margin – Außenabstand zu anderen Elementen\n\nStandardmäßig (box-sizing: content-box) gilt width nur für den Inhalt. Padding und Border kommen dazu! Mit box-sizing: border-box zählen Padding und Border in die width hinein – das ist viel einfacher zu rechnen und deshalb heute üblich."
+    },
+    {
+      "type": "code",
+      "content": ".karte {\n  width: 200px;\n  padding: 20px;\n  border: 5px solid gray;\n  margin: 10px;\n}\n/* sichtbare Breite:\n   200 + 2·20 + 2·5 = 250px\n   (margin kommt außen dazu) */\n\n* {\n  box-sizing: border-box;\n}\n/* jetzt: sichtbar genau 200px */"
+    },
+    {
+      "type": "text",
+      "content": "Farben kannst du als Namen (red), als Hex-Code (#ff0000) oder mit rgb(255, 0, 0) angeben. Bei Hex steht je ein Zeichenpaar für Rot, Grün und Blau (00 bis ff).\n\nFür Schriften gibt es font-family (mit Ersatzschriften, am Ende eine generische wie sans-serif), font-size, font-weight und line-height. Für Schriftgrößen sind relative Einheiten wie rem praktisch: 1rem ist die Grundschriftgröße (meist 16px). Wer im Browser die Schrift vergrößert, bekommt so alles mitskaliert."
+    },
+    {
+      "type": "code",
+      "content": "body {\n  font-family: \"Segoe UI\",\n    Arial, sans-serif;\n  font-size: 1rem;\n  line-height: 1.5;\n  color: #222222;\n  background: rgb(245, 245, 245);\n}\nh1 {\n  font-size: 2rem;   /* 32px */\n  font-weight: bold;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Kaskade: Oft passen mehrere Regeln auf dasselbe Element. Der Browser entscheidet so:\n1. Wichtigkeit: !important gewinnt (nur im Notfall verwenden).\n2. Spezifität: Je genauer der Selektor, desto stärker. ID schlägt Klasse, Klasse schlägt Element. Man zählt (IDs, Klassen/Pseudoklassen, Elemente): #logo = (1,0,0), nav .aktiv = (0,1,1), p = (0,0,1).\n3. Reihenfolge: Bei gleicher Spezifität gewinnt die Regel, die später kommt.\n\nAußerdem werden manche Eigenschaften vererbt: color und font-family gelten auch für Kind-Elemente, margin und border nicht."
+    },
+    {
+      "type": "code",
+      "content": "/* HTML:\n<p id=\"info\" class=\"tipp\">Hallo</p>\n*/\n#info { color: red; }   /* 1,0,0 */\n.tipp { color: green; } /* 0,1,0 */\np     { color: blue; }  /* 0,0,1 */\n\n/* Ergebnis: rot – die ID ist am\n   spezifischsten, egal wo sie\n   in der Datei steht. */"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Strichpunkt oder Klammer vergessen (die nächste Regel wird dann oft ignoriert), Punkt vor dem Klassennamen im HTML schreiben (class=\".tipp\" ist falsch), Padding bei der Breite vergessen, und überall IDs oder !important einsetzen – dann lassen sich Regeln kaum noch überschreiben.\n\nZusammenfassung: Eine Regel = Selektor + Deklarationen. Jedes Element ist eine Box aus content, padding, border und margin. Wenn Regeln kollidieren, entscheiden Wichtigkeit, Spezifität und Reihenfolge."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie breit ist die Box sichtbar (Rand außen inklusive, ohne margin)? Es gilt box-sizing: content-box.",
+      "code": ".box {\n  width: 300px;\n  padding: 10px;\n  border: 2px solid black;\n  margin: 20px;\n}",
+      "options": [
+        "300px",
+        "364px",
+        "324px",
+        "320px"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei content-box kommen Padding und Border dazu: 300 + 2·10 + 2·2 = 324px. Der margin ist Abstand außerhalb und zählt nicht zur sichtbaren Box."
+    },
+    {
+      "question": "Welche Farbe hat die Überschrift <h1 class=\"gross\">Hi</h1>?",
+      "code": ".gross { color: blue; }\nh1     { color: green; }",
+      "options": [
+        "grün, weil die Regel zuletzt steht",
+        "blau",
+        "schwarz (Standard)",
+        "beide Farben gemischt"
+      ],
+      "correctIndex": 1,
+      "explanation": ".gross hat die Spezifität (0,1,0), h1 nur (0,0,1). Die Klasse gewinnt, obwohl die h1-Regel später steht – die Reihenfolge zählt nur bei gleicher Spezifität."
+    },
+    {
+      "question": "Welcher Selektor wählt alle Elemente mit class=\"fehler\" aus?",
+      "options": [
+        "#fehler",
+        "fehler",
+        "*fehler",
+        ".fehler"
+      ],
+      "correctIndex": 3,
+      "explanation": "Klassen werden in CSS mit einem Punkt angesprochen. # steht für IDs, ein Name ohne Zeichen für Elemente."
+    },
+    {
+      "question": "In welcher Farbe wird ein Absatz <p> angezeigt?",
+      "code": "p { color: red; }\np { color: blue; }",
+      "options": [
+        "blau",
+        "rot",
+        "rot und blau abwechselnd",
+        "keine Farbe – Fehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beide Regeln haben dieselbe Spezifität (0,0,1). Dann gewinnt die Regel, die später kommt: blau."
+    }
+  ]
+}

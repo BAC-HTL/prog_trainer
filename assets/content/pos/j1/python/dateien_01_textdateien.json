@@ -1,0 +1,96 @@
+{
+  "id": "pos-j1-python-dateien_01_textdateien",
+  "title": "Textdateien lesen und schreiben",
+  "summary": "Daten dauerhaft in Textdateien speichern, wieder einlesen und Zeile für Zeile verarbeiten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Variablen sind weg, sobald dein Programm endet. Willst du Daten behalten – einen Highscore, eine Klassenliste, ein Protokoll – speicherst du sie in einer Textdatei. Mit open(dateiname, modus, encoding=\"utf-8\") öffnest du eine Datei. Die wichtigsten Modi:\n• \"r\" – lesen (Standard, wenn du nichts angibst)\n• \"w\" – schreiben: Die Datei wird neu angelegt bzw. komplett ÜBERSCHRIEBEN\n• \"a\" – anhängen (append): Neues kommt ans Ende, Altes bleibt"
+    },
+    {
+      "type": "code",
+      "content": "with open(\"klasse.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"Anna\\n\")\n    f.write(\"Ben\\n\")\n    f.write(\"Jürgen\\n\")\nprint(\"gespeichert\")"
+    },
+    {
+      "type": "text",
+      "content": "Das with sorgt dafür, dass die Datei am Ende des eingerückten Blocks automatisch geschlossen wird. Ohne with müsstest du selbst f.close() aufrufen – vergisst du das, landen Daten eventuell nicht in der Datei. Wichtig: write() hängt KEINEN Zeilenumbruch an, das \\n schreibst du selbst. Außerdem nimmt write() nur Strings, Zahlen wandelst du vorher mit str() oder einem f-String um. encoding=\"utf-8\" sorgt dafür, dass Umlaute wie ü auch unter Windows richtig gespeichert werden."
+    },
+    {
+      "type": "text",
+      "content": "Zum Lesen gibt es zwei einfache Methoden:\n• read() liefert den ganzen Inhalt als einen String.\n• readlines() liefert eine Liste mit einer Zeile pro Element – jeweils inklusive dem \\n am Ende."
+    },
+    {
+      "type": "code",
+      "content": "with open(\"klasse.txt\", encoding=\"utf-8\") as f:\n    inhalt = f.read()\nprint(len(inhalt))   # 16\n\nwith open(\"klasse.txt\", encoding=\"utf-8\") as f:\n    zeilen = f.readlines()\nprint(zeilen)\n# ['Anna\\n', 'Ben\\n', 'Jürgen\\n']"
+    },
+    {
+      "type": "text",
+      "content": "Meistens gehst du die Datei mit einer for-Schleife Zeile für Zeile durch. Das spart auch bei riesigen Dateien Speicher. Weil jede Zeile mit \\n endet, entfernst du den Umbruch mit strip() – sonst druckt print() zusätzlich eine Leerzeile."
+    },
+    {
+      "type": "code",
+      "content": "with open(\"klasse.txt\", encoding=\"utf-8\") as f:\n    for zeile in f:\n        name = zeile.strip()\n        print(f\"Hallo {name}!\")"
+    },
+    {
+      "type": "text",
+      "content": "Praxisbeispiel: In punkte.txt steht pro Zeile ein Name und eine Punktezahl, getrennt durch einen Strichpunkt (Anna;87). Du teilst jede Zeile mit split(\";\"), wandelst die Punkte mit int() um und schreibst das Ergebnis in eine neue Datei."
+    },
+    {
+      "type": "code",
+      "content": "with open(\"punkte.txt\", encoding=\"utf-8\") as f:\n    zeilen = f.readlines()\n\nwith open(\"ergebnis.txt\", \"w\", encoding=\"utf-8\") as aus:\n    for zeile in zeilen:\n        teile = zeile.strip().split(\";\")\n        name = teile[0]\n        punkte = int(teile[1])\n        if punkte >= 50:\n            aus.write(f\"{name}: bestanden\\n\")\n        else:\n            aus.write(f\"{name}: nicht best.\\n\")\n\nwith open(\"ergebnis.txt\", encoding=\"utf-8\") as f:\n    print(f.read())"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• Datei zum Lesen öffnen, die es nicht gibt (Tippfehler oder falscher Ordner) → FileNotFoundError. Ein Dateiname ohne Pfad wird im aktuellen Arbeitsverzeichnis gesucht. Wie du solche Fehler abfängst, lernst du später.\n• Mit \"w\" statt \"a\" öffnen – alle alten Daten sind weg.\n• strip() vergessen – dann steht \"87\\n\" bzw. \"Anna\\n\" in deinen Daten.\n• Eine leere Zeile am Dateiende – split() liefert dann nur ein Element, und teile[1] führt zu einem IndexError.\nZusammenfassung: open + with, Modus richtig wählen, encoding=\"utf-8\" angeben, Zeilen mit strip() und split() zerlegen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "with open(\"t.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(\"A\")\n    f.write(\"B\\n\")\nwith open(\"t.txt\", \"a\", encoding=\"utf-8\") as f:\n    f.write(\"C\\n\")\nwith open(\"t.txt\", encoding=\"utf-8\") as f:\n    print(f.readlines())",
+      "options": [
+        "['A', 'B', 'C']",
+        "['AB\\n', 'C\\n']",
+        "['C\\n']",
+        "['A\\n', 'B\\n', 'C\\n']"
+      ],
+      "correctIndex": 1,
+      "explanation": "write() fügt keinen Zeilenumbruch ein: \"A\" und \"B\\n\" ergeben die Zeile AB. Der Modus \"a\" hängt C an, statt zu überschreiben. readlines() behält die \\n."
+    },
+    {
+      "question": "Dein Spiel soll jeden neuen Highscore in highscores.txt hinzufügen, ohne die alten zu löschen. Welchen Modus verwendest du?",
+      "options": [
+        "\"r\"",
+        "\"w\"",
+        "\"a\"",
+        "\"x\""
+      ],
+      "correctIndex": 2,
+      "explanation": "\"a\" (append) hängt ans Ende an. \"w\" würde die Datei jedes Mal leeren, \"r\" erlaubt nur Lesen."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "punkte = 95\nwith open(\"score.txt\", \"w\", encoding=\"utf-8\") as f:\n    f.write(punkte)",
+      "options": [
+        "In der Datei steht 95",
+        "TypeError: write() argument must be str, not int",
+        "In der Datei steht \"95\\n\"",
+        "FileNotFoundError"
+      ],
+      "correctIndex": 1,
+      "explanation": "write() akzeptiert nur Strings. Richtig wäre f.write(str(punkte)) oder f.write(f\"{punkte}\\n\")."
+    },
+    {
+      "question": "zahlen.txt enthält die drei Zeilen 3, 5 und 10. Was gibt dieser Code aus?",
+      "code": "summe = 0\nwith open(\"zahlen.txt\", encoding=\"utf-8\") as f:\n    for zeile in f:\n        summe += int(zeile)\nprint(summe)",
+      "options": [
+        "18",
+        "3510",
+        "ValueError, wegen \\n",
+        "0"
+      ],
+      "correctIndex": 0,
+      "explanation": "int() ignoriert Leerzeichen und Zeilenumbrüche am Rand, int(\"5\\n\") ist also 5. 3 + 5 + 10 = 18. Trotzdem ist strip() guter Stil – bei split() oder Vergleichen würden die \\n stören."
+    }
+  ]
+}

@@ -9,6 +9,7 @@ class ProgressStats {
     required this.examsPassedByTrack,
     required this.solvedByTrack,
     required this.pointsByTrack,
+    this.examsPassedBySubject = const {},
     this.missionsSolved = 0,
     this.perfectMissions = 0,
   });
@@ -19,6 +20,7 @@ class ProgressStats {
   final Map<String, int> examsPassedByTrack;
   final Map<String, int> solvedByTrack;
   final Map<String, int> pointsByTrack;
+  final Map<String, int> examsPassedBySubject;
   final int missionsSolved;
   final int perfectMissions;
 
@@ -111,9 +113,31 @@ final List<Achievement> allAchievements = [
   Achievement(
     id: 'polyglott',
     title: 'Polyglott',
-    description: 'Bestehe Prüfungen in zwei verschiedenen Sprachen.',
+    description: 'Bestehe Prüfungen in Python und in C#.',
     icon: Icons.translate,
-    check: (s) => s.examsPassedByTrack.values.where((n) => n > 0).length >= 2,
+    check: (s) => s.examsIn('python') > 0 && s.examsIn('csharp') > 0,
+  ),
+  Achievement(
+    id: 'allrounder',
+    title: 'Allrounder',
+    description: 'Bestehe Prüfungen in POS, DBI, NVS und TINF.',
+    icon: Icons.hub,
+    check: (s) => ['POS', 'DBI', 'NVS', 'TINF']
+        .every((f) => (s.examsPassedBySubject[f] ?? 0) > 0),
+  ),
+  Achievement(
+    id: 'netzwerker',
+    title: 'Netzwerker',
+    description: 'Bestehe 3 Prüfungen in Netzwerksysteme (NVS).',
+    icon: Icons.lan,
+    check: (s) => (s.examsPassedBySubject['NVS'] ?? 0) >= 3,
+  ),
+  Achievement(
+    id: 'datenbank',
+    title: 'Datenprofi',
+    description: 'Bestehe 3 Prüfungen in Datenbanken (DBI).',
+    icon: Icons.storage,
+    check: (s) => (s.examsPassedBySubject['DBI'] ?? 0) >= 3,
   ),
   Achievement(
     id: 'challenge_1',

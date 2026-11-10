@@ -1,0 +1,96 @@
+{
+  "id": "pos-j1-csharp-dateien_02_fehlersuche_debugging",
+  "title": "Fehlersuche und Debugging",
+  "summary": "Compiler-, Laufzeit- und Logikfehler unterscheiden, Fehlermeldungen lesen und mit Ausgaben und dem Debugger Fehler finden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Fehler (Bugs) gehören zum Programmieren dazu – auch Profis machen ständig welche. Wichtig ist, sie schnell zu finden. Dabei hilft es, drei Arten zu unterscheiden:\n• Compilerfehler (Syntaxfehler): Der Code verstößt gegen die Regeln von C#. Das Programm lässt sich gar nicht erst starten. Visual Studio unterstreicht die Stelle rot und listet den Fehler in der Fehlerliste.\n• Laufzeitfehler: Das Programm startet, stürzt aber während der Ausführung ab – es wird eine Exception (Ausnahme) ausgelöst.\n• Logikfehler: Das Programm läuft fehlerfrei durch, liefert aber ein falsches Ergebnis. Die sind am schwierigsten zu finden, weil niemand Alarm schlägt."
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(\"Hallo\")\n// Program.cs(1,27): error CS1002:\n//   ; expected\n\nint alter = \"17\";\n// error CS0029: Cannot implicitly\n//   convert type 'string' to 'int'\n\nConsole.WriteLine(Punkte);\n// error CS0103: The name 'Punkte'\n//   does not exist in the current\n//   context"
+    },
+    {
+      "type": "text",
+      "content": "So liest du eine Compiler-Meldung: Program.cs(1,27) bedeutet Datei Program.cs, Zeile 1, Spalte 27. Danach kommt ein Fehlercode wie CS1002 und die Beschreibung. In einem deutschsprachigen Visual Studio ist der Text übersetzt (z. B. „; erwartet“), der Code bleibt gleich – mit ihm findest du online schnell Erklärungen.\n\nTipp: Behebe immer zuerst den ersten Fehler in der Liste. Ein einziger Tippfehler, etwa eine fehlende geschwungene Klammer, kann viele Folgefehler auslösen, die danach von selbst verschwinden."
+    },
+    {
+      "type": "text",
+      "content": "Bei einem Laufzeitfehler bricht das Programm mit einer Meldung ab. Sie verrät dir drei Dinge: den Typ der Exception, eine Beschreibung und die Zeile, in der es passiert ist. Häufige Exceptions:\n• IndexOutOfRangeException – Index außerhalb des Arrays\n• FormatException – int.Parse mit einem Text, der keine ganze Zahl ist (z. B. \"abc\" oder \"3,5\")\n• DivideByZeroException – ganzzahlige Division durch 0\n• FileNotFoundException – Datei existiert nicht"
+    },
+    {
+      "type": "code",
+      "content": "int[] noten = { 1, 2, 3 };\nConsole.WriteLine(noten[3]);\n\n// Unhandled exception.\n// System.IndexOutOfRangeException:\n//   Index was outside the bounds\n//   of the array.\n//   at Program.<Main>$(String[] args)\n//   in ...\\Program.cs:line 2"
+    },
+    {
+      "type": "text",
+      "content": "Logikfehler findest du, indem du Erwartung und Wirklichkeit vergleichst. Die einfachste Methode ist Console-Debugging: Du gibst Zwischenwerte aus und schaust, ab wann sie nicht mehr stimmen. Hier sollte der Durchschnitt von 4, 5, 6 und 7 berechnet werden – erwartet ist 5,5:"
+    },
+    {
+      "type": "code",
+      "content": "int[] punkte = { 4, 5, 6, 7 };\nint summe = 0;\nfor (int i = 1; i < punkte.Length; i++)\n{\n    summe += punkte[i];\n    Console.WriteLine($\"DEBUG {i}: {summe}\");\n}\ndouble schnitt = summe / punkte.Length;\nConsole.WriteLine(schnitt);\n// DEBUG 1: 5   ← punkte[0] fehlt!\n// DEBUG 2: 11\n// DEBUG 3: 18\n// 4\n\n// Korrektur: i = 0 und\n// (double)summe / punkte.Length → 5,5"
+    },
+    {
+      "type": "text",
+      "content": "Noch mächtiger ist der Debugger in Visual Studio. Klick links neben eine Zeilennummer (oder drück F9) – ein roter Punkt erscheint: ein Haltepunkt (Breakpoint). Startest du mit F5, hält das Programm vor dieser Zeile an. Jetzt kannst du mit der Maus über Variablen fahren oder im Fenster „Lokal“ alle aktuellen Werte sehen und Schritt für Schritt weitergehen.\n\nLäuft eine Schleife 1000-mal und der Fehler tritt erst spät auf, hilft ein bedingter Haltepunkt: Rechtsklick auf den roten Punkt → Bedingungen, z. B. i == 873."
+    },
+    {
+      "type": "code",
+      "content": "Tastenkürzel in Visual Studio:\nF9        Haltepunkt ein/aus\nF5        Debuggen starten/fortsetzen\nF10       Prozedurschritt\n          (Methodenaufruf in einem Stück)\nF11       Einzelschritt\n          (springt in Methoden hinein)\nUmschalt+F11  Ausführen bis Rücksprung\nUmschalt+F5   Debuggen beenden"
+    },
+    {
+      "type": "text",
+      "content": "Eine bewährte Strategie bei jedem Bug:\n1. Fehler nachstellen – mit welcher Eingabe tritt er auf?\n2. Eingrenzen – in welchem Teil des Codes geht es schief?\n3. Vermutung aufstellen und mit Ausgaben oder Debugger prüfen.\n4. Nur eine Sache auf einmal ändern und erneut testen.\nHilfreich ist auch, den Code jemandem (oder einer Quietscheente) Zeile für Zeile zu erklären – oft fällt dir der Fehler dabei selbst auf.\n\nZusammenfassung: Compilerfehler verhindern den Start, Laufzeitfehler führen zum Absturz, Logikfehler zu falschen Ergebnissen. Lies Meldungen genau (Zeile, Code, Typ), nutze Debug-Ausgaben und den Debugger – und entferne die DEBUG-Ausgaben, wenn du fertig bist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was passiert beim Ausführen dieses Codes?",
+      "code": "int a = 10;\nint b = 0;\nConsole.WriteLine(a / b);",
+      "options": [
+        "Der Compiler meldet einen Fehler",
+        "Es wird 0 ausgegeben – ein Logikfehler",
+        "Es tritt ein Laufzeitfehler auf (DivideByZeroException)",
+        "Es wird 10 ausgegeben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Code ist syntaktisch korrekt und lässt sich kompilieren. Erst beim Ausführen wird durch b = 0 geteilt. Bei ganzen Zahlen ist das nicht erlaubt, das Programm stürzt mit einer DivideByZeroException ab."
+    },
+    {
+      "question": "Welche Exception löst dieser Code aus?",
+      "code": "string eingabe = \"3,5\";\nint x = int.Parse(eingabe);\nConsole.WriteLine(x);",
+      "options": [
+        "FormatException",
+        "IndexOutOfRangeException",
+        "Keine – x wird 3",
+        "DivideByZeroException"
+      ],
+      "correctIndex": 0,
+      "explanation": "int.Parse erwartet eine ganze Zahl. \"3,5\" ist keine, deshalb wird eine FormatException ausgelöst. Abgerundet wird dabei nicht."
+    },
+    {
+      "question": "Finde den Logikfehler: Was gibt dieser Code aus?",
+      "code": "int[] temp = { -5, -2, -8 };\nint max = 0;\nforeach (int t in temp)\n{\n    if (t > max)\n    {\n        max = t;\n    }\n}\nConsole.WriteLine(max);",
+      "options": [
+        "-2",
+        "-8",
+        "0",
+        "Es tritt ein Laufzeitfehler auf"
+      ],
+      "correctIndex": 2,
+      "explanation": "max startet mit 0. Weil alle Temperaturen negativ sind, ist keine größer als 0 – max bleibt 0. Das Programm läuft, liefert aber ein falsches Ergebnis. Korrektur: int max = temp[0];"
+    },
+    {
+      "question": "Der Debugger steht an einem Haltepunkt in der Zeile int s = Summe(werte);. Mit welcher Taste springst du in die Methode Summe hinein, um sie Schritt für Schritt zu verfolgen?",
+      "options": [
+        "F10",
+        "F9",
+        "F5",
+        "F11"
+      ],
+      "correctIndex": 3,
+      "explanation": "F11 (Einzelschritt) springt in die aufgerufene Methode hinein. F10 (Prozedurschritt) führt den Aufruf in einem Stück aus, F9 setzt oder entfernt einen Haltepunkt und F5 läuft bis zum nächsten Haltepunkt weiter."
+    }
+  ]
+}

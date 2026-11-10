@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j1-text_03_praesentationen",
+  "title": "Präsentationen gestalten",
+  "summary": "Folienaufbau, Folienmaster, Bilder, sparsame Animationen, Audio/Video und Regeln für gute Präsentationen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Präsentationsprogramme sind z. B. PowerPoint (Microsoft) und Impress (LibreOffice). Eine Präsentation unterstützt deinen Vortrag – sie ist nicht der Vortrag. Das Publikum soll dir zuhören, nicht Folien mitlesen."
+    },
+    {
+      "type": "text",
+      "content": "Jede Folie basiert auf einem Layout mit Platzhaltern: Titelfolie, Titel und Inhalt, Zwei Inhalte, nur Titel, leer. Nutze die Platzhalter statt eigener Textfelder – dann bleiben Position und Schrift einheitlich, und Titel erscheinen in der Gliederung."
+    },
+    {
+      "type": "text",
+      "content": "Der Folienmaster (Impress: Masterfolie) ist die „Formatvorlage“ für Folien. Dort legst du einmal Hintergrund, Schriftarten, Farben, Logo und Foliennummer fest – sie gelten für alle Folien. PowerPoint: Ansicht → Folienmaster, Impress: Ansicht → Masterfolie. Typischer Fehler: das Schullogo auf jede Folie einzeln kopieren."
+    },
+    {
+      "type": "code",
+      "content": "Folienmaster\n├── Titelfolie-Layout\n├── Titel und Inhalt\n└── Zwei Inhalte\n      ↓  vererbt an\nFolie 1, Folie 2, Folie 3 ...\n\nÄnderung im Master\n→ wirkt auf alle Folien"
+    },
+    {
+      "type": "text",
+      "content": "Bilder und Grafiken: Verwende Bilder, die etwas erklären – nicht nur dekorieren. Beim Vergrößern an einer Ecke ziehen, nicht an einer Seite, sonst wird das Bild verzerrt. Achte auf das Urheberrecht: Nur Bilder verwenden, die du nutzen darfst (z. B. eigene Fotos oder Creative-Commons-Bilder), und die Quelle angeben. Große Fotos kannst du komprimieren, damit die Datei nicht riesig wird."
+    },
+    {
+      "type": "text",
+      "content": "Animationen und Übergänge sparsam einsetzen. Gut: einen Aufzählungspunkt erst einblenden, wenn du darüber sprichst, oder einen Ablauf Schritt für Schritt zeigen. Schlecht: fliegende, drehende Texte und jede Folie mit einem anderen Übergang – das lenkt ab und wirkt unprofessionell."
+    },
+    {
+      "type": "text",
+      "content": "Audio und Video fügst du über Einfügen → Audio/Video ein. Je nach Programm und Einstellung wird die Datei in die Präsentation eingebettet oder nur verknüpft. Bei einer Verknüpfung musst du die Mediendatei mitkopieren, sonst fehlt sie am Schul-PC. Online-Videos brauchen eine Internetverbindung. Teste Ton und Wiedergabe immer vorher auf dem Gerät, auf dem du präsentierst."
+    },
+    {
+      "type": "code",
+      "content": "Faustregeln für Folien:\n• 1 Folie = 1 Kernaussage\n• Stichworte statt ganzer Sätze\n• höchstens ca. 6 Punkte je Folie\n• Schrift groß genug (ab ~24 pt)\n• guter Kontrast (dunkel auf hell)\n• max. 2 Schriftarten\n• Quellen auf letzter Folie"
+    },
+    {
+      "type": "text",
+      "content": "Beim Präsentieren startest du die Bildschirmpräsentation mit F5. Mit der Referentenansicht (Impress: Präsentationskonsole) siehst du auf deinem Laptop Notizen, Uhr und die nächste Folie, während der Beamer nur die aktuelle Folie zeigt. Schau ins Publikum, nicht auf die Leinwand, und lies nicht vor."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Layouts und Platzhalter nutzen, Einheitliches im Folienmaster festlegen, Bilder mit Sinn und Quellenangabe, Animationen sparsam, Medien vorher testen und mitkopieren. Die Folie unterstützt – du präsentierst."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Das Logo der Schule soll auf allen 25 Folien rechts oben stehen. Was ist der beste Weg?",
+      "options": [
+        "Das Logo einmal im Folienmaster einfügen",
+        "Das Logo auf jede Folie kopieren",
+        "Das Logo als Hintergrundmusik einfügen",
+        "Das Logo nur auf die Titelfolie geben"
+      ],
+      "correctIndex": 0,
+      "explanation": "Alles, was im Folienmaster steht, erscheint auf allen Folien, die darauf basieren. Eine spätere Änderung musst du nur einmal machen."
+    },
+    {
+      "question": "Am Schul-PC spielt dein Video nicht ab, zu Hause hat es funktioniert. Was ist eine typische Ursache?",
+      "options": [
+        "Die Präsentation hat zu viele Folien",
+        "Das Video war nur verknüpft und die Videodatei wurde nicht mitkopiert",
+        "Videos funktionieren nur im Hochformat",
+        "Die Schriftgröße ist zu klein"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei verknüpften Medien speichert die Präsentation nur den Pfad zur Datei. Fehlt die Datei am anderen Rechner, kann sie nicht abgespielt werden."
+    },
+    {
+      "question": "Welcher Einsatz von Animationen ist am sinnvollsten?",
+      "options": [
+        "Jeder Buchstabe fliegt einzeln herein",
+        "Jede Folie bekommt einen anderen Übergang",
+        "Aufzählungspunkte erscheinen nacheinander, wenn du darüber sprichst",
+        "Der Titel dreht sich dauerhaft"
+      ],
+      "correctIndex": 2,
+      "explanation": "Animationen sollen das Verständnis unterstützen. Punkte schrittweise einzublenden hält die Aufmerksamkeit beim aktuellen Thema; alles andere lenkt ab."
+    },
+    {
+      "question": "Du vergrößerst ein Foto, indem du am rechten Seitenrand ziehst. Was passiert?",
+      "options": [
+        "Das Bild wird schärfer",
+        "Das Bild wird automatisch zugeschnitten",
+        "Nichts – Bilder kann man so nicht ändern",
+        "Das Bild wird verzerrt, weil sich nur die Breite ändert"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ziehst du an einer Seite, änderst du nur Breite oder Höhe – das Seitenverhältnis stimmt nicht mehr. An einer Ecke ziehen erhält die Proportionen."
+    }
+  ]
+}

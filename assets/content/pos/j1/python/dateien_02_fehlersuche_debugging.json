@@ -1,0 +1,96 @@
+{
+  "id": "pos-j1-python-dateien_02_fehlersuche_debugging",
+  "title": "Fehlersuche und Debugging",
+  "summary": "Syntax-, Laufzeit- und Logikfehler unterscheiden, Tracebacks lesen und Fehler gezielt finden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Fehler (Bugs) gehören zum Programmieren dazu – auch Profis verbringen viel Zeit mit Fehlersuche (Debugging). Wichtig ist, systematisch vorzugehen. Dazu hilft es, drei Fehlerarten zu unterscheiden: Syntaxfehler, Laufzeitfehler und Logikfehler."
+    },
+    {
+      "type": "text",
+      "content": "Ein Syntaxfehler verletzt die Grammatik von Python: fehlender Doppelpunkt, vergessene Klammer, falsche Einrückung (IndentationError), = statt == in einer Bedingung. Python prüft die Syntax VOR dem Start – das Programm läuft deshalb überhaupt nicht los, auch die Zeilen vor dem Fehler werden nicht ausgeführt. Die Meldung zeigt Zeile und Stelle mit ^ an."
+    },
+    {
+      "type": "code",
+      "content": "alter = 17\nif alter >= 16\n    print(\"ok\")\n\n# Ausgabe:\n  File \"test.py\", line 2\n    if alter >= 16\n                  ^\nSyntaxError: expected ':'"
+    },
+    {
+      "type": "text",
+      "content": "Ein Laufzeitfehler (Exception) tritt erst während der Ausführung auf. Alles davor wurde schon ausgeführt, dann stürzt das Programm ab. Häufige Beispiele:\n• ZeroDivisionError – Division durch 0\n• IndexError – Index außerhalb der Liste\n• ValueError – int(\"zwölf\")\n• TypeError – \"Summe: \" + 5\n• NameError – Tippfehler im Variablennamen\n• FileNotFoundError – Datei fehlt"
+    },
+    {
+      "type": "code",
+      "content": "Traceback (most recent call last):\n  File \"noten.py\", line 5, in <module>\n    print(schnitt([]))\n          ~~~~~~~^^^^\n  File \"noten.py\", line 2, in schnitt\n    return sum(noten) / len(noten)\n           ~~~~~~~~~~~^~~~~~~~~~~~\nZeroDivisionError: division by zero"
+    },
+    {
+      "type": "text",
+      "content": "So liest du einen Traceback: von UNTEN nach oben. Die letzte Zeile nennt Fehlerart und Grund (division by zero). Darüber steht, wo es gekracht hat: Datei noten.py, Zeile 2, in der Funktion schnitt. Noch weiter oben siehst du, von wo diese Funktion aufgerufen wurde: Zeile 5 mit einer leeren Liste. Die eigentliche Ursache liegt also oft beim Aufrufer!"
+    },
+    {
+      "type": "text",
+      "content": "Am schwierigsten sind Logikfehler: Das Programm läuft ohne Meldung, liefert aber ein falsches Ergebnis. Python kann sie nicht erkennen, weil der Code formal korrekt ist. Typisch sind range-Grenzen um eins daneben, < statt <= oder falsche Startwerte. Einfaches Werkzeug dagegen ist print-Debugging: Du gibst Zwischenwerte aus und vergleichst sie mit dem, was du erwartest. Der f-String {i=} gibt Name und Wert gemeinsam aus."
+    },
+    {
+      "type": "code",
+      "content": "# soll 1 + 2 + ... + n berechnen\ndef summe_bis(n):\n    s = 0\n    for i in range(1, n):\n        s += i\n        print(f\"DEBUG {i=} {s=}\")\n    return s\n\nprint(summe_bis(3))  # erwartet 6\n# DEBUG i=1 s=1\n# DEBUG i=2 s=3\n# 3   → i erreicht nie 3!\n# Lösung: range(1, n + 1)"
+    },
+    {
+      "type": "text",
+      "content": "Komfortabler ist der Debugger deiner IDE (VS Code, PyCharm, Thonny …):\n• Breakpoint: Klick links neben die Zeilennummer (VS Code: F9). Dort hält das Programm an.\n• Debuggen starten (VS Code: F5).\n• Step Over (F10): aktuelle Zeile ausführen, Funktionsaufrufe am Stück.\n• Step Into (F11): in die aufgerufene Funktion hineinspringen.\n• Continue: weiterlaufen bis zum nächsten Breakpoint.\nIm Variablen-Fenster siehst du jederzeit alle aktuellen Werte – ganz ohne print()."
+    },
+    {
+      "type": "text",
+      "content": "Vorgehen bei der Fehlersuche: Fehlermeldung genau lesen, den Fehler reproduzieren, den Bereich eingrenzen, eine Vermutung aufstellen und immer nur EINE Sache ändern, dann neu testen. Hilft gar nichts, erkläre deinen Code Zeile für Zeile jemandem – notfalls einer Quietscheente (Rubber-Duck-Debugging). Zusammenfassung: Syntaxfehler verhindern den Start, Laufzeitfehler brechen ab, Logikfehler liefern falsche Ergebnisse. Tracebacks liest du von unten nach oben."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welcher Fehler tritt bei diesem Code auf?",
+      "code": "print(\"Summe: \" + 5)",
+      "options": [
+        "SyntaxError",
+        "ValueError",
+        "TypeError",
+        "NameError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein String und eine Zahl können nicht mit + verbunden werden: TypeError: can only concatenate str (not \"int\") to str. Richtig: \"Summe: \" + str(5) oder ein f-String."
+    },
+    {
+      "question": "Was gibt dieser Code aus, und welche Fehlerart liegt vor?",
+      "code": "werte = [2, 3, 4]\nsumme = 0\nfor i in range(1, len(werte)):\n    summe += werte[i]\nprint(summe / len(werte))",
+      "options": [
+        "3.0 – kein Fehler",
+        "IndexError – Laufzeitfehler",
+        "2.3333333333333335 – Logikfehler",
+        "SyntaxError – Syntaxfehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "range(1, …) beginnt bei Index 1, werte[0] = 2 wird übersprungen. Summe 7 geteilt durch 3 ergibt 2.333… statt 3.0. Das Programm läuft fehlerfrei durch, rechnet aber falsch – ein Logikfehler."
+    },
+    {
+      "question": "Was ist die Ursache für diesen Traceback?",
+      "code": "Traceback (most recent call last):\n  File \"noten.py\", line 7, in <module>\n    print(schnitt(liste))\n          ~~~~~~~^^^^^^^\n  File \"noten.py\", line 2, in schnitt\n    return sum(n) / len(n)\n           ~~~~~~~^~~~~~~~\nZeroDivisionError: division by zero",
+      "options": [
+        "Die Funktion schnitt wurde in Zeile 7 mit einer leeren Liste aufgerufen",
+        "In Zeile 7 fehlt eine Klammer",
+        "sum() funktioniert nicht mit Listen",
+        "Die Variable n ist nicht definiert"
+      ],
+      "correctIndex": 0,
+      "explanation": "Von unten gelesen: Division durch 0 in Zeile 2. len(n) ist also 0 – die Liste ist leer. Der Aufruf in Zeile 7 übergibt eine leere Liste. Ein Syntaxfehler würde keinen Traceback mit Aufrufkette erzeugen."
+    },
+    {
+      "question": "Der Debugger steht an einem Breakpoint in der Zeile ergebnis = berechne(x). Du willst sehen, was INNERHALB von berechne passiert. Was wählst du?",
+      "options": [
+        "Step Over",
+        "Continue",
+        "Step Into",
+        "Breakpoint entfernen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Step Into springt in die aufgerufene Funktion hinein. Step Over würde berechne am Stück ausführen und in der nächsten Zeile stehen bleiben."
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-elektro_01_spannung_strom",
+  "title": "Spannung, Strom und Widerstand",
+  "summary": "Die drei Grundgrößen der Elektrotechnik verstehen und Gleich- von Wechselstrom unterscheiden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Jedes elektronische Gerät – vom Handy bis zum Server – funktioniert, weil sich elektrische Ladungen bewegen. Um zu verstehen, was in einem Netzteil oder auf einer Platine passiert, brauchst du drei Grundgrößen: Spannung, Strom und Widerstand."
+    },
+    {
+      "type": "text",
+      "content": "Ein hilfreiches Bild ist ein Wasserkreislauf:\n• Spannung = Druckunterschied, der das Wasser antreibt\n• Strom = Wassermenge, die pro Sekunde fließt\n• Widerstand = Engstelle im Rohr, die den Fluss bremst\nDas Bild ist nicht perfekt, hilft aber beim Einstieg."
+    },
+    {
+      "type": "text",
+      "content": "Die Spannung U wird in Volt (V) gemessen. Sie ist der „Antrieb“ zwischen zwei Punkten, z. B. zwischen Plus- und Minuspol eines Akkus. Ohne Spannung fließt kein Strom. Der Strom I wird in Ampere (A) gemessen und gibt an, wie viel Ladung pro Sekunde durch einen Leiter fließt. Strom fließt nur in einem geschlossenen Stromkreis."
+    },
+    {
+      "type": "text",
+      "content": "Der Widerstand R wird in Ohm (Ω) gemessen und gibt an, wie stark ein Bauteil den Strom bremst. Metalle wie Kupfer leiten gut (kleiner Widerstand), Kunststoff oder Glas isolieren (sehr großer Widerstand). Widerstände als Bauteile begrenzen gezielt den Strom, z. B. vor einer LED."
+    },
+    {
+      "type": "code",
+      "content": "Größe      Zeichen  Einheit\nSpannung   U        Volt (V)\nStrom      I        Ampere (A)\nWiderstand R        Ohm (Ω)\n\n1 mA = 0,001 A\n1 kΩ = 1000 Ω"
+    },
+    {
+      "type": "text",
+      "content": "Gemessen wird mit dem Multimeter. Wichtig – und ein typischer Fehler im Labor: Die Spannung misst du parallel zum Bauteil (die Messspitzen an beide Enden). Den Strom misst du in Reihe – der Stromkreis wird dafür aufgetrennt und das Messgerät hineingeschaltet. Wer im Strommessbereich parallel an eine Spannungsquelle geht, erzeugt praktisch einen Kurzschluss."
+    },
+    {
+      "type": "text",
+      "content": "Bei Gleichstrom (DC, direct current) fließt der Strom immer in dieselbe Richtung. Quellen: Batterien, Akkus, USB-Anschlüsse (5 V), PC-Netzteil-Ausgänge (12 V, 5 V, 3,3 V). Elektronik wie CPU und RAM braucht Gleichspannung. Als technische Stromrichtung gilt von Plus nach Minus."
+    },
+    {
+      "type": "text",
+      "content": "Bei Wechselstrom (AC, alternating current) ändert die Spannung ständig ihre Richtung. Das Stromnetz in Österreich liefert 230 V Wechselspannung mit 50 Hz – die Richtung wechselt also 100-mal pro Sekunde. Die 230 V sind ein Effektivwert; der Spitzenwert liegt bei 230 V · √2 ≈ 325 V. Wechselspannung lässt sich mit Transformatoren leicht umformen, darum wird sie für die Energieübertragung verwendet."
+    },
+    {
+      "type": "code",
+      "content": "DC (Akku, USB)     AC (Steckdose)\n\nU                  U\n│────────          │  /\\    /\\\n│                  │ /  \\  /  \\\n│                  │/    \\/    \\\n└──────── t        └────────── t"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Spannung U (Volt) treibt an, Strom I (Ampere) fließt, Widerstand R (Ohm) bremst. Spannung parallel messen, Strom in Reihe. Gleichstrom fließt in eine Richtung (Akku, Elektronik), Wechselstrom wechselt die Richtung (Steckdose, 230 V, 50 Hz)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Einheit wird der elektrische Strom gemessen?",
+      "options": [
+        "Volt",
+        "Ohm",
+        "Ampere",
+        "Watt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Strom I in Ampere (A). Volt ist die Einheit der Spannung, Ohm die des Widerstands, Watt die der Leistung."
+    },
+    {
+      "question": "Wie wird ein Multimeter zur Strommessung angeschlossen?",
+      "options": [
+        "In Reihe – der Stromkreis wird dafür aufgetrennt",
+        "Parallel zum Bauteil",
+        "Direkt an die Steckdose",
+        "Gar nicht, Strom kann man nicht messen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Strom muss durch das Messgerät fließen, daher in Reihe. Spannung misst man parallel."
+    },
+    {
+      "question": "Welche Quelle liefert Wechselspannung?",
+      "options": [
+        "Ein USB-Anschluss",
+        "Ein Smartphone-Akku",
+        "Der 12-V-Ausgang eines PC-Netzteils",
+        "Die Steckdose im Klassenzimmer"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Steckdose liefert 230 V Wechselspannung mit 50 Hz. Die anderen Quellen liefern Gleichspannung."
+    },
+    {
+      "question": "Wie viel Ampere sind 250 mA?",
+      "options": [
+        "250 A",
+        "0,25 A",
+        "2,5 A",
+        "0,025 A"
+      ],
+      "correctIndex": 1,
+      "explanation": "1 mA = 0,001 A, also 250 mA = 0,25 A."
+    }
+  ]
+}

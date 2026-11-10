@@ -1,0 +1,89 @@
+{
+  "id": "tinf-j1-zahlen_01_bits_bytes",
+  "title": "Bits, Bytes und Präfixe",
+  "summary": "Wie Computer Information in Bits speichern und warum 1 kB nicht immer 1 KiB ist.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Computer kennt intern nur zwei Zustände: Strom an oder aus, Spannung hoch oder niedrig. Diese kleinste Informationseinheit heißt Bit (binary digit) und hat den Wert 0 oder 1. Alles – Zahlen, Texte, Bilder, Musik – wird am Ende als Folge von Bits gespeichert."
+    },
+    {
+      "type": "text",
+      "content": "Mit n Bits kannst du 2ⁿ verschiedene Muster bilden. Jedes zusätzliche Bit verdoppelt die Anzahl der Möglichkeiten. 8 Bits ergeben ein Byte – die übliche Einheit, in der Speicher adressiert und Dateigrößen angegeben werden."
+    },
+    {
+      "type": "code",
+      "content": "Bits  Muster   Beispiel\n 1    2        0, 1\n 2    4        00 01 10 11\n 4    16       0000 … 1111\n 8    256      1 Byte\n16    65 536   2 Byte\n32    rund 4,3 Milliarden"
+    },
+    {
+      "type": "text",
+      "content": "Weil man schnell große Mengen braucht, verwendet man Präfixe. Achtung, hier gibt es zwei Systeme: Die SI-Präfixe (k, M, G, T) sind dezimal und rechnen mit Faktor 1000. Die IEC-Binärpräfixe (Ki, Mi, Gi, Ti – sprich „Kibi“, „Mebi“, „Gibi“, „Tebi“) rechnen mit Faktor 1024 = 2¹⁰."
+    },
+    {
+      "type": "code",
+      "content": "Dezimal (SI)       Binär (IEC)\n1 kB = 1000 B       1 KiB = 1024 B\n1 MB = 1000 kB      1 MiB = 1024 KiB\n1 GB = 1000 MB      1 GiB = 1024 MiB\n1 TB = 1000 GB      1 TiB = 1024 GiB"
+    },
+    {
+      "type": "text",
+      "content": "Praxisbeispiel: Du kaufst eine SSD mit „1 TB“. Der Hersteller rechnet dezimal: 10¹² Byte. Windows zeigt die Größe aber in Binäreinheiten an (und schreibt dabei verwirrenderweise „GB“). Deshalb siehst du nur rund 931 „GB“. Es fehlt nichts – es ist nur eine andere Einheit."
+    },
+    {
+      "type": "code",
+      "content": "1 TB = 1 000 000 000 000 B\n\n1 GiB = 1024³ B\n      = 1 073 741 824 B\n\n10¹² / 1024³ ≈ 931,32 GiB"
+    },
+    {
+      "type": "text",
+      "content": "Zweite Stolperfalle: Bit und Byte. Netzwerk-Geschwindigkeiten werden in Bit pro Sekunde angegeben (kleines b, z. B. Mbit/s), Dateigrößen in Byte (großes B). Ein Anschluss mit 100 Mbit/s überträgt also höchstens 100 / 8 = 12,5 MB pro Sekunde – in der Praxis wegen Protokoll-Overhead etwas weniger."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: 1 Bit = 0 oder 1, 1 Byte = 8 Bit, n Bits ergeben 2ⁿ Möglichkeiten. k/M/G/T rechnen mit 1000, Ki/Mi/Gi/Ti mit 1024. Achte immer auf b (Bit) und B (Byte)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele verschiedene Werte kannst du mit 8 Bit darstellen?",
+      "options": [
+        "8",
+        "128",
+        "255",
+        "256"
+      ],
+      "correctIndex": 3,
+      "explanation": "2⁸ = 256 verschiedene Muster. Der größte vorzeichenlose Wert ist zwar 255, aber zusammen mit der 0 sind es 256 Werte."
+    },
+    {
+      "question": "Wie viele Byte sind 1 KiB?",
+      "options": [
+        "1024",
+        "1000",
+        "1048",
+        "8192"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das „i“ steht für Binärpräfix: 1 KiB = 2¹⁰ = 1024 Byte. 1 kB (ohne i) sind dagegen 1000 Byte."
+    },
+    {
+      "question": "Eine Datei ist 50 MB groß. Wie lange dauert der Download bei konstant 100 Mbit/s mindestens?",
+      "options": [
+        "0,5 Sekunden",
+        "4 Sekunden",
+        "50 Sekunden",
+        "8 Sekunden"
+      ],
+      "correctIndex": 1,
+      "explanation": "100 Mbit/s = 12,5 MB/s. 50 MB / 12,5 MB/s = 4 s. Typischer Fehler: Bit und Byte gleichsetzen – dann käme man auf 0,5 s."
+    },
+    {
+      "question": "Eine Festplatte wird mit „500 GB“ verkauft. Was zeigt Windows ungefähr an?",
+      "options": [
+        "500 GB",
+        "512 GB",
+        "466 GB",
+        "488 GB"
+      ],
+      "correctIndex": 2,
+      "explanation": "500 · 10⁹ B / 1024³ ≈ 465,66 GiB. Windows schreibt dafür „GB“, rechnet aber binär."
+    }
+  ]
+}

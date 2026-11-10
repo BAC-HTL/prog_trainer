@@ -1,0 +1,122 @@
+{
+  "id": "pos-j2-python-baeume_pruefung",
+  "title": "Abschlussprüfung: Bäume & Suchbäume",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "In welcher Reihenfolge gibt postorder die Knoten dieses Baums aus?",
+      "code": "      K\n     / \\\n    L   O\n   / \\\n  M   N",
+      "options": [
+        "K L M N O",
+        "M L N O K",
+        "L M N K O",
+        "M N L O K"
+      ],
+      "correctIndex": 3,
+      "explanation": "Postorder: links – rechts – Wurzel. Zuerst der linke Teilbaum L (M, N, dann L), dann der rechte Teilbaum O, ganz zum Schluss die Wurzel K."
+    },
+    {
+      "question": "Die Werte 6, 4, 9, 5, 2 werden in einen leeren BST eingefügt. Was liefert die Preorder-Traversierung?",
+      "code": "w = None\nfor x in [6, 4, 9, 5, 2]:\n    w = einfuegen(w, x)\npreorder(w)",
+      "options": [
+        "2 4 5 6 9",
+        "6 4 2 5 9",
+        "6 4 9 2 5",
+        "2 5 4 9 6"
+      ],
+      "correctIndex": 1,
+      "explanation": "6 ist Wurzel, 4 links mit den Kindern 2 und 5, 9 rechts. Preorder (Wurzel – links – rechts) ergibt 6 4 2 5 9."
+    },
+    {
+      "question": "Ist dieser Baum ein gültiger binärer Suchbaum?",
+      "code": "      10\n     /  \\\n    5    15\n     \\\n      12",
+      "options": [
+        "Ja, weil jedes Kind korrekt zu seinem direkten Elternknoten liegt",
+        "Nein, weil 12 im linken Teilbaum von 10 liegt, aber größer als 10 ist",
+        "Nein, weil 5 nur ein Kind hat",
+        "Ja, weil 15 größer als 10 ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Regel gilt für den GANZEN Teilbaum, nicht nur für direkte Kinder. Alles links von 10 muss kleiner als 10 sein – 12 verletzt das."
+    },
+    {
+      "question": "Was gibt dieser Code für den Baum A(B(D, E), C(-, F)) aus der Lektion aus?",
+      "code": "def blaetter(k):\n    if k is None:\n        return 0\n    if k.links is None and k.rechts is None:\n        return 1\n    return (blaetter(k.links)\n            + blaetter(k.rechts))\n\nprint(blaetter(a))",
+      "options": [
+        "6",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Gezählt werden Knoten ohne Kinder: D, E und F."
+    },
+    {
+      "question": "Wo steht in einem binären Suchbaum der kleinste Wert?",
+      "options": [
+        "Immer in der Wurzel",
+        "Im ganz linken Knoten, den man von der Wurzel aus nur über links erreicht",
+        "Im ersten Blatt der Preorder-Traversierung",
+        "Immer im linken Kind der Wurzel"
+      ],
+      "correctIndex": 1,
+      "explanation": "Links ist immer alles kleiner. Wer von der Wurzel aus so lange nach links geht, bis kein linkes Kind mehr da ist, landet beim Minimum. Das muss kein Blatt sein – es kann noch ein rechtes Kind haben."
+    },
+    {
+      "question": "Ein vollständig gefüllter BST hat 1023 Knoten (Höhe 9). Wie viele Vergleiche braucht eine Suche höchstens?",
+      "options": [
+        "10",
+        "512",
+        "1023",
+        "9"
+      ],
+      "correctIndex": 0,
+      "explanation": "Höhe 9 bedeutet 10 Ebenen (2¹⁰ − 1 = 1023 Knoten). Pro Ebene gibt es höchstens einen Vergleich, also 10."
+    },
+    {
+      "question": "Welche Einfügereihenfolge der Werte 1 bis 7 ergibt OHNE Balancierung einen Baum der Höhe 2?",
+      "options": [
+        "1, 2, 3, 4, 5, 6, 7",
+        "7, 6, 5, 4, 3, 2, 1",
+        "4, 2, 6, 1, 3, 5, 7",
+        "1, 7, 2, 6, 3, 5, 4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Wird zuerst der mittlere Wert 4 eingefügt, dann die Mitten der Hälften (2 und 6), entsteht ein perfekt ausgeglichener Baum. Die anderen Reihenfolgen erzeugen Ketten oder Zickzack-Bäume der Höhe 6."
+    },
+    {
+      "question": "In einen AVL-Baum werden 30, 20, 10 eingefügt. Welcher Wert steht nach dem Rebalancieren in der Wurzel?",
+      "options": [
+        "30",
+        "10",
+        "Der Baum bleibt unverändert",
+        "20"
+      ],
+      "correctIndex": 3,
+      "explanation": "30 bekommt den Balancefaktor −2 (Fall links-links). Eine Rechtsrotation macht 20 zur Wurzel mit 10 links und 30 rechts."
+    },
+    {
+      "question": "Was gibt dieser Code aus (hoehe wie in der Lektion)?",
+      "code": "print(hoehe(None), hoehe(Knoten(7)))",
+      "options": [
+        "-1 0",
+        "0 1",
+        "0 0",
+        "1 1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der leere Baum hat nach dieser Definition Höhe −1, ein einzelner Knoten 1 + max(−1, −1) = 0. So stimmt die Zählung in Kanten."
+    },
+    {
+      "question": "Welche Aussage über AVL-Bäume stimmt?",
+      "options": [
+        "Jeder Knoten hat genau zwei Kinder",
+        "Die Werte werden in Preorder sortiert ausgegeben",
+        "Bei jedem Knoten unterscheiden sich die Höhen der beiden Teilbäume um höchstens 1",
+        "Nach dem Einfügen wird der ganze Baum neu aufgebaut"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Balancefaktor jedes Knotens muss −1, 0 oder 1 sein. Verletzungen werden lokal mit Rotationen behoben, nicht durch Neuaufbau. Sortiert ist – wie bei jedem BST – die Inorder-Reihenfolge."
+    }
+  ]
+}

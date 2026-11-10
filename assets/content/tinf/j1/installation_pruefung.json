@@ -1,0 +1,117 @@
+{
+  "id": "tinf-j1-installation_pruefung",
+  "title": "Abschlussprüfung: Installation, Wartung & Fehlersuche",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was macht Secure Boot?",
+      "options": [
+        "Es verschlüsselt die Festplatte",
+        "Es erlaubt nur das Starten signierter Bootloader",
+        "Es erstellt automatisch Backups",
+        "Es erhöht die Bootgeschwindigkeit durch Übertakten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Secure Boot prüft die Signatur des Bootloaders und schützt so vor Schadsoftware, die vor dem Betriebssystem startet."
+    },
+    {
+      "question": "Warum lässt sich eine 4-TB-Festplatte mit MBR nicht vollständig nutzen?",
+      "options": [
+        "MBR adressiert mit 32 Bit nur 2³² Sektoren à 512 Byte = 2 TiB",
+        "MBR funktioniert nur mit SSDs",
+        "MBR unterstützt nur FAT32",
+        "MBR erlaubt nur eine einzige Partition"
+      ],
+      "correctIndex": 0,
+      "explanation": "2³² · 512 Byte = 2 TiB. Für größere Datenträger braucht man GPT."
+    },
+    {
+      "question": "Du kopierst eine ISO-Datei einfach auf einen USB-Stick. Der PC bootet nicht davon. Warum?",
+      "options": [
+        "Der Stick ist zu klein",
+        "ISO-Dateien sind immer defekt",
+        "Das Image muss mit einem passenden Tool auf den Stick geschrieben werden",
+        "USB-Sticks können grundsätzlich nicht booten"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Bootmedium braucht die richtige Struktur. Ein Erstellungs- oder Image-Schreibprogramm schreibt das Image passend auf den Stick."
+    },
+    {
+      "question": "Nach der Installation hat das WLAN keine Funktion, im Geräte-Manager ist ein gelbes Warnsymbol. Was tust du?",
+      "options": [
+        "Das Betriebssystem neu installieren",
+        "Die WLAN-Karte sofort tauschen",
+        "Das Gerät im UEFI deaktivieren",
+        "Den passenden Treiber über Updates oder die Herstellerseite installieren"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das Warnsymbol deutet auf einen fehlenden Treiber hin – der einfachste Schritt zuerst."
+    },
+    {
+      "question": "Ein PC stürzt nur unter Last (z. B. beim Kompilieren großer Projekte) ab. Welche Ursache ist am wahrscheinlichsten?",
+      "options": [
+        "Falsche Bootreihenfolge",
+        "Überhitzung durch verstaubte Kühler oder ein zu schwaches Netzteil",
+        "Ein fehlender Druckertreiber",
+        "Ein falsches Hintergrundbild"
+      ],
+      "correctIndex": 1,
+      "explanation": "Unter Last steigen Wärme und Stromaufnahme. Staub im Kühler oder ein überfordertes Netzteil sind typische Ursachen."
+    },
+    {
+      "question": "Mit welcher Strategie findest du heraus, ob ein RAM-Modul defekt ist?",
+      "options": [
+        "Minimalkonfiguration und Tauschmethode: Module einzeln testen",
+        "Alle Treiber neu installieren",
+        "Die Festplatte formatieren",
+        "Das Netzwerkkabel tauschen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit nur einem Modul starten und die Module der Reihe nach tauschen grenzt das defekte Teil ein."
+    },
+    {
+      "question": "Vollsicherung 100 GB am Sonntag, Mo–Fr jeweils eine differenzielle Sicherung, täglich kommen 2 GB neue Änderungen dazu. Wie viel Platz brauchen alle Sicherungen zusammen bis Freitag?",
+      "options": [
+        "110 GB",
+        "100 GB",
+        "130 GB",
+        "120 GB"
+      ],
+      "correctIndex": 2,
+      "explanation": "Differenziell wächst: 2 + 4 + 6 + 8 + 10 = 30 GB plus 100 GB Vollsicherung = 130 GB. Inkrementell wären es nur 110 GB."
+    },
+    {
+      "question": "Ein Kollege sagt: „Wir brauchen kein Backup, unsere Daten liegen auf einem RAID mit gespiegelten Platten.“ Was stimmt?",
+      "options": [
+        "Er hat recht, RAID ersetzt jedes Backup",
+        "RAID ist nur bei SSDs ein Backup",
+        "RAID schützt vor Ransomware",
+        "RAID schützt vor Plattenausfall, aber nicht vor Löschen, Ransomware oder Brand"
+      ],
+      "correctIndex": 3,
+      "explanation": "Gelöschte oder verschlüsselte Dateien werden sofort auf alle gespiegelten Platten übertragen. RAID erhöht die Verfügbarkeit, ersetzt aber kein Backup."
+    },
+    {
+      "question": "Warum reicht Überschreiben vom Betriebssystem aus bei einer SSD nicht sicher?",
+      "options": [
+        "Weil SSDs nicht beschrieben werden können",
+        "Weil die SSD durch Wear Leveling intern andere Zellen beschreibt",
+        "Weil SSDs keine Dateisysteme haben",
+        "Weil Überschreiben die SSD sofort zerstört"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Controller verteilt Schreibvorgänge. Alte Daten können in nicht erreichten Zellen verbleiben – daher Secure Erase oder Verschlüsselung."
+    },
+    {
+      "question": "Welche Angabe gehört in eine Inventarliste?",
+      "options": [
+        "Die Seriennummer des Geräts",
+        "Die privaten E-Mails der Nutzer",
+        "Das Passwort des Administrators",
+        "Der Browserverlauf"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Inventarliste enthält Gerätedaten wie Seriennummer, Standort, Kaufdatum und Garantie – keine persönlichen oder geheimen Daten."
+    }
+  ]
+}

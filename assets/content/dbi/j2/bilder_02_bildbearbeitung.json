@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j2-bilder_02_bildbearbeitung",
+  "title": "Bildbearbeitung",
+  "summary": "Bilder zuschneiden, skalieren, mit Ebenen und Auswahlen arbeiten, Tonwerte korrigieren und verantwortungsvoll fürs Web exportieren.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Für Bildbearbeitung gibt es kostenlose Programme wie GIMP oder Krita und kommerzielle wie Adobe Photoshop. Die Werkzeuge heißen überall ähnlich. Goldene Regel: Arbeite nie am Original – speichere zuerst eine Kopie bzw. die Arbeitsdatei im programmeigenen Format (GIMP: XCF, Photoshop: PSD), damit Ebenen erhalten bleiben."
+    },
+    {
+      "type": "text",
+      "content": "Zuschneiden (Crop) entfernt störende Ränder und verbessert den Bildaufbau. Hilfreich ist die Drittelregel: Wichtiges liegt auf den Linien eines 3 × 3-Rasters, nicht genau in der Mitte. Oft brauchst du ein festes Seitenverhältnis, z. B. 16:9 für ein Präsentations- oder Website-Banner."
+    },
+    {
+      "type": "code",
+      "content": "Foto 4000 × 3000 (4:3) → 16:9\nBreite bleibt 4000 Pixel\n\nHöhe = 4000 × 9 / 16\n     = 2250 Pixel\n\n→ oben/unten 750 Pixel wegschneiden"
+    },
+    {
+      "type": "text",
+      "content": "Skalieren ändert die Pixelmaße. Halte das Seitenverhältnis fest (Kettensymbol), sonst werden Gesichter gestaucht. Verkleinern funktioniert gut. Beim Vergrößern muss das Programm fehlende Pixel erfinden (Interpolation) – das Bild wird unscharf, echte Details entstehen nicht."
+    },
+    {
+      "type": "code",
+      "content": "Foto 4000 × 3000 → Breite 1200\n\nFaktor = 1200 / 4000 = 0,3\nHöhe   = 3000 × 0,3  = 900\n\n→ 1200 × 900 Pixel"
+    },
+    {
+      "type": "text",
+      "content": "Ebenen liegen wie Folien übereinander: Hintergrundfoto, darüber Text, darüber ein Logo. Du kannst jede Ebene einzeln verschieben, ausblenden oder in der Deckkraft ändern. Mit einer Ebenenmaske versteckst du Teile einer Ebene, ohne Pixel zu löschen – das nennt man nicht-destruktives Arbeiten."
+    },
+    {
+      "type": "text",
+      "content": "Mit Auswahlwerkzeugen legst du fest, welcher Bereich bearbeitet wird: Rechteck- und Ellipsenauswahl, Lasso (freihändig) und Zauberstab (wählt benachbarte Pixel ähnlicher Farbe, z. B. einen blauen Himmel). Eine weiche Kante sorgt dafür, dass Übergänge nicht hart aussehen."
+    },
+    {
+      "type": "text",
+      "content": "Die Tonwertkorrektur arbeitet mit dem Histogramm, das zeigt, wie viele Pixel welche Helligkeit (0 = Schwarz bis 255 = Weiß) haben. Nutzt ein flaues Foto nur den Bereich 30–220, spreizt du ihn auf 0–255 – der Kontrast steigt."
+    },
+    {
+      "type": "code",
+      "content": "Tonwert spreizen: 30..220 → 0..255\n\nneu = (alt − 30) × 255 / (220 − 30)\n\nalt = 30   → neu = 0\nalt = 125  → neu = 127,5 ≈ 128\nalt = 220  → neu = 255"
+    },
+    {
+      "type": "text",
+      "content": "Ethik und Recht: Rote Augen entfernen ist okay, aber Personen wegretuschieren oder Körper verändern kann täuschen – in Nachrichten ist das tabu, Montagen solltest du kennzeichnen. Beachte das Recht am eigenen Bild und das Urheberrecht. Für den Web-Export: passend verkleinern (z. B. max. 1920 Pixel breit), JPEG/WebP mit ca. 70–85 % Qualität, Metadaten (EXIF, eventuell mit GPS-Ort!) entfernen. Zusammenfassung: Kopie anlegen → zuschneiden → skalieren → korrigieren → exportieren."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Foto mit 3000 × 2000 Pixel wird proportional auf 900 Pixel Breite verkleinert. Wie hoch ist es danach?",
+      "options": [
+        "450 Pixel",
+        "600 Pixel",
+        "675 Pixel",
+        "2000 Pixel"
+      ],
+      "correctIndex": 1,
+      "explanation": "Faktor 900 / 3000 = 0,3. Höhe 2000 × 0,3 = 600 Pixel."
+    },
+    {
+      "question": "Warum wird ein kleines Bild beim starken Vergrößern unscharf?",
+      "options": [
+        "Weil das Programm automatisch JPEG verwendet",
+        "Weil die Farbtiefe sinkt",
+        "Weil fehlende Pixel nur aus Nachbarpixeln berechnet (interpoliert) werden",
+        "Weil das Seitenverhältnis verloren geht"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beim Hochskalieren entstehen keine neuen Details. Das Programm schätzt die neuen Pixel aus den vorhandenen – das Ergebnis wirkt weich und unscharf."
+    },
+    {
+      "question": "Du willst einen gleichmäßig blauen Himmel mit einem Klick auswählen. Welches Werkzeug passt?",
+      "options": [
+        "Zauberstab",
+        "Rechteckauswahl",
+        "Lasso",
+        "Zuschneiden"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Zauberstab wählt zusammenhängende Pixel ähnlicher Farbe aus – ideal für einheitliche Flächen."
+    },
+    {
+      "question": "Was solltest du beim Export eines Handyfotos für die Schulwebsite unbedingt beachten?",
+      "options": [
+        "Als BMP speichern, damit nichts verloren geht",
+        "Originalgröße behalten, damit es scharf ist",
+        "Auf 300 dpi hochrechnen",
+        "Verkleinern, komprimieren und Metadaten wie GPS-Daten entfernen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Fürs Web zählen kleine Dateien und Datenschutz: passende Pixelmaße, JPEG/WebP-Kompression und keine EXIF-Daten mit Aufnahmeort. Die dpi-Angabe ist am Bildschirm egal."
+    }
+  ]
+}

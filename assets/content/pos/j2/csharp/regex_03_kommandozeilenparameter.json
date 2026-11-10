@@ -1,0 +1,91 @@
+{
+  "id": "pos-j2-csharp-regex_03_kommandozeilenparameter",
+  "title": "Kommandozeilenparameter",
+  "summary": "Programmen beim Start Werte mitgeben: args in Top-Level-Programmen, Environment.GetCommandLineArgs und sauberes Auswerten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Programme bekommen ihre Eingaben nicht über Console.ReadLine, sondern direkt beim Start – denk an git commit -m \"Text\" oder dotnet new console. Diese Werte heißen Kommandozeilenparameter (Argumente).\n\nDas hat Vorteile: Das Programm kann ohne Rückfragen in Skripten laufen, und du kannst es mit verschiedenen Eingaben schnell hintereinander starten – etwa einen Notenrechner für mehrere Klassen-Dateien."
+    },
+    {
+      "type": "code",
+      "content": "// Program.cs mit Top-Level-Statements\nConsole.WriteLine($\"Anzahl: {args.Length}\");\nfor (int i = 0; i < args.Length; i++)\n    Console.WriteLine(\n        $\"args[{i}] = {args[i]}\");\n\n// Aufruf: notenrechner noten.csv 5\n// Ausgabe:\n// Anzahl: 2\n// args[0] = noten.csv\n// args[1] = 5"
+    },
+    {
+      "type": "text",
+      "content": "In einem Programm mit Top-Level-Statements steht dir automatisch die Variable args vom Typ string[] zur Verfügung – du musst sie nirgends deklarieren. (Im klassischen Stil ist sie der Parameter von static void Main(string[] args).)\n\nWichtig:\n• Die Argumente werden an Leerzeichen getrennt. Was zusammengehört, setzt du in Anführungszeichen.\n• Alle Argumente sind Strings – Zahlen musst du selbst umwandeln.\n• Ohne Argumente ist args ein leeres Array (Length 0), nicht null.\n• Der Programmname selbst steht nicht in args."
+    },
+    {
+      "type": "code",
+      "content": "> notenrechner noten.csv 5\n  args = { \"noten.csv\", \"5\" }\n\n> notenrechner \"Mathe 2AHIF.csv\"\n  args = { \"Mathe 2AHIF.csv\" }\n\n> dotnet run -- noten.csv 5\n  (alles nach -- geht an dein\n   Programm, nicht an dotnet)"
+    },
+    {
+      "type": "text",
+      "content": "Zum Testen in Visual Studio trägst du die Argumente in den Debug-Einstellungen des Projekts ein (Startprofil, Feld „Befehlszeilenargumente“). Sie landen in der Datei Properties/launchSettings.json unter commandLineArgs.\n\nEine Alternative zu args ist Environment.GetCommandLineArgs(). Diese Methode kannst du überall im Programm aufrufen, z. B. auch in einer Klasse, an die du args nicht übergeben hast. Achtung: Hier ist Element 0 der Name bzw. Pfad des Programms, die eigentlichen Argumente beginnen erst bei Index 1."
+    },
+    {
+      "type": "code",
+      "content": "var alle =\n    Environment.GetCommandLineArgs();\n\nConsole.WriteLine(args.Length);\nConsole.WriteLine(alle.Length);\nConsole.WriteLine(alle[1] == args[0]);\n\n// Aufruf: notenrechner noten.csv\n// Ausgabe:\n// 1\n// 2\n// True"
+    },
+    {
+      "type": "text",
+      "content": "Parameter sauber auswerten heißt:\n1. Nie blind auf args[0] zugreifen – erst args.Length prüfen.\n2. Zahlen mit int.TryParse umwandeln, damit falsche Eingaben nicht zum Absturz führen.\n3. Bei Fehlern eine verständliche Meldung ausgeben und mit return 1; einen Fehlercode zurückgeben. Top-Level-Programme dürfen eine Zahl zurückgeben; 0 bedeutet „alles ok“. Skripte können diesen Exit-Code auswerten.\n4. Optionen wie --stellen=2 lassen sich bequem mit einem regulären Ausdruck erkennen und zerlegen.\n\nDas folgende Programm berechnet einen Notenschnitt. Die Anzahl der Nachkommastellen kann per Option eingestellt werden."
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.RegularExpressions;\n\nint stellen = 1;\nvar noten = new List<int>();\n\nforeach (string a in args)\n{\n    var m = Regex.Match(a,\n        @\"^--stellen=(\\d)$\");\n    if (m.Success)\n        stellen = int.Parse(\n            m.Groups[1].Value);\n    else if (Regex.IsMatch(a, \"^[1-5]$\"))\n        noten.Add(int.Parse(a));\n    else\n    {\n        Console.WriteLine($\"Ungültig: {a}\");\n        return 1;\n    }\n}\n\nif (noten.Count == 0)\n{\n    Console.WriteLine(\"Keine Noten!\");\n    return 1;\n}\ndouble s = noten.Average();\nConsole.WriteLine(Math.Round(s, stellen));\nreturn 0;\n// Aufruf: schnitt 1 2 2 --stellen=2\n// Ausgabe: 1,67"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• args[0] ohne Längenprüfung → IndexOutOfRangeException, sobald jemand das Programm ohne Parameter startet.\n• Bei GetCommandLineArgs vergessen, dass Index 0 der Programmname ist.\n• Pfade mit Leerzeichen ohne Anführungszeichen übergeben – dann werden daraus mehrere Argumente.\n• Bei dotnet run das -- vergessen: Optionen wie --stellen könnte sonst dotnet selbst auswerten wollen.\n\nZusammenfassung: args enthält die Startparameter als string[], GetCommandLineArgs() zusätzlich den Programmnamen an Position 0. Prüfe Anzahl und Format (z. B. mit TryParse oder Regex) und melde Fehler mit einer Meldung und einem Exit-Code ungleich 0."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Das Programm wird so gestartet: schnitt \"1 2\" 3. Welchen Wert hat args.Length?",
+      "options": [
+        "3",
+        "2",
+        "4",
+        "1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Anführungszeichen fassen 1 2 zu einem Argument zusammen. args ist also { \"1 2\", \"3\" } und hat die Länge 2."
+    },
+    {
+      "question": "Program.cs enthält nur Console.WriteLine(args[0]); und wird ohne Parameter gestartet. Was passiert?",
+      "code": "Console.WriteLine(args[0]);",
+      "options": [
+        "Es wird eine leere Zeile ausgegeben",
+        "Es wird null ausgegeben",
+        "Eine IndexOutOfRangeException tritt auf",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ohne Parameter ist args ein leeres Array. Der Zugriff auf Index 0 liegt außerhalb und löst eine IndexOutOfRangeException aus. Daher immer zuerst args.Length prüfen."
+    },
+    {
+      "question": "Was gibt dieser Code aus, wenn das Programm mit prog a b gestartet wird?",
+      "code": "Console.WriteLine(\n    Environment.GetCommandLineArgs().Length);",
+      "options": [
+        "2",
+        "3",
+        "1",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "GetCommandLineArgs liefert zusätzlich zu a und b an Position 0 den Programmnamen – insgesamt 3 Elemente."
+    },
+    {
+      "question": "Wie übergibst du beim Starten mit dotnet run die Datei eingabe.txt an dein Programm?",
+      "options": [
+        "dotnet run eingabe.txt --",
+        "dotnet -- run eingabe.txt",
+        "dotnet run args=eingabe.txt",
+        "dotnet run -- eingabe.txt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Alles nach dem doppelten Bindestrich -- reicht dotnet run unverändert an dein Programm weiter."
+    }
+  ]
+}

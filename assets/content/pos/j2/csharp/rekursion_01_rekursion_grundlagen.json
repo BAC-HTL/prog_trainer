@@ -1,0 +1,91 @@
+{
+  "id": "pos-j2-csharp-rekursion_01_rekursion_grundlagen",
+  "title": "Rekursion: Grundlagen",
+  "summary": "Methoden, die sich selbst aufrufen: Basisfall, Rekursionsschritt und was dabei am Aufrufstapel passiert.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Methode darf sich selbst aufrufen – das nennt man Rekursion. Die Idee: Du löst ein großes Problem, indem du es auf eine kleinere Version desselben Problems zurückführst.\n\nEin Alltagsbeispiel: Du stehst in der Mensa-Schlange und willst wissen, an welcher Stelle du stehst. Du fragst die Person vor dir nach ihrer Position und zählst 1 dazu. Diese fragt wieder ihre Vorderperson – bis die erste Person sagt: „Ich bin Nummer 1.“"
+    },
+    {
+      "type": "code",
+      "content": "static void Countdown(int n)\n{\n    if (n == 0)\n    {\n        Console.WriteLine(\"Start!\");\n        return;\n    }\n    Console.WriteLine(n);\n    Countdown(n - 1);\n}\n\nCountdown(3);\n// Ausgabe:\n// 3\n// 2\n// 1\n// Start!"
+    },
+    {
+      "type": "text",
+      "content": "Jede funktionierende Rekursion braucht zwei Zutaten:\n• Basisfall (Abbruchbedingung): ein so einfacher Fall, dass die Antwort sofort feststeht – ohne weiteren Selbstaufruf. Beim Countdown ist das n == 0.\n• Rekursionsschritt: Die Methode ruft sich mit einem kleineren Problem auf (hier n - 1). So nähert man sich Schritt für Schritt dem Basisfall.\n\nDas klassische Beispiel ist die Fakultät: 5! = 5 · 4 · 3 · 2 · 1 = 120. Rekursiv betrachtet gilt n! = n · (n − 1)! und 1! = 1."
+    },
+    {
+      "type": "code",
+      "content": "static long Fakultaet(int n)\n{\n    // Basisfall\n    if (n <= 1)\n        return 1;\n    // Rekursionsschritt\n    return n * Fakultaet(n - 1);\n}\n\nConsole.WriteLine(Fakultaet(5));\n// Ausgabe: 120"
+    },
+    {
+      "type": "text",
+      "content": "Was passiert dabei im Computer? Jeder Methodenaufruf bekommt einen eigenen Bereich am Aufrufstapel (Call Stack). Dort liegen seine Parameter, lokalen Variablen und die Stelle, an der es danach weitergeht.\n\nRuft sich Fakultaet selbst auf, wird ein neuer Bereich oben auf den Stapel gelegt. Jeder Aufruf hat also sein eigenes n! Erst wenn der Basisfall erreicht ist, werden die Aufrufe von oben nach unten wieder abgebaut und die Ergebnisse zurückgereicht."
+    },
+    {
+      "type": "code",
+      "content": "Fakultaet(3) – Abstieg:\n| Fakultaet(1) |  <- oben\n| Fakultaet(2) |\n| Fakultaet(3) |\n| Hauptprogramm|\n\nAufstieg (Stapel wird abgebaut):\nFakultaet(1) liefert 1\nFakultaet(2) liefert 2 * 1 = 2\nFakultaet(3) liefert 3 * 2 = 6"
+    },
+    {
+      "type": "text",
+      "content": "Code, der nach dem rekursiven Aufruf steht, wird erst beim Aufstieg ausgeführt – also in umgekehrter Reihenfolge. Das ist am Anfang überraschend, lässt sich aber gut beobachten:"
+    },
+    {
+      "type": "code",
+      "content": "static void Zeige(int n)\n{\n    if (n == 0) return;\n    Console.WriteLine($\"rein {n}\");\n    Zeige(n - 1);\n    Console.WriteLine($\"raus {n}\");\n}\n\nZeige(2);\n// Ausgabe:\n// rein 2\n// rein 1\n// raus 1\n// raus 2"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• Basisfall vergessen: Die Methode ruft sich endlos selbst auf, bis der Stapel voll ist und das Programm abstürzt.\n• Problem wird nicht kleiner: z. B. Fakultaet(n) statt Fakultaet(n - 1) – gleicher Effekt.\n• Basisfall wird übersprungen: Mit n - 2 und der Bedingung n == 0 landet ein ungerades n nie bei 0.\n\nZusammenfassung: Rekursion = Basisfall + Rekursionsschritt, der das Problem verkleinert. Jeder Aufruf hat seinen eigenen Platz am Aufrufstapel; nach dem Basisfall laufen die Aufrufe in umgekehrter Reihenfolge zurück."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int Summe(int n)\n{\n    if (n == 0) return 0;\n    return n + Summe(n - 1);\n}\n\nConsole.WriteLine(Summe(4));",
+      "options": [
+        "4",
+        "10",
+        "0",
+        "24"
+      ],
+      "correctIndex": 1,
+      "explanation": "Summe(4) = 4 + Summe(3) = 4 + 3 + Summe(2) = … = 4 + 3 + 2 + 1 + 0 = 10. Der Basisfall n == 0 liefert 0."
+    },
+    {
+      "question": "Was versteht man unter dem Basisfall einer rekursiven Methode?",
+      "options": [
+        "Den ersten Aufruf aus dem Hauptprogramm",
+        "Den Fall mit dem größten Parameterwert",
+        "Die Zeile, in der sich die Methode selbst aufruft",
+        "Den Fall, in dem die Methode ohne weiteren Selbstaufruf ein Ergebnis liefert"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Basisfall ist die Abbruchbedingung: Die Antwort steht direkt fest, es gibt keinen weiteren rekursiven Aufruf. Ohne ihn endet die Rekursion nie."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static void F(int n)\n{\n    if (n > 3) return;\n    F(n + 1);\n    Console.Write(n);\n}\n\nF(1);",
+      "options": [
+        "123",
+        "321",
+        "1234",
+        "4321"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Ausgabe steht nach dem Selbstaufruf. F(1) ruft F(2), F(2) ruft F(3), F(3) ruft F(4), das sofort zurückkehrt. Beim Aufstieg schreibt zuerst F(3), dann F(2), dann F(1): 321."
+    },
+    {
+      "question": "Du rufst Fakultaet(4) auf. Wie viele Aufrufe von Fakultaet liegen im tiefsten Moment gleichzeitig am Aufrufstapel?",
+      "options": [
+        "1",
+        "3",
+        "4",
+        "24"
+      ],
+      "correctIndex": 2,
+      "explanation": "Fakultaet(4), Fakultaet(3), Fakultaet(2) und Fakultaet(1) liegen übereinander, bevor Fakultaet(1) als Basisfall zurückkehrt – also 4 Aufrufe."
+    }
+  ]
+}

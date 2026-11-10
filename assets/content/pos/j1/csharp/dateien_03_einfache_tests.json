@@ -1,0 +1,95 @@
+{
+  "id": "pos-j1-csharp-dateien_03_einfache_tests",
+  "title": "Einfache Tests",
+  "summary": "Methoden mit eigenen Prüf-Methoden und Debug.Assert testen und gute Testfälle inklusive Randfällen auswählen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "„Bei mir hat's funktioniert“ reicht nicht – vor allem nicht, wenn du später etwas am Code änderst. Mit Tests prüfst du systematisch, ob deine Methoden das Richtige tun.\n\nEin Testfall besteht immer aus einer Eingabe und dem erwarteten Ergebnis. Der Test ruft die Methode auf und vergleicht das tatsächliche mit dem erwarteten Ergebnis. Stimmen sie überein, ist der Test bestanden. Wichtig: Das erwartete Ergebnis rechnest du selbst aus (z. B. im Kopf oder auf Papier) – nicht mit dem Programm, das du testen willst."
+    },
+    {
+      "type": "code",
+      "content": "Console.WriteLine(Note(95) == \"Sehr gut\");\nConsole.WriteLine(Note(50) == \"Genügend\");\nConsole.WriteLine(Note(85) == \"Gut\");\n// Ausgabe:\n// True\n// True\n// True\n\nstring Note(int prozent)\n{\n    if (prozent >= 90) return \"Sehr gut\";\n    if (prozent >= 80) return \"Gut\";\n    if (prozent >= 65) return \"Befriedigend\";\n    if (prozent >= 50) return \"Genügend\";\n    return \"Nicht genügend\";\n}"
+    },
+    {
+      "type": "text",
+      "content": "Lauter True-Zeilen sind unübersichtlich: Welcher Test war das noch mal? Besser ist eine eigene Prüf-Methode, die den Testnamen, das erwartete und das tatsächliche Ergebnis ausgibt und mitzählt, wie viele Tests fehlschlagen. Eine lokale Funktion darf dabei auf Variablen zugreifen, die vorher im Hauptprogramm deklariert wurden – hier auf fehler."
+    },
+    {
+      "type": "code",
+      "content": "int fehler = 0;\n\nPruefe(\"95 %\", \"Sehr gut\", Note(95));\nPruefe(\"80 %\", \"Gut\", Note(80));\nPruefe(\"49 %\", \"Nicht genügend\", Note(49));\nConsole.WriteLine($\"{fehler} Fehler\");\n\nvoid Pruefe(string name, string erwartet,\n            string tatsaechlich)\n{\n    if (erwartet == tatsaechlich)\n    {\n        Console.WriteLine($\"OK     {name}\");\n    }\n    else\n    {\n        Console.WriteLine($\"FEHLER {name}: \" +\n            $\"erwartet {erwartet}, \" +\n            $\"war {tatsaechlich}\");\n        fehler++;\n    }\n}\n// Note wie oben"
+    },
+    {
+      "type": "text",
+      "content": "Welche Testfälle sind sinnvoll? Alle Werte zu testen ist unmöglich, deshalb wählst du geschickt aus:\n• Normalfälle – typische Werte aus jedem Bereich, z. B. 95, 70, 30.\n• Randfälle (Grenzwerte) – genau an der Grenze und knapp daneben: 89 und 90, 79 und 80, 49 und 50, außerdem 0 und 100. Hier stecken die meisten Fehler, etwa ein > statt >=.\n• Sonderfälle – leeres Array, nur ein Element, alle Werte gleich, negative Zahlen.\n• Ungültige Eingaben – z. B. -5 oder 120 Prozent: Was soll dann passieren?"
+    },
+    {
+      "type": "code",
+      "content": "// Fehlerhafte Version mit > statt >=:\n//   if (prozent > 80) return \"Gut\";\n\nPruefe(\"81 %\", \"Gut\", Note(81));\nPruefe(\"80 %\", \"Gut\", Note(80));\nPruefe(\"79 %\", \"Befriedigend\", Note(79));\n// Ausgabe:\n// OK     81 %\n// FEHLER 80 %: erwartet Gut,\n//        war Befriedigend\n// OK     79 %\n\n// Nur der Grenzwert 80 deckt den Bug auf!"
+    },
+    {
+      "type": "text",
+      "content": "C# bringt auch ein fertiges Prüf-Werkzeug mit: Debug.Assert(bedingung, meldung) aus dem Namensraum System.Diagnostics. Ist die Bedingung falsch, wird das Programm mit „Assertion failed“, deiner Meldung und der Zeilennummer abgebrochen – läuft der Debugger, hält Visual Studio genau an dieser Stelle an.\n\nAchtung: Debug.Assert wirkt nur im Debug-Build. Im Release-Build werden alle Aufrufe samt Bedingung entfernt. Schreib deshalb nie Code in ein Assert, der unbedingt ausgeführt werden muss."
+    },
+    {
+      "type": "code",
+      "content": "using System.Diagnostics;\n\nint[] a = { 1, 2, 3 };\nint[] leer = { };\nint[] b = { -4, 4 };\n\nDebug.Assert(Summe(a) == 6);\nDebug.Assert(Summe(leer) == 0, \"leer\");\nDebug.Assert(Summe(b) == 0, \"negativ\");\nConsole.WriteLine(\"Alle Tests bestanden\");\n\nint Summe(int[] zahlen)\n{\n    int s = 0;\n    foreach (int z in zahlen)\n    {\n        s += z;\n    }\n    return s;\n}\n// Schlägt ein Assert fehl, z. B.:\n// Process terminated. Assertion failed.\n// leer\n//    at Program.<Main>$(…) in\n//    …\\Program.cs:line 8"
+    },
+    {
+      "type": "text",
+      "content": "Gute Gewohnheiten beim Testen:\n• Lass nach jeder Änderung alle Tests erneut laufen – so merkst du sofort, wenn du etwas kaputt gemacht hast (Regressionstest).\n• Findest du einen Bug, schreib zuerst einen Test, der ihn zeigt, und repariere ihn dann.\n• Ein bestandener Test beweist nicht, dass das Programm fehlerfrei ist – er zeigt nur, dass es für diese Fälle stimmt.\n\nIn größeren Projekten verwendet man Test-Frameworks wie xUnit, NUnit oder MSTest. Die Grundidee ist dieselbe wie bei deiner Pruefe-Methode."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung:\n• Testfall = Eingabe + erwartetes Ergebnis, Vergleich mit dem tatsächlichen Ergebnis.\n• Eigene Prüf-Methoden machen Tests übersichtlich und zählen Fehler.\n• Teste Normal-, Rand- und Sonderfälle – Grenzwerte sind besonders wichtig.\n• Debug.Assert bricht bei falscher Bedingung ab, wirkt aber nur im Debug-Build."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Methode DarfWaehlen(int alter) liefert true ab 16 Jahren. Welches Paar von Testfällen prüft die Grenze am besten?",
+      "options": [
+        "1 und 100",
+        "16 und 17",
+        "15 und 16",
+        "30 und 40"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein guter Grenzwerttest prüft genau an der Grenze (16 → true) und knapp daneben (15 → false). So fällt sofort auf, wenn jemand > statt >= geschrieben hat. 16 und 17 liegen beide auf derselben Seite der Grenze."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int fehler = 0;\nPruefe(Max(3, 7) == 7);\nPruefe(Max(7, 3) == 7);\nPruefe(Max(5, 5) == 5);\nPruefe(Max(-2, -9) == -2);\nConsole.WriteLine(fehler);\n\nvoid Pruefe(bool ok)\n{\n    if (!ok) fehler++;\n}\n\nint Max(int a, int b)\n{\n    if (a > b) return a;\n    if (b > a) return b;\n    return 0;\n}",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Max(3, 7), Max(7, 3) und Max(-2, -9) liefern das Richtige. Bei Max(5, 5) ist weder a > b noch b > a, die Methode liefert 0 statt 5 – dieser Randfall (gleiche Werte) schlägt fehl. fehler ist also 1."
+    },
+    {
+      "question": "Was gibt dieser Code im Release-Build aus?",
+      "code": "using System.Diagnostics;\n\nint zaehler = 0;\nDebug.Assert(++zaehler == 1);\nConsole.WriteLine(zaehler);",
+      "options": [
+        "1",
+        "Assertion failed",
+        "0",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Im Release-Build wird der Debug.Assert-Aufruf samt Bedingung entfernt – auch das ++zaehler. zaehler bleibt 0. Im Debug-Build wäre die Ausgabe 1. Deshalb gehört kein notwendiger Code in ein Assert."
+    },
+    {
+      "question": "Du testest die Methode Durchschnitt(int[] a), die die int-Summe durch a.Length teilt. Welcher Testfall ist ein wichtiger Sonderfall?",
+      "options": [
+        "{ 1, 2, 3 }",
+        "{ 2, 4, 6, 8 }",
+        "{ 10, 20 }",
+        "{ } – ein leeres Array"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei einem leeren Array ist a.Length = 0. Die ganzzahlige Division durch 0 löst eine DivideByZeroException aus. Die anderen drei Arrays sind alles Normalfälle desselben Typs – sie decken keinen neuen Fehler auf."
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "id": "pos-j2-theorie-uml_pruefung",
+  "title": "Abschlussprüfung: UML – Objekt- & Klassendiagramme",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Person ist mit {abstract} markiert, Schueler erbt von Person. Welcher Objekt-Kopf darf in einem Objektdiagramm vorkommen?",
+      "options": [
+        "p : Person",
+        ": Person",
+        "s : Schueler",
+        "Schueler : Person"
+      ],
+      "correctIndex": 2,
+      "explanation": "Von einer abstrakten Klasse gibt es keine direkten Objekte, auch keine anonymen. Ein Schueler-Objekt ist erlaubt (und ist zugleich eine Person). „Schueler : Person“ würde ein Objekt namens Schueler bedeuten."
+    },
+    {
+      "question": "Welche Aussage über Objekt- und Klassendiagramme stimmt?",
+      "options": [
+        "Ein Objektdiagramm ist eine Momentaufnahme konkreter Objekte, ein Klassendiagramm beschreibt den Aufbau aller Objekte einer Klasse.",
+        "Ein Klassendiagramm zeigt die aktuellen Attributwerte.",
+        "Ein Objektdiagramm enthält die Methoden der Objekte.",
+        "Objektdiagramme gibt es nur für abstrakte Klassen."
+      ],
+      "correctIndex": 0,
+      "explanation": "Klassendiagramm = Bauplan (Typen, Methoden), Objektdiagramm = Schnappschuss (konkrete Werte, Links, keine Methoden)."
+    },
+    {
+      "question": "Welche Situation in einem Objektdiagramm widerspricht diesem Modell (KV = Klassenvorstand)?",
+      "code": "+--------+ 1   KV   0..1 +--------+\n| Lehrer |---------------| Klasse |\n+--------+               +--------+",
+      "options": [
+        "Ein Lehrer ist KV von keiner Klasse.",
+        "Ein Lehrer ist KV von zwei Klassen.",
+        "Jede Klasse hat genau einen KV.",
+        "Fünf Lehrer sind KV von je einer Klasse."
+      ],
+      "correctIndex": 1,
+      "explanation": "0..1 steht bei Klasse: Ein Lehrer ist KV von höchstens einer Klasse. Die 1 bei Lehrer heißt: Jede Klasse hat genau einen KV. Lehrer ohne Klasse sind erlaubt."
+    },
+    {
+      "question": "Welche Zeile beschreibt korrekt eine private Methode pruefe, die einen String text bekommt und einen Wahrheitswert liefert?",
+      "options": [
+        "- bool pruefe(String text)",
+        "+ pruefe(text : String) : bool",
+        "- pruefe(String : text) : bool",
+        "- pruefe(text : String) : bool"
+      ],
+      "correctIndex": 3,
+      "explanation": "private = -, Parameter als „name : Typ“, Rückgabetyp nach der Klammer."
+    },
+    {
+      "question": "Auf welches Attribut darf eine Unterklasse direkt zugreifen, eine beliebige fremde Klasse aber nicht?",
+      "options": [
+        "+ id : int",
+        "- pin : String",
+        "# saldo : double",
+        "~ code : int"
+      ],
+      "correctIndex": 2,
+      "explanation": "protected (#) ist für die Klasse und ihre Unterklassen sichtbar. + ist für alle sichtbar, - nur für die Klasse selbst, ~ für alle Klassen im selben Paket – unabhängig von Vererbung."
+    },
+    {
+      "question": "Du modellierst diesen Code als Assoziation zwischen Klasse und Schueler. Welche Multiplizität steht beim Ende Schueler?",
+      "code": "// C#\nclass Klasse\n{\n    private List<Schueler> schueler\n        = new();\n}\n\n# Python\nclass Klasse:\n    def __init__(self):\n        self.__schueler = []",
+      "options": [
+        "1",
+        "*",
+        "0..1",
+        "2"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine Liste kann beliebig viele (auch 0) Schueler-Objekte enthalten – also *. Ein einzelnes Attribut vom Typ Schueler wäre 1 bzw. 0..1."
+    },
+    {
+      "question": "Was gilt für eine Komposition?",
+      "options": [
+        "Ein Teil kann gleichzeitig zu mehreren Ganzen gehören.",
+        "Sie wird mit einer leeren Raute beim Teil gezeichnet.",
+        "Sie ist eine andere Schreibweise für Vererbung.",
+        "Ein Teil gehört zu genau einem Ganzen; wird das Ganze gelöscht, verschwinden auch seine Teile."
+      ],
+      "correctIndex": 3,
+      "explanation": "Komposition = starke Teil-Ganzes-Beziehung mit gemeinsamer Lebensdauer, gezeichnet mit voller Raute beim Ganzen."
+    },
+    {
+      "question": "Wie wird eine Vererbung zwischen Schueler (Unterklasse) und Person (Oberklasse) gezeichnet?",
+      "options": [
+        "Von Person zu Schueler, Dreieck bei Schueler",
+        "Gestrichelt von Schueler zu Person, volle Raute bei Person",
+        "Durchgezogen von Schueler zu Person, leeres Dreieck bei Person",
+        "Durchgezogen mit voller Raute bei Person"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Unterklasse „zeigt“ auf ihre Oberklasse: durchgezogene Linie, leeres Dreieck an der Oberklasse."
+    },
+    {
+      "question": "Die Klasse Drucker realisiert das «interface» Druckbar mit der Methode + drucken(). Was gilt?",
+      "options": [
+        "Drucker muss drucken() selbst implementieren.",
+        "Druckbar liefert den Code von drucken(), Drucker erbt ihn.",
+        "Von Druckbar kann man direkt Objekte erzeugen.",
+        "Drucker darf außer drucken() keine weiteren Methoden haben."
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Interface schreibt nur vor, welche Methoden existieren müssen. Die Umsetzung liefert die realisierende Klasse; weitere Methoden darf sie zusätzlich haben."
+    },
+    {
+      "question": "Ein Auto hat genau 4 Räder. Ein Rad gehört zu höchstens einem Auto, kann aber ausgebaut werden und existiert dann weiter. Welches Modell passt?",
+      "options": [
+        "Auto ◆—— Rad, bei Auto 1, bei Rad 4",
+        "Auto ◇—— Rad, bei Auto 4, bei Rad 0..1",
+        "Rad erbt von Auto (Vererbung)",
+        "Auto ◇—— Rad, bei Auto 0..1, bei Rad 4"
+      ],
+      "correctIndex": 3,
+      "explanation": "Räder überleben das Auto → Aggregation (leere Raute beim Auto). Ein Rad hat 0..1 Autos (steht beim Auto), ein Auto 4 Räder (steht beim Rad)."
+    }
+  ]
+}

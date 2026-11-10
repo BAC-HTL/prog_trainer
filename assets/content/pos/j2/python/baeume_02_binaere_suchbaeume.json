@@ -1,0 +1,95 @@
+{
+  "id": "pos-j2-python-baeume_02_binaere_suchbaeume",
+  "title": "Binäre Suchbäume",
+  "summary": "Werte in einem binären Suchbaum einfügen und suchen – und abschätzen, wie schnell das geht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein binärer Suchbaum (BST, Binary Search Tree) ist ein Binärbaum mit einer Ordnungsregel: Für JEDEN Knoten gilt, dass alle Werte im linken Teilbaum kleiner und alle Werte im rechten Teilbaum größer sind. (Doppelte Werte lassen wir hier weg.) Das ist die Idee der Binärsuche – nur als Baum, in den du jederzeit neue Werte einfügen kannst."
+    },
+    {
+      "type": "code",
+      "content": "        50\n       /  \\\n     30    70\n    /  \\     \\\n   20  40     80"
+    },
+    {
+      "type": "text",
+      "content": "Suchen: Du startest bei der Wurzel. Ist der gesuchte Wert kleiner, gehst du nach links, ist er größer, nach rechts. Triffst du ihn, bist du fertig. Landest du bei None, ist der Wert nicht im Baum. Bei jedem Schritt fällt ein ganzer Teilbaum weg."
+    },
+    {
+      "type": "code",
+      "content": "def suchen(k, x):\n    if k is None:\n        return False\n    if x == k.wert:\n        return True\n    if x < k.wert:\n        return suchen(k.links, x)\n    return suchen(k.rechts, x)\n\nprint(suchen(wurzel, 40))  # True\nprint(suchen(wurzel, 60))  # False"
+    },
+    {
+      "type": "text",
+      "content": "Einfügen: Du gehst denselben Weg wie beim Suchen. Wo du auf None stößt, hängst du einen neuen Knoten als Blatt an. Die rekursive Funktion liefert jeweils die (eventuell neue) Wurzel des Teilbaums zurück. Darum musst du das Ergebnis immer zuweisen: wurzel = einfuegen(wurzel, x). Vergisst du das beim ersten Einfügen, bleibt wurzel None."
+    },
+    {
+      "type": "code",
+      "content": "class Knoten:\n    def __init__(self, wert):\n        self.wert = wert\n        self.links = None\n        self.rechts = None\n\ndef einfuegen(k, x):\n    if k is None:\n        return Knoten(x)\n    if x < k.wert:\n        k.links = einfuegen(k.links, x)\n    elif x > k.wert:\n        k.rechts = einfuegen(k.rechts, x)\n    return k\n\nwurzel = None\nfor x in [50, 30, 70, 20, 40, 80]:\n    wurzel = einfuegen(wurzel, x)\n\nprint(wurzel.links.rechts.wert)  # 40"
+    },
+    {
+      "type": "text",
+      "content": "Eine praktische Eigenschaft: Die Inorder-Traversierung (links – Wurzel – rechts) liefert die Werte eines BST immer SORTIERT. Das kleinste Element findest du, indem du von der Wurzel aus immer nach links gehst, das größte immer nach rechts."
+    },
+    {
+      "type": "code",
+      "content": "def inorder(k, erg):\n    if k is not None:\n        inorder(k.links, erg)\n        erg.append(k.wert)\n        inorder(k.rechts, erg)\n    return erg\n\nprint(inorder(wurzel, []))\n# [20, 30, 40, 50, 70, 80]\n\nk = wurzel\nwhile k.links is not None:\n    k = k.links\nprint(k.wert)   # 20 (Minimum)"
+    },
+    {
+      "type": "text",
+      "content": "Laufzeit: Suchen und Einfügen brauchen höchstens so viele Vergleiche, wie der Baum Ebenen hat (Höhe + 1). Ist der Baum gleichmäßig gefüllt, ist die Höhe etwa log₂(n): Bei rund einer Million Werten reichen etwa 20 Vergleiche. Ist der Baum aber einseitig, kann es bis zu n Vergleiche dauern – mehr dazu in der nächsten Lektion. Löschen ist übrigens aufwendiger, weil ein Knoten mit zwei Kindern durch einen passenden Nachfolger ersetzt werden muss."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Im BST ist links alles kleiner, rechts alles größer. Suchen und Einfügen folgen einem einzigen Pfad von der Wurzel nach unten. Inorder liefert die Werte sortiert. Die Geschwindigkeit hängt von der Höhe ab: gut bei ausgeglichenen, schlecht bei einseitigen Bäumen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Die Werte 8, 3, 10, 1, 6 werden der Reihe nach in einen leeren BST eingefügt. Welcher Knoten ist das rechte Kind von 3?",
+      "code": "wurzel = None\nfor x in [8, 3, 10, 1, 6]:\n    wurzel = einfuegen(wurzel, x)\nprint(wurzel.links.rechts.wert)",
+      "options": [
+        "10",
+        "6",
+        "1",
+        "8"
+      ],
+      "correctIndex": 1,
+      "explanation": "8 wird Wurzel, 3 kommt links, 10 rechts. 1 ist kleiner als 8 und 3 → links von 3. 6 ist kleiner als 8, aber größer als 3 → rechts von 3."
+    },
+    {
+      "question": "Was gibt dieser Code aus (einfuegen und inorder wie in der Lektion)?",
+      "code": "wurzel = None\nfor x in [5, 2, 8, 1, 9]:\n    wurzel = einfuegen(wurzel, x)\nprint(inorder(wurzel, []))",
+      "options": [
+        "[5, 2, 8, 1, 9]",
+        "[9, 8, 5, 2, 1]",
+        "[1, 2, 5, 8, 9]",
+        "[1, 2, 9, 8, 5]"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Inorder-Traversierung eines binären Suchbaums liefert die Werte immer aufsteigend sortiert – unabhängig von der Einfügereihenfolge."
+    },
+    {
+      "question": "Im Baum aus der Lektion (Wurzel 50, links 30 mit 20 und 40, rechts 70 mit 80) wird 40 gesucht. Mit wie vielen Knoten wird verglichen?",
+      "options": [
+        "3",
+        "2",
+        "4",
+        "6"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Weg führt über 50 (40 ist kleiner → links), 30 (40 ist größer → rechts) zu 40. Das sind 3 Vergleiche."
+    },
+    {
+      "question": "Welche Aussage über die Laufzeit des Suchens in einem BST mit n Werten stimmt?",
+      "options": [
+        "Es dauert immer genau n Schritte",
+        "Es dauert immer genau log₂(n) Schritte",
+        "Die Laufzeit ist unabhängig von der Form des Baums",
+        "Sie hängt von der Höhe ab: etwa log₂(n) bei ausgeglichenen, bis zu n bei einseitigen Bäumen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Gesucht wird entlang eines Pfads von der Wurzel nach unten. Wie lang dieser Pfad höchstens ist, bestimmt die Höhe des Baums."
+    }
+  ]
+}

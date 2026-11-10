@@ -1,0 +1,124 @@
+{
+  "id": "pos-j2-python-rekursion_pruefung",
+  "title": "Abschlussprüfung: Rekursion",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def f(s):\n    if s == \"\":\n        return \"\"\n    return f(s[1:]) + s[0]\n\nprint(f(\"HTL\"))",
+      "options": [
+        "HTL",
+        "TLH",
+        "LTH",
+        "L"
+      ],
+      "correctIndex": 2,
+      "explanation": "f(\"HTL\") = f(\"TL\") + \"H\" = (f(\"L\") + \"T\") + \"H\" = \"L\" + \"T\" + \"H\". Die Funktion dreht den Text um."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def f(n):\n    if n == 0:\n        return\n    print(n, end=\" \")\n    f(n - 1)\n    print(n, end=\" \")\n\nf(2)",
+      "options": [
+        "2 1 1 2",
+        "2 1 2 1",
+        "1 2 2 1",
+        "2 1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das erste print läuft auf dem Weg hinein (2, 1), das zweite auf dem Weg hinaus in umgekehrter Reihenfolge (1, 2)."
+    },
+    {
+      "question": "Welche Aussage zu dieser Funktion stimmt?",
+      "code": "def summe(liste, acc=0):\n    if not liste:\n        return acc\n    return summe(liste[1:],\n                 acc + liste[0])",
+      "options": [
+        "Sie ist nicht endrekursiv, weil sie einen Akkumulator hat",
+        "Python wandelt sie automatisch in eine Schleife um",
+        "Sie liefert immer 0",
+        "Sie ist endrekursiv, kann bei sehr langen Listen aber trotzdem einen RecursionError auslösen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der rekursive Aufruf ist die letzte Aktion, also ist sie endrekursiv. Python optimiert das aber nicht – jede Ebene belegt weiterhin Platz auf dem Aufrufstapel."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert bei countdown(3)?",
+      "code": "def countdown(n):\n    if n == 0:\n        print(\"Los!\")\n    else:\n        print(n)\n        countdown(n)\n\ncountdown(3)",
+      "options": [
+        "Es wird 3, 2, 1, Los! ausgegeben",
+        "Es wird mehrmals 3 ausgegeben, dann folgt ein RecursionError",
+        "Es wird nur Los! ausgegeben",
+        "SyntaxError, weil return fehlt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Im Rekursionsschritt wird countdown(n) statt countdown(n - 1) aufgerufen. n wird nie kleiner, der Basisfall nie erreicht."
+    },
+    {
+      "question": "Wie oft wird fib insgesamt aufgerufen, wenn du fib(4) mit der naiven Version (zwei rekursive Aufrufe, Basisfall n < 2) berechnest?",
+      "options": [
+        "4",
+        "5",
+        "9",
+        "16"
+      ],
+      "correctIndex": 2,
+      "explanation": "Aufrufe(n) = 1 + Aufrufe(n − 1) + Aufrufe(n − 2) mit Aufrufe(0) = Aufrufe(1) = 1. Also Aufrufe(2) = 3, Aufrufe(3) = 5, Aufrufe(4) = 1 + 5 + 3 = 9."
+    },
+    {
+      "question": "Wie oft wird potenz aufgerufen (den ersten Aufruf mitgezählt)?",
+      "code": "def potenz(x, n):\n    if n == 0:\n        return 1\n    if n % 2 == 0:\n        h = potenz(x, n // 2)\n        return h * h\n    return x * potenz(x, n - 1)\n\npotenz(2, 8)",
+      "options": [
+        "8",
+        "5",
+        "4",
+        "3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Aufrufe sind potenz(2, 8), (2, 4), (2, 2), (2, 1) und (2, 0) – also 5. Bei 2, 4 und 8 wird halbiert, bei 1 wird um eins verringert."
+    },
+    {
+      "question": "Eine sortierte Liste hat 1000 Elemente. Wie viele Vergleiche mit der Mitte braucht die Binärsuche im schlimmsten Fall ungefähr?",
+      "options": [
+        "ca. 10",
+        "500",
+        "1000",
+        "ca. 100"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jeder Schritt halbiert den Suchbereich: 1000 → 500 → 250 → … → 1. Das sind etwa log₂(1000) ≈ 10 Schritte."
+    },
+    {
+      "question": "Was ist der ERSTE Zug, den dieser Code ausgibt?",
+      "code": "def hanoi(n, von, nach, hilf):\n    if n == 0:\n        return\n    hanoi(n - 1, von, hilf, nach)\n    print(von, \"->\", nach)\n    hanoi(n - 1, hilf, nach, von)\n\nhanoi(2, \"A\", \"C\", \"B\")",
+      "options": [
+        "A -> C",
+        "B -> C",
+        "C -> B",
+        "A -> B"
+      ],
+      "correctIndex": 3,
+      "explanation": "hanoi(2, A, C, B) ruft zuerst hanoi(1, A, B, C) auf – die kleinste Scheibe kommt also zuerst von A auf den Hilfsstab B."
+    },
+    {
+      "question": "Was liefert f(5)?",
+      "code": "def f(n, acc=1):\n    if n == 0:\n        return acc\n    return f(n - 1, acc * 2)\n\nprint(f(5))",
+      "options": [
+        "10",
+        "25",
+        "32",
+        "64"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Akkumulator wird fünfmal verdoppelt: 1 → 2 → 4 → 8 → 16 → 32."
+    },
+    {
+      "question": "fakultaet(3) wurde aufgerufen. Welche Aufrufe liegen gerade auf dem Aufrufstapel, während fakultaet(1) läuft?",
+      "options": [
+        "Nur fakultaet(1)",
+        "fakultaet(3), fakultaet(2) und fakultaet(1)",
+        "fakultaet(1) und fakultaet(0)",
+        "Keine, das Ergebnis 6 steht schon fest"
+      ],
+      "correctIndex": 1,
+      "explanation": "fakultaet(3) und fakultaet(2) warten noch auf das Ergebnis ihres inneren Aufrufs. Erst wenn fakultaet(1) fertig ist, werden sie der Reihe nach vom Stapel genommen."
+    }
+  ]
+}

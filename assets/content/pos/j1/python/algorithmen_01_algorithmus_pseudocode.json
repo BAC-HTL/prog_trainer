@@ -1,0 +1,95 @@
+{
+  "id": "pos-j1-python-algorithmen_01_algorithmus_pseudocode",
+  "title": "Algorithmus und Pseudocode",
+  "summary": "Was einen Algorithmus ausmacht und wie du ihn mit Pseudocode unabhängig von der Programmiersprache beschreibst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Algorithmus ist eine eindeutige, endliche Folge von Schritten, die ein Problem löst. Du kennst das aus dem Alltag: ein Kochrezept, die Wegbeschreibung zur Schule oder die Anleitung für den Kaffeeautomaten im Schulhaus. Ein Computer braucht aber viel genauere Anweisungen als ein Mensch – „ein bisschen Salz“ versteht er nicht."
+    },
+    {
+      "type": "text",
+      "content": "Damit eine Handlungsvorschrift als Algorithmus gilt, muss sie bestimmte Eigenschaften haben:\n• Finitheit – die Beschreibung ist endlich lang\n• Ausführbarkeit – jeder Schritt ist tatsächlich durchführbar\n• Eindeutigkeit – nach jedem Schritt ist klar, welcher als Nächstes kommt\n• Terminiertheit – der Algorithmus endet nach endlich vielen Schritten\n• Determiniertheit – gleiche Eingabe liefert immer das gleiche Ergebnis\n• Allgemeinheit – er löst eine ganze Klasse von Aufgaben, nicht nur einen Einzelfall"
+    },
+    {
+      "type": "text",
+      "content": "Bevor du programmierst, beschreibst du den Ablauf oft in Pseudocode. Das ist eine halbformale Schreibweise ohne feste Syntax, die jede:r lesen kann – egal ob du später in Python oder C# programmierst. Üblich sind Schlüsselwörter wie EINGABE, AUSGABE, WENN … DANN … SONST, SOLANGE, FÜR i VON … BIS … sowie ← für die Zuweisung. MOD steht für den Rest einer Division (in Python %)."
+    },
+    {
+      "type": "code",
+      "content": "ALGORITHMUS Maximum\nEINGABE: Liste zahlen (nicht leer)\nmax ← zahlen[0]\nFÜR JEDES z IN zahlen\n    WENN z > max DANN\n        max ← z\n    ENDE WENN\nENDE FÜR\nAUSGABE: max"
+    },
+    {
+      "type": "text",
+      "content": "Aus gutem Pseudocode wird das Programm fast Zeile für Zeile. Beachte: In Python solltest du die Variable nicht max nennen, weil du damit die eingebaute Funktion max() überdeckst. ENDE WENN und ENDE FÜR entsprechen in Python dem Ende der Einrückung."
+    },
+    {
+      "type": "code",
+      "content": "def maximum(zahlen):\n    max_wert = zahlen[0]\n    for z in zahlen:\n        if z > max_wert:\n            max_wert = z\n    return max_wert\n\nprint(maximum([3, 9, 4, 7]))  # 9\nprint(maximum([-5, -2, -8]))  # -2"
+    },
+    {
+      "type": "text",
+      "content": "Ein klassisches Beispiel ist der Algorithmus von Euklid für den größten gemeinsamen Teiler (ggT). Mit einer Tracetabelle (Schreibtischtest) spielst du ihn auf Papier durch: Pro Schleifendurchlauf notierst du die Werte aller Variablen. So findest du Fehler, bevor du überhaupt einen Computer brauchst."
+    },
+    {
+      "type": "code",
+      "content": "ALGORITHMUS ggT\nEINGABE: a, b (ganze Zahlen > 0)\nSOLANGE a ≠ b\n    WENN a > b DANN\n        a ← a - b\n    SONST\n        b ← b - a\n    ENDE WENN\nENDE SOLANGE\nAUSGABE: a\n\nTracetabelle für a = 12, b = 18:\nSchritt |  a |  b\n--------+----+----\nStart   | 12 | 18\n1       | 12 |  6\n2       |  6 |  6\nAusgabe: 6"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Schritte sind unpräzise („nimm die passende Zahl“), Sonderfälle werden vergessen (leere Liste beim Maximum) oder die Vorbedingung wird verletzt. Gibst du beim ggT a = 0 ein, wird immer b ← b − 0 gerechnet – die Schleife endet nie, die Terminiertheit ist verletzt. Darum gehört die Vorbedingung („> 0“) zur EINGABE dazu."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Algorithmus ist eine endliche, eindeutige und ausführbare Schrittfolge, die terminiert. Pseudocode beschreibt ihn sprachunabhängig, die Tracetabelle hilft beim Überprüfen. Erst denken, dann programmieren!"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Eigenschaft eines Algorithmus verletzt dieser Pseudocode?",
+      "code": "x ← 1\nSOLANGE x > 0\n    x ← x + 1\nENDE SOLANGE\nAUSGABE: x",
+      "options": [
+        "Eindeutigkeit",
+        "Ausführbarkeit",
+        "Finitheit",
+        "Terminiertheit"
+      ],
+      "correctIndex": 3,
+      "explanation": "x startet bei 1 und wird nur größer. Die Bedingung x > 0 bleibt immer wahr, die Schleife endet nie. Die Beschreibung selbst ist endlich (Finitheit erfüllt), aber der Ablauf terminiert nicht."
+    },
+    {
+      "question": "Der ggT-Algorithmus von Euklid (mit Subtraktion) wird mit a = 8 und b = 20 gestartet. Was wird ausgegeben?",
+      "options": [
+        "2",
+        "4",
+        "8",
+        "12"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ablauf: (8, 20) → b ← 12 → (8, 12) → b ← 4 → (8, 4) → a ← 4 → (4, 4). Jetzt ist a = b, Ausgabe 4. Tatsächlich ist 4 der ggT von 8 und 20."
+    },
+    {
+      "question": "Wie schreibst du die Pseudocode-Zeile „FÜR i VON 1 BIS 5“ in Python?",
+      "options": [
+        "for i in range(1, 5):",
+        "for i in range(5):",
+        "for i in range(1, 6):",
+        "for i in range(0, 5):"
+      ],
+      "correctIndex": 2,
+      "explanation": "Im Pseudocode ist BIS inklusive, also 1, 2, 3, 4, 5. Bei range() ist die Obergrenze exklusiv – du brauchst daher range(1, 6)."
+    },
+    {
+      "question": "Was gibt dieser Pseudocode aus?",
+      "code": "summe ← 0\nFÜR i VON 1 BIS 4\n    WENN i MOD 2 = 0 DANN\n        summe ← summe + i\n    ENDE WENN\nENDE FÜR\nAUSGABE: summe",
+      "options": [
+        "10",
+        "4",
+        "9",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur gerade i (Rest 0 bei Division durch 2) werden addiert: 2 + 4 = 6."
+    }
+  ]
+}

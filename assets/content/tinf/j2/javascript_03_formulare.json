@@ -1,0 +1,94 @@
+{
+  "id": "tinf-j2-javascript_03_formulare",
+  "title": "Formulare mit JavaScript",
+  "summary": "Eingaben aus Formularen lesen, prüfen und das Neuladen der Seite verhindern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Formulare sammeln Eingaben, z. B. die Anmeldung zum Tag der offenen Tür. Ein <form> enthält Eingabefelder (<input>, <select>, <textarea>) und einen Absende-Button. Jedes Feld bekommt ein <label> – über for und id sind beide verbunden. So kannst du auch auf die Beschriftung klicken, und Screenreader lesen sie vor.\n\nMit dem type wählst du die Art des Felds: text, email, number, checkbox usw. Am Handy erscheint dann die passende Tastatur."
+    },
+    {
+      "type": "code",
+      "content": "<form id=\"anmeldung\">\n  <label for=\"name\">Name</label>\n  <input id=\"name\" required>\n\n  <label for=\"alter\">Alter</label>\n  <input id=\"alter\" type=\"number\"\n    min=\"10\" max=\"20\">\n\n  <label>\n    <input id=\"kommt\"\n      type=\"checkbox\"> Ich komme\n  </label>\n\n  <button type=\"submit\">\n    Senden</button>\n  <p id=\"meldung\"></p>\n</form>"
+    },
+    {
+      "type": "text",
+      "content": "Beim Absenden schickt der Browser das Formular normalerweise an den Server und lädt die Seite neu. Willst du die Daten selbst mit JavaScript verarbeiten, horchst du auf das submit-Event des Formulars (nicht auf click beim Button – so funktioniert auch das Absenden mit Enter) und rufst event.preventDefault() auf. Das verhindert das Standardverhalten, also das Neuladen."
+    },
+    {
+      "type": "code",
+      "content": "const form =\n  document.querySelector(\"#anmeldung\");\n\nform.addEventListener(\"submit\",\n  (event) => {\n    event.preventDefault();\n    console.log(\"Kein Neuladen!\");\n  });"
+    },
+    {
+      "type": "text",
+      "content": "Den Inhalt eines Felds liest du mit .value. Achtung: value ist IMMER ein String – auch bei type=\"number\". Zum Rechnen wandelst du mit Number() um. Ein leeres Feld ergibt dabei 0, Text wie \"abc\" ergibt NaN (Not a Number). Mit Number.isNaN() prüfst du darauf. trim() entfernt Leerzeichen am Anfang und Ende.\n\nBei Checkboxen liest du .checked (true oder false) statt value."
+    },
+    {
+      "type": "code",
+      "content": "console.log(\"3\" + \"4\");     // \"34\"\nconsole.log(Number(\"17\"));  // 17\nconsole.log(Number(\"\"));    // 0 (!)\nconsole.log(Number(\"abc\")); // NaN\nconsole.log(Number(\"3,5\")); // NaN\nconsole.log(Number(\"3.5\")); // 3.5\n\nconsole.log(\n  Number.isNaN(Number(\"abc\")));\n// true\nconsole.log(\"  Lea \".trim());\n// \"Lea\""
+    },
+    {
+      "type": "text",
+      "content": "Validierung heißt: Eingaben prüfen, bevor du sie verwendest. HTML-Attribute wie required, min, max und type=\"email\" lassen den Browser schon vieles prüfen. Für eigene Regeln schreibst du eine Funktion, die eine Liste von Fehlermeldungen zurückgibt – ist sie leer, passt alles. So eine Funktion kannst du ohne Browser testen.\n\nWichtig: Prüfen im Browser ist nur Komfort für die Benutzer:innen. JavaScript lässt sich abschalten oder umgehen. Der Server muss die Daten deshalb immer noch einmal selbst prüfen."
+    },
+    {
+      "type": "code",
+      "content": "function validiere(name, alter) {\n  const fehler = [];\n  if (name.trim() === \"\") {\n    fehler.push(\"Name fehlt\");\n  }\n  if (Number.isNaN(alter) ||\n      alter < 10 || alter > 20) {\n    fehler.push(\"Alter 10–20\");\n  }\n  return fehler;\n}\n\nconsole.log(validiere(\" \", 25));\n// [\"Name fehlt\", \"Alter 10–20\"]\nconsole.log(validiere(\"Lea\", 16));\n// []"
+    },
+    {
+      "type": "code",
+      "content": "form.addEventListener(\"submit\",\n  (event) => {\n  event.preventDefault();\n  const name = document\n    .querySelector(\"#name\").value;\n  const alter = Number(document\n    .querySelector(\"#alter\").value);\n  const meldung = document\n    .querySelector(\"#meldung\");\n\n  const fehler =\n    validiere(name, alter);\n  if (fehler.length > 0) {\n    meldung.textContent =\n      fehler.join(\", \");\n    meldung.classList.add(\"fehler\");\n  } else {\n    meldung.textContent =\n      \"Danke, \" + name + \"!\";\n    meldung.classList\n      .remove(\"fehler\");\n  }\n});"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: preventDefault() vergessen (die Seite lädt neu und deine Meldung verschwindet sofort), value-Strings addieren statt Zahlen, ein leeres Feld mit Number() prüfen (ergibt 0, nicht NaN!) und sich nur auf die Prüfung im Browser verlassen.\n\nZusammenfassung: Auf submit des Formulars reagieren, mit preventDefault() das Neuladen verhindern, Werte mit .value (bzw. .checked) lesen, umwandeln, validieren und Fehler mit textContent anzeigen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was liefert Number(\"\") – also die Umwandlung eines leeren Eingabefelds?",
+      "options": [
+        "NaN",
+        "undefined",
+        "\"\"",
+        "0"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein leerer String wird zu 0. Deshalb prüfst du leere Felder besser mit value.trim() === \"\" statt mit Number.isNaN()."
+    },
+    {
+      "question": "Wozu dient event.preventDefault() im submit-Listener?",
+      "options": [
+        "Es verhindert, dass der Browser das Formular abschickt und die Seite neu lädt",
+        "Es löscht alle Eingaben im Formular",
+        "Es prüft die required-Felder",
+        "Es verhindert, dass Benutzer:innen tippen können"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Standardverhalten beim Absenden ist das Senden an den Server mit Neuladen. preventDefault() unterdrückt das, damit dein JavaScript die Daten verarbeiten kann."
+    },
+    {
+      "question": "Die Felder enthalten 12 und 5. Was gibt der Code aus?",
+      "code": "const a = feldA.value; // \"12\"\nconst b = feldB.value; // \"5\"\nconsole.log(a + b, a - b);",
+      "options": [
+        "17 7",
+        "125 7",
+        "125 NaN",
+        "17 125"
+      ],
+      "correctIndex": 1,
+      "explanation": "value ist immer ein String. + hängt Strings zusammen (\"125\"), - wandelt in Zahlen um und rechnet 12 - 5 = 7."
+    },
+    {
+      "question": "Warum muss der Server die Formulardaten noch einmal prüfen, obwohl JavaScript sie schon geprüft hat?",
+      "options": [
+        "Weil JavaScript bei Zahlen falsch rechnet",
+        "Weil die Prüfung im Browser umgangen werden kann",
+        "Weil required nur am Server funktioniert",
+        "Muss er nicht – einmal prüfen reicht"
+      ],
+      "correctIndex": 1,
+      "explanation": "Benutzer:innen können JavaScript abschalten, den Code in den Entwicklertools ändern oder Anfragen direkt an den Server schicken. Nur die Prüfung am Server ist verlässlich."
+    }
+  ]
+}

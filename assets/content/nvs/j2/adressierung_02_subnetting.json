@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j2-adressierung_02_subnetting",
+  "title": "Subnetting mit CIDR",
+  "summary": "Netz- und Broadcastadresse berechnen, Hosts pro Netz bestimmen und ein Netz in Subnetze aufteilen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Statt die Subnetzmaske auszuschreiben, gibt man meist die CIDR-Schreibweise an: /26 bedeutet „die ersten 26 Bit sind Netzanteil“. 255.255.255.192 und /26 sind also dasselbe. Die restlichen 32 − 26 = 6 Bit bilden den Hostanteil."
+    },
+    {
+      "type": "code",
+      "content": "CIDR  Maske             Hosts\n----  ---------------   -----\n/24   255.255.255.0     254\n/25   255.255.255.128   126\n/26   255.255.255.192    62\n/27   255.255.255.224    30\n/28   255.255.255.240    14\n/29   255.255.255.248     6\n/30   255.255.255.252     2"
+    },
+    {
+      "type": "text",
+      "content": "Wie viele Geräte passen in ein Netz? Bei h Hostbits gibt es 2^h Adressen. Zwei davon sind reserviert: Die erste (alle Hostbits 0) ist die Netzadresse, die letzte (alle Hostbits 1) die Broadcastadresse. Nutzbare Hosts = 2^h − 2. Typischer Fehler: das „− 2“ vergessen. Denk auch daran, dass der Router selbst eine Adresse im Netz braucht."
+    },
+    {
+      "type": "text",
+      "content": "Die Netzadresse berechnest du mit einer bitweisen UND-Verknüpfung von IP-Adresse und Maske. Interessant ist nur das Oktett, in dem die Maske „bricht“ (nicht 255 und nicht 0). Beispiel: 192.168.10.77/26 – die Maske ist im 4. Oktett 192."
+    },
+    {
+      "type": "code",
+      "content": "192.168.10.77/26, 4. Oktett:\n\n  77 = 0100 1101\n 192 = 1100 0000\n AND = 0100 0000 = 64\n\nNetzadresse:   192.168.10.64\nBroadcast:     192.168.10.127\nHosts:         .65 bis .126 (62)"
+    },
+    {
+      "type": "text",
+      "content": "Schneller geht es mit der Blockgröße: 256 − Maskenwert im „brechenden“ Oktett. Bei /26 ist das 256 − 192 = 64. Die Netze beginnen also bei 0, 64, 128, 192. Die IP 77 liegt im Block 64–127, also ist 64 die Netzadresse und 127 der Broadcast (nächstes Netz minus 1)."
+    },
+    {
+      "type": "code",
+      "content": "172.16.5.200/20\nMaske: 255.255.240.0 -> 3. Oktett!\nBlock: 256 - 240 = 16\nNetze im 3. Okt.: 0, 16, 32, ...\n5 liegt im Block 0-15\n\nNetz:      172.16.0.0\nBroadcast: 172.16.15.255\nHosts:     2^12 - 2 = 4094"
+    },
+    {
+      "type": "text",
+      "content": "Ein Netz aufteilen: Willst du ein Netz in 2^n gleich große Subnetze teilen, „leihst“ du dir n Bits vom Hostanteil. Beispiel: Die Schule hat 192.168.1.0/24 und braucht 4 Subnetze (Verwaltung, Lehrer, EDV-Saal, WLAN). 4 = 2^2, also 2 Bits leihen: /24 + 2 = /26, Blockgröße 64."
+    },
+    {
+      "type": "code",
+      "content": "192.168.1.0/24 -> 4 x /26\n\nSubnetz  Netz           Broadcast\n1        192.168.1.0    .63\n2        192.168.1.64   .127\n3        192.168.1.128  .191\n4        192.168.1.192  .255\n\nje 62 nutzbare Hosts"
+    },
+    {
+      "type": "text",
+      "content": "Geht man von der benötigten Hostanzahl aus, suchst du das kleinste h mit 2^h − 2 ≥ Bedarf. Für 50 Geräte: 2^6 − 2 = 62 reicht, 2^5 − 2 = 30 nicht – also 6 Hostbits, Präfix /26. Für 120 Geräte brauchst du 7 Hostbits (126), also /25. Zusammenfassung: Netzadresse = IP UND Maske, Broadcast = nächstes Netz − 1, Hosts = 2^h − 2. Prüfe deine Ergebnisse z. B. mit Pythons Modul ipaddress."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie lautet die Netzadresse von 192.168.5.130/27?",
+      "options": [
+        "192.168.5.96",
+        "192.168.5.130",
+        "192.168.5.128",
+        "192.168.5.0"
+      ],
+      "correctIndex": 2,
+      "explanation": "/27 → Blockgröße 256 − 224 = 32. Netze: 0, 32, 64, 96, 128, 160 … 130 liegt im Block 128–159, also ist 192.168.5.128 die Netzadresse."
+    },
+    {
+      "question": "Wie viele nutzbare Hostadressen hat ein /28-Netz?",
+      "options": [
+        "16",
+        "14",
+        "28",
+        "30"
+      ],
+      "correctIndex": 1,
+      "explanation": "32 − 28 = 4 Hostbits. 2^4 = 16 Adressen, minus Netz- und Broadcastadresse = 14."
+    },
+    {
+      "question": "Wie lautet die Broadcastadresse von 192.168.100.37/29?",
+      "options": [
+        "192.168.100.39",
+        "192.168.100.40",
+        "192.168.100.255",
+        "192.168.100.47"
+      ],
+      "correctIndex": 0,
+      "explanation": "/29 → Blockgröße 8. Netze: 32, 40 … 37 liegt im Block 32–39, also ist .39 der Broadcast."
+    },
+    {
+      "question": "Ein EDV-Saal braucht 100 Adressen für Geräte. Welches ist das kleinste passende Präfix?",
+      "options": [
+        "/26",
+        "/24",
+        "/27",
+        "/25"
+      ],
+      "correctIndex": 3,
+      "explanation": "/26 bietet nur 62 Hosts. /25 bietet 2^7 − 2 = 126 Hosts und reicht damit für 100 Geräte."
+    }
+  ]
+}

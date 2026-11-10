@@ -1,0 +1,124 @@
+{
+  "id": "pos-j2-python-listen_pruefung",
+  "title": "Abschlussprüfung: Verkettete Listen, Stack & Queue",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "a, b, c = Knoten(1), Knoten(2), Knoten(3)\na.next, b.next = b, c\n\nsumme = 0\nakt = a\nwhile akt is not None:\n    summe += akt.wert\n    akt = akt.next\nprint(summe)",
+      "options": [
+        "3",
+        "6",
+        "None",
+        "AttributeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Schleife läuft vom Kopf bis zum Ende und addiert 1 + 2 + 3 = 6."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "l = VerketteteListe()\nfor x in [1, 2, 3]:\n    l.vorne_einfuegen(x)\nl.ausgeben()",
+      "options": [
+        "1 2 3",
+        "3 1 2",
+        "1 3 2",
+        "3 2 1"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jedes vorne_einfuegen macht den neuen Knoten zum Kopf. Das zuletzt eingefügte Element steht also vorne."
+    },
+    {
+      "question": "akt zeigt auf einen Knoten, und der Knoten DANACH soll aus einer einfach verketteten Liste gelöscht werden. Welche Zeile ist richtig?",
+      "options": [
+        "akt = akt.next.next",
+        "akt.next = akt.next.next",
+        "akt.next.next = akt",
+        "akt.next = None"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der next-Zeiger von akt muss am zu löschenden Knoten vorbei auf den übernächsten zeigen. akt = … würde nur die Hilfsvariable ändern, nicht die Liste. akt.next = None würde den ganzen Rest abschneiden."
+    },
+    {
+      "question": "In einer doppelt verketteten Liste soll ein neuer Knoten zwischen a und b (a.next ist b) eingefügt werden. Wie viele Zeiger müssen gesetzt werden?",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "1"
+      ],
+      "correctIndex": 2,
+      "explanation": "neu.prev = a, neu.next = b, a.next = neu und b.prev = neu – also vier Zeiger."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "s = []\nfor z in \"POS\":\n    s.append(z)\nerg = \"\"\nwhile s:\n    erg += s.pop()\nprint(erg)",
+      "options": [
+        "SOP",
+        "POS",
+        "S",
+        "IndexError"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Buchstaben werden in der Reihenfolge P, O, S auf den Stapel gelegt und in umgekehrter Reihenfolge wieder herausgenommen. Ein Stack dreht die Reihenfolge um."
+    },
+    {
+      "question": "Was liefert klammern_ok(\"(()\") mit der Funktion aus der Lektion?",
+      "code": "print(klammern_ok(\"(()\"))",
+      "options": [
+        "True",
+        "IndexError",
+        "False",
+        "None"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jede schließende Klammer passt, aber am Ende liegt noch eine ( auf dem Stapel. Weil len(stapel) == 0 nicht gilt, ist das Ergebnis False."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from collections import deque\nd = deque()\nd.append(1)\nd.append(2)\nd.appendleft(0)\nprint(d.pop(), d.popleft())",
+      "options": [
+        "0 2",
+        "2 0",
+        "1 0",
+        "2 1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nach den Einfügungen ist d = deque([0, 1, 2]). pop() nimmt rechts 2, popleft() nimmt links 0."
+    },
+    {
+      "question": "Was passiert bei diesem Code mit dem selbst gebauten Stack aus der Lektion?",
+      "code": "s = Stack()\ns.push(5)\ns.pop()\nprint(s.pop())",
+      "options": [
+        "Es wird None ausgegeben",
+        "Es wird 5 ausgegeben",
+        "AttributeError",
+        "IndexError: Stack leer"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nach dem ersten pop() ist der Stack leer. Das zweite pop() erkennt top is None und löst bewusst einen IndexError aus – genau wie list.pop() bei einer leeren Liste."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from collections import deque\nq = deque([\"Anna\", \"Ben\"])\nerster = q.popleft()\nq.append(\"Cem\")\nprint(erster, q.popleft())",
+      "options": [
+        "Anna Ben",
+        "Cem Ben",
+        "Ben Cem",
+        "Anna Cem"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Queue arbeitet FIFO: Anna kommt als Erste heraus. Danach wird Cem angestellt, aber Ben steht weiter vorne."
+    },
+    {
+      "question": "Welche Zuordnung ist richtig?",
+      "options": [
+        "Zurück-Button im Browser → Queue, Druckerwarteschlange → Stack",
+        "Zurück-Button im Browser → Stack, Druckerwarteschlange → Queue",
+        "Beides → Stack",
+        "Beides → Queue"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Zurück-Button führt zur zuletzt besuchten Seite (LIFO, Stack). Druckaufträge werden in der Reihenfolge des Eintreffens abgearbeitet (FIFO, Queue)."
+    }
+  ]
+}

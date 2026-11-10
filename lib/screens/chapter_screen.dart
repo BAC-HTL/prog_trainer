@@ -2,22 +2,16 @@ import 'package:flutter/material.dart';
 
 import '../app_services.dart';
 import '../models/content.dart';
+import '../models/curriculum.dart';
 import '../widgets/certificate_button.dart';
 import 'exam_screen.dart';
 import 'lesson_screen.dart';
 
 /// Lektionen eines Kapitels und die Abschlussprüfung.
 class ChapterScreen extends StatefulWidget {
-  const ChapterScreen({
-    super.key,
-    required this.track,
-    required this.level,
-    required this.chapter,
-  });
+  const ChapterScreen({super.key, required this.chapter});
 
-  final Track track;
-  final Level level;
-  final Chapter chapter;
+  final ChapterContext chapter;
 
   @override
   State<ChapterScreen> createState() => _ChapterScreenState();
@@ -30,7 +24,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _lessons ??=
-        AppServices.of(context).repository.loadLessons(widget.chapter);
+        AppServices.of(context).repository.loadLessons(widget.chapter.lessonPaths);
   }
 
   @override
@@ -55,7 +49,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
             builder: (context, _) {
               final allDone =
                   chapter.lessonPaths.every(progress.isLessonCompleted);
-              final result = progress.examResult(chapter.id);
+              final result = progress.examResult(chapter.chapterId);
 
               return ListView(
                 padding: const EdgeInsets.all(16),
@@ -119,11 +113,8 @@ class _ChapterScreenState extends State<ChapterScreen> {
                               onPressed: allDone
                                   ? () => Navigator.of(context).push(
                                         MaterialPageRoute<void>(
-                                          builder: (_) => ExamScreen(
-                                            track: widget.track,
-                                            level: widget.level,
-                                            chapter: chapter,
-                                          ),
+                                          builder: (_) =>
+                                              ExamScreen(chapter: chapter),
                                         ),
                                       )
                                   : null,

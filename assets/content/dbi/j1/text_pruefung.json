@@ -1,0 +1,117 @@
+{
+  "id": "dbi-j1-text_pruefung",
+  "title": "Abschlussprüfung: Textverarbeitung & Präsentation",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was ist ein Absatz in einem Textdokument?",
+      "options": [
+        "Alles zwischen zwei Seitenumbrüchen",
+        "Text, der mit Enter (¶) abgeschlossen wird",
+        "Eine Zeile, die mit Umschalt+Enter endet",
+        "Jeder Satz, der mit einem Punkt endet"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Absatz endet mit der Absatzmarke ¶ (Enter). Umschalt+Enter erzeugt nur einen Zeilenumbruch innerhalb desselben Absatzes."
+    },
+    {
+      "question": "Welche Formatierung ist ein Zeichenformat?",
+      "options": [
+        "Zeilenabstand 1,5",
+        "Blocksatz",
+        "Hochgestellt (wie bei m²)",
+        "Abstand nach dem Absatz 6 pt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Hochgestellt betrifft einzelne Zeichen. Zeilenabstand, Ausrichtung und Absatzabstände sind Absatzformate."
+    },
+    {
+      "question": "Jonas tippt bei einer nummerierten Anleitung die Nummern 1., 2., 3. von Hand. Was ist das Problem?",
+      "options": [
+        "Fügt er einen Schritt ein, stimmen die folgenden Nummern nicht mehr",
+        "Handgetippte Nummern werden nicht gedruckt",
+        "Das Dokument kann nicht gespeichert werden",
+        "Es gibt kein Problem"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eine automatische Nummerierung zählt nach dem Einfügen oder Löschen von Punkten selbst neu. Handgetippte Nummern muss man alle ausbessern."
+    },
+    {
+      "question": "Welche Voraussetzung braucht ein automatisches Inhaltsverzeichnis?",
+      "options": [
+        "Alle Überschriften müssen fett sein",
+        "Das Dokument muss eine Kopfzeile haben",
+        "Die Überschriften müssen mit Überschrift-Formatvorlagen formatiert sein",
+        "Das Dokument muss mehr als 10 Seiten haben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Programm baut das Verzeichnis aus den Absätzen mit „Überschrift 1“, „Überschrift 2“ usw. Die Ebene der Vorlage bestimmt die Einrückung im Verzeichnis."
+    },
+    {
+      "question": "Warum fügt man Seitenzahlen als Feld in die Fußzeile ein, statt sie zu tippen?",
+      "options": [
+        "Weil getippte Zahlen nicht in die Fußzeile passen",
+        "Weil das Feld auf jeder Seite automatisch die richtige Zahl anzeigt",
+        "Weil Felder kleiner gedruckt werden",
+        "Weil sonst das Inhaltsverzeichnis gelöscht wird"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Fußzeile ist auf allen Seiten gleich. Nur ein Seitenzahl-Feld kann auf jeder Seite einen anderen, automatisch berechneten Wert zeigen."
+    },
+    {
+      "question": "Welche Angabe gehört in ein Protokoll, aber nicht in ein Bewerbungsschreiben?",
+      "options": [
+        "Datum",
+        "Liste der Anwesenden",
+        "Betreff",
+        "Unterschrift"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Protokoll hält fest, wer bei der Besprechung anwesend war. Datum, Betreff und Unterschrift kommen auch in Briefen wie einer Bewerbung vor."
+    },
+    {
+      "question": "Was ist beim Serienbrief das Hauptdokument?",
+      "options": [
+        "Die Tabelle mit den Adressen",
+        "Der fertige Brief an die erste Person",
+        "Der gemeinsame Text mit Platzhaltern (Seriendruckfeldern)",
+        "Eine PDF-Datei mit allen Briefen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Hauptdokument enthält den Text, der für alle gleich ist, sowie Felder wie «Nachname». Die Datenquelle liefert die Werte für jede Zeile."
+    },
+    {
+      "question": "Alle Folientitel deiner Präsentation sollen dunkelblau statt schwarz sein. Wo änderst du das am besten?",
+      "options": [
+        "Im Folienmaster",
+        "Auf jeder Folie einzeln",
+        "In der Referentenansicht",
+        "In den Animationseinstellungen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Schrift und Farben der Titelplatzhalter legt der Folienmaster fest. Eine Änderung dort wirkt auf alle Folien mit diesem Master."
+    },
+    {
+      "question": "Welche Folie hält sich am besten an die Präsentationsregeln?",
+      "options": [
+        "12 ganze Sätze in 14 pt",
+        "Gelbe Schrift auf weißem Hintergrund",
+        "4 Stichworte in 28 pt mit passendem Diagramm",
+        "5 verschiedene Schriftarten für mehr Abwechslung"
+      ],
+      "correctIndex": 2,
+      "explanation": "Wenige Stichworte, große Schrift und eine erklärende Grafik sind gut lesbar. Viel Text, wenig Kontrast und viele Schriftarten erschweren das Lesen."
+    },
+    {
+      "question": "Du willst ein Foto aus dem Internet in deine Präsentation geben. Was ist richtig?",
+      "options": [
+        "Alles, was im Internet frei abrufbar ist, darf ohne Weiteres verwendet werden",
+        "Nur Bilder, die du nutzen darfst (z. B. Creative Commons oder eigene), mit Quellenangabe",
+        "Bilder dürfen nur ohne Quellenangabe verwendet werden",
+        "Fotos darf man nur als Video einbinden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bilder sind urheberrechtlich geschützt, auch wenn sie frei abrufbar sind. Verwende Bilder mit passender Lizenz oder eigene Fotos und gib die Quelle an."
+    }
+  ]
+}

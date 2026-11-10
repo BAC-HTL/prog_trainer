@@ -25,7 +25,7 @@ Für iOS braucht man einen Mac mit Xcode.
 lib/
   main.dart                  Start, Dienste verdrahten
   app_services.dart          stellt Repository, Fortschritt, Code-Runner bereit
-  models/                    Track, Level, Chapter, Lesson, Exam, Challenge
+  models/                    Curriculum (Lehrplan), Lesson, Exam, Challenge
   data/
     content_repository.dart  lädt die JSON-Inhalte
     progress_store.dart      Fortschritt, Punkte, Prüfungen (shared_preferences)

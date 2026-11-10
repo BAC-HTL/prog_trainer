@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-elektro_02_ohmsches_gesetz",
+  "title": "Ohmsches Gesetz, Schaltungen und Leistung",
+  "summary": "Mit U = R · I, Reihen- und Parallelschaltung sowie P = U · I rechnen – vom Vorwiderstand bis zum Netzteil.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Das Ohmsche Gesetz verbindet die drei Grundgrößen: U = R · I. Je größer die Spannung, desto größer der Strom. Je größer der Widerstand, desto kleiner der Strom. Umgestellt erhältst du I = U / R und R = U / I. Merkhilfe: das URI-Dreieck – U oben, R und I unten."
+    },
+    {
+      "type": "code",
+      "content": "    ┌───┐\n    │ U │\n  ┌─┴─┬─┴─┐\n  │ R │ I │\n  └───┴───┘\nU = R · I\nI = U / R\nR = U / I"
+    },
+    {
+      "type": "text",
+      "content": "Reihenschaltung: Bauteile hintereinander, der Strom hat nur einen Weg. Darum ist der Strom überall gleich. Die Widerstände addieren sich, und die Gesamtspannung teilt sich auf die Bauteile auf."
+    },
+    {
+      "type": "code",
+      "content": "12 V, R1 = 100 Ω, R2 = 200 Ω\nin Reihe\n\nR = 100 + 200 = 300 Ω\nI = 12 V / 300 Ω = 0,04 A\n  = 40 mA\nU1 = 100 Ω · 0,04 A = 4 V\nU2 = 200 Ω · 0,04 A = 8 V\nProbe: 4 V + 8 V = 12 V ✓"
+    },
+    {
+      "type": "text",
+      "content": "Parallelschaltung: Bauteile nebeneinander, der Strom teilt sich auf. An jedem Zweig liegt dieselbe Spannung. Die Ströme addieren sich. Für den Gesamtwiderstand gilt 1/R = 1/R1 + 1/R2 – er ist immer kleiner als der kleinste Einzelwiderstand. So hängen z. B. alle Geräte an einer Steckdosenleiste parallel."
+    },
+    {
+      "type": "code",
+      "content": "12 V, R1 = 100 Ω, R2 = 200 Ω\nparallel\n\nI1 = 12 V / 100 Ω = 0,12 A\nI2 = 12 V / 200 Ω = 0,06 A\nI  = 0,18 A\nR  = 12 V / 0,18 A ≈ 66,7 Ω"
+    },
+    {
+      "type": "text",
+      "content": "Die elektrische Leistung P in Watt (W) sagt, wie viel Energie pro Sekunde umgesetzt wird: P = U · I. Ein Laptop-Netzteil mit 20 V und 3,25 A liefert also 65 W. Die Energie ist Leistung mal Zeit: E = P · t, angegeben in Wattstunden (Wh) oder Kilowattstunden (kWh). Läuft der Laptop 8 h mit 65 W, braucht er 520 Wh = 0,52 kWh. Bei einem angenommenen Strompreis von 0,25 €/kWh kostet das 13 Cent."
+    },
+    {
+      "type": "text",
+      "content": "Praxisbeispiel LED-Vorwiderstand: Eine LED darf nur mit begrenztem Strom betrieben werden, sonst brennt sie durch. Eine rote LED hat z. B. eine Durchlassspannung von etwa 2 V und soll mit 20 mA leuchten. Am USB-Anschluss (5 V) muss der Vorwiderstand die restlichen 3 V „übernehmen“."
+    },
+    {
+      "type": "code",
+      "content": "U_R = 5 V − 2 V = 3 V\nI   = 20 mA = 0,02 A\nR   = 3 V / 0,02 A = 150 Ω\nP_R = 3 V · 0,02 A = 0,06 W\n\n→ 150 Ω, Standard-Widerstand\n  (0,25 W) reicht locker"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: U = R · I. Reihe: gleicher Strom, R addieren, Spannungen teilen sich. Parallel: gleiche Spannung, Ströme addieren, Gesamtwiderstand kleiner als jeder Einzelwiderstand. P = U · I, E = P · t. Typische Fehler: mA nicht in A umrechnen und bei der LED die Durchlassspannung vergessen. Gibt es den berechneten Widerstand nicht, nimm den nächstgrößeren Normwert – dann fließt etwas weniger Strom."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "An einem 1-kΩ-Widerstand liegen 9 V. Wie groß ist der Strom?",
+      "options": [
+        "9 A",
+        "9 mA",
+        "0,9 mA",
+        "111 mA"
+      ],
+      "correctIndex": 1,
+      "explanation": "I = U / R = 9 V / 1000 Ω = 0,009 A = 9 mA."
+    },
+    {
+      "question": "Zwei 100-Ω-Widerstände werden parallel geschaltet. Wie groß ist der Gesamtwiderstand?",
+      "options": [
+        "200 Ω",
+        "100 Ω",
+        "10 Ω",
+        "50 Ω"
+      ],
+      "correctIndex": 3,
+      "explanation": "1/R = 1/100 + 1/100 = 2/100 → R = 50 Ω. Zwei gleiche Widerstände parallel ergeben die Hälfte."
+    },
+    {
+      "question": "Eine LED (2 V, 20 mA) soll an 12 V betrieben werden. Welcher Vorwiderstand ist rechnerisch nötig?",
+      "options": [
+        "500 Ω",
+        "600 Ω",
+        "100 Ω",
+        "0,5 Ω"
+      ],
+      "correctIndex": 0,
+      "explanation": "U_R = 12 V − 2 V = 10 V. R = 10 V / 0,02 A = 500 Ω. Wer die Durchlassspannung vergisst, kommt fälschlich auf 600 Ω."
+    },
+    {
+      "question": "Ein USB-Ladegerät liefert 5 V und 0,5 A. Welche Leistung ist das?",
+      "options": [
+        "10 W",
+        "5,5 W",
+        "2,5 W",
+        "0,1 W"
+      ],
+      "correctIndex": 2,
+      "explanation": "P = U · I = 5 V · 0,5 A = 2,5 W."
+    }
+  ]
+}

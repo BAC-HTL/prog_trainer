@@ -1,0 +1,2064 @@
+{
+ "stages": [
+  {
+   "id": "j1",
+   "title": "1. Jahrgang",
+   "group": "htl",
+   "description": "Grundlagen: erste Programme, Hardware, Office."
+  },
+  {
+   "id": "j2",
+   "title": "2. Jahrgang",
+   "group": "htl",
+   "description": "Datenstrukturen, Objektorientierung, Logik, Netzwerke, Web."
+  },
+  {
+   "id": "j3",
+   "title": "3. Jahrgang",
+   "group": "htl",
+   "description": "Formale Sprachen, Datenbanken, Betriebssysteme, Projektmanagement."
+  },
+  {
+   "id": "j4",
+   "title": "4. Jahrgang",
+   "group": "htl",
+   "description": "Design Patterns, Transaktionen, verteilte Systeme, IT-Prozesse."
+  },
+  {
+   "id": "j5",
+   "title": "5. Jahrgang",
+   "group": "htl",
+   "description": "Softwarearchitektur, Cloud, Business Intelligence, Recht."
+  },
+  {
+   "id": "junior",
+   "title": "Junior",
+   "group": "beruf",
+   "description": "Was man im ersten Job als Entwickler:in braucht."
+  },
+  {
+   "id": "senior",
+   "title": "Senior",
+   "group": "beruf",
+   "description": "Architektur, Skalierung, Sicherheit und Verantwortung im Team."
+  },
+  {
+   "id": "expert",
+   "title": "Expert",
+   "group": "beruf",
+   "description": "Tiefes Spezialwissen für Profis."
+  }
+ ],
+ "subjects": [
+  {
+   "id": "POS",
+   "title": "Programmieren und Software Engineering",
+   "icon": "code"
+  },
+  {
+   "id": "DBI",
+   "title": "Datenbanken und Informationssysteme",
+   "icon": "storage"
+  },
+  {
+   "id": "NVS",
+   "title": "Netzwerksysteme und Verteilte Systeme",
+   "icon": "lan"
+  },
+  {
+   "id": "TINF",
+   "title": "Technische Informatik",
+   "icon": "memory"
+  },
+  {
+   "id": "SYP",
+   "title": "Systemplanung und Projektentwicklung",
+   "icon": "assignment"
+  }
+ ],
+ "topics": [
+  {
+   "id": "programmieren",
+   "title": "Programmieren"
+  },
+  {
+   "id": "algorithmen",
+   "title": "Algorithmen"
+  },
+  {
+   "id": "datenstrukturen",
+   "title": "Datenstrukturen"
+  },
+  {
+   "id": "oop",
+   "title": "Objektorientierung"
+  },
+  {
+   "id": "theorie",
+   "title": "Theoretische Informatik"
+  },
+  {
+   "id": "datenbanken",
+   "title": "Datenbanken"
+  },
+  {
+   "id": "office",
+   "title": "Office"
+  },
+  {
+   "id": "multimedia",
+   "title": "Multimedia"
+  },
+  {
+   "id": "netzwerke",
+   "title": "Netzwerke"
+  },
+  {
+   "id": "hardware",
+   "title": "Hardware"
+  },
+  {
+   "id": "betriebssysteme",
+   "title": "Betriebssysteme"
+  },
+  {
+   "id": "web",
+   "title": "Web"
+  },
+  {
+   "id": "security",
+   "title": "IT-Security"
+  },
+  {
+   "id": "software-engineering",
+   "title": "Software Engineering"
+  },
+  {
+   "id": "projektmanagement",
+   "title": "Projektmanagement"
+  },
+  {
+   "id": "recht",
+   "title": "Recht & Datenschutz"
+  },
+  {
+   "id": "cloud",
+   "title": "Cloud & DevOps"
+  },
+  {
+   "id": "ki",
+   "title": "KI & Daten"
+  }
+ ],
+ "languages": [
+  {
+   "id": "python",
+   "title": "Python"
+  },
+  {
+   "id": "csharp",
+   "title": "C#"
+  }
+ ],
+ "modules": [
+  {
+   "id": "pos-j1-erste-schritte",
+   "stage": "j1",
+   "subject": "POS",
+   "title": "Erste Schritte",
+   "description": "Ausgabe, Variablen, Eingabe und Rechnen.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 1,
+   "variants": {
+    "python": {
+     "id": "python-e1",
+     "title": "Erste Schritte",
+     "lessons": [
+      "python/einsteiger/e1_01_erstes_programm.json",
+      "python/einsteiger/e1_02_variablen.json",
+      "python/einsteiger/e1_03_eingabe_rechnen.json"
+     ],
+     "exam": "python/einsteiger/e1_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-e1",
+     "title": "Erste Schritte",
+     "lessons": [
+      "csharp/einsteiger/e1_01_erstes_programm.json",
+      "csharp/einsteiger/e1_02_variablen.json",
+      "csharp/einsteiger/e1_03_eingabe_rechnen.json"
+     ],
+     "exam": "csharp/einsteiger/e1_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j1-entscheidungen",
+   "stage": "j1",
+   "subject": "POS",
+   "title": "Entscheidungen",
+   "description": "Bedingungen, logische Operatoren, Verzweigungen.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 1,
+   "variants": {
+    "python": {
+     "id": "python-e2",
+     "title": "Entscheidungen",
+     "lessons": [
+      "python/einsteiger/e2_01_bedingungen.json",
+      "python/einsteiger/e2_02_verschachtelte_bedingungen.json",
+      "python/einsteiger/e2_03_match.json"
+     ],
+     "exam": "python/einsteiger/e2_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-e2",
+     "title": "Entscheidungen",
+     "lessons": [
+      "csharp/einsteiger/e2_01_bedingungen.json",
+      "csharp/einsteiger/e2_02_switch.json",
+      "csharp/einsteiger/e2_03_ternaer_verschachtelt.json"
+     ],
+     "exam": "csharp/einsteiger/e2_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j1-schleifen",
+   "stage": "j1",
+   "subject": "POS",
+   "title": "Schleifen",
+   "description": "Kontrollstrukturen zum Wiederholen.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 1,
+   "variants": {
+    "python": {
+     "id": "python-e3",
+     "title": "Schleifen",
+     "lessons": [
+      "python/einsteiger/e3_01_schleifen.json",
+      "python/einsteiger/e3_02_continue_verschachtelt.json",
+      "python/einsteiger/e3_03_schleifen_muster.json"
+     ],
+     "exam": "python/einsteiger/e3_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-e3",
+     "title": "Schleifen",
+     "lessons": [
+      "csharp/einsteiger/e3_01_while_do.json",
+      "csharp/einsteiger/e3_02_for.json",
+      "csharp/einsteiger/e3_03_break_continue_verschachtelt.json"
+     ],
+     "exam": "csharp/einsteiger/e3_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j1-listen-strings",
+   "stage": "j1",
+   "subject": "POS",
+   "title": "Zusammengesetzte Datentypen",
+   "description": "Listen bzw. Arrays und Zeichenketten.",
+   "topics": [
+    "programmieren",
+    "datenstrukturen"
+   ],
+   "semester": 2,
+   "variants": {
+    "python": {
+     "id": "python-e4",
+     "title": "Listen & Strings",
+     "lessons": [
+      "python/einsteiger/e4_01_listen.json",
+      "python/einsteiger/e4_02_listen_methoden.json",
+      "python/einsteiger/e4_03_strings.json",
+      "python/einsteiger/e4_04_slicing.json"
+     ],
+     "exam": "python/einsteiger/e4_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-e4",
+     "title": "Arrays & Strings",
+     "lessons": [
+      "csharp/einsteiger/e4_01_arrays.json",
+      "csharp/einsteiger/e4_02_strings.json",
+      "csharp/einsteiger/e4_03_string_methoden.json",
+      "csharp/einsteiger/e4_04_mehrdimensional.json"
+     ],
+     "exam": "csharp/einsteiger/e4_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j1-funktionen",
+   "stage": "j1",
+   "subject": "POS",
+   "title": "Funktionen",
+   "description": "Prozeduren und Funktionen, Parameter, Rückgabewerte.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 2,
+   "variants": {
+    "python": {
+     "id": "python-e5",
+     "title": "Funktionen",
+     "lessons": [
+      "python/einsteiger/e5_01_funktionen.json",
+      "python/einsteiger/e5_02_parameter_rueckgabe.json",
+      "python/einsteiger/e5_03_gueltigkeitsbereich.json",
+      "python/einsteiger/e5_04_standardwerte_keyword.json"
+     ],
+     "exam": "python/einsteiger/e5_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-e5",
+     "title": "Methoden",
+     "lessons": [
+      "csharp/einsteiger/e5_01_methoden.json",
+      "csharp/einsteiger/e5_02_parameter_rueckgabe.json",
+      "csharp/einsteiger/e5_03_ueberladung.json",
+      "csharp/einsteiger/e5_04_ref_out.json"
+     ],
+     "exam": "csharp/einsteiger/e5_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j1-algorithmen",
+   "stage": "j1",
+   "subject": "POS",
+   "title": "Algorithmen & Struktogramme",
+   "description": "Pseudocode, Struktogramme, Basisalgorithmen zum Suchen und Sortieren.",
+   "topics": [
+    "programmieren",
+    "algorithmen"
+   ],
+   "semester": 2,
+   "variants": {
+    "python": {
+     "id": "pos-j1-algorithmen-python",
+     "lessons": [
+      "pos/j1/python/algorithmen_01_algorithmus_pseudocode.json",
+      "pos/j1/python/algorithmen_02_struktogramme.json",
+      "pos/j1/python/algorithmen_03_suchen.json",
+      "pos/j1/python/algorithmen_04_sortieren.json"
+     ],
+     "exam": "pos/j1/python/algorithmen_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j1-algorithmen-csharp",
+     "lessons": [
+      "pos/j1/csharp/algorithmen_01_algorithmus_pseudocode.json",
+      "pos/j1/csharp/algorithmen_02_struktogramme.json",
+      "pos/j1/csharp/algorithmen_03_suchen.json",
+      "pos/j1/csharp/algorithmen_04_sortieren.json"
+     ],
+     "exam": "pos/j1/csharp/algorithmen_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j1-dateien-tests",
+   "stage": "j1",
+   "subject": "POS",
+   "title": "Textdateien, Tests & Fehlersuche",
+   "description": "Textdateien lesen und schreiben, Fehler finden, einfache Tests.",
+   "topics": [
+    "programmieren",
+    "software-engineering"
+   ],
+   "semester": 2,
+   "variants": {
+    "python": {
+     "id": "pos-j1-dateien-python",
+     "lessons": [
+      "pos/j1/python/dateien_01_textdateien.json",
+      "pos/j1/python/dateien_02_fehlersuche_debugging.json",
+      "pos/j1/python/dateien_03_einfache_tests.json"
+     ],
+     "exam": "pos/j1/python/dateien_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j1-dateien-csharp",
+     "lessons": [
+      "pos/j1/csharp/dateien_01_textdateien.json",
+      "pos/j1/csharp/dateien_02_fehlersuche_debugging.json",
+      "pos/j1/csharp/dateien_03_einfache_tests.json"
+     ],
+     "exam": "pos/j1/csharp/dateien_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j2-aussagenlogik",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Aussagenlogik",
+   "description": "Aussagenlogische Formeln, Wahrheitstabellen, Normalformen, Äquivalenzumformungen.",
+   "topics": [
+    "theorie"
+   ],
+   "semester": 3,
+   "lessons": [
+    "pos/j2/theorie/aussagenlogik_01_aussagen_verknuepfungen.json",
+    "pos/j2/theorie/aussagenlogik_02_wahrheitstabellen.json",
+    "pos/j2/theorie/aussagenlogik_03_normalformen_umformungen.json"
+   ],
+   "exam": "pos/j2/theorie/aussagenlogik_pruefung.json"
+  },
+  {
+   "id": "pos-j2-rekursion",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Rekursion",
+   "description": "Rekursive Algorithmen, Endrekursion und Umwandlung in iterative Lösungen.",
+   "topics": [
+    "programmieren",
+    "algorithmen"
+   ],
+   "semester": 3,
+   "variants": {
+    "python": {
+     "id": "pos-j2-rekursion-python",
+     "lessons": [
+      "pos/j2/python/rekursion_01_rekursion_grundlagen.json",
+      "pos/j2/python/rekursion_02_endrekursion_iterativ.json",
+      "pos/j2/python/rekursion_03_rekursive_algorithmen.json"
+     ],
+     "exam": "pos/j2/python/rekursion_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j2-rekursion-csharp",
+     "lessons": [
+      "pos/j2/csharp/rekursion_01_rekursion_grundlagen.json",
+      "pos/j2/csharp/rekursion_02_endrekursion_iterativ.json",
+      "pos/j2/csharp/rekursion_03_rekursive_algorithmen.json"
+     ],
+     "exam": "pos/j2/csharp/rekursion_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j2-listen-stack-queue",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Verkettete Listen, Stack & Queue",
+   "description": "Einfach und doppelt verkettete Listen, Stapel und Warteschlangen.",
+   "topics": [
+    "programmieren",
+    "datenstrukturen"
+   ],
+   "semester": 3,
+   "variants": {
+    "python": {
+     "id": "pos-j2-listen-python",
+     "lessons": [
+      "pos/j2/python/listen_01_verkettete_listen.json",
+      "pos/j2/python/listen_02_stack.json",
+      "pos/j2/python/listen_03_queue.json"
+     ],
+     "exam": "pos/j2/python/listen_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j2-listen-csharp",
+     "lessons": [
+      "pos/j2/csharp/listen_01_verkettete_listen.json",
+      "pos/j2/csharp/listen_02_stack.json",
+      "pos/j2/csharp/listen_03_queue.json"
+     ],
+     "exam": "pos/j2/csharp/listen_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j2-container",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Container-Datentypen",
+   "description": "Eingebaute Sammlungen sinnvoll einsetzen.",
+   "topics": [
+    "programmieren",
+    "datenstrukturen"
+   ],
+   "semester": 3,
+   "variants": {
+    "python": {
+     "id": "python-f1",
+     "title": "Datenstrukturen",
+     "lessons": [
+      "python/fortgeschritten/f1_01_dictionaries.json",
+      "python/fortgeschritten/f1_02_tupel_sets.json",
+      "python/fortgeschritten/f1_03_comprehensions.json"
+     ],
+     "exam": "python/fortgeschritten/f1_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-f3",
+     "title": "Collections & Generics",
+     "lessons": [
+      "csharp/fortgeschritten/f3_01_list.json",
+      "csharp/fortgeschritten/f3_02_dictionary.json",
+      "csharp/fortgeschritten/f3_03_generics.json"
+     ],
+     "exam": "csharp/fortgeschritten/f3_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j2-oop",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Objektorientierung",
+   "description": "Klassen, Objekte, Attribute und Methoden.",
+   "topics": [
+    "programmieren",
+    "oop"
+   ],
+   "semester": 3,
+   "variants": {
+    "python": {
+     "id": "python-f4",
+     "title": "Objektorientierung",
+     "lessons": [
+      "python/fortgeschritten/f4_01_klassen.json",
+      "python/fortgeschritten/f4_02_methoden_attribute.json",
+      "python/fortgeschritten/f4_03_vererbung.json",
+      "python/fortgeschritten/f4_04_dunder_property.json"
+     ],
+     "exam": "python/fortgeschritten/f4_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-f1",
+     "title": "Klassen & Objekte",
+     "lessons": [
+      "csharp/fortgeschritten/f1_01_klassen_objekte.json",
+      "csharp/fortgeschritten/f1_02_konstruktoren.json",
+      "csharp/fortgeschritten/f1_03_properties.json",
+      "csharp/fortgeschritten/f1_04_static.json"
+     ],
+     "exam": "csharp/fortgeschritten/f1_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j2-regex",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Reguläre Ausdrücke & Kommandozeile",
+   "description": "Muster in Texten finden und Kommandozeilenparameter verarbeiten.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 3,
+   "variants": {
+    "python": {
+     "id": "pos-j2-regex-python",
+     "lessons": [
+      "pos/j2/python/regex_01_regulaere_ausdruecke.json",
+      "pos/j2/python/regex_02_regex_anwenden.json",
+      "pos/j2/python/regex_03_kommandozeilenparameter.json"
+     ],
+     "exam": "pos/j2/python/regex_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j2-regex-csharp",
+     "lessons": [
+      "pos/j2/csharp/regex_01_regulaere_ausdruecke.json",
+      "pos/j2/csharp/regex_02_regex_anwenden.json",
+      "pos/j2/csharp/regex_03_kommandozeilenparameter.json"
+     ],
+     "exam": "pos/j2/csharp/regex_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j2-praedikatenlogik",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Prädikatenlogik",
+   "description": "Prädikate, Quantoren, Äquivalenzen und Schlüsse.",
+   "topics": [
+    "theorie"
+   ],
+   "semester": 4,
+   "lessons": [
+    "pos/j2/theorie/praedikatenlogik_01_praedikate_quantoren.json",
+    "pos/j2/theorie/praedikatenlogik_02_aequivalenzen_schluesse.json",
+    "pos/j2/theorie/praedikatenlogik_03_formalisieren.json"
+   ],
+   "exam": "pos/j2/theorie/praedikatenlogik_pruefung.json"
+  },
+  {
+   "id": "pos-j2-baeume",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Bäume & Suchbäume",
+   "description": "Bäume, binäre Suchbäume, balancierte Bäume.",
+   "topics": [
+    "programmieren",
+    "datenstrukturen",
+    "algorithmen"
+   ],
+   "semester": 4,
+   "variants": {
+    "python": {
+     "id": "pos-j2-baeume-python",
+     "lessons": [
+      "pos/j2/python/baeume_01_baeume_grundlagen.json",
+      "pos/j2/python/baeume_02_binaere_suchbaeume.json",
+      "pos/j2/python/baeume_03_balancierte_baeume.json"
+     ],
+     "exam": "pos/j2/python/baeume_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j2-baeume-csharp",
+     "lessons": [
+      "pos/j2/csharp/baeume_01_baeume_grundlagen.json",
+      "pos/j2/csharp/baeume_02_binaere_suchbaeume.json",
+      "pos/j2/csharp/baeume_03_balancierte_baeume.json"
+     ],
+     "exam": "pos/j2/csharp/baeume_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j2-uml",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "UML: Objekt- & Klassendiagramme",
+   "description": "Objektdiagramme, Klassendiagramme, Beziehungen und Vererbung modellieren.",
+   "topics": [
+    "oop",
+    "software-engineering"
+   ],
+   "semester": 4,
+   "lessons": [
+    "pos/j2/theorie/uml_01_objektdiagramme.json",
+    "pos/j2/theorie/uml_02_klassendiagramme.json",
+    "pos/j2/theorie/uml_03_beziehungen_vererbung.json"
+   ],
+   "exam": "pos/j2/theorie/uml_pruefung.json"
+  },
+  {
+   "id": "pos-j2-vererbung",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Vererbung & Schnittstellen",
+   "description": "Klassenhierarchien, abstrakte Klassen, Interfaces, Polymorphie.",
+   "topics": [
+    "programmieren",
+    "oop"
+   ],
+   "semester": 4,
+   "variants": {
+    "csharp": {
+     "id": "csharp-f2",
+     "title": "Vererbung & Interfaces",
+     "lessons": [
+      "csharp/fortgeschritten/f2_01_vererbung.json",
+      "csharp/fortgeschritten/f2_02_abstrakt.json",
+      "csharp/fortgeschritten/f2_03_interfaces.json",
+      "csharp/fortgeschritten/f2_04_polymorphie.json"
+     ],
+     "exam": "csharp/fortgeschritten/f2_pruefung.json"
+    }
+   },
+   "note": {
+    "python": "In Python ist Vererbung Teil des Moduls „Objektorientierung“."
+   }
+  },
+  {
+   "id": "pos-j2-exceptions-dateien",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Exceptions & Dateien",
+   "description": "Fehlerbehandlung mit Exceptions, Text- und Binärdateien.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 4,
+   "variants": {
+    "python": {
+     "id": "python-f2",
+     "title": "Fehler & Dateien",
+     "lessons": [
+      "python/fortgeschritten/f2_01_exceptions.json",
+      "python/fortgeschritten/f2_02_eigene_exceptions.json",
+      "python/fortgeschritten/f2_03_dateien.json"
+     ],
+     "exam": "python/fortgeschritten/f2_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-f4",
+     "title": "Fehler & Dateien",
+     "lessons": [
+      "csharp/fortgeschritten/f4_01_exceptions.json",
+      "csharp/fortgeschritten/f4_02_eigene_exceptions.json",
+      "csharp/fortgeschritten/f4_03_dateien.json"
+     ],
+     "exam": "csharp/fortgeschritten/f4_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j2-bibliotheken",
+   "stage": "j2",
+   "subject": "POS",
+   "title": "Klassenbibliotheken & Module",
+   "description": "Bibliotheken verwenden und Code in Module aufteilen.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 4,
+   "variants": {
+    "python": {
+     "id": "python-f3",
+     "title": "Module & Pakete",
+     "lessons": [
+      "python/fortgeschritten/f3_01_import.json",
+      "python/fortgeschritten/f3_02_standardbibliothek.json",
+      "python/fortgeschritten/f3_03_pip_venv.json"
+     ],
+     "exam": "python/fortgeschritten/f3_pruefung.json"
+    }
+   },
+   "note": {
+    "csharp": "Für C# folgt dieses Modul später."
+   }
+  },
+  {
+   "id": "pos-j3-funktional",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Funktionale Programmierung",
+   "description": "Funktionen als Werte, Lambdas und deklarative Datenverarbeitung.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 5,
+   "variants": {
+    "python": {
+     "id": "python-f5",
+     "title": "Funktionale Werkzeuge",
+     "lessons": [
+      "python/fortgeschritten/f5_01_lambda_map_filter.json",
+      "python/fortgeschritten/f5_02_iteratoren_generatoren.json",
+      "python/fortgeschritten/f5_03_dekoratoren.json"
+     ],
+     "exam": "python/fortgeschritten/f5_pruefung.json"
+    },
+    "csharp": {
+     "id": "csharp-f5",
+     "title": "Delegates, Lambdas & LINQ",
+     "lessons": [
+      "csharp/fortgeschritten/f5_01_delegates_lambdas.json",
+      "csharp/fortgeschritten/f5_02_linq_grundlagen.json",
+      "csharp/fortgeschritten/f5_03_linq_fortgeschritten.json"
+     ],
+     "exam": "csharp/fortgeschritten/f5_pruefung.json"
+    }
+   }
+  },
+  {
+   "id": "pos-j3-automaten",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Formale Sprachen & Automaten",
+   "description": "Grammatiken, endliche Automaten und ihre Implementierung.",
+   "topics": [
+    "theorie"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "pos-j3-generics",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Polymorphie & Generics",
+   "description": "Generische Datentypen und Programmiertechniken, Serialisierung.",
+   "topics": [
+    "programmieren",
+    "oop"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "pos-j3-git",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Versionsverwaltung mit Git",
+   "description": "Commits, Branches, Merges, Zusammenarbeit.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "pos-j3-unit-tests",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Teststrategien & Unit-Tests",
+   "description": "Testarten, Testfälle entwerfen, Unit-Tests schreiben.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "pos-j3-gui",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Grafische Benutzeroberflächen",
+   "description": "Design, Layout, Usability und Eventhandling.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "pos-j3-graphen",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Graphen & Graphalgorithmen",
+   "description": "Speicherformen, Suche, kürzeste Wege.",
+   "topics": [
+    "algorithmen",
+    "datenstrukturen"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "pos-j3-compiler",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Compiler & Parser",
+   "description": "Aufbau eines Compilers, syntaktische Analyse, Hashing.",
+   "topics": [
+    "theorie",
+    "algorithmen"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "pos-j3-threads",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Threads & Race Conditions",
+   "description": "Nebenläufigkeit, Lebenszyklus, typische Fehler.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "pos-j3-db-zugriff",
+   "stage": "j3",
+   "subject": "POS",
+   "title": "Datenbankzugriff aus Programmen",
+   "description": "Datenbanken aus dem Code ansprechen, Eingaben validieren.",
+   "topics": [
+    "programmieren",
+    "datenbanken"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "pos-j4-paradigmen",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Programmiersprachen & Paradigmen",
+   "description": "Typsysteme, imperativ, funktional, objektorientiert, logisch.",
+   "topics": [
+    "theorie",
+    "programmieren"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "pos-j4-fuzzy",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Mehrwertige Logik & Fuzzy-Sets",
+   "description": "Dreiwertige Logiken und unscharfe Mengen.",
+   "topics": [
+    "theorie"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "pos-j4-patterns",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Design Patterns",
+   "description": "Entwurfsrichtlinien und bewährte Muster.",
+   "topics": [
+    "oop",
+    "software-engineering"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "pos-j4-synchronisation",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Thread-Synchronisation",
+   "description": "Locks, Monitore, Deadlocks vermeiden.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "pos-j4-build",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Build-Management & Dokumentation",
+   "description": "Build-Werkzeuge, Abhängigkeiten, Doku generieren.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "pos-j4-komplexitaet",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Komplexität & Optimierung",
+   "description": "O-Notation, Laufzeitanalyse, Optimieren.",
+   "topics": [
+    "algorithmen",
+    "theorie"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "pos-j4-numerik",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Grundzüge der Numerik",
+   "description": "Gleitkommazahlen, Fehleranalyse, numerische Verfahren.",
+   "topics": [
+    "algorithmen"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "pos-j4-zuverlaessig",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Zuverlässige Systeme & Integrationstests",
+   "description": "Issue-Tracking, Hilfesysteme, Integrationstests.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "pos-j4-parallel",
+   "stage": "j4",
+   "subject": "POS",
+   "title": "Parallele Programmierung & Reflection",
+   "description": "Parallele Algorithmen, Reflection, Massendaten.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "pos-j5-architektur",
+   "stage": "j5",
+   "subject": "POS",
+   "title": "Softwarearchitekturen & Architekturmuster",
+   "description": "Schichten, MVC, Microkernel, Event-driven.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 9
+  },
+  {
+   "id": "pos-j5-heterogen",
+   "stage": "j5",
+   "subject": "POS",
+   "title": "Kommunikation heterogener Systeme",
+   "description": "Schnittstellen, Formate, Protokolle zwischen Systemen.",
+   "topics": [
+    "programmieren",
+    "netzwerke"
+   ],
+   "semester": 9
+  },
+  {
+   "id": "pos-j5-deployment",
+   "stage": "j5",
+   "subject": "POS",
+   "title": "Internationalisierung & Deployment",
+   "description": "Mehrsprachigkeit, Optimierung, Systemtests, Auslieferung.",
+   "topics": [
+    "software-engineering",
+    "cloud"
+   ],
+   "semester": 9
+  },
+  {
+   "id": "pos-j5-ergonomie",
+   "stage": "j5",
+   "subject": "POS",
+   "title": "Softwareergonomie & Dialoggestaltung",
+   "description": "Visuelle Gestaltung, Usability, Barrierefreiheit.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "pos-j5-frameworks",
+   "stage": "j5",
+   "subject": "POS",
+   "title": "Frameworks entwickeln",
+   "description": "Wiederverwendbare Bibliotheken und Frameworks bauen.",
+   "topics": [
+    "programmieren",
+    "software-engineering"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "pos-j5-qualitaet",
+   "stage": "j5",
+   "subject": "POS",
+   "title": "Softwarequalität & Performance-Tests",
+   "description": "Qualitätsmerkmale, Messen, Last- und Performance-Tests.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "dbi-j1-textverarbeitung",
+   "stage": "j1",
+   "subject": "DBI",
+   "title": "Textverarbeitung & Präsentation",
+   "description": "Textdokumente gestalten, praxisübliche Dokumente, Präsentationsfolien.",
+   "topics": [
+    "office"
+   ],
+   "semester": 1,
+   "lessons": [
+    "dbi/j1/text_01_textdokumente.json",
+    "dbi/j1/text_02_layout_dokumente.json",
+    "dbi/j1/text_03_praesentationen.json"
+   ],
+   "exam": "dbi/j1/text_pruefung.json"
+  },
+  {
+   "id": "dbi-j1-tabellenkalkulation",
+   "stage": "j1",
+   "subject": "DBI",
+   "title": "Tabellenkalkulation",
+   "description": "Tabellenblätter, Formeln, Funktionen und Diagramme.",
+   "topics": [
+    "office"
+   ],
+   "semester": 2,
+   "lessons": [
+    "dbi/j1/tabellen_01_tabellen_formeln.json",
+    "dbi/j1/tabellen_02_funktionen.json",
+    "dbi/j1/tabellen_03_diagramme.json"
+   ],
+   "exam": "dbi/j1/tabellen_pruefung.json"
+  },
+  {
+   "id": "dbi-j2-bilddaten",
+   "stage": "j2",
+   "subject": "DBI",
+   "title": "Bilddaten & Multimedia",
+   "description": "Bildformate, Bildbearbeitung, Audio- und Videoformate.",
+   "topics": [
+    "multimedia"
+   ],
+   "semester": 3,
+   "lessons": [
+    "dbi/j2/bilder_01_bildformate.json",
+    "dbi/j2/bilder_02_bildbearbeitung.json",
+    "dbi/j2/bilder_03_multimedia_formate.json"
+   ],
+   "exam": "dbi/j2/bilder_pruefung.json"
+  },
+  {
+   "id": "dbi-j2-datenbanken",
+   "stage": "j2",
+   "subject": "DBI",
+   "title": "Erste Datenbanken",
+   "description": "Tabellen, Beziehungen, Abfragen, Formulare und Berichte.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 3,
+   "lessons": [
+    "dbi/j2/datenbanken_01_tabellen_datentypen.json",
+    "dbi/j2/datenbanken_02_beziehungen.json",
+    "dbi/j2/datenbanken_03_abfragen_sql.json",
+    "dbi/j2/datenbanken_04_formulare_berichte.json"
+   ],
+   "exam": "dbi/j2/datenbanken_pruefung.json"
+  },
+  {
+   "id": "dbi-j2-cms",
+   "stage": "j2",
+   "subject": "DBI",
+   "title": "Content-Management-Systeme",
+   "description": "Aufbau eines CMS, Inhalte verwalten, Berechtigungen.",
+   "topics": [
+    "web"
+   ],
+   "semester": 4,
+   "lessons": [
+    "dbi/j2/cms_01_cms_aufbau.json",
+    "dbi/j2/cms_02_inhalte_berechtigungen.json"
+   ],
+   "exam": "dbi/j2/cms_pruefung.json"
+  },
+  {
+   "id": "dbi-j3-dbms",
+   "stage": "j3",
+   "subject": "DBI",
+   "title": "Datenbanksysteme & Architektur",
+   "description": "Drei-Ebenen-Architektur, Datenunabhängigkeit, Installation.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "dbi-j3-sql",
+   "stage": "j3",
+   "subject": "DBI",
+   "title": "SQL: DDL, DML & Views",
+   "description": "Tabellen anlegen, Constraints, Abfragen, Sichten.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "dbi-j3-er-modell",
+   "stage": "j3",
+   "subject": "DBI",
+   "title": "Datenbankentwurf & ER-Modell",
+   "description": "Objekte, Attribute, Beziehungen, Redundanz vermeiden.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "dbi-j3-stored",
+   "stage": "j3",
+   "subject": "DBI",
+   "title": "Stored Procedures & Trigger",
+   "description": "Data Dictionary, Routinen, Datenintegrität.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "dbi-j3-xml-json",
+   "stage": "j3",
+   "subject": "DBI",
+   "title": "Semistrukturierte Daten: XML & JSON",
+   "description": "Aufbau, Grammatiken, Verarbeitung.",
+   "topics": [
+    "datenbanken",
+    "web"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "dbi-j4-normalformen",
+   "stage": "j4",
+   "subject": "DBI",
+   "title": "Konzeptuelle Modelle & Normalformen",
+   "description": "Business Rules, funktionale Abhängigkeiten, Normalisierung.",
+   "topics": [
+    "datenbanken",
+    "theorie"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "dbi-j4-transaktionen",
+   "stage": "j4",
+   "subject": "DBI",
+   "title": "Transaktionen & Recovery",
+   "description": "ACID, Fehlerbehandlung, Datensicherung, Verfügbarkeit.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "dbi-j4-concurrency",
+   "stage": "j4",
+   "subject": "DBI",
+   "title": "Mehrbenutzerbetrieb & Concurrency Control",
+   "description": "Serialisierbarkeit, Sperren, Isolationslevel.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "dbi-j4-zugriff",
+   "stage": "j4",
+   "subject": "DBI",
+   "title": "Zugriffskontrolle & Kryptologie",
+   "description": "Benutzer, Rechte, Rollen, Authentifizierung.",
+   "topics": [
+    "datenbanken",
+    "security"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "dbi-j5-indizes",
+   "stage": "j5",
+   "subject": "DBI",
+   "title": "Indizes & Anfrageoptimierung",
+   "description": "Speicherformen, Indizes, Hashing, Ausführungspläne.",
+   "topics": [
+    "datenbanken",
+    "algorithmen"
+   ],
+   "semester": 9
+  },
+  {
+   "id": "dbi-j5-nosql",
+   "stage": "j5",
+   "subject": "DBI",
+   "title": "DBMS-Interna & aktuelle Datenmodelle",
+   "description": "Prozess- und Speichermanagement, NoSQL.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 9
+  },
+  {
+   "id": "dbi-j5-bi",
+   "stage": "j5",
+   "subject": "DBI",
+   "title": "Data Warehouse & Business Intelligence",
+   "description": "OLAP, Data Mining, Entscheidungsunterstützung.",
+   "topics": [
+    "datenbanken",
+    "ki"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "dbi-j5-tuning",
+   "stage": "j5",
+   "subject": "DBI",
+   "title": "Administration & Performance-Tuning",
+   "description": "Managementtools, Leistungsbewertung, Tuning.",
+   "topics": [
+    "datenbanken"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "nvs-j2-grundlagen",
+   "stage": "j2",
+   "subject": "NVS",
+   "title": "Netzwerk-Grundlagen",
+   "description": "Übertragungsmedien, Topologien, Netzwerkkomponenten, Protokolle.",
+   "topics": [
+    "netzwerke"
+   ],
+   "semester": 3,
+   "lessons": [
+    "nvs/j2/grundlagen_01_uebertragungsmedien.json",
+    "nvs/j2/grundlagen_02_topologien_komponenten.json",
+    "nvs/j2/grundlagen_03_protokolle_osi.json"
+   ],
+   "exam": "nvs/j2/grundlagen_pruefung.json"
+  },
+  {
+   "id": "nvs-j2-adressierung",
+   "stage": "j2",
+   "subject": "NVS",
+   "title": "Adressierung & Subnetting",
+   "description": "MAC- und IP-Adressen, Subnetze, IPv6.",
+   "topics": [
+    "netzwerke"
+   ],
+   "semester": 3,
+   "lessons": [
+    "nvs/j2/adressierung_01_mac_ip.json",
+    "nvs/j2/adressierung_02_subnetting.json",
+    "nvs/j2/adressierung_03_ipv6.json"
+   ],
+   "exam": "nvs/j2/adressierung_pruefung.json"
+  },
+  {
+   "id": "nvs-j2-switching-routing",
+   "stage": "j2",
+   "subject": "NVS",
+   "title": "Switching & Routing",
+   "description": "Switches, VLANs, Router und Routingverfahren.",
+   "topics": [
+    "netzwerke"
+   ],
+   "semester": 4,
+   "lessons": [
+    "nvs/j2/routing_01_switching_vlan.json",
+    "nvs/j2/routing_02_routing_grundlagen.json",
+    "nvs/j2/routing_03_routingprotokolle.json"
+   ],
+   "exam": "nvs/j2/routing_pruefung.json"
+  },
+  {
+   "id": "nvs-j2-dienste",
+   "stage": "j2",
+   "subject": "NVS",
+   "title": "Netzwerkdienste",
+   "description": "DHCP, DNS und weitere Dienste, Fehlersuche im Netz.",
+   "topics": [
+    "netzwerke"
+   ],
+   "semester": 4,
+   "lessons": [
+    "nvs/j2/dienste_01_dhcp_dns.json",
+    "nvs/j2/dienste_02_weitere_dienste.json",
+    "nvs/j2/dienste_03_fehlersuche_tools.json"
+   ],
+   "exam": "nvs/j2/dienste_pruefung.json"
+  },
+  {
+   "id": "nvs-j3-komponenten",
+   "stage": "j3",
+   "subject": "NVS",
+   "title": "Aktive Netzwerkkomponenten",
+   "description": "Auswahl, Konfiguration und Betrieb, Übertragungsprotokolle.",
+   "topics": [
+    "netzwerke"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "nvs-j3-verzeichnis",
+   "stage": "j3",
+   "subject": "NVS",
+   "title": "Verzeichnis- & Authentifizierungsdienste",
+   "description": "LDAP, Active Directory, RADIUS.",
+   "topics": [
+    "netzwerke",
+    "security"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "nvs-j3-entwurf",
+   "stage": "j3",
+   "subject": "NVS",
+   "title": "Netzwerkentwurf & -management",
+   "description": "Netzwerkmodelle, Planung, Monitoring.",
+   "topics": [
+    "netzwerke"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "nvs-j3-sicherheit",
+   "stage": "j3",
+   "subject": "NVS",
+   "title": "Netzwerksicherheit",
+   "description": "Bedrohungsarten und Schutzmaßnahmen.",
+   "topics": [
+    "netzwerke",
+    "security"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "nvs-j4-policies",
+   "stage": "j4",
+   "subject": "NVS",
+   "title": "Security Policies & Sicherheitslösungen",
+   "description": "Firewalls, VPN, Richtlinien.",
+   "topics": [
+    "security",
+    "netzwerke"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "nvs-j4-sockets",
+   "stage": "j4",
+   "subject": "NVS",
+   "title": "Verteilte Systeme & Socket-API",
+   "description": "Architektur verteilter Systeme, Webapplikationen, Sockets.",
+   "topics": [
+    "netzwerke",
+    "programmieren"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "nvs-j4-lastverteilung",
+   "stage": "j4",
+   "subject": "NVS",
+   "title": "Verfügbarkeit & Lastverteilung",
+   "description": "Redundanz, Load Balancing, Performanceanalyse.",
+   "topics": [
+    "netzwerke",
+    "cloud"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "nvs-j4-mobile",
+   "stage": "j4",
+   "subject": "NVS",
+   "title": "Mobile Apps & Interprozesskommunikation",
+   "description": "Mobile Entwicklung, Synchronisation, IPC.",
+   "topics": [
+    "programmieren"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "nvs-j5-soa",
+   "stage": "j5",
+   "subject": "NVS",
+   "title": "Serviceorientierte Architektur & Middleware",
+   "description": "SOA, Enterprise Application Architecture, Server Applications.",
+   "topics": [
+    "netzwerke",
+    "software-engineering"
+   ],
+   "semester": 9
+  },
+  {
+   "id": "nvs-j5-cloud",
+   "stage": "j5",
+   "subject": "NVS",
+   "title": "Multi-Tier-Systeme & Cloud Computing",
+   "description": "Komplexe verteilte Systeme in der Cloud.",
+   "topics": [
+    "cloud",
+    "netzwerke"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "nvs-j5-sicherheitskonzepte",
+   "stage": "j5",
+   "subject": "NVS",
+   "title": "Sicherheitskonzepte",
+   "description": "Ganzheitliche Sicherheitslösungen planen.",
+   "topics": [
+    "security"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "tinf-j1-zahlensysteme",
+   "stage": "j1",
+   "subject": "TINF",
+   "title": "Zahlensysteme & Informationsdarstellung",
+   "description": "Bits und Bytes, Binär- und Hexadezimalsystem, Zeichencodierung.",
+   "topics": [
+    "hardware",
+    "theorie"
+   ],
+   "semester": 1,
+   "lessons": [
+    "tinf/j1/zahlen_01_bits_bytes.json",
+    "tinf/j1/zahlen_02_zahlensysteme.json",
+    "tinf/j1/zahlen_03_zeichen_codierung.json"
+   ],
+   "exam": "tinf/j1/zahlen_pruefung.json"
+  },
+  {
+   "id": "tinf-j1-hardware",
+   "stage": "j1",
+   "subject": "TINF",
+   "title": "Computer-Hardware",
+   "description": "Hardwarearchitektur, Komponenten, Schnittstellen und Peripherie.",
+   "topics": [
+    "hardware"
+   ],
+   "semester": 1,
+   "lessons": [
+    "tinf/j1/hardware_01_von_neumann.json",
+    "tinf/j1/hardware_02_komponenten.json",
+    "tinf/j1/hardware_03_schnittstellen_peripherie.json"
+   ],
+   "exam": "tinf/j1/hardware_pruefung.json"
+  },
+  {
+   "id": "tinf-j1-elektrotechnik",
+   "stage": "j1",
+   "subject": "TINF",
+   "title": "Elektrotechnische Grundlagen",
+   "description": "Spannung, Strom, Widerstand, Leistung und Sicherheit.",
+   "topics": [
+    "hardware"
+   ],
+   "semester": 2,
+   "lessons": [
+    "tinf/j1/elektro_01_spannung_strom.json",
+    "tinf/j1/elektro_02_ohmsches_gesetz.json",
+    "tinf/j1/elektro_03_sicherheit_im_labor.json"
+   ],
+   "exam": "tinf/j1/elektro_pruefung.json"
+  },
+  {
+   "id": "tinf-j1-installation",
+   "stage": "j1",
+   "subject": "TINF",
+   "title": "Installation, Wartung & Fehlersuche",
+   "description": "Betriebssysteme installieren, Wartung, Reparatur, Recycling.",
+   "topics": [
+    "hardware",
+    "betriebssysteme"
+   ],
+   "semester": 2,
+   "lessons": [
+    "tinf/j1/installation_01_betriebssystem_installieren.json",
+    "tinf/j1/installation_02_wartung_fehlersuche.json",
+    "tinf/j1/installation_03_dokumentation_recycling.json"
+   ],
+   "exam": "tinf/j1/installation_pruefung.json"
+  },
+  {
+   "id": "tinf-j2-html-css",
+   "stage": "j2",
+   "subject": "TINF",
+   "title": "HTML & CSS",
+   "description": "Aufbau von Webseiten, Auszeichnung und Gestaltung.",
+   "topics": [
+    "web"
+   ],
+   "semester": 3,
+   "lessons": [
+    "tinf/j2/html_01_html_grundlagen.json",
+    "tinf/j2/html_02_css.json",
+    "tinf/j2/html_03_layout.json"
+   ],
+   "exam": "tinf/j2/html_pruefung.json"
+  },
+  {
+   "id": "tinf-j2-javascript",
+   "stage": "j2",
+   "subject": "TINF",
+   "title": "JavaScript-Grundlagen",
+   "description": "Skriptsprache im Browser, DOM und Ereignisse.",
+   "topics": [
+    "web",
+    "programmieren"
+   ],
+   "semester": 3,
+   "lessons": [
+    "tinf/j2/javascript_01_js_grundlagen.json",
+    "tinf/j2/javascript_02_dom_events.json",
+    "tinf/j2/javascript_03_formulare.json"
+   ],
+   "exam": "tinf/j2/javascript_pruefung.json"
+  },
+  {
+   "id": "tinf-j2-webapps",
+   "stage": "j2",
+   "subject": "TINF",
+   "title": "Webapplikationen",
+   "description": "Client und Server, Aufbau von Webapplikationen, Datenanbindung.",
+   "topics": [
+    "web"
+   ],
+   "semester": 4,
+   "lessons": [
+    "tinf/j2/webapps_01_http_client_server.json",
+    "tinf/j2/webapps_02_aufbau_webapp.json",
+    "tinf/j2/webapps_03_datenanbindung.json"
+   ],
+   "exam": "tinf/j2/webapps_pruefung.json"
+  },
+  {
+   "id": "tinf-j3-bs-architektur",
+   "stage": "j3",
+   "subject": "TINF",
+   "title": "Betriebssysteme: Architektur & Prozesse",
+   "description": "Arten, Prozessverwaltung und -synchronisation.",
+   "topics": [
+    "betriebssysteme"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "tinf-j3-speicher",
+   "stage": "j3",
+   "subject": "TINF",
+   "title": "Speicher-, Geräte- & Dateiverwaltung",
+   "description": "Wie ein Betriebssystem Ressourcen verwaltet.",
+   "topics": [
+    "betriebssysteme"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "tinf-j3-virtualisierung",
+   "stage": "j3",
+   "subject": "TINF",
+   "title": "Virtualisierung & Administration",
+   "description": "Virtuelle Maschinen, Benutzerverwaltung, Konfiguration.",
+   "topics": [
+    "betriebssysteme",
+    "cloud"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "tinf-j3-bs-sicherheit",
+   "stage": "j3",
+   "subject": "TINF",
+   "title": "Betriebssystem-Sicherheit & Monitoring",
+   "description": "Sicherheitsrisiken, Schutzmaßnahmen, Tuning.",
+   "topics": [
+    "betriebssysteme",
+    "security"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "tinf-j3-shell",
+   "stage": "j3",
+   "subject": "TINF",
+   "title": "Shell-Programmierung & System Calls",
+   "description": "Kommandosprachen, Skripte, Systemaufrufe.",
+   "topics": [
+    "betriebssysteme",
+    "programmieren"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "syp-j3-pm-grundlagen",
+   "stage": "j3",
+   "subject": "SYP",
+   "title": "Projektmanagement-Grundlagen",
+   "description": "Projektbegriff, Phasenmodelle, Projektorganisation.",
+   "topics": [
+    "projektmanagement"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "syp-j3-projektplanung",
+   "stage": "j3",
+   "subject": "SYP",
+   "title": "Projektplanung & Controlling",
+   "description": "Planung, Start, Durchführung, Abschluss, Evaluation.",
+   "topics": [
+    "projektmanagement"
+   ],
+   "semester": 5
+  },
+  {
+   "id": "syp-j3-vorgehensmodelle",
+   "stage": "j3",
+   "subject": "SYP",
+   "title": "Vorgehensmodelle im Software Engineering",
+   "description": "Wasserfall, V-Modell, Scrum, Rollen.",
+   "topics": [
+    "software-engineering",
+    "projektmanagement"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "syp-j3-anforderungen",
+   "stage": "j3",
+   "subject": "SYP",
+   "title": "Anforderungsanalyse & Aufwandsschätzung",
+   "description": "Ist-Erhebung, Anforderungen beschreiben, schätzen.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "syp-j3-qualitaet",
+   "stage": "j3",
+   "subject": "SYP",
+   "title": "Qualitätsmanagement & Dokumentation",
+   "description": "Qualitätssicherung, Produktdokumentation, Wartung.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 6
+  },
+  {
+   "id": "syp-j4-prozesse",
+   "stage": "j4",
+   "subject": "SYP",
+   "title": "IT-Markt & Prozessmodelle",
+   "description": "Betriebliche IKT-Systeme, Prozesse beschreiben und gestalten.",
+   "topics": [
+    "projektmanagement"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "syp-j4-it-architektur",
+   "stage": "j4",
+   "subject": "SYP",
+   "title": "IT-Architekturen & Frameworks",
+   "description": "Architekturmodelle und -frameworks.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "syp-j4-requirements",
+   "stage": "j4",
+   "subject": "SYP",
+   "title": "Requirements Engineering & Testmanagement",
+   "description": "Anforderungen managen, Tests planen, Change Management.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 7
+  },
+  {
+   "id": "syp-j4-governance",
+   "stage": "j4",
+   "subject": "SYP",
+   "title": "IT-Governance & IT-Service-Management",
+   "description": "IKT-Strategie, IT-Services, Referenzmodelle (ITIL).",
+   "topics": [
+    "projektmanagement"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "syp-j4-controlling",
+   "stage": "j4",
+   "subject": "SYP",
+   "title": "IT-Controlling & Compliance",
+   "description": "Wirtschaftlichkeit, Umweltgerechtheit, Compliance, Rollout.",
+   "topics": [
+    "projektmanagement",
+    "recht"
+   ],
+   "semester": 8
+  },
+  {
+   "id": "syp-j5-systemkonzepte",
+   "stage": "j5",
+   "subject": "SYP",
+   "title": "IKT-Systemkonzepte",
+   "description": "Systeme dimensionieren und beschreiben.",
+   "topics": [
+    "software-engineering"
+   ],
+   "semester": 9
+  },
+  {
+   "id": "syp-j5-beschaffung",
+   "stage": "j5",
+   "subject": "SYP",
+   "title": "Beschaffung, Pflichtenheft & Ausschreibung",
+   "description": "Business Case, Systemauswahl, Vergabe, Verträge.",
+   "topics": [
+    "projektmanagement",
+    "recht"
+   ],
+   "semester": 9
+  },
+  {
+   "id": "syp-j5-sicherheitsstandards",
+   "stage": "j5",
+   "subject": "SYP",
+   "title": "IT-Sicherheitsstandards & Datenschutz",
+   "description": "Richtlinien, DSGVO und Datenschutzgesetz.",
+   "topics": [
+    "security",
+    "recht"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "syp-j5-softwarerecht",
+   "stage": "j5",
+   "subject": "SYP",
+   "title": "Recht in der Softwareentwicklung",
+   "description": "Urheberrecht, Lizenzen, Haftung, Compliance.",
+   "topics": [
+    "recht"
+   ],
+   "semester": 10
+  },
+  {
+   "id": "junior-git-team",
+   "stage": "junior",
+   "subject": "POS",
+   "title": "Git im Team",
+   "description": "Pull Requests, Code Reviews, Konflikte lösen.",
+   "topics": [
+    "software-engineering"
+   ]
+  },
+  {
+   "id": "junior-clean-code",
+   "stage": "junior",
+   "subject": "POS",
+   "title": "Clean Code",
+   "description": "Lesbarer, wartbarer Code: Namen, Funktionen, Refactoring.",
+   "topics": [
+    "programmieren",
+    "software-engineering"
+   ]
+  },
+  {
+   "id": "junior-debugging",
+   "stage": "junior",
+   "subject": "POS",
+   "title": "Debugging in der Praxis",
+   "description": "Fehler systematisch finden, Logs, Debugger.",
+   "topics": [
+    "programmieren"
+   ]
+  },
+  {
+   "id": "junior-rest",
+   "stage": "junior",
+   "subject": "NVS",
+   "title": "REST-APIs entwickeln",
+   "description": "HTTP, JSON, Endpunkte entwerfen und testen.",
+   "topics": [
+    "web",
+    "netzwerke"
+   ]
+  },
+  {
+   "id": "junior-sql-praxis",
+   "stage": "junior",
+   "subject": "DBI",
+   "title": "SQL in der Praxis",
+   "description": "Joins, Aggregationen, typische Abfragen im Arbeitsalltag.",
+   "topics": [
+    "datenbanken"
+   ]
+  },
+  {
+   "id": "junior-linux",
+   "stage": "junior",
+   "subject": "TINF",
+   "title": "Linux-Kommandozeile",
+   "description": "Dateien, Rechte, Prozesse, Pakete, SSH.",
+   "topics": [
+    "betriebssysteme"
+   ]
+  },
+  {
+   "id": "junior-docker",
+   "stage": "junior",
+   "subject": "NVS",
+   "title": "Container mit Docker",
+   "description": "Images, Container, Compose.",
+   "topics": [
+    "cloud"
+   ]
+  },
+  {
+   "id": "junior-scrum",
+   "stage": "junior",
+   "subject": "SYP",
+   "title": "Agiles Arbeiten mit Scrum",
+   "description": "Sprints, Rollen, Backlog, Retros.",
+   "topics": [
+    "projektmanagement"
+   ]
+  },
+  {
+   "id": "senior-architektur-ddd",
+   "stage": "senior",
+   "subject": "POS",
+   "title": "Software-Architektur & DDD",
+   "description": "Domain-Driven Design, Clean Architecture, Entscheidungen dokumentieren.",
+   "topics": [
+    "software-engineering"
+   ]
+  },
+  {
+   "id": "senior-testing",
+   "stage": "senior",
+   "subject": "POS",
+   "title": "Testing-Strategien",
+   "description": "Testpyramide, Mocking, TDD, Contract Tests.",
+   "topics": [
+    "software-engineering"
+   ]
+  },
+  {
+   "id": "senior-performance",
+   "stage": "senior",
+   "subject": "POS",
+   "title": "Performance & Skalierung",
+   "description": "Profiling, Caching, asynchrone Verarbeitung.",
+   "topics": [
+    "programmieren",
+    "algorithmen"
+   ]
+  },
+  {
+   "id": "senior-microservices",
+   "stage": "senior",
+   "subject": "NVS",
+   "title": "Microservices",
+   "description": "Schnitt, Kommunikation, Resilienz, Observability.",
+   "topics": [
+    "cloud",
+    "software-engineering"
+   ]
+  },
+  {
+   "id": "senior-owasp",
+   "stage": "senior",
+   "subject": "NVS",
+   "title": "Web-Security & OWASP Top 10",
+   "description": "Injection, XSS, Authentifizierung, sichere Entwicklung.",
+   "topics": [
+    "security",
+    "web"
+   ]
+  },
+  {
+   "id": "senior-cloud-architektur",
+   "stage": "senior",
+   "subject": "NVS",
+   "title": "Cloud-Architektur",
+   "description": "Skalierbare Systeme in der Cloud entwerfen.",
+   "topics": [
+    "cloud"
+   ]
+  },
+  {
+   "id": "senior-db-design",
+   "stage": "senior",
+   "subject": "DBI",
+   "title": "Datenbank-Design im Großen",
+   "description": "Partitionierung, Replikation, Migrationen.",
+   "topics": [
+    "datenbanken"
+   ]
+  },
+  {
+   "id": "senior-mentoring",
+   "stage": "senior",
+   "subject": "SYP",
+   "title": "Code Reviews & Mentoring",
+   "description": "Wissen weitergeben, Feedback, technische Leitung.",
+   "topics": [
+    "projektmanagement",
+    "software-engineering"
+   ]
+  },
+  {
+   "id": "expert-konsens",
+   "stage": "expert",
+   "subject": "NVS",
+   "title": "Verteilte Konsensverfahren",
+   "description": "Paxos, Raft, CAP-Theorem.",
+   "topics": [
+    "netzwerke",
+    "theorie"
+   ]
+  },
+  {
+   "id": "expert-compilerbau",
+   "stage": "expert",
+   "subject": "POS",
+   "title": "Compiler & Interpreter bauen",
+   "description": "Lexer, Parser, AST, Codeerzeugung.",
+   "topics": [
+    "theorie",
+    "programmieren"
+   ]
+  },
+  {
+   "id": "expert-kryptografie",
+   "stage": "expert",
+   "subject": "NVS",
+   "title": "Kryptografie",
+   "description": "Symmetrisch, asymmetrisch, Hashes, Protokolle.",
+   "topics": [
+    "security",
+    "theorie"
+   ]
+  },
+  {
+   "id": "expert-ml",
+   "stage": "expert",
+   "subject": "POS",
+   "title": "Machine Learning Grundlagen",
+   "description": "Lernverfahren, Modelle bewerten, Grenzen.",
+   "topics": [
+    "ki",
+    "algorithmen"
+   ]
+  },
+  {
+   "id": "expert-db-interna",
+   "stage": "expert",
+   "subject": "DBI",
+   "title": "Datenbank-Interna",
+   "description": "B-Bäume, Write-Ahead-Log, MVCC.",
+   "topics": [
+    "datenbanken",
+    "algorithmen"
+   ]
+  },
+  {
+   "id": "expert-kernel",
+   "stage": "expert",
+   "subject": "TINF",
+   "title": "Betriebssystem-Kernel",
+   "description": "Scheduler, Speicherverwaltung, Treiber.",
+   "topics": [
+    "betriebssysteme"
+   ]
+  },
+  {
+   "id": "expert-verifikation",
+   "stage": "expert",
+   "subject": "POS",
+   "title": "Formale Verifikation",
+   "description": "Beweisbar korrekte Software, Model Checking.",
+   "topics": [
+    "theorie",
+    "software-engineering"
+   ]
+  },
+  {
+   "id": "expert-tech-lead",
+   "stage": "expert",
+   "subject": "SYP",
+   "title": "Technische Führung & Strategie",
+   "description": "Architekturentscheidungen, Roadmaps, Teams führen.",
+   "topics": [
+    "projektmanagement"
+   ]
+  }
+ ]
+}

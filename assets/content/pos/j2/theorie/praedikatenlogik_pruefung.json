@@ -1,0 +1,118 @@
+{
+  "id": "pos-j2-theorie-praedikatenlogik_pruefung",
+  "title": "Abschlussprüfung: Prädikatenlogik",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Grundmenge {2, 3, 4, 5}. P(x): x ist eine Primzahl, G(x): x ist gerade. Welche Werte haben ∃x (P(x) ∧ G(x)) und ∀x (P(x) → ¬G(x))?",
+      "options": [
+        "wahr, wahr",
+        "falsch, wahr",
+        "wahr, falsch",
+        "falsch, falsch"
+      ],
+      "correctIndex": 2,
+      "explanation": "2 ist eine gerade Primzahl: Sie macht die erste Formel wahr und ist zugleich das Gegenbeispiel für die zweite."
+    },
+    {
+      "question": "Welche Formel ist die Negation von ∀x ∃y L(x, y)?",
+      "options": [
+        "∀x ∃y ¬L(x, y)",
+        "∃x ∀y ¬L(x, y)",
+        "∃y ∀x ¬L(x, y)",
+        "¬∃x ¬∀y L(x, y)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Negation wandert nach innen und dreht jeden Quantor um, die Reihenfolge der Variablen bleibt: ∃x ∀y ¬L(x, y)."
+    },
+    {
+      "question": "Was ist die Negation von „Jede Klasse hat mindestens eine:n Klassensprecher:in“?",
+      "options": [
+        "Keine Klasse hat eine:n Klassensprecher:in.",
+        "Jede Klasse hat keine:n Klassensprecher:in.",
+        "Es gibt eine Klasse mit mindestens einer/einem Klassensprecher:in.",
+        "Es gibt eine Klasse ohne Klassensprecher:in."
+      ],
+      "correctIndex": 3,
+      "explanation": "¬∀k ∃s KS(s, k) ≡ ∃k ∀s ¬KS(s, k): Es gibt (mindestens) eine Klasse, in der niemand Klassensprecher:in ist."
+    },
+    {
+      "question": "Welche Variable ist in ∀x (P(x) → Q(x, y)) frei?",
+      "options": [
+        "nur x",
+        "x und y",
+        "nur y",
+        "keine"
+      ],
+      "correctIndex": 2,
+      "explanation": "x wird vom Allquantor gebunden, y von keinem Quantor. Die Formel ist daher noch keine Aussage."
+    },
+    {
+      "question": "Prämissen: ∃x (A(x) ∧ B(x)) und ∀x (B(x) → C(x)). Welche Konklusion folgt gültig?",
+      "options": [
+        "∀x (A(x) → C(x))",
+        "∃x (A(x) ∧ C(x))",
+        "∃x (C(x) ∧ ¬A(x))",
+        "∀x (C(x) → B(x))"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nimm das x, das A und B erfüllt. Wegen B(x) → C(x) gilt auch C(x), also A(x) ∧ C(x). Über alle A-Elemente oder über Elemente ohne A weißt du nichts."
+    },
+    {
+      "question": "„Alle Informatiker:innen können programmieren. Mia kann programmieren. Also ist Mia Informatikerin.“ Wie beurteilst du den Schluss?",
+      "options": [
+        "gültig – Modus ponens",
+        "gültig – Modus tollens",
+        "ungültig – Bejahung der Folgerung",
+        "ungültig, weil die erste Prämisse falsch ist"
+      ],
+      "correctIndex": 2,
+      "explanation": "Aus ∀x (I(x) → P(x)) und P(Mia) folgt nicht I(Mia) – Mia könnte auch anders programmieren gelernt haben. Ob eine Prämisse inhaltlich stimmt, ändert nichts an der Gültigkeit der Form."
+    },
+    {
+      "question": "Welche Formel ist äquivalent zu ¬∀x (P(x) → Q(x))?",
+      "options": [
+        "∀x (P(x) ∧ ¬Q(x))",
+        "∃x (P(x) ∧ ¬Q(x))",
+        "∃x (¬P(x) → ¬Q(x))",
+        "∃x (¬P(x) ∧ Q(x))"
+      ],
+      "correctIndex": 1,
+      "explanation": "¬∀x (…) ≡ ∃x ¬(…), und ¬(P → Q) ≡ ¬(¬P ∨ Q) ≡ P ∧ ¬Q."
+    },
+    {
+      "question": "L(x): x ist Lehrkraft, S(x): x ist Schüler:in. Wie formalisierst du „Keine Lehrkraft ist gleichzeitig Schüler:in“?",
+      "options": [
+        "¬∀x (L(x) → S(x))",
+        "∀x (¬L(x) → S(x))",
+        "∃x (L(x) ∧ ¬S(x))",
+        "∀x (L(x) → ¬S(x))"
+      ],
+      "correctIndex": 3,
+      "explanation": "„Kein A ist B“ ≡ ∀x (A(x) → ¬B(x)) ≡ ¬∃x (A(x) ∧ B(x)). ¬∀x (L(x) → S(x)) hieße nur „Nicht jede Lehrkraft ist Schüler:in“."
+    },
+    {
+      "question": "Grundmenge {1, 2, 3}. Welche Aussage ist FALSCH?",
+      "options": [
+        "∀x ∃y (x + y = 4)",
+        "∃y ∀x (x + y = 4)",
+        "∃x ∃y (x < y)",
+        "∀x ∃y (x ≤ y)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zu jedem x gibt es ein passendes y (3, 2, 1), aber kein einziges y passt zu allen x. Die Reihenfolge der Quantoren entscheidet."
+    },
+    {
+      "question": "Gesucht sind Schüler:innen s, für die gilt: ∀n (n ist Note von s → n ≤ 4). Welche WHERE-Bedingung ist richtig?",
+      "code": "SELECT name FROM schueler s\nWHERE ???",
+      "options": [
+        "NOT EXISTS (… AND n.note > 4)",
+        "EXISTS (… AND n.note <= 4)",
+        "NOT EXISTS (… AND n.note <= 4)",
+        "EXISTS (… AND n.note > 4)"
+      ],
+      "correctIndex": 0,
+      "explanation": "SQL hat keinen Allquantor. ∀n (… → n ≤ 4) ≡ ¬∃n (… ∧ n > 4): Es darf keine Note über 4 existieren."
+    }
+  ]
+}

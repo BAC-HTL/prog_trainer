@@ -4,9 +4,10 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prog_trainer/models/challenge.dart';
 import 'package:prog_trainer/models/content.dart';
+import 'package:prog_trainer/models/curriculum.dart';
 
-/// Prüft alle Inhaltsdateien, damit kaputte JSON-Dateien, fehlende Dateien
-/// oder falsche Antwort-Indizes sofort auffallen.
+/// Prüft den Lehrplan und alle Inhaltsdateien, damit kaputte JSON-Dateien,
+/// fehlende Dateien oder falsche Antwort-Indizes sofort auffallen.
 const base = 'assets/content';
 
 Map<String, dynamic> readJson(String path) =>
@@ -21,6 +22,7 @@ void checkQuestions(List<QuizQuestion> questions) {
 }
 
 void main() {
+  final curriculum = Curriculum.fromJson(readJson('curriculum.json'));
   final tracks = (readJson('index.json')['tracks'] as List)
       .map((t) => Track.fromJson(t as Map<String, dynamic>))
       .toList();
@@ -32,48 +34,83 @@ void main() {
         reason: 'Ordner $base/$folder fehlt unter assets in pubspec.yaml');
   }
 
-  test('Track-IDs sind eindeutig', () {
-    final ids = tracks.map((t) => t.id).toList();
-    expect(ids.toSet().length, ids.length);
+  group('Lehrplan', () {
+    test('IDs sind eindeutig, Verweise gültig', () {
+      final stageIds = curriculum.stages.map((s) => s.id).toSet();
+      final subjectIds = curriculum.subjects.map((s) => s.id).toSet();
+      final topicIds = curriculum.topics.map((t) => t.id).toSet();
+      final languageIds = curriculum.languages.map((l) => l.id).toSet();
+      final moduleIds = <String>{};
+      final contentIds = <String>{};
+      for (final m in curriculum.modules) {
+        expect(moduleIds.add(m.id), isTrue, reason: 'doppeltes Modul ${m.id}');
+        expect(stageIds, contains(m.stage), reason: m.id);
+        expect(subjectIds, contains(m.subject), reason: m.id);
+        expect(topicIds, containsAll(m.topics), reason: m.id);
+        expect(languageIds, containsAll(m.variants.keys), reason: m.id);
+        for (final c in [...m.variants.values, if (m.neutral != null) m.neutral!]) {
+          expect(contentIds.add(c.id), isTrue,
+              reason: 'doppelte Fortschritts-ID ${c.id}');
+          // Module mit Lektionen brauchen eine Abschlussprüfung.
+          if (c.isAvailable) expect(c.examPath, isNotNull, reason: m.id);
+        }
+      }
+    });
+
+    test('Jeder HTL-Jahrgang hat Module, 1. und 2. Jahrgang sind verfügbar', () {
+      for (final s in curriculum.stages) {
+        expect(curriculum.modules.where((m) => m.stage == s.id), isNotEmpty,
+            reason: s.title);
+      }
+      for (final stage in ['j1', 'j2']) {
+        for (final m in curriculum.modules.where((m) => m.stage == stage)) {
+          final contents = [...m.variants.values, if (m.neutral != null) m.neutral!];
+          expect(contents.every((c) => c.isAvailable), isTrue,
+              reason: '${m.id} hat noch keine Lektionen');
+        }
+      }
+    });
   });
 
-  final allIds = <String>{};
+  final lessonIds = <String>{};
+  final seenPaths = <String>{};
 
-  for (final track in tracks) {
-    for (final levelPath in track.levelPaths) {
-      final level = Level.fromJson(readJson(levelPath));
-      group('${track.id}/${level.title}', () {
-        test('level.json in pubspec eingetragen', () {
-          expectAssetFolder(levelPath);
-        });
-
-        for (final chapter in level.chapters) {
-          for (final path in chapter.lessonPaths) {
-            test('Lektion $path', () {
-              expect(File('$base/$path').existsSync(), isTrue,
-                  reason: 'Datei fehlt');
-              expectAssetFolder(path);
-              final lesson = Lesson.fromJson(readJson(path));
-              expect(lesson.sections, isNotEmpty);
-              expect(allIds.add(lesson.id), isTrue,
-                  reason: 'doppelte ID ${lesson.id}');
-              checkQuestions(lesson.quiz);
-            });
-          }
-          if (chapter.examPath != null) {
-            test('Prüfung ${chapter.examPath}', () {
-              expect(File('$base/${chapter.examPath}').existsSync(), isTrue,
-                  reason: 'Datei fehlt');
-              final exam = Exam.fromJson(readJson(chapter.examPath!));
-              expect(exam.questions.length, greaterThanOrEqualTo(5));
-              expect(exam.passPercent, inInclusiveRange(1, 100));
-              checkQuestions(exam.questions);
-            });
-          }
+  for (final m in curriculum.modules) {
+    final contents = <String, ModuleContent>{
+      ...m.variants,
+      if (m.neutral != null) 'neutral': m.neutral!,
+    };
+    for (final entry in contents.entries) {
+      final c = entry.value;
+      if (!c.isAvailable) continue;
+      group('${m.id} (${entry.key})', () {
+        for (final path in c.lessonPaths) {
+          test('Lektion $path', () {
+            expect(seenPaths.add(path), isTrue,
+                reason: 'Lektion in mehreren Modulen verwendet');
+            expect(File('$base/$path').existsSync(), isTrue, reason: 'Datei fehlt');
+            expectAssetFolder(path);
+            final lesson = Lesson.fromJson(readJson(path));
+            expect(lesson.sections, isNotEmpty);
+            expect(lessonIds.add(lesson.id), isTrue,
+                reason: 'doppelte ID ${lesson.id}');
+            checkQuestions(lesson.quiz);
+          });
         }
+        test('Prüfung ${c.examPath}', () {
+          expect(File('$base/${c.examPath}').existsSync(), isTrue,
+              reason: 'Datei fehlt');
+          expectAssetFolder(c.examPath!);
+          final exam = Exam.fromJson(readJson(c.examPath!));
+          expect(exam.questions.length, greaterThanOrEqualTo(5));
+          expect(exam.passPercent, inInclusiveRange(1, 100));
+          checkQuestions(exam.questions);
+        });
       });
     }
+  }
 
+  for (final track in tracks) {
     if (track.challengesPath != null) {
       test('${track.id}: Herausforderungen', () {
         expectAssetFolder(track.challengesPath!);

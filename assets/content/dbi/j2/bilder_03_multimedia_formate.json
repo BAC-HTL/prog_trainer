@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j2-bilder_03_multimedia_formate",
+  "title": "Audio- und Videoformate",
+  "summary": "Abtastrate, Bittiefe und Bitrate verstehen und wissen, was Codecs und Container wie MP4 oder MKV sind.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ton ist analog: eine Schwingung, die sich stetig ändert. Zum Digitalisieren wird das Signal in festen Abständen gemessen (Abtastung) und jeder Messwert auf eine ganze Zahl gerundet (Quantisierung). Das Ergebnis heißt PCM (Pulse-Code-Modulation) – unkomprimiertes Audio."
+    },
+    {
+      "type": "text",
+      "content": "Die Abtastrate gibt an, wie oft pro Sekunde gemessen wird. Nach dem Abtasttheorem (Nyquist-Shannon) muss sie mehr als doppelt so hoch sein wie die höchste Frequenz, die du aufnehmen willst. Menschen hören bis etwa 20 kHz – daher nutzt die Audio-CD 44,1 kHz, Video meist 48 kHz."
+    },
+    {
+      "type": "text",
+      "content": "Die Bittiefe legt fest, wie fein jeder Messwert abgestuft ist: 16 Bit (CD) ergeben 2¹⁶ = 65.536 Stufen, Studios arbeiten oft mit 24 Bit. Dazu kommt die Zahl der Kanäle: 1 = Mono, 2 = Stereo."
+    },
+    {
+      "type": "code",
+      "content": "WAV, 1 Minute, CD-Qualität:\n44.100 Hz × 16 Bit × 2 Kanäle\n× 60 s / 8\n= 10.584.000 Byte\n≈ 10,6 MB pro Minute"
+    },
+    {
+      "type": "text",
+      "content": "Audioformate:\n• WAV – meist unkomprimiertes PCM, groß, gut zum Schneiden\n• FLAC – verlustfrei komprimiert (etwa halbe Größe, je nach Material)\n• MP3 – verlustbehaftet, sehr verbreitet\n• AAC – verlustbehaftet, klingt bei gleicher Bitrate meist besser als MP3, Standard bei vielen Streamingdiensten und Videos\nBei verlustbehafteten Formaten zählt die Bitrate: Bit pro Sekunde, z. B. 128 kbit/s."
+    },
+    {
+      "type": "code",
+      "content": "MP3, 3 Minuten, 128 kbit/s:\n128.000 Bit/s × 180 s / 8\n= 2.880.000 Byte ≈ 2,9 MB\n\n→ rund 11× kleiner als\n  WAV (≈ 31,8 MB)"
+    },
+    {
+      "type": "text",
+      "content": "Video ist eine Folge von Einzelbildern. Wichtig sind die Auflösung (720p = 1280 × 720, Full HD 1080p = 1920 × 1080, 4K UHD = 3840 × 2160) und die Bildrate in fps (frames per second). Typisch: 24 fps (Kino), 25/50 fps (Europa, Fernsehen), 30/60 fps (Games, Handys)."
+    },
+    {
+      "type": "code",
+      "content": "Full HD, 24 Bit, 25 fps, unkompr.:\n1920 × 1080 × 3 Byte × 25\n= 155.520.000 Byte\n≈ 155 MB pro SEKUNDE!\n\n→ ohne Kompression unbrauchbar"
+    },
+    {
+      "type": "text",
+      "content": "Ein Codec (Coder/Decoder) komprimiert die Daten: H.264 (AVC) ist der verbreitetste, H.265 (HEVC) braucht bei ähnlicher Qualität deutlich weniger Bitrate, AV1 ist ein modernes lizenzfreies Format der Alliance for Open Media. Ein Container ist die „Verpackung“, die Video, Audio und Untertitel zusammenhält: MP4 (z. B. H.264 + AAC) oder MKV (Matroska, nimmt fast jeden Codec auf). Typischer Fehler: „MP4 ist ein Codec“ – nein, die Dateiendung sagt nur, welcher Container es ist."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Audiogröße = Abtastrate × Bittiefe × Kanäle × Sekunden / 8. Bei komprimierten Dateien rechnest du mit der Bitrate: Bitrate × Sekunden / 8. Verlustfrei: WAV, FLAC – verlustbehaftet: MP3, AAC. Codec = Komprimierung, Container = Verpackung."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie groß ist eine unkomprimierte Mono-Aufnahme mit 48 kHz und 16 Bit, die 10 Sekunden dauert?",
+      "options": [
+        "7.680.000 Byte",
+        "960.000 Byte",
+        "1.920.000 Byte",
+        "96.000 Byte"
+      ],
+      "correctIndex": 1,
+      "explanation": "48.000 × 16 × 1 × 10 = 7.680.000 Bit. Geteilt durch 8 ergibt 960.000 Byte. Bei Stereo wären es 1.920.000 Byte."
+    },
+    {
+      "question": "Du willst Töne bis 20 kHz aufnehmen. Welche Abtastrate brauchst du mindestens laut Abtasttheorem?",
+      "options": [
+        "Mehr als 10 kHz",
+        "Genau 20 kHz",
+        "Mehr als 40 kHz",
+        "Mehr als 80 kHz"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Abtastrate muss mehr als doppelt so hoch sein wie die höchste Frequenz: mehr als 2 × 20 kHz = 40 kHz. Darum 44,1 kHz bei der CD."
+    },
+    {
+      "question": "Welche Aussage über MP4 stimmt?",
+      "options": [
+        "MP4 ist ein Container, der z. B. H.264-Video und AAC-Audio enthalten kann",
+        "MP4 ist ein verlustfreier Audiocodec",
+        "MP4 ist ein Videocodec wie H.265",
+        "MP4 kann nur Ton speichern"
+      ],
+      "correctIndex": 0,
+      "explanation": "MP4 ist ein Containerformat. Welche Codecs darin stecken (H.264, H.265, AV1, AAC …), ist eine eigene Frage."
+    },
+    {
+      "question": "Ein Video hat eine Gesamtbitrate von 8 Mbit/s und dauert 1 Minute. Wie groß ist die Datei ungefähr?",
+      "options": [
+        "8 MB",
+        "480 MB",
+        "480 Mbit",
+        "60 MB"
+      ],
+      "correctIndex": 3,
+      "explanation": "8.000.000 Bit/s × 60 s = 480.000.000 Bit = 480 Mbit. Geteilt durch 8 sind das 60.000.000 Byte = 60 MB."
+    }
+  ]
+}

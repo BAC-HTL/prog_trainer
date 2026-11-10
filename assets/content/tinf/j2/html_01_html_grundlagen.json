@@ -1,0 +1,95 @@
+{
+  "id": "tinf-j2-html_01_html_grundlagen",
+  "title": "HTML-Grundlagen",
+  "summary": "Wie eine Webseite zum Browser kommt und wie du sie mit HTML strukturierst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wenn du im Browser eine Adresse wie https://www.example.com eingibst, schickt der Browser (Client) eine Anfrage (Request) an einen Webserver. Der Server antwortet (Response) mit einer HTML-Datei. Der Browser liest das HTML und stellt die Seite dar. Für jedes Bild und jede CSS-Datei, die im HTML vorkommt, schickt er eine weitere Anfrage.\n\nHTML (HyperText Markup Language) ist keine Programmiersprache, sondern eine Auszeichnungssprache: Sie beschreibt die Struktur einer Seite – was ist Überschrift, was Absatz, was Liste. Wie es aussieht, regelt später CSS."
+    },
+    {
+      "type": "code",
+      "content": "<!DOCTYPE html>\n<html lang=\"de\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\n    \"width=device-width,initial-scale=1\">\n  <title>Meine erste Seite</title>\n</head>\n<body>\n  <h1>Hallo HTL!</h1>\n  <p>Das ist ein Absatz.</p>\n</body>\n</html>"
+    },
+    {
+      "type": "text",
+      "content": "Das ist das HTML5-Grundgerüst:\n• <!DOCTYPE html> sagt dem Browser: modernes HTML5.\n• <html lang=\"de\"> umschließt alles; lang hilft z. B. Vorleseprogrammen.\n• <head> enthält Infos über die Seite: Zeichensatz utf-8 (für ä, ö, ü, ß), viewport (fürs Handy) und den <title> im Browser-Tab.\n• <body> enthält alles, was du siehst.\n\nEin Element besteht meist aus Start-Tag, Inhalt und End-Tag: <p>Text</p>. Attribute stehen im Start-Tag: lang=\"de\". Für Überschriften gibt es <h1> bis <h6> – verwende pro Seite nur ein <h1> und überspringe keine Ebenen. Absätze schreibst du mit <p>, mit <strong> und <em> hebst du Wörter hervor."
+    },
+    {
+      "type": "text",
+      "content": "Links erstellst du mit <a href=\"…\">. Das Ziel steht im Attribut href – entweder absolut (https://…) oder relativ zur aktuellen Datei (z. B. kontakt.html oder bilder/logo.png).\n\nBilder bindest du mit <img> ein. <img> ist ein leeres Element ohne End-Tag. src gibt die Bilddatei an, alt einen Ersatztext. alt ist Pflicht: Er wird vorgelesen, wenn jemand die Seite mit einem Screenreader nutzt, und angezeigt, wenn das Bild nicht lädt."
+    },
+    {
+      "type": "code",
+      "content": "<h1>Tag der offenen Tür</h1>\n<h2>Programm</h2>\n<p>Wir zeigen <strong>Robotik</strong>\n  und <em>Webprojekte</em>.</p>\n\n<a href=\"anmeldung.html\">Anmelden</a>\n<a href=\"https://www.example.com\">\n  Externe Seite</a>\n\n<img src=\"bilder/werkstatt.jpg\"\n  alt=\"Schüler:innen an der Fräse\">"
+    },
+    {
+      "type": "text",
+      "content": "Listen gibt es als ungeordnete Liste <ul> (Aufzählungspunkte) und geordnete Liste <ol> (nummeriert). Jeder Eintrag steht in einem <li>.\n\nTabellen sind für tabellarische Daten gedacht, z. B. einen Stundenplan – nicht fürs Seitenlayout. <table> enthält Zeilen <tr>; in einer Zeile stehen Kopfzellen <th> oder Datenzellen <td>. Mit <thead> und <tbody> trennst du Kopf und Inhalt."
+    },
+    {
+      "type": "code",
+      "content": "<ol>\n  <li>Anmelden</li>\n  <li>Führung</li>\n</ol>\n\n<table>\n  <thead>\n    <tr>\n      <th>Stunde</th><th>Fach</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>1</td><td>POS</td>\n    </tr>\n    <tr>\n      <td>2</td><td>NVS</td>\n    </tr>\n  </tbody>\n</table>"
+    },
+    {
+      "type": "text",
+      "content": "Semantische Elemente sagen, welche Rolle ein Bereich hat: <header> (Kopfbereich), <nav> (Navigation), <main> (Hauptinhalt, nur einmal pro Seite), <article> (eigenständiger Beitrag, z. B. eine News), <section> (thematischer Abschnitt), <aside> (Randinfo) und <footer> (Fußbereich).\n\nOptisch ändern sie nichts – aber Suchmaschinen und Screenreader verstehen die Seite besser, und dein Code wird lesbarer als ein Meer aus <div>s."
+    },
+    {
+      "type": "code",
+      "content": "<body>\n  <header>\n    <h1>HTL Musterstadt</h1>\n    <nav>\n      <a href=\"index.html\">Start</a>\n      <a href=\"news.html\">News</a>\n    </nav>\n  </header>\n  <main>\n    <article>\n      <h2>Robotik-Cup gewonnen</h2>\n      <p>Die 2AHIF holt Platz 1.</p>\n    </article>\n  </main>\n  <footer>© 2026 HTL</footer>\n</body>"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: End-Tags vergessen oder falsch verschachteln (<p><strong>…</p></strong>), alt bei Bildern weglassen, Tabellen für das Layout missbrauchen und Überschriften nur wegen der Schriftgröße wählen.\n\nZusammenfassung: Der Browser holt HTML per Request vom Server. HTML beschreibt die Struktur mit Elementen und Attributen. Wichtig sind Grundgerüst, h1–h6, p, a, img, ul/ol/li, table und die semantischen Elemente wie header, nav, main und footer."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Attribut sollte jedes <img> haben, damit Screenreader das Bild beschreiben können?",
+      "options": [
+        "title",
+        "src",
+        "href",
+        "alt"
+      ],
+      "correctIndex": 3,
+      "explanation": "alt enthält den Ersatztext. Er wird vorgelesen und angezeigt, wenn das Bild nicht geladen werden kann. src gibt nur die Bilddatei an."
+    },
+    {
+      "question": "Warum funktioniert dieser Link nicht?",
+      "code": "<a src=\"kontakt.html\">Kontakt</a>",
+      "options": [
+        "Der Link-Text muss in Anführungszeichen stehen",
+        "Das Ziel gehört ins Attribut href, nicht src",
+        "<a> braucht kein End-Tag",
+        "Relative Pfade sind in Links nicht erlaubt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei <a> steht das Ziel im Attribut href. src verwenden z. B. <img> und <script>."
+    },
+    {
+      "question": "Wie viele Spalten hat diese Tabelle?",
+      "code": "<table>\n  <tr>\n    <td>A</td><td>B</td><td>C</td>\n  </tr>\n  <tr>\n    <td>D</td><td>E</td><td>F</td>\n  </tr>\n</table>",
+      "options": [
+        "2",
+        "3",
+        "6",
+        "1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jede Zeile <tr> hat drei Zellen <td>, also hat die Tabelle 3 Spalten und 2 Zeilen."
+    },
+    {
+      "question": "Welches Element ist für den Hauptinhalt gedacht und soll pro Seite nur einmal vorkommen?",
+      "options": [
+        "<main>",
+        "<section>",
+        "<article>",
+        "<div>"
+      ],
+      "correctIndex": 0,
+      "explanation": "<main> umschließt den Hauptinhalt der Seite und kommt nur einmal vor. <section> und <article> dürfen mehrfach verwendet werden."
+    }
+  ]
+}

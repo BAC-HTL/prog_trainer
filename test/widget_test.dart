@@ -7,6 +7,7 @@ import 'package:prog_trainer/game/mission.dart';
 import 'package:prog_trainer/main.dart';
 import 'package:prog_trainer/models/challenge.dart';
 import 'package:prog_trainer/models/content.dart';
+import 'package:prog_trainer/models/curriculum.dart';
 import 'package:prog_trainer/runner/code_runner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,43 +16,71 @@ const _track = Track(
   title: 'Python',
   description: 'Test',
   icon: 'python',
-  kind: TrackKind.language,
-  levelPaths: ['python/einsteiger/level.json'],
   challengesPath: 'python/challenges.json',
   runtime: 'python',
 );
 
+const _content = ModuleContent(
+    id: 'python-e1', lessonPaths: ['l1.json'], examPath: 'exam.json');
+
+const _curriculum = Curriculum(
+  stages: [
+    Stage(id: 'j1', title: '1. Jahrgang', group: 'htl', description: 'Start'),
+    Stage(id: 'j2', title: '2. Jahrgang', group: 'htl', description: 'Weiter'),
+  ],
+  subjects: [
+    Subject(id: 'POS', title: 'Programmieren und Software Engineering', icon: 'code'),
+    Subject(id: 'NVS', title: 'Netzwerksysteme und Verteilte Systeme', icon: 'lan'),
+  ],
+  topics: [
+    Topic(id: 'programmieren', title: 'Programmieren'),
+    Topic(id: 'netzwerke', title: 'Netzwerke'),
+  ],
+  languages: [Language('python', 'Python'), Language('csharp', 'C#')],
+  modules: [
+    CurriculumModule(
+      id: 'pos-j1-erste-schritte',
+      stage: 'j1',
+      subject: 'POS',
+      semester: 1,
+      title: 'Erste Schritte',
+      description: 'Kapitel',
+      topics: ['programmieren'],
+      variants: {
+        'python': _content,
+        'csharp': ModuleContent(
+            id: 'csharp-e1', lessonPaths: ['c1.json'], examPath: 'exam.json'),
+      },
+    ),
+    CurriculumModule(
+      id: 'pos-j1-leer',
+      stage: 'j1',
+      subject: 'POS',
+      title: 'Leeres Modul',
+      description: 'Noch ohne Inhalt',
+      topics: ['programmieren'],
+      neutral: ModuleContent(id: 'pos-j1-leer', lessonPaths: []),
+    ),
+    CurriculumModule(
+      id: 'nvs-j2-grundlagen',
+      stage: 'j2',
+      subject: 'NVS',
+      semester: 3,
+      title: 'Netzwerk-Grundlagen',
+      description: 'Medien und Protokolle',
+      topics: ['netzwerke'],
+      neutral: ModuleContent(
+          id: 'nvs-j2-grundlagen', lessonPaths: ['n1.json'], examPath: 'exam.json'),
+    ),
+  ],
+);
+
 class FakeRepository extends ContentRepository {
   @override
-  Future<List<Track>> loadTracks() async => const [
-        _track,
-        Track(
-          id: 'testing',
-          title: 'Testing',
-          description: 'Test',
-          icon: 'testing',
-          kind: TrackKind.concept,
-          levelPaths: [],
-        ),
-      ];
+  Future<List<Track>> loadTracks() async => const [_track];
 
   @override
-  Future<List<Level>> loadLevels(Track track) async => const [
-        Level(
-          id: 'python-einsteiger',
-          title: 'Einsteiger',
-          description: 'Start',
-          chapters: [
-            Chapter(
-              id: 'python-e1',
-              title: 'Erste Schritte',
-              description: 'Kapitel',
-              lessonPaths: ['l1.json'],
-              examPath: 'exam.json',
-            ),
-          ],
-        ),
-      ];
+  Future<Curriculum> loadCurriculum() async => _curriculum;
 
   @override
   Future<Lesson> loadLesson(String path) async => const Lesson(
@@ -157,9 +186,9 @@ void main() {
   testWidgets('Lektion → Quiz → Prüfung bestanden', (tester) async {
     final progress = await pumpApp(tester);
 
-    expect(find.text('Bald verfügbar'), findsOneWidget);
-    await tester.tap(find.text('Python'));
-    await tester.pumpAndSettle();
+    // 1. Jahrgang ist vorausgewählt; das leere Modul ist noch gesperrt.
+    expect(find.textContaining('Bald verfügbar'), findsOneWidget);
+    expect(find.text('Netzwerk-Grundlagen'), findsNothing);
     await tester.tap(find.text('Erste Schritte'));
     await tester.pumpAndSettle();
 
@@ -229,5 +258,36 @@ void main() {
     expect(progress.missionStars('python', 'm01'), 3);
     expect(progress.points('python'), 30);
     expect(progress.isUnlocked('mission_1'), isTrue);
+  });
+
+  testWidgets('Stufen, Themenfilter und Sprachwahl', (tester) async {
+    final progress = await pumpApp(tester);
+
+    // Stufe wechseln
+    await tester.tap(find.text('2. Jahrgang'));
+    await tester.pumpAndSettle();
+    expect(find.text('Netzwerk-Grundlagen'), findsOneWidget);
+    expect(find.text('Erste Schritte'), findsNothing);
+
+    // Alle Stufen
+    await tester.tap(find.text('Alle'));
+    await tester.pumpAndSettle();
+    expect(find.text('Netzwerk-Grundlagen'), findsOneWidget);
+    expect(find.text('Erste Schritte'), findsOneWidget);
+
+    // Nach Thema filtern
+    await tester.tap(find.text('Filter'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Netzwerke'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Anzeigen'));
+    await tester.pumpAndSettle();
+    expect(find.text('Netzwerk-Grundlagen'), findsOneWidget);
+    expect(find.text('Erste Schritte'), findsNothing);
+
+    // Sprache umstellen
+    await tester.tap(find.text('C#'));
+    await tester.pumpAndSettle();
+    expect(progress.language, 'csharp');
   });
 }

@@ -1,0 +1,93 @@
+{
+  "id": "pos-j2-csharp-rekursion_03_rekursive_algorithmen",
+  "title": "Rekursive Algorithmen",
+  "summary": "Fibonacci und Effizienz, schnelles Potenzieren, Binärsuche und die Türme von Hanoi – rekursiv gelöst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Fibonacci-Folge lautet 0, 1, 1, 2, 3, 5, 8, 13, … – jede Zahl ist die Summe der beiden vorigen. Mathematisch: Fib(0) = 0, Fib(1) = 1 und Fib(n) = Fib(n − 1) + Fib(n − 2). Das lässt sich direkt rekursiv hinschreiben. Darunter siehst du eine verbesserte Variante mit Gedächtnis:"
+    },
+    {
+      "type": "code",
+      "content": "static long Fib(int n)\n{\n    if (n <= 1) return n;\n    return Fib(n - 1) + Fib(n - 2);\n}\n\nvar memo = new Dictionary<int, long>();\nlong FibM(int n)\n{\n    if (n <= 1) return n;\n    if (memo.TryGetValue(n, out long w))\n        return w;\n    long e = FibM(n - 1) + FibM(n - 2);\n    memo[n] = e;\n    return e;\n}\n\nConsole.WriteLine(Fib(10));\nConsole.WriteLine(FibM(90));\n// Ausgabe:\n// 55\n// 2880067194370816120"
+    },
+    {
+      "type": "text",
+      "content": "Die einfache Version ist schön kurz, aber extrem langsam: Fib(5) ruft Fib(4) und Fib(3) auf, Fib(4) ruft wieder Fib(3) auf – dieselben Werte werden immer wieder neu berechnet. Die Zahl der Aufrufe wächst exponentiell: Fib(40) braucht über 330 Millionen Aufrufe!\n\nDie Lösung heißt Memoisierung: Jedes berechnete Ergebnis wird in einem Dictionary gespeichert. Beim nächsten Mal wird es nur nachgeschlagen. So wird jeder Wert nur einmal berechnet, und FibM(90) ist sofort fertig. Merke: Elegant heißt nicht automatisch effizient."
+    },
+    {
+      "type": "text",
+      "content": "Potenzieren: x hoch n naiv zu berechnen braucht n Multiplikationen. Rekursiv geht es viel schneller, denn bei geradem n gilt xⁿ = (x^(n/2))². Bei ungeradem n rechnest du x · xⁿ⁻¹. Weil n bei jedem zweiten Schritt halbiert wird, brauchst du nur etwa 2 · log₂(n) Aufrufe statt n."
+    },
+    {
+      "type": "code",
+      "content": "static long Potenz(long x, int n)\n{\n    if (n == 0) return 1;\n    if (n % 2 == 1)\n        return x * Potenz(x, n - 1);\n    long h = Potenz(x, n / 2);\n    return h * h;\n}\n\nConsole.WriteLine(Potenz(2, 10));\nConsole.WriteLine(Potenz(3, 13));\n// Ausgabe:\n// 1024\n// 1594323"
+    },
+    {
+      "type": "text",
+      "content": "Binärsuche in einem sortierten Array: Schau dir das mittlere Element an. Ist es das gesuchte, bist du fertig. Ist der gesuchte Wert kleiner, suchst du nur noch in der linken Hälfte weiter, sonst in der rechten. Der Suchbereich wird über die Parameter von und bis festgelegt. Basisfall: von > bis – der Bereich ist leer, der Wert kommt nicht vor."
+    },
+    {
+      "type": "code",
+      "content": "static int Suche(int[] a, int ziel,\n                 int von, int bis)\n{\n    if (von > bis) return -1;\n    int m = (von + bis) / 2;\n    if (a[m] == ziel) return m;\n    if (ziel < a[m])\n        return Suche(a, ziel, von, m - 1);\n    return Suche(a, ziel, m + 1, bis);\n}\n\nint[] w = { 3, 8, 12, 17, 21, 30, 42 };\nConsole.WriteLine(Suche(w, 21, 0, 6));\nConsole.WriteLine(Suche(w, 5, 0, 6));\n// Ausgabe:\n// 4\n// -1"
+    },
+    {
+      "type": "text",
+      "content": "Die Türme von Hanoi: n Scheiben liegen der Größe nach auf Stab A und sollen auf Stab C. Du darfst immer nur eine Scheibe bewegen und nie eine größere auf eine kleinere legen. Stab B hilft.\n\nRekursiv ist die Lösung erstaunlich einfach:\n1. Bring die oberen n − 1 Scheiben von A nach B (C hilft).\n2. Leg die größte Scheibe von A nach C.\n3. Bring die n − 1 Scheiben von B nach C (A hilft).\nInsgesamt braucht man 2ⁿ − 1 Züge."
+    },
+    {
+      "type": "code",
+      "content": "static void Hanoi(int n, char von,\n                  char ziel, char hilf)\n{\n    if (n == 0) return;\n    Hanoi(n - 1, von, hilf, ziel);\n    Console.WriteLine(\n        $\"{n}: {von} -> {ziel}\");\n    Hanoi(n - 1, hilf, ziel, von);\n}\n\nHanoi(2, 'A', 'C', 'B');\n// Ausgabe:\n// 1: A -> B\n// 2: A -> C\n// 1: B -> C"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung:\n• Naives Fibonacci rechnet Teilergebnisse mehrfach – Memoisierung (oder eine Schleife) macht es schnell.\n• Schnelles Potenzieren und Binärsuche halbieren das Problem in jedem Schritt und brauchen daher nur etwa log₂(n) Schritte.\n• Hanoi zeigt die Stärke der Rekursion: Ein kniffliges Problem wird auf zwei kleinere gleicher Art zurückgeführt. Die Zahl der Züge (2ⁿ − 1) wächst aber rasant – bei 64 Scheiben wären es über 18 Trillionen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie oft wird die naive Methode Fib insgesamt aufgerufen, wenn du Fib(4) berechnest (inklusive des ersten Aufrufs)?",
+      "options": [
+        "4",
+        "5",
+        "9",
+        "16"
+      ],
+      "correctIndex": 2,
+      "explanation": "Fib(4) ruft Fib(3) und Fib(2) auf, Fib(3) ruft Fib(2) und Fib(1) auf, und jedes der beiden Fib(2) ruft Fib(1) und Fib(0) auf. Zusammen sind das 9 Aufrufe."
+    },
+    {
+      "question": "Wie viele Züge braucht man mindestens, um bei den Türmen von Hanoi 5 Scheiben umzuschichten?",
+      "options": [
+        "25",
+        "31",
+        "32",
+        "10"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Formel lautet 2ⁿ − 1, also 2⁵ − 1 = 32 − 1 = 31 Züge."
+    },
+    {
+      "question": "Wie oft wird Potenz (aus der Lektion) insgesamt aufgerufen, wenn du Potenz(2, 8) berechnest?",
+      "options": [
+        "8",
+        "5",
+        "4",
+        "9"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Aufrufe sind Potenz(2, 8), Potenz(2, 4), Potenz(2, 2), Potenz(2, 1) und Potenz(2, 0) – also 5. Bei geradem n wird halbiert, bei n = 1 wird um 1 verringert."
+    },
+    {
+      "question": "Du suchst mit Suche(w, 30, 0, 6) im Array { 3, 8, 12, 17, 21, 30, 42 }. Welche Indizes m werden der Reihe nach angeschaut?",
+      "options": [
+        "3 4 5",
+        "0 1 2 3 4 5",
+        "3 5",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst m = (0 + 6) / 2 = 3 (Wert 17). 30 ist größer, also von = 4, bis = 6, m = 5 – dort steht 30. Gefunden nach zwei Schritten."
+    }
+  ]
+}

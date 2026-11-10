@@ -1,0 +1,117 @@
+{
+  "id": "nvs-j2-dienste_pruefung",
+  "title": "Abschlussprüfung: Netzwerkdienste",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Warum sendet ein DHCP-Client die Request-Nachricht als Broadcast, obwohl er den Server aus dem Offer schon kennt?",
+      "options": [
+        "Weil er noch keine MAC-Adresse hat",
+        "Damit alle DHCP-Server erfahren, welches Angebot angenommen wurde",
+        "Weil DHCP über TCP läuft",
+        "Damit der Switch seine MAC-Tabelle löscht"
+      ],
+      "correctIndex": 1,
+      "explanation": "Haben mehrere Server Angebote gemacht, erkennen die nicht gewählten am Broadcast-Request, dass sie ihre angebotene Adresse wieder freigeben können."
+    },
+    {
+      "question": "Welche Ports verwendet DHCP?",
+      "options": [
+        "TCP 53",
+        "UDP 123",
+        "TCP 67 und 68",
+        "UDP 67 (Server) und 68 (Client)"
+      ],
+      "correctIndex": 3,
+      "explanation": "DHCP läuft über UDP, Server auf Port 67, Client auf Port 68. Port 53 ist DNS, 123 ist NTP."
+    },
+    {
+      "question": "www.schule.example ist ein CNAME auf web.schule.example. Was braucht es noch, damit Browser die Seite per IPv4 erreichen?",
+      "options": [
+        "Einen A-Record für web.schule.example",
+        "Einen MX-Record für www.schule.example",
+        "Einen zweiten CNAME auf www",
+        "Nichts – der CNAME enthält die IP"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein CNAME verweist nur auf einen anderen Namen. Die IPv4-Adresse liefert erst ein A-Record (für IPv6 ein AAAA-Record) des Ziels."
+    },
+    {
+      "question": "In welcher Reihenfolge fragt ein Resolver ohne Cache-Treffer nach www.example.at?",
+      "options": [
+        "Autoritativer Server → TLD → Root",
+        "Root → TLD-Server (.at) → autoritativer Server",
+        "TLD-Server → Root → Mailserver",
+        "Default Gateway → DHCP → DNS"
+      ],
+      "correctIndex": 1,
+      "explanation": "DNS ist hierarchisch: Der Root-Server verweist auf die Server der TLD .at, diese auf den autoritativen Server von example.at."
+    },
+    {
+      "question": "Eine Domain hat zwei MX-Records: Priorität 10 → mx1, Priorität 20 → mx2. Welcher Server wird bevorzugt?",
+      "options": [
+        "mx2, weil die Zahl größer ist",
+        "Zufällig einer der beiden",
+        "mx1, weil der kleinere Wert bevorzugt wird",
+        "Keiner – MX braucht einen CNAME"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei MX-Records gilt: kleinerer Prioritätswert = höhere Priorität. mx2 ist der Ersatz, falls mx1 nicht erreichbar ist."
+    },
+    {
+      "question": "Welche Kombination ist richtig zugeordnet?",
+      "options": [
+        "IMAP – Mails versenden, Port 25",
+        "SSH – verschlüsselter Fernzugriff, Port 22",
+        "NTP – Webseiten, Port 80",
+        "FTP – verschlüsselt, Port 443"
+      ],
+      "correctIndex": 1,
+      "explanation": "SSH nutzt TCP-Port 22. IMAP dient zum Abholen (143/993), NTP der Zeitsynchronisation (UDP 123), FTP ist unverschlüsselt (21)."
+    },
+    {
+      "question": "Warum sollte man im Schulnetz FTP durch SFTP ersetzen?",
+      "options": [
+        "FTP ist langsamer als jedes andere Protokoll.",
+        "FTP funktioniert nicht über Switches.",
+        "SFTP braucht keinen Server.",
+        "FTP überträgt Zugangsdaten und Dateien unverschlüsselt."
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei FTP kann jeder, der den Verkehr mitschneidet, Benutzername und Passwort lesen. SFTP läuft verschlüsselt über SSH."
+    },
+    {
+      "question": "Ein Schüler meldet: „Kein Internet.“ ping 127.0.0.1 klappt, ping zum Gateway 192.168.1.1 klappt, ping 1.1.1.1 schlägt fehl. Wo suchst du weiter?",
+      "options": [
+        "Am Netzwerkkabel des Schüler-PCs",
+        "Bei der Netzwerkkarte des PCs",
+        "Beim Weg ab dem Gateway Richtung Internet (Router, Provider)",
+        "Nur beim DNS"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das lokale Netz bis zum Gateway funktioniert. Der Fehler liegt dahinter. Mit tracert/traceroute zu 1.1.1.1 siehst du, ab welchem Hop es hakt. DNS spielt bei einem ping auf eine IP keine Rolle."
+    },
+    {
+      "question": "Was ist der Hauptzweck von „ipconfig /flushdns“ unter Windows?",
+      "options": [
+        "Den lokalen DNS-Cache leeren, damit Namen neu aufgelöst werden",
+        "Eine neue IP-Adresse per DHCP holen",
+        "Den ARP-Cache anzeigen",
+        "Den DNS-Server neu starten"
+      ],
+      "correctIndex": 0,
+      "explanation": "Veraltete Einträge im DNS-Cache können nach Änderungen falsche Adressen liefern. /flushdns leert den Cache; /renew wäre für DHCP."
+    },
+    {
+      "question": "In einer traceroute-Ausgabe zeigen die Hops 1–4 Antwortzeiten, ab Hop 5 nur noch * * * bis zum Abbruch. Was ist die sinnvollste Schlussfolgerung?",
+      "options": [
+        "Der eigene PC hat keine IP-Adresse.",
+        "Ab Hop 5 kommen keine Antworten mehr – das Problem oder ein Filter liegt um diesen Abschnitt.",
+        "Das DNS ist falsch konfiguriert.",
+        "Der Switch hat eine volle MAC-Tabelle."
+      ],
+      "correctIndex": 1,
+      "explanation": "Die ersten Hops sind erreichbar, also funktionieren PC und lokales Netz. Ab Hop 5 antwortet niemand mehr – dort liegt eine Störung, oder ICMP wird ab dort gefiltert."
+    }
+  ]
+}

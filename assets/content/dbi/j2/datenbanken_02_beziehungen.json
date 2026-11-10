@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j2-datenbanken_02_beziehungen",
+  "title": "Beziehungen und Fremdschlüssel",
+  "summary": "Tabellen über Fremdschlüssel verbinden, 1:1-, 1:n- und m:n-Beziehungen modellieren und referentielle Integrität verstehen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Würdest du bei jeder Schülerin Klassenbezeichnung, Raum und Klassenvorstand mitspeichern, stünden dieselben Daten 30-mal in der Tabelle (Redundanz). Ändert sich der Raum, müsstest du 30 Zeilen ändern – und vergisst garantiert eine. Lösung: Die Klassen kommen in eine eigene Tabelle, und die Schülertabelle verweist nur noch darauf."
+    },
+    {
+      "type": "text",
+      "content": "Dieser Verweis heißt Fremdschlüssel (Foreign Key, FK): ein Feld, das den Primärschlüssel einer anderen Tabelle enthält. In schueler steht nur noch klasse_id = 1, und in der Tabelle klassen steht, dass 1 die 2AHIT im Raum E07 ist."
+    },
+    {
+      "type": "code",
+      "content": "klassen\nid | bezeichnung | raum\n---+-------------+-----\n 1 | 2AHIT       | E07\n 2 | 2BHIT       | E08\n\nschueler\nid | vorname | klasse_id (FK)\n---+---------+---------------\n 1 | Anna    | 1  → 2AHIT\n 2 | Ben     | 1  → 2AHIT\n 3 | Clara   | 2  → 2BHIT"
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE schueler (\n  schueler_id INTEGER PRIMARY KEY,\n  vorname     VARCHAR(50) NOT NULL,\n  nachname    VARCHAR(50) NOT NULL,\n  klasse_id   INTEGER,\n  FOREIGN KEY (klasse_id)\n    REFERENCES klassen(klasse_id)\n);"
+    },
+    {
+      "type": "text",
+      "content": "1:n (eins zu viele) ist die häufigste Beziehung: Eine Klasse hat viele Schüler:innen, jede:r gehört zu genau einer Klasse. Merke: Der Fremdschlüssel kommt immer auf die n-Seite, also in die Tabelle schueler. Umgekehrt ginge es nicht – ein Feld darf ja nur einen Wert enthalten."
+    },
+    {
+      "type": "text",
+      "content": "1:1 (eins zu eins): Jede:r Schüler:in hat höchstens einen Spind, jeder Spind gehört höchstens einer Person. Technisch ist das ein Fremdschlüssel, der zusätzlich UNIQUE (eindeutig) ist. 1:1-Beziehungen sind selten – oft kann man die Daten auch in eine Tabelle legen."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE spinde (\n  spind_nr    INTEGER PRIMARY KEY,\n  stockwerk   INTEGER,\n  schueler_id INTEGER UNIQUE,\n  FOREIGN KEY (schueler_id)\n    REFERENCES schueler(schueler_id)\n);"
+    },
+    {
+      "type": "text",
+      "content": "m:n (viele zu viele): Eine Schülerin besucht mehrere Freifächer, ein Freifach hat viele Teilnehmer:innen. Das lässt sich mit einem einzigen Fremdschlüssel nicht abbilden. Du brauchst eine Zwischentabelle (Verbindungstabelle), die zwei Fremdschlüssel enthält. Aus einer m:n-Beziehung werden so zwei 1:n-Beziehungen."
+    },
+    {
+      "type": "code",
+      "content": "freifaecher\nid | name\n---+--------\n 1 | Robotik\n 2 | Chor\n\nteilnahme (Zwischentabelle)\nschueler_id | freifach_id\n------------+------------\n     1      |     1\n     1      |     2\n     2      |     1\n     3      |     2\n\nPK = (schueler_id, freifach_id)\n→ Anna (1): Robotik und Chor\n→ Robotik: Anna und Ben"
+    },
+    {
+      "type": "text",
+      "content": "Referentielle Integrität heißt: Jeder Fremdschlüssel zeigt auf einen existierenden Datensatz. Das DBMS lehnt deshalb ab, eine Schülerin in die nicht vorhandene Klasse 9 einzutragen oder eine Klasse zu löschen, in der noch Schüler:innen sind. Mit ON DELETE CASCADE würden die abhängigen Datensätze mitgelöscht – das ist bequem, aber gefährlich. Zusammenfassung: FK auf die n-Seite, m:n über Zwischentabelle, Integrität verhindert „verwaiste“ Verweise."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Lehrkraft unterrichtet viele Klassen, eine Klasse hat viele Lehrkräfte. Wie bildest du das ab?",
+      "options": [
+        "Fremdschlüssel lehrer_id in der Tabelle klassen",
+        "Fremdschlüssel klasse_id in der Tabelle lehrer",
+        "Alle Klassen durch Beistrich getrennt in ein Feld schreiben",
+        "Eine Zwischentabelle mit lehrer_id und klasse_id"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das ist eine m:n-Beziehung. Sie braucht eine Zwischentabelle mit zwei Fremdschlüsseln. Mehrere Werte in einem Feld sind verboten."
+    },
+    {
+      "question": "Ein Fach hat viele Schularbeiten, jede Schularbeit gehört zu genau einem Fach. Wo steht der Fremdschlüssel?",
+      "options": [
+        "In der Tabelle schularbeiten (fach_id)",
+        "In der Tabelle faecher (schularbeit_id)",
+        "In beiden Tabellen",
+        "In einer Zwischentabelle"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei 1:n kommt der Fremdschlüssel immer auf die n-Seite – hier die Schularbeiten."
+    },
+    {
+      "question": "Es gibt nur die Klassen 1 und 2. Was passiert bei diesem Befehl, wenn referentielle Integrität aktiv ist?",
+      "code": "INSERT INTO schueler\nVALUES (6, 'Felix', 'Moser', 9);",
+      "options": [
+        "Felix wird ohne Klasse gespeichert",
+        "Das DBMS lehnt den Datensatz ab, weil es keine Klasse 9 gibt",
+        "Die Klasse 9 wird automatisch angelegt",
+        "Felix wird in Klasse 1 eingetragen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Fremdschlüssel muss auf einen existierenden Primärschlüssel zeigen. Klasse 9 existiert nicht → Fehler."
+    },
+    {
+      "question": "Was macht den Fremdschlüssel schueler_id in der Tabelle spinde zu einer 1:1-Beziehung?",
+      "code": "CREATE TABLE spinde (\n  spind_nr    INTEGER PRIMARY KEY,\n  stockwerk   INTEGER,\n  schueler_id INTEGER UNIQUE,\n  FOREIGN KEY (schueler_id)\n    REFERENCES schueler(schueler_id)\n);",
+      "options": [
+        "Das Schlüsselwort FOREIGN KEY allein",
+        "Der Datentyp INTEGER",
+        "Die zusätzliche Eigenschaft UNIQUE",
+        "Dass spind_nr der Primärschlüssel ist"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein normaler Fremdschlüssel erlaubt, dass mehrere Spinde dieselbe Person haben (1:n). Erst UNIQUE verhindert das – dann ist es 1:1."
+    }
+  ]
+}

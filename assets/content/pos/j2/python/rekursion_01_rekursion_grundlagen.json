@@ -1,0 +1,96 @@
+{
+  "id": "pos-j2-python-rekursion_01_rekursion_grundlagen",
+  "title": "Rekursion: Grundlagen",
+  "summary": "Funktionen, die sich selbst aufrufen – mit Basisfall, Rekursionsschritt und Aufrufstapel.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Funktion darf sich selbst aufrufen. Das nennt man Rekursion. Die Idee: Du führst ein Problem auf eine kleinere Version desselben Problems zurück – so lange, bis es so klein ist, dass die Lösung trivial ist. Ein Countdown von 3 ist zum Beispiel: „3“ sagen und dann einen Countdown von 2 machen."
+    },
+    {
+      "type": "code",
+      "content": "def countdown(n):\n    if n == 0:\n        print(\"Start!\")\n        return\n    print(n)\n    countdown(n - 1)\n\ncountdown(3)\n# 3\n# 2\n# 1\n# Start!"
+    },
+    {
+      "type": "text",
+      "content": "Jede rekursive Funktion besteht aus zwei Teilen:\n• Basisfall (Abbruchbedingung): Das kleinste Problem wird direkt gelöst, ohne weiteren Aufruf.\n• Rekursionsschritt: Die Funktion ruft sich mit einem kleineren Problem auf. Jeder Schritt muss dem Basisfall näherkommen."
+    },
+    {
+      "type": "text",
+      "content": "Ein Klassiker ist die Fakultät aus Mathe: n! = n · (n − 1)! und 0! = 1. Zum Beispiel ist 5! = 5 · 4 · 3 · 2 · 1 = 120. Die mathematische Definition ist schon rekursiv – du kannst sie fast 1:1 in Python übernehmen."
+    },
+    {
+      "type": "code",
+      "content": "def fakultaet(n):\n    if n <= 1:          # Basisfall\n        return 1\n    return n * fakultaet(n - 1)\n\nprint(fakultaet(5))   # 120"
+    },
+    {
+      "type": "text",
+      "content": "Was passiert dabei im Speicher? Jeder Aufruf bekommt einen eigenen Eintrag (Rahmen) auf dem Aufrufstapel (Call Stack) – mit eigenen lokalen Variablen. Ein Aufruf wartet, bis der innere Aufruf fertig ist. Erst wenn der Basisfall erreicht ist, werden die Ergebnisse von innen nach außen zurückgegeben."
+    },
+    {
+      "type": "code",
+      "content": "fakultaet(4)\n= 4 * fakultaet(3)\n= 4 * (3 * fakultaet(2))\n= 4 * (3 * (2 * fakultaet(1)))\n= 4 * (3 * (2 * 1))     ← Basisfall\n= 4 * (3 * 2)\n= 4 * 6\n= 24"
+    },
+    {
+      "type": "text",
+      "content": "Code vor dem rekursiven Aufruf läuft „auf dem Weg hinein“, Code danach erst „auf dem Weg hinaus“ – also in umgekehrter Reihenfolge. Das siehst du gut, wenn du vor und nach dem Aufruf etwas ausgibst:"
+    },
+    {
+      "type": "code",
+      "content": "def zeige(n):\n    if n == 0:\n        return\n    print(\"rein\", n)\n    zeige(n - 1)\n    print(\"raus\", n)\n\nzeige(2)\n# rein 2\n# rein 1\n# raus 1\n# raus 2"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Der Basisfall fehlt, ist nie erreichbar (z. B. fakultaet(-1) bei Bedingung n == 1) oder das Problem wird nicht kleiner (fakultaet(n) statt fakultaet(n - 1)). Dann ruft sich die Funktion endlos auf, bis Python mit einem RecursionError abbricht.\n\nZusammenfassung: Rekursion = Basisfall + Rekursionsschritt. Jeder Aufruf liegt auf dem Aufrufstapel und wartet auf das Ergebnis des inneren Aufrufs."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def summe(n):\n    if n == 0:\n        return 0\n    return n + summe(n - 1)\n\nprint(summe(4))",
+      "options": [
+        "10",
+        "4",
+        "0",
+        "24"
+      ],
+      "correctIndex": 0,
+      "explanation": "summe(4) = 4 + 3 + 2 + 1 + 0 = 10. Der Basisfall summe(0) liefert 0."
+    },
+    {
+      "question": "Welche Aufgabe hat der Basisfall einer rekursiven Funktion?",
+      "options": [
+        "Er ruft die Funktion mit einem kleineren Wert auf",
+        "Er macht die Funktion schneller",
+        "Er beendet die Rekursion, indem er das kleinste Problem direkt löst",
+        "Er speichert alle Zwischenergebnisse"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ohne Basisfall würde sich die Funktion endlos aufrufen. Der Basisfall liefert ein Ergebnis ohne weiteren rekursiven Aufruf."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def f(n):\n    if n == 0:\n        return\n    f(n - 1)\n    print(n, end=\" \")\n\nf(3)",
+      "options": [
+        "3 2 1",
+        "1 2 3",
+        "3 2 1 0",
+        "0 1 2 3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das print steht nach dem rekursiven Aufruf. Es läuft also erst „auf dem Weg hinaus“: zuerst für n = 1, dann 2, dann 3."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert bei diesem Aufruf?",
+      "code": "def fak(n):\n    if n == 1:\n        return 1\n    return n * fak(n - 1)\n\nprint(fak(0))",
+      "options": [
+        "Es wird 1 ausgegeben",
+        "Es wird 0 ausgegeben",
+        "None wird ausgegeben",
+        "RecursionError"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei n = 0 greift der Basisfall n == 1 nie: Es geht weiter mit -1, -2, … bis Python die maximale Rekursionstiefe erreicht und einen RecursionError auslöst. Besser: if n <= 1."
+    }
+  ]
+}

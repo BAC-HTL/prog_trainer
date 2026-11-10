@@ -1,0 +1,117 @@
+{
+  "id": "nvs-j2-routing_pruefung",
+  "title": "Abschlussprüfung: Switching & Routing",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Switch hat eine leere MAC-Tabelle. PC A (Port 1) sendet einen Frame an PC B (Port 5). Was steht danach in der Tabelle, und wohin ging der Frame?",
+      "options": [
+        "MAC von B an Port 5; Frame nur an Port 5",
+        "MAC von A an Port 1; Frame an alle Ports außer Port 1",
+        "MAC von A an Port 1; Frame nur an Port 5",
+        "Nichts; Frame wurde verworfen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Gelernt wird die Quell-MAC (A an Port 1). Die Ziel-MAC von B ist noch unbekannt, also wird der Frame geflutet."
+    },
+    {
+      "question": "Ein Router hat zwei Schnittstellen; an jeder hängt ein Switch mit 8 PCs (keine VLANs). Wie viele Broadcast-Domänen gibt es?",
+      "options": [
+        "1",
+        "16",
+        "2",
+        "18"
+      ],
+      "correctIndex": 2,
+      "explanation": "Router trennen Broadcast-Domänen: Pro Router-Schnittstelle entsteht eine. Switches tun das (ohne VLANs) nicht."
+    },
+    {
+      "question": "Wie viele Bit hat die VLAN-ID im 802.1Q-Tag?",
+      "options": [
+        "12",
+        "8",
+        "16",
+        "4"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die VLAN-ID hat 12 Bit, also 4096 Werte, wovon 1–4094 nutzbar sind. Das gesamte Tag ist 4 Byte groß."
+    },
+    {
+      "question": "PC 1 in VLAN 10 und PC 2 in VLAN 20 hängen am selben Switch. ping von PC 1 zu PC 2 schlägt fehl. Was fehlt?",
+      "options": [
+        "Ein zweites Kabel",
+        "Ein Hub zwischen den VLANs",
+        "Ein größerer Switch",
+        "Ein Router oder Layer-3-Switch für Inter-VLAN-Routing"
+      ],
+      "correctIndex": 3,
+      "explanation": "VLANs sind getrennte Broadcast-Domänen und in der Regel getrennte Subnetze. Für Verkehr zwischen ihnen braucht es Routing."
+    },
+    {
+      "question": "Routingtabelle: 0.0.0.0/0 → A, 192.168.0.0/16 → B, 192.168.8.0/21 → C, 192.168.8.0/24 → D. Wohin geht ein Paket an 192.168.12.4?",
+      "options": [
+        "A",
+        "C",
+        "B",
+        "D"
+      ],
+      "correctIndex": 1,
+      "explanation": "192.168.8.0/21 umfasst 192.168.8.0–192.168.15.255, also auch .12.4. /24 (.8.x) passt nicht. Von den passenden Einträgen (/0, /16, /21) ist /21 am längsten → C."
+    },
+    {
+      "question": "Ein PC hat 10.0.5.20/24 und als Gateway 10.0.6.1 eingetragen. Was ist die Folge?",
+      "options": [
+        "Alles funktioniert, das Gateway darf in jedem Netz liegen.",
+        "Nur das Internet geht, lokal nichts.",
+        "Lokale Geräte im 10.0.5.0/24 sind erreichbar, fremde Netze nicht.",
+        "Der PC bekommt automatisch eine APIPA-Adresse."
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Gateway liegt nicht im eigenen Subnetz und ist daher per ARP nicht erreichbar. Lokaler Verkehr braucht kein Gateway und funktioniert weiter."
+    },
+    {
+      "question": "Welche Aussage über statisches Routing ist richtig?",
+      "options": [
+        "Es passt sich automatisch an Leitungsausfälle an.",
+        "Es erfordert keine Konfiguration.",
+        "Es verwendet den Dijkstra-Algorithmus.",
+        "Es ist einfach und vorhersehbar, aber in großen Netzen aufwendig zu pflegen."
+      ],
+      "correctIndex": 3,
+      "explanation": "Statische Routen werden von Hand gepflegt und ändern sich nicht von selbst. Anpassung an Ausfälle leisten dynamische Routingprotokolle."
+    },
+    {
+      "question": "Warum bevorzugt OSPF einen Weg über 3 Router mit 1-Gbit/s-Leitungen gegenüber einem Weg über 1 Router mit einer 10-Mbit/s-Leitung, während RIP den kürzeren wählt?",
+      "options": [
+        "OSPF rechnet mit bandbreitenbasierten Kosten, RIP nur mit Hops.",
+        "OSPF wählt immer den längsten Weg.",
+        "RIP kennt keine Router.",
+        "OSPF verwendet NAT."
+      ],
+      "correctIndex": 0,
+      "explanation": "OSPF-Kosten hängen von der Bandbreite ab, schnelle Leitungen sind „billig“. RIP zählt nur die Hops und sieht 1 < 3."
+    },
+    {
+      "question": "Ein Router lernt das Netz 10.9.0.0/16 sowohl über OSPF als auch über RIP (Cisco-Standardwerte). Welche Route kommt in die Routingtabelle?",
+      "options": [
+        "Die RIP-Route, weil RIP älter ist",
+        "Beide abwechselnd",
+        "Die OSPF-Route, weil ihre administrative Distanz (110) kleiner ist als die von RIP (120)",
+        "Keine – das ist ein Konflikt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei gleichem Präfix entscheidet die administrative Distanz über die Quelle; kleiner gewinnt. OSPF (110) schlägt RIP (120)."
+    },
+    {
+      "question": "Was trifft auf NAT/PAT zu?",
+      "options": [
+        "Es ersetzt eine Firewall vollständig.",
+        "Es übersetzt private Quelladressen in eine öffentliche Adresse und merkt sich die Zuordnung samt Port.",
+        "Es wird von Switches zur MAC-Adressierung genutzt.",
+        "Es vergibt IP-Adressen an Clients."
+      ],
+      "correctIndex": 1,
+      "explanation": "NAT/PAT ersetzt Quelladresse und -port und führt dazu eine Übersetzungstabelle. Adressvergabe ist Aufgabe von DHCP, Filterung die einer Firewall."
+    }
+  ]
+}

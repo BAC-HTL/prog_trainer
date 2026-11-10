@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j2-datenbanken_01_tabellen_datentypen",
+  "title": "Tabellen, Datentypen und Primärschlüssel",
+  "summary": "Verstehen, wie eine relationale Datenbank Daten in Tabellen speichert und warum jeder Datensatz einen Primärschlüssel braucht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Datenbank speichert große Datenmengen dauerhaft, geordnet und für viele Benutzer:innen gleichzeitig. Ein Datenbankmanagementsystem (DBMS) wie MySQL, MariaDB, PostgreSQL, SQLite oder Microsoft Access verwaltet sie. In einer relationalen Datenbank liegen alle Daten in Tabellen – ähnlich wie in Excel, aber mit strengen Regeln."
+    },
+    {
+      "type": "code",
+      "content": "Tabelle: schueler\n\nid | vorname | nachname | klasse\n---+---------+----------+-------\n 1 | Anna    | Berger   | 2AHIT\n 2 | Ben     | Huber    | 2AHIT\n 3 | Clara   | Novak    | 2BHIT"
+    },
+    {
+      "type": "text",
+      "content": "Die Begriffe: Eine Zeile ist ein Datensatz (Tupel) – hier eine Schülerin oder ein Schüler. Eine Spalte ist ein Feld (Attribut), z. B. nachname. Die Tabelle oben hat also 3 Datensätze und 4 Felder. Jedes Feld enthält genau einen Wert – also nicht „Mathe, Englisch“ in ein Feld schreiben!"
+    },
+    {
+      "type": "text",
+      "content": "Jedes Feld hat einen Datentyp. Er legt fest, welche Werte erlaubt sind und wie viel Platz sie brauchen:\n• INTEGER – ganze Zahlen (Anzahl, ID)\n• DECIMAL(p,s) – exakte Kommazahlen, z. B. Geldbeträge\n• VARCHAR(n) – Text mit max. n Zeichen\n• DATE – Datum im Format 'JJJJ-MM-TT'\n• BOOLEAN – wahr/falsch"
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE buch (\n  isbn      VARCHAR(17) PRIMARY KEY,\n  titel     VARCHAR(100) NOT NULL,\n  preis     DECIMAL(6,2),\n  seiten    INTEGER,\n  verliehen BOOLEAN\n);"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Telefonnummern oder Postleitzahlen als Zahl speichern. „0664 …“ würde die führende Null verlieren, „+43“ geht gar nicht. Faustregel: Nur was du zum Rechnen brauchst, wird eine Zahl. Auch Geld nie als ungenauen Gleitkommatyp (FLOAT) speichern, sondern als DECIMAL."
+    },
+    {
+      "type": "text",
+      "content": "Der Primärschlüssel (Primary Key, PK) identifiziert jeden Datensatz eindeutig. Er darf nie doppelt vorkommen und nie leer (NULL) sein. Namen eignen sich nicht – es gibt mehrere „Anna Berger“. Deshalb verwendet man meist eine künstliche ID-Nummer, die das DBMS oft automatisch vergibt."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE schueler (\n  schueler_id INTEGER PRIMARY KEY,\n  vorname     VARCHAR(50),\n  nachname    VARCHAR(50),\n  geburtstag  DATE,\n  telefon     VARCHAR(20)\n);\n\nINSERT INTO schueler\nVALUES (1, 'Anna', 'Berger',\n        '2010-03-14', '+43 664 1234567');"
+    },
+    {
+      "type": "code",
+      "content": "-- zweiter Datensatz mit ID 1:\nINSERT INTO schueler\nVALUES (1, 'Ben', 'Huber',\n        '2010-07-02', NULL);\n\n-- Fehler! Der Primärschlüssel 1\n-- ist schon vergeben."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Tabelle = Sammlung gleichartiger Datensätze (Zeilen) mit festen Feldern (Spalten). Jedes Feld hat einen passenden Datentyp. Der Primärschlüssel ist eindeutig und nie leer – er ist die „Ausweisnummer“ jedes Datensatzes."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Tabelle enthält 25 Schüler:innen mit den Feldern id, vorname, nachname und geburtstag. Wie viele Datensätze und Felder hat sie?",
+      "options": [
+        "4 Datensätze, 25 Felder",
+        "25 Datensätze, 4 Felder",
+        "100 Datensätze, 4 Felder",
+        "25 Datensätze, 100 Felder"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jede Person ist ein Datensatz (Zeile) → 25. Jede Spalte ist ein Feld → 4."
+    },
+    {
+      "question": "Welcher Datentyp passt am besten für eine Telefonnummer wie „+43 664 1234567“?",
+      "options": [
+        "INTEGER",
+        "DECIMAL(10,2)",
+        "DATE",
+        "VARCHAR(20)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Mit Telefonnummern rechnet man nicht, und sie enthalten +, Leerzeichen und führende Nullen. Daher Text: VARCHAR."
+    },
+    {
+      "question": "Welches Feld eignet sich in einer Schülertabelle am besten als Primärschlüssel?",
+      "options": [
+        "schueler_id (fortlaufende Nummer)",
+        "nachname",
+        "klasse",
+        "geburtstag"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nachnamen, Klassen und Geburtstage können doppelt vorkommen. Eine eindeutige, automatisch vergebene ID ist ideal."
+    },
+    {
+      "question": "Die Tabelle enthält bereits einen Datensatz mit schueler_id 1. Was passiert bei diesem Befehl?",
+      "code": "INSERT INTO schueler\nVALUES (1, 'Ben', 'Huber',\n        '2010-07-02', NULL);",
+      "options": [
+        "Der alte Datensatz wird überschrieben",
+        "Ben bekommt automatisch die ID 2",
+        "Das DBMS meldet einen Fehler, weil der Primärschlüssel eindeutig sein muss",
+        "Es gibt danach zwei Datensätze mit ID 1"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Primärschlüssel darf nicht doppelt vorkommen. Das DBMS lehnt den INSERT mit einer Fehlermeldung ab."
+    }
+  ]
+}

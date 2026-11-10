@@ -1,0 +1,118 @@
+{
+  "id": "tinf-j1-zahlen_pruefung",
+  "title": "Abschlussprüfung: Zahlensysteme & Informationsdarstellung",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein USB-Stick hat 16 GiB. Wie viele MiB sind das?",
+      "options": [
+        "16 000 MiB",
+        "16 384 MiB",
+        "1600 MiB",
+        "131 072 MiB"
+      ],
+      "correctIndex": 1,
+      "explanation": "1 GiB = 1024 MiB, also 16 · 1024 = 16 384 MiB."
+    },
+    {
+      "question": "Ein unkomprimiertes Bild hat 1920 × 1080 Pixel mit je 3 Byte (RGB). Wie groß ist es ungefähr?",
+      "options": [
+        "6,2 MB",
+        "2 MB",
+        "49,8 MB",
+        "620 kB"
+      ],
+      "correctIndex": 0,
+      "explanation": "1920 · 1080 · 3 = 6 220 800 Byte ≈ 6,2 MB (dezimal) bzw. ≈ 5,9 MiB."
+    },
+    {
+      "question": "Was ist 200 im Binärsystem?",
+      "options": [
+        "1001 1000",
+        "1100 0100",
+        "1100 1000",
+        "1110 1000"
+      ],
+      "correctIndex": 2,
+      "explanation": "200 = 128 + 64 + 8 → 1100 1000."
+    },
+    {
+      "question": "Was ergibt die binäre Addition?",
+      "code": "  1100\n+ 0110\n──────",
+      "options": [
+        "1 0010",
+        "1 1110",
+        "1 0110",
+        "1 0100"
+      ],
+      "correctIndex": 0,
+      "explanation": "1100 (12) + 0110 (6) = 18 = 1 0010. Achtung auf den Übertrag bei 1+1."
+    },
+    {
+      "question": "Welchen Wert hat 1111 0110 als 8-Bit-Zweierkomplement?",
+      "options": [
+        "246",
+        "−9",
+        "−118",
+        "−10"
+      ],
+      "correctIndex": 3,
+      "explanation": "Höchstes Bit 1 → negativ. −128 + 64 + 32 + 16 + 4 + 2 = −10. Alternativ: invertieren (0000 1001) + 1 = 0000 1010 = 10, also −10."
+    },
+    {
+      "question": "Was ist der größte Wert, der in 8 Bit Zweierkomplement darstellbar ist?",
+      "options": [
+        "255",
+        "128",
+        "127",
+        "256"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Bereich ist −128 bis +127. 0111 1111 = 127 = 0x7F."
+    },
+    {
+      "question": "Wie viele Hex-Ziffern brauchst du für 32 Bit?",
+      "options": [
+        "4",
+        "8",
+        "16",
+        "32"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine Hex-Ziffer entspricht 4 Bit. 32 / 4 = 8 Ziffern, z. B. 0xFFFFFFFF."
+    },
+    {
+      "question": "Wie viele Byte belegt „Straße 5€“ in UTF-8?",
+      "options": [
+        "9",
+        "10",
+        "11",
+        "12"
+      ],
+      "correctIndex": 3,
+      "explanation": "7 ASCII-Zeichen (S, t, r, a, e, Leerzeichen, 5) = 7 Byte, ß = 2 Byte, € = 3 Byte → 12 Byte."
+    },
+    {
+      "question": "Welche Aussage über UTF-8 ist richtig?",
+      "options": [
+        "Jede gültige ASCII-Datei ist auch gültiges UTF-8",
+        "Jedes Zeichen braucht genau 2 Byte",
+        "UTF-8 kann keine Emojis speichern",
+        "UTF-8 ist identisch mit Windows-1252"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die ersten 128 Codepoints werden in UTF-8 mit genau einem Byte gespeichert, identisch zu ASCII."
+    },
+    {
+      "question": "Eine Textdatei wurde in Windows-1252 gespeichert und wird als UTF-8 geöffnet. Was siehst du bei den Umlauten typischerweise?",
+      "options": [
+        "Zwei Zeichen wie Ã¤",
+        "Das Ersatzzeichen �",
+        "Die Umlaute korrekt",
+        "Nur Großbuchstaben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Umlaut ist in Windows-1252 ein einzelnes Byte ≥ 128, das allein kein gültiges UTF-8 ist. Der Editor ersetzt es durch �. Das Muster Ã¤ entsteht im umgekehrten Fall."
+    }
+  ]
+}

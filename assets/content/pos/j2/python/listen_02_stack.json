@@ -1,0 +1,95 @@
+{
+  "id": "pos-j2-python-listen_02_stack",
+  "title": "Stack (Stapel)",
+  "summary": "Das LIFO-Prinzip verstehen, einen Stack selbst bauen und Klammern prüfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Stack (Stapel) funktioniert wie ein Stapel Teller in der Mensa: Du legst oben drauf und nimmst oben weg. Was zuletzt hineinkam, kommt zuerst wieder heraus – Last In, First Out (LIFO). Beispiele: die Rückgängig-Funktion (Strg+Z), der Zurück-Button im Browser und der Aufrufstapel bei der Rekursion."
+    },
+    {
+      "type": "text",
+      "content": "Die typischen Operationen:\n• push(x) – Element oben ablegen\n• pop() – oberstes Element entfernen und zurückgeben\n• peek() – oberstes Element nur ansehen\n• is_empty() – ist der Stapel leer?\nIn Python kannst du eine normale Liste als Stack verwenden: append ist push, pop() ist pop und liste[-1] ist peek."
+    },
+    {
+      "type": "code",
+      "content": "stapel = []\nstapel.append(\"Mathe\")\nstapel.append(\"POS\")\nstapel.append(\"NVS\")\nprint(stapel[-1])     # NVS (peek)\nprint(stapel.pop())   # NVS\nprint(stapel.pop())   # POS\nprint(stapel)         # ['Mathe']"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: Arbeite immer am ENDE der Liste. append() und pop() am Ende sind schnell. insert(0, x) und pop(0) wären langsam, weil alle anderen Elemente verschoben werden. Typischer Fehler: pop() auf einen leeren Stapel – das gibt einen IndexError. Prüfe vorher mit if stapel: oder fang die Exception ab."
+    },
+    {
+      "type": "code",
+      "content": "stapel = []\ntry:\n    stapel.pop()\nexcept IndexError as e:\n    print(e)   # pop from empty list"
+    },
+    {
+      "type": "text",
+      "content": "Du kannst einen Stack auch selbst mit verketteten Knoten bauen. Der oberste Knoten (top) entspricht dem Kopf der verketteten Liste: push fügt vorne ein, pop entfernt vorne. Beides geht ohne Verschieben."
+    },
+    {
+      "type": "code",
+      "content": "class Knoten:\n    def __init__(self, wert):\n        self.wert = wert\n        self.next = None\n\nclass Stack:\n    def __init__(self):\n        self.top = None\n\n    def push(self, wert):\n        neu = Knoten(wert)\n        neu.next = self.top\n        self.top = neu\n\n    def pop(self):\n        if self.top is None:\n            raise IndexError(\"Stack leer\")\n        wert = self.top.wert\n        self.top = self.top.next\n        return wert\n\n    def peek(self):\n        if self.top is None:\n            raise IndexError(\"Stack leer\")\n        return self.top.wert\n\n    def is_empty(self):\n        return self.top is None\n\ns = Stack()\ns.push(1)\ns.push(2)\nprint(s.pop())       # 2\nprint(s.peek())      # 1\nprint(s.is_empty())  # False"
+    },
+    {
+      "type": "text",
+      "content": "Klassische Anwendung: Klammerprüfung, wie sie jeder Code-Editor macht. Für jede öffnende Klammer legst du sie auf den Stapel. Bei einer schließenden Klammer muss oben die passende öffnende liegen – dann nimmst du sie weg. Am Ende muss der Stapel leer sein."
+    },
+    {
+      "type": "code",
+      "content": "def klammern_ok(text):\n    paare = {\")\": \"(\", \"]\": \"[\", \"}\": \"{\"}\n    stapel = []\n    for z in text:\n        if z in \"([{\":\n            stapel.append(z)\n        elif z in paare:\n            if not stapel:\n                return False\n            if stapel.pop() != paare[z]:\n                return False\n    return len(stapel) == 0\n\nprint(klammern_ok(\"(a[1] + b) * 2\"))  # True\nprint(klammern_ok(\"([)]\"))   # False\nprint(klammern_ok(\"((\"))     # False"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Stack arbeitet nach LIFO mit push, pop, peek und is_empty. In Python nimmst du eine Liste mit append() und pop() am Ende oder baust ihn mit verketteten Knoten. pop() auf einen leeren Stack löst einen IndexError aus. Stacks eignen sich überall, wo das zuletzt Begonnene zuerst abgeschlossen wird – Klammern, Undo, Funktionsaufrufe."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "s = []\ns.append(1)\ns.append(2)\ns.append(3)\ns.pop()\ns.append(4)\nprint(s.pop(), s[-1])",
+      "options": [
+        "3 2",
+        "4 2",
+        "4 3",
+        "1 4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nach drei append ist s = [1, 2, 3]. pop() entfernt 3, append(4) ergibt [1, 2, 4]. pop() liefert 4, danach ist s[-1] gleich 2."
+    },
+    {
+      "question": "Was gibt klammern_ok(\"([)]\") mit der Funktion aus der Lektion zurück?",
+      "code": "print(klammern_ok(\"([)]\"))",
+      "options": [
+        "False",
+        "True",
+        "IndexError",
+        "None"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei ) liegt oben [ – das passt nicht zu (, also wird sofort False zurückgegeben. Die Anzahl der Klammern allein reicht nicht."
+    },
+    {
+      "question": "Was bedeutet LIFO?",
+      "options": [
+        "Das kleinste Element kommt zuerst heraus",
+        "Das zuerst eingefügte Element kommt zuerst heraus",
+        "Das zuletzt eingefügte Element kommt zuerst heraus",
+        "Die Elemente kommen in zufälliger Reihenfolge heraus"
+      ],
+      "correctIndex": 2,
+      "explanation": "Last In, First Out: Wie bei einem Tellerstapel nimmst du immer das oberste, also zuletzt abgelegte Element."
+    },
+    {
+      "question": "Wofür eignet sich ein Stack am besten?",
+      "options": [
+        "Druckaufträge in der Reihenfolge ihres Eintreffens abarbeiten",
+        "Schüler:innen alphabetisch sortieren",
+        "Kund:innen an der Kassa der Reihe nach bedienen",
+        "Die Rückgängig-Funktion (Undo) in einem Editor"
+      ],
+      "correctIndex": 3,
+      "explanation": "Undo macht immer die letzte Aktion zuerst rückgängig – das ist LIFO. Drucker und Kassa arbeiten nach FIFO (Queue)."
+    }
+  ]
+}

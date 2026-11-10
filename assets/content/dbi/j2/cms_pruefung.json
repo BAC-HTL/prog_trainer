@@ -1,0 +1,118 @@
+{
+  "id": "dbi-j2-cms_pruefung",
+  "title": "Abschlussprüfung: Content-Management-Systeme",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Komponente eines klassischen CMS sehen normale Besucher:innen der Schulwebsite?",
+      "options": [
+        "Das Backend",
+        "Die Datenbank",
+        "Das Frontend",
+        "Die Plugin-Verwaltung"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Frontend ist die öffentliche Website. Backend und Datenbank sind nur für Berechtigte bzw. das System selbst zugänglich."
+    },
+    {
+      "question": "Welcher Vorteil ergibt sich direkt aus der Trennung von Inhalt und Layout?",
+      "options": [
+        "Inhalte können ohne HTML-Kenntnisse erstellt und das Design zentral geändert werden",
+        "Die Website braucht keinen Server mehr",
+        "Bilder werden automatisch kleiner",
+        "Benutzerrechte sind nicht mehr nötig"
+      ],
+      "correctIndex": 0,
+      "explanation": "Redakteur:innen kümmern sich nur um Inhalte, das Template sorgt für ein einheitliches Aussehen. Ein neues Design betrifft nur das Template."
+    },
+    {
+      "question": "Die Schule will dieselben News auf der Website, in einer Handy-App und auf einem Infobildschirm zeigen. Welcher Ansatz passt am besten?",
+      "options": [
+        "Für jeden Kanal ein eigenes klassisches CMS",
+        "Statische HTML-Seiten kopieren",
+        "Die News als PDF verschicken",
+        "Ein Headless CMS, das die Inhalte per API (z. B. JSON) liefert"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Headless CMS verwaltet Inhalte einmal zentral und stellt sie über eine API für beliebig viele Ausgabekanäle bereit."
+    },
+    {
+      "question": "Welche Aussage über WordPress, Joomla und TYPO3 stimmt?",
+      "options": [
+        "Es sind kostenpflichtige Programme von Microsoft",
+        "Es sind Open-Source-CMS, die in PHP geschrieben sind",
+        "Sie funktionieren nur ohne Datenbank",
+        "Es sind Headless CMS ohne Frontend"
+      ],
+      "correctIndex": 1,
+      "explanation": "Alle drei sind freie Open-Source-Systeme auf PHP-Basis und speichern Inhalte typischerweise in einer Datenbank wie MySQL/MariaDB."
+    },
+    {
+      "question": "Was zeigt dieses Template an, wenn in der Datenbank titel = \"Matura 2027\" und datum = \"2027-05-04\" steht?",
+      "code": "<h2>{{ titel }}</h2>\n<time>{{ datum }}</time>",
+      "options": [
+        "<h2>{{ titel }}</h2><time>{{ datum }}</time>",
+        "<h2>Matura 2027</h2><time>{{ datum }}</time>",
+        "<h2>titel</h2><time>datum</time>",
+        "<h2>Matura 2027</h2><time>2027-05-04</time>"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beide Platzhalter werden durch die Werte aus der Datenbank ersetzt."
+    },
+    {
+      "question": "Wo legst du die Seite „Impressum“ in WordPress am besten an?",
+      "options": [
+        "Als Seite, weil es ein dauerhafter Inhalt ist",
+        "Als Beitrag in der Kategorie News",
+        "Als Bild in der Medienbibliothek",
+        "Als Kommentar"
+      ],
+      "correctIndex": 0,
+      "explanation": "Seiten sind für dauerhafte, zeitunabhängige Inhalte gedacht. Beiträge sind für News mit Datum."
+    },
+    {
+      "question": "Eine Lehrkraft soll alle Beiträge und Seiten bearbeiten und veröffentlichen, aber keine Plugins installieren dürfen. Welche WordPress-Rolle passt?",
+      "options": [
+        "Administrator",
+        "Abonnent",
+        "Redakteur",
+        "Mitarbeiter"
+      ],
+      "correctIndex": 2,
+      "explanation": "Redakteur:innen verwalten alle Inhalte, auch fremde. Plugins, Themes und Benutzer bleiben den Administrator:innen vorbehalten."
+    },
+    {
+      "question": "Warum ist es problematisch, wenn sich die ganze Schülerzeitungsredaktion ein Administratorkonto teilt?",
+      "options": [
+        "Weil WordPress nur ein Konto erlaubt",
+        "Weil zu viele Rechte vergeben werden und nicht nachvollziehbar ist, wer was geändert hat",
+        "Weil Administratoren keine Beiträge schreiben dürfen",
+        "Weil das Konto dann automatisch gesperrt wird"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das verletzt das Prinzip der minimalen Rechte und macht Änderungen nicht zuordenbar. Jede Person braucht ein eigenes Konto mit passender Rolle."
+    },
+    {
+      "question": "Über welchen Weg werden CMS-Websites am häufigsten angegriffen?",
+      "options": [
+        "Über zu viele Seiten im Menü",
+        "Über das CSS des Themes",
+        "Über veraltete Plugins/Themes mit bekannten Sicherheitslücken und schwache Passwörter",
+        "Über zu große Bilder"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bekannte Lücken in nicht aktualisierten Erweiterungen und schwache Zugangsdaten werden automatisiert ausgenutzt. Darum: Updates und starke Passwörter mit 2FA."
+    },
+    {
+      "question": "In welcher Reihenfolge gehst du bei einem größeren CMS-Update am besten vor?",
+      "options": [
+        "Backup – Update (am besten zuerst testen) – Website prüfen",
+        "Update – Website prüfen – Backup",
+        "Website prüfen – Update – kein Backup nötig",
+        "Plugins löschen – Update – Backup"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zuerst sichern, dann aktualisieren (idealerweise erst auf einem Testsystem), danach kontrollieren, ob alles funktioniert."
+    }
+  ]
+}

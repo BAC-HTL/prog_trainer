@@ -1,0 +1,96 @@
+{
+  "id": "pos-j1-csharp-algorithmen_02_struktogramme",
+  "title": "Struktogramme",
+  "summary": "Algorithmen mit Nassi-Shneiderman-Diagrammen darstellen und in C# übersetzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Struktogramm (auch Nassi-Shneiderman-Diagramm, genormt in DIN 66261) stellt einen Algorithmus grafisch dar. Es wird von oben nach unten gelesen und besteht nur aus ineinander geschachtelten Rechtecken. Jeder Block hat genau einen Eingang (oben) und einen Ausgang (unten) – wilde Sprünge sind unmöglich. Dadurch zwingt dich ein Struktogramm zu sauber strukturiertem Code.\n\nDer einfachste Baustein ist die Sequenz: Anweisungen stehen in Rechtecken untereinander und werden der Reihe nach ausgeführt."
+    },
+    {
+      "type": "code",
+      "content": "+------------------------------+\n| Eingabe: laenge, breite      |\n+------------------------------+\n| flaeche ← laenge * breite    |\n+------------------------------+\n| Ausgabe: flaeche             |\n+------------------------------+\n\n// in C#:\nint laenge = int.Parse(Console.ReadLine());\nint breite = int.Parse(Console.ReadLine());\nint flaeche = laenge * breite;\nConsole.WriteLine(flaeche);"
+    },
+    {
+      "type": "text",
+      "content": "Eine Verzweigung (Alternative) zeichnest du mit einem Dreieck: Oben in der Mitte steht die Bedingung, links der Ja-Zweig, rechts der Nein-Zweig. Darunter teilt sich der Block in zwei Spalten. Bleibt ein Zweig leer, entspricht das einem if ohne else – die Spalte wird trotzdem gezeichnet und z. B. mit „–“ markiert.\n\nFür die Mehrfachauswahl (switch) gibt es einen eigenen Block: Der Kopf nennt die Variable, darunter steht für jeden Fall eine eigene Spalte, meist mit einer Sonst-Spalte ganz rechts."
+    },
+    {
+      "type": "code",
+      "content": "+--------------------------------+\n|\\         punkte >= 50 ?       /|\n|  \\ ja                  nein /  |\n+---------------+----------------+\n| Ausgabe:      | Ausgabe:       |\n| \"bestanden\"   | \"nicht         |\n|               |  bestanden\"    |\n+---------------+----------------+\n\n// in C#:\nif (punkte >= 50)\n{\n    Console.WriteLine(\"bestanden\");\n}\nelse\n{\n    Console.WriteLine(\"nicht bestanden\");\n}"
+    },
+    {
+      "type": "text",
+      "content": "Eine Schleife umschließt den Schleifenkörper wie ein umgedrehtes L. Bei der kopfgesteuerten Schleife steht die Bedingung oben – sie wird vor jedem Durchlauf geprüft. Ist sie schon am Anfang falsch, läuft der Körper kein einziges Mal (while in C#).\n\nDie Zählschleife (for) wird genauso gezeichnet, nur steht oben z. B. „für i von 1 bis 5“."
+    },
+    {
+      "type": "code",
+      "content": "+--------------------------------+\n| zahl ← 100                     |\n+--------------------------------+\n| schritte ← 0                   |\n+--------------------------------+\n| solange zahl > 1               |\n|    +---------------------------+\n|    | zahl ← zahl / 2           |\n|    +---------------------------+\n|    | schritte ← schritte + 1   |\n+----+---------------------------+\n| Ausgabe: schritte              |\n+--------------------------------+\n\n// in C#:\nint zahl = 100;\nint schritte = 0;\nwhile (zahl > 1)\n{\n    zahl = zahl / 2;\n    schritte++;\n}\nConsole.WriteLine(schritte);   // 6"
+    },
+    {
+      "type": "text",
+      "content": "Bei der fußgesteuerten Schleife steht die Bedingung unten. Der Körper wird also mindestens einmal ausgeführt und erst danach geprüft – das passt zu do-while in C#. Typisch ist das Wiederholen einer Eingabe, bis sie gültig ist.\n\nAchtung: Manche Bücher schreiben unten eine Abbruchbedingung („bis note gültig“), andere eine Wiederholungsbedingung („solange note ungültig“). In C# brauchst du bei do-while immer die Wiederholungsbedingung."
+    },
+    {
+      "type": "code",
+      "content": "+--------------------------------+\n|    | Ausgabe: \"Note (1-5): \"   |\n|    +---------------------------+\n|    | Eingabe: note             |\n|    +---------------------------+\n| solange note < 1 oder note > 5 |\n+--------------------------------+\n\n// in C#:\nint note;\ndo\n{\n    Console.Write(\"Note (1-5): \");\n    note = int.Parse(Console.ReadLine());\n} while (note < 1 || note > 5);"
+    },
+    {
+      "type": "code",
+      "content": "// Verschachtelt: Verzweigung in Schleife\n// durch 3 teilbar → *, sonst die Zahl\n+------------------------------+\n| für i von 1 bis 6            |\n|   +--------------------------+\n|   |\\     i MOD 3 = 0 ?     / |\n|   |  \\ ja           nein /   |\n|   +------------+-------------+\n|   | Ausgabe: * | Ausgabe: i  |\n+---+------------+-------------+\n\n// in C#:\nfor (int i = 1; i <= 6; i++)\n{\n    if (i % 3 == 0)\n    {\n        Console.Write(\"* \");\n    }\n    else\n    {\n        Console.Write(i + \" \");\n    }\n}\n// Ausgabe: 1 2 * 4 5 *"
+    },
+    {
+      "type": "text",
+      "content": "Alle Blöcke lassen sich beliebig ineinander schachteln – wie im letzten Beispiel eine Verzweigung in einer Schleife.\n\nTypische Fehler: Bei der Verzweigung ja und nein vertauschen, die Schleifenbedingung beim Übersetzen umdrehen oder kopf- und fußgesteuerte Schleife verwechseln (while statt do-while).\n\nZusammenfassung:\n• Sequenz – Rechtecke untereinander\n• Verzweigung – Dreieck mit ja/nein → if/else\n• Mehrfachauswahl → switch\n• kopfgesteuerte Schleife / Zählschleife – Bedingung oben → while / for\n• fußgesteuerte Schleife – Bedingung unten → do-while\nEin Struktogramm ist sprachunabhängig: Dasselbe Diagramm kannst du in C#, Python oder Java umsetzen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieses Struktogramm aus?",
+      "code": "+----------------------------+\n| x ← 1                      |\n+----------------------------+\n| solange x < 50             |\n|    +-----------------------+\n|    | x ← x * 3             |\n+----+-----------------------+\n| Ausgabe: x                 |\n+----------------------------+",
+      "options": [
+        "27",
+        "81",
+        "50",
+        "243"
+      ],
+      "correctIndex": 1,
+      "explanation": "x durchläuft 1 → 3 → 9 → 27 → 81. Bei 27 ist x < 50 noch wahr, also wird noch einmal mit 3 multipliziert. Erst bei 81 ist die Bedingung falsch."
+    },
+    {
+      "question": "Was gibt dieses Struktogramm aus?",
+      "code": "+----------------------------+\n| x ← 10                     |\n+----------------------------+\n|    | x ← x + 1             |\n| solange x < 5              |\n+----------------------------+\n| Ausgabe: x                 |\n+----------------------------+",
+      "options": [
+        "10",
+        "Nichts, die Schleife läuft nie",
+        "11",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei der fußgesteuerten Schleife wird der Körper zuerst ausgeführt: x wird 11. Danach ist x < 5 falsch und die Schleife endet. Der Körper läuft also genau einmal."
+    },
+    {
+      "question": "Welches C#-Konstrukt entspricht einer Schleife, bei der die Bedingung unten im Struktogramm steht?",
+      "options": [
+        "do-while",
+        "while",
+        "for",
+        "switch"
+      ],
+      "correctIndex": 0,
+      "explanation": "Steht die Bedingung unten, ist die Schleife fußgesteuert: Erst wird der Körper ausgeführt, dann geprüft. Das ist do-while. while und for prüfen die Bedingung vor dem ersten Durchlauf."
+    },
+    {
+      "question": "Welche Ausgabe erzeugt das Struktogramm für a = 7 und b = 3?",
+      "code": "+-----------------------------+\n|\\         a > b ?          / |\n|  \\ ja             nein  /   |\n+----------+------------------+\n|          |\\    a = b ?    / |\n|          |  \\ ja   nein /   |\n| Ausgabe: +---------+--------+\n| \"a\"      | Ausgabe:| Ausg.: |\n|          | \"gleich\"| \"b\"    |\n+----------+---------+--------+",
+      "options": [
+        "a",
+        "gleich",
+        "b",
+        "ab"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die erste Bedingung a > b ist wahr (7 > 3), also wird nur der Ja-Zweig ausgeführt: Ausgabe a. Der Nein-Zweig mit der zweiten Verzweigung wird gar nicht betreten."
+    }
+  ]
+}

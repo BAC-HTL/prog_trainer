@@ -1,0 +1,119 @@
+{
+  "id": "tinf-j2-html_pruefung",
+  "title": "Abschlussprüfung: HTML & CSS",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Du rufst eine Webseite mit drei Bildern und einer CSS-Datei auf. Wie viele HTTP-Anfragen schickt der Browser mindestens?",
+      "options": [
+        "1",
+        "4",
+        "5",
+        "2"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine Anfrage für das HTML-Dokument, dann je eine für die CSS-Datei und die drei Bilder: 1 + 1 + 3 = 5."
+    },
+    {
+      "question": "Welcher HTML-Code ist korrekt verschachtelt?",
+      "options": [
+        "<p><em>Hallo</p></em>",
+        "<em><p>Hallo</em></p>",
+        "<p><em>Hallo</p>",
+        "<p><em>Hallo</em></p>"
+      ],
+      "correctIndex": 3,
+      "explanation": "Was zuletzt geöffnet wurde, muss zuerst geschlossen werden: zuerst </em>, dann </p>."
+    },
+    {
+      "question": "Die Datei index.html liegt im Ordner website, das Bild in website/bilder/logo.png. Welcher src ist in index.html richtig?",
+      "options": [
+        "/logo.png",
+        "website/logo.png",
+        "bilder/logo.png",
+        "../bilder/logo.png"
+      ],
+      "correctIndex": 2,
+      "explanation": "Relative Pfade gehen vom Ordner der aktuellen Datei aus. Von website aus liegt das Bild im Unterordner bilder."
+    },
+    {
+      "question": "Wofür ist ein <table> gedacht?",
+      "options": [
+        "Für tabellarische Daten wie einen Stundenplan",
+        "Für das Spaltenlayout der Seite",
+        "Um Bilder nebeneinander zu stellen",
+        "Für die Navigation"
+      ],
+      "correctIndex": 0,
+      "explanation": "Tabellen sind für Daten mit Zeilen und Spalten gedacht. Für das Layout verwendest du Flexbox oder Grid."
+    },
+    {
+      "question": "Welche Farbe hat der Link?",
+      "code": "<!-- HTML -->\n<nav class=\"menu\">\n  <a href=\"#\">Start</a>\n</nav>\n\n/* CSS */\n.menu a { color: green; }\nnav a   { color: red; }\na       { color: blue; }",
+      "options": [
+        "grün",
+        "rot",
+        "blau",
+        "Standard-Linkfarbe"
+      ],
+      "correctIndex": 0,
+      "explanation": "Spezifitäten: nav a = (0,0,2), .menu a = (0,1,1), a = (0,0,1). Die Klasse macht .menu a am spezifischsten – also grün."
+    },
+    {
+      "question": "Wie viel Platz nimmt die Box insgesamt waagrecht ein (inklusive margin)?",
+      "code": ".box {\n  box-sizing: border-box;\n  width: 200px;\n  padding: 15px;\n  border: 5px solid;\n  margin: 20px;\n}",
+      "options": [
+        "200px",
+        "240px",
+        "260px",
+        "220px"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei border-box ist die sichtbare Breite genau 200px (Padding und Border sind schon drin). Dazu kommt links und rechts je 20px margin: 240px."
+    },
+    {
+      "question": "Welche Eigenschaft wird an Kind-Elemente vererbt?",
+      "options": [
+        "margin",
+        "border",
+        "padding",
+        "color"
+      ],
+      "correctIndex": 3,
+      "explanation": "Text-Eigenschaften wie color und font-family werden vererbt. Abstände und Rahmen gelten nur für das Element selbst."
+    },
+    {
+      "question": "Ein Container hat display: flex und flex-direction: column. Welche Eigenschaft zentriert die Items waagrecht?",
+      "options": [
+        "justify-content: center",
+        "text-align: center",
+        "align-items: center",
+        "flex-wrap: center"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei column ist die Hauptachse senkrecht. justify-content wirkt dann senkrecht, align-items (Querachse) waagrecht."
+    },
+    {
+      "question": "Ein Grid hat grid-template-columns: repeat(4, 1fr). Das erste Item hat grid-column: span 2. Wie viele Zeilen brauchen insgesamt 5 Items?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das erste Item belegt 2 Spalten. Zeile 1: Item 1 (2 Spalten) + Item 2 + Item 3 = 4 Spalten. Zeile 2: Item 4 und 5. Also 2 Zeilen."
+    },
+    {
+      "question": "Du baust Mobile First. Ab 800px Breite sollen zwei Spalten erscheinen. Welche Media Query passt?",
+      "options": [
+        "@media (max-width: 800px)",
+        "@media (min-width: 800px)",
+        "@media (width: 800px)",
+        "@media screen and (max-width: 400px)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei Mobile First ist das Handy-Layout die Basis. Mit min-width ergänzt du Regeln, die erst ab einer Mindestbreite gelten."
+    }
+  ]
+}

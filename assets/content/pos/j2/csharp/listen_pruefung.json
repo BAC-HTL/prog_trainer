@@ -1,0 +1,120 @@
+{
+  "id": "pos-j2-csharp-listen_pruefung",
+  "title": "Abschlussprüfung: Verkettete Listen, Stack & Queue",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus? (Knoten wie in der Lektion)",
+      "code": "var k = new Knoten(1);\nk.Next = new Knoten(2);\nvar neu = new Knoten(5);\nneu.Next = k.Next;\nk.Next = neu;\n\nfor (var x = k; x != null; x = x.Next)\n    Console.Write(x.Wert);",
+      "options": [
+        "125",
+        "152",
+        "512",
+        "15"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der neue Knoten 5 übernimmt zuerst den Nachfolger von k (Knoten 2), dann zeigt k auf den neuen Knoten. Die Kette lautet also 1 → 5 → 2."
+    },
+    {
+      "question": "Im vorigen Beispiel werden die beiden Zeilen vertauscht: zuerst k.Next = neu;, dann neu.Next = k.Next;. Was passiert beim Durchlaufen?",
+      "options": [
+        "Ausgabe 152 – die Reihenfolge ist egal",
+        "Ausgabe 15",
+        "Endlosschleife, weil Knoten 5 auf sich selbst zeigt",
+        "NullReferenceException"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nach k.Next = neu ist k.Next bereits der neue Knoten. neu.Next = k.Next lässt ihn also auf sich selbst zeigen, und Knoten 2 ist verloren. Beim Einfügen immer zuerst den neuen Knoten verbinden, dann den Vorgänger umhängen!"
+    },
+    {
+      "question": "Welche Operation ist bei LinkedList<T> immer gleich schnell, bei List<T> aber umso langsamer, je mehr Elemente vorhanden sind?",
+      "options": [
+        "Zugriff auf das Element an Index i",
+        "Abfragen von Count",
+        "Einfügen ganz am Anfang",
+        "Lesen des ersten Elements"
+      ],
+      "correctIndex": 2,
+      "explanation": "List<T> muss beim Einfügen am Anfang alle Elemente um einen Platz verschieben. LinkedList<T> hängt nur ein paar Verweise um. Der Index-Zugriff ist dagegen bei List<T> schnell und bei LinkedList<T> langsam."
+    },
+    {
+      "question": "In einer doppelt verketteten Liste soll der Knoten x (mit Vorgänger und Nachfolger) entfernt werden. Welche Verweise müssen geändert werden?",
+      "options": [
+        "Nur x.Previous",
+        "Next des Vorgängers und Previous des Nachfolgers",
+        "Nur Next des Vorgängers",
+        "Alle Verweise der gesamten Liste"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Vorgänger muss mit Next auf den Nachfolger zeigen und der Nachfolger mit Previous auf den Vorgänger. Vergisst du eine Richtung, ist die Liste rückwärts kaputt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var s = new Stack<int>();\nfor (int i = 1; i <= 4; i++)\n{\n    s.Push(i);\n    if (i % 2 == 0)\n        s.Pop();\n}\nConsole.WriteLine(string.Join(\",\", s));",
+      "options": [
+        "1,3",
+        "4,3,2,1",
+        "3,1",
+        "1,2,3,4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Gerade Zahlen werden sofort wieder entfernt. Übrig bleiben 1 und 3. foreach bzw. string.Join durchläuft einen Stack von oben nach unten: 3,1."
+    },
+    {
+      "question": "Korrekt aus der Lektion prüft \"{[()()]}\". Wie viele Klammern liegen höchstens gleichzeitig am Stack?",
+      "options": [
+        "2",
+        "4",
+        "8",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "{, [ und ( werden gepusht – das sind 3. Die ) entfernt (, dann kommt wieder ( dazu (wieder 3) usw. Mehr als 3 liegen nie gleichzeitig am Stack."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var q = new Queue<char>(\"HTL\");\nvar s = new Stack<char>();\nwhile (q.Count > 0)\n    s.Push(q.Dequeue());\nwhile (s.Count > 0)\n    q.Enqueue(s.Pop());\nConsole.WriteLine(string.Join(\"\", q));",
+      "options": [
+        "HTL",
+        "LTH",
+        "THL",
+        "LHT"
+      ],
+      "correctIndex": 1,
+      "explanation": "Alle Zeichen wandern der Reihe nach aus der Queue in den Stack und kommen in umgekehrter Reihenfolge zurück. So kehrt man eine Queue mit einem Stack um."
+    },
+    {
+      "question": "Eine Queue<string> könnte leer sein. Womit holst du das vordere Element, ohne dass eine Exception entstehen kann?",
+      "options": [
+        "Dequeue()",
+        "Peek()",
+        "TryDequeue(out var x)",
+        "Clear()"
+      ],
+      "correctIndex": 2,
+      "explanation": "TryDequeue liefert false, wenn die Queue leer ist, sonst true und das Element in x. Dequeue und Peek werfen bei leerer Queue eine InvalidOperationException."
+    },
+    {
+      "question": "Round-Robin wie in der Lektion (Zeitscheibe 10 ms): Prozess A braucht 20 ms, B braucht 30 ms, A steht vorne. Wann sind die Prozesse fertig?",
+      "options": [
+        "A nach 20 ms, B nach 50 ms",
+        "A nach 30 ms, B nach 50 ms",
+        "B nach 30 ms, A nach 50 ms",
+        "A nach 20 ms, B nach 30 ms"
+      ],
+      "correctIndex": 1,
+      "explanation": "A (0–10), B (10–20), A (20–30) → A fertig nach 30 ms. Dann B (30–40) und B (40–50) → B fertig nach 50 ms."
+    },
+    {
+      "question": "Warum fügt MeinStack neue Elemente am Kopf der verketteten Liste ein und nicht am Ende?",
+      "options": [
+        "Weil Einfügen und Entfernen am Kopf ohne Durchlaufen der Liste möglich sind",
+        "Weil man am Ende einer Liste gar nichts einfügen kann",
+        "Weil der Stack sonst nach FIFO arbeiten würde, egal wo entfernt wird",
+        "Weil der Garbage Collector sonst die Knoten löscht"
+      ],
+      "correctIndex": 0,
+      "explanation": "Am Kopf reicht es, ein paar Verweise umzuhängen – unabhängig von der Länge. Am Ende einer einfach verketteten Liste müsste man für jedes Pop den vorletzten Knoten suchen."
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "id": "tinf-j1-hardware_pruefung",
+  "title": "Abschlussprüfung: Computer-Hardware",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welcher Teil der CPU führt Rechen- und Vergleichsoperationen aus?",
+      "options": [
+        "Steuerwerk",
+        "Rechenwerk (ALU)",
+        "Befehlszähler",
+        "Adressbus"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die ALU (Arithmetic Logic Unit) rechnet. Das Steuerwerk koordiniert den Ablauf."
+    },
+    {
+      "question": "Was enthält der Befehlszähler (Program Counter)?",
+      "options": [
+        "Die Anzahl der ausgeführten Befehle",
+        "Das Ergebnis der letzten Rechnung",
+        "Die Adresse des nächsten Befehls",
+        "Die Taktfrequenz"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Befehlszähler zeigt auf die Speicheradresse des nächsten Befehls. Nach dem Fetch wird er weitergezählt – bei einem Sprung neu gesetzt."
+    },
+    {
+      "question": "Ein System hat einen 24-Bit-Adressbus, jede Adresse spricht 1 Byte an. Wie viel Speicher ist adressierbar?",
+      "options": [
+        "24 MiB",
+        "16 MiB",
+        "4 GiB",
+        "256 KiB"
+      ],
+      "correctIndex": 1,
+      "explanation": "2²⁴ = 16 777 216 Byte = 16 MiB."
+    },
+    {
+      "question": "Was versteht man unter dem Von-Neumann-Flaschenhals?",
+      "options": [
+        "Die Wärmeentwicklung der CPU",
+        "Zu wenig USB-Anschlüsse",
+        "Die begrenzte Zahl an Schreibzyklen von SSDs",
+        "Programm und Daten teilen sich einen Bus zum langsameren Speicher"
+      ],
+      "correctIndex": 3,
+      "explanation": "Befehle und Daten müssen nacheinander über denselben Bus. Caches mildern das Problem."
+    },
+    {
+      "question": "Warum bringt ein größerer Cache oft mehr Leistung als mehr RAM?",
+      "options": [
+        "Weil der Cache viel schneller ist und häufig benutzte Daten nah an der CPU hält",
+        "Weil der Cache Daten auch ohne Strom speichert",
+        "Weil der RAM nur für die Grafik verwendet wird",
+        "Weil Cache und Festplatte dasselbe sind"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Cache verkürzt die Wartezeit auf Daten. Mehr RAM hilft dagegen erst, wenn der vorhandene RAM voll ist."
+    },
+    {
+      "question": "Ein Laptop hat verlöteten RAM. Was bedeutet das für dich?",
+      "options": [
+        "Der RAM ist schneller als jeder andere",
+        "Er kann später nicht einfach aufgerüstet werden",
+        "Er ist nicht flüchtig",
+        "Er läuft ohne Netzteil"
+      ],
+      "correctIndex": 1,
+      "explanation": "Verlöteter Speicher sitzt fest auf der Platine. Die Größe muss beim Kauf passen."
+    },
+    {
+      "question": "Welche Aufgabe hat das Mainboard?",
+      "options": [
+        "Es wandelt Wechselspannung in Gleichspannung um",
+        "Es berechnet das Bild für den Monitor",
+        "Es verbindet alle Komponenten und enthält Sockel, Slots und Firmware",
+        "Es speichert Dateien dauerhaft"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Mainboard ist die zentrale Platine mit CPU-Sockel, RAM- und PCIe-Slots, Chipsatz und dem BIOS/UEFI-Chip."
+    },
+    {
+      "question": "Eine SATA-Schnittstelle schafft nutzbar rund 600 MB/s. Wie lange dauert das Kopieren von 30 GB mindestens?",
+      "options": [
+        "5 Sekunden",
+        "20 Sekunden",
+        "500 Sekunden",
+        "50 Sekunden"
+      ],
+      "correctIndex": 3,
+      "explanation": "30 000 MB / 600 MB/s = 50 s. Im Alltag dauert es länger, weil auch das Laufwerk selbst bremst."
+    },
+    {
+      "question": "Du willst einen PC-Monitor anschließen. Welche Kombination überträgt Bild UND Ton digital?",
+      "options": [
+        "HDMI oder DisplayPort",
+        "VGA oder SATA",
+        "PCIe oder M.2",
+        "Bluetooth oder VGA"
+      ],
+      "correctIndex": 0,
+      "explanation": "HDMI und DisplayPort übertragen beides digital. VGA ist analog und nur für Bild, SATA und M.2 sind für Laufwerke."
+    },
+    {
+      "question": "Was ist NVMe?",
+      "options": [
+        "Eine Steckerform für USB",
+        "Ein Funkstandard",
+        "Ein Protokoll, das SSDs über PCIe anbindet",
+        "Ein anderer Name für SATA"
+      ],
+      "correctIndex": 2,
+      "explanation": "NVMe nutzt die schnellen PCIe-Lanes direkt. M.2 ist der Formfaktor, in dem NVMe-SSDs meist stecken."
+    }
+  ]
+}

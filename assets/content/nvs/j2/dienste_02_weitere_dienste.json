@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j2-dienste_02_weitere_dienste",
+  "title": "Weitere Netzwerkdienste",
+  "summary": "HTTP/HTTPS, E-Mail mit SMTP und IMAP, Dateiübertragung, SSH und Zeitsynchronisation mit NTP.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Dienste im Netz folgen dem Client-Server-Prinzip: Ein Server bietet einen Dienst auf einem bekannten Port an, ein Client verbindet sich dorthin. Welcher Dienst auf welchem Port läuft, solltest du für die wichtigsten Protokolle auswendig wissen – das brauchst du bei Firewall-Regeln und bei der Fehlersuche."
+    },
+    {
+      "type": "code",
+      "content": "Dienst  Port      Transport\n------  --------  ---------\nFTP     21 (+20)  TCP\nSSH     22        TCP\nSMTP    25 / 587  TCP\nHTTP    80        TCP\nNTP     123       UDP\nIMAP    143 / 993 TCP\nHTTPS   443       TCP"
+    },
+    {
+      "type": "text",
+      "content": "HTTP (Hypertext Transfer Protocol) ist das Protokoll des Webs. Der Client schickt eine Anfrage (Request) mit einer Methode, z. B. GET (Daten holen) oder POST (Daten senden), der Server antwortet mit einem Statuscode und dem Inhalt. Wichtige Statuscodes: 200 OK, 301 dauerhaft umgeleitet, 404 nicht gefunden, 500 Serverfehler. Die erste Ziffer verrät die Klasse: 2xx Erfolg, 3xx Umleitung, 4xx Fehler des Clients, 5xx Fehler des Servers."
+    },
+    {
+      "type": "code",
+      "content": "# nur die Antwort-Header holen\ncurl -I https://www.example.com\n\nHTTP/2 200\ncontent-type: text/html\n..."
+    },
+    {
+      "type": "text",
+      "content": "HTTP überträgt alles im Klartext – Passwörter könnten mitgelesen werden. HTTPS ist HTTP über eine mit TLS verschlüsselte Verbindung (Port 443). TLS sorgt für Verschlüsselung, Integrität und mithilfe von Zertifikaten dafür, dass du wirklich mit dem richtigen Server sprichst. Heute sollte jede Webseite HTTPS verwenden."
+    },
+    {
+      "type": "text",
+      "content": "E-Mail nutzt mehrere Protokolle: SMTP (Simple Mail Transfer Protocol) VERSENDET Mails – vom Mailprogramm zum Mailserver (meist Port 587 mit Anmeldung) und zwischen Mailservern (Port 25). Zum ABHOLEN dient IMAP (Port 143, verschlüsselt 993): Die Mails bleiben am Server, Ordner werden auf Handy und PC synchron gehalten. Das ältere POP3 (110 bzw. 995) lädt Mails dagegen typischerweise herunter. Typischer Fehler: zu glauben, mit IMAP könne man Mails versenden."
+    },
+    {
+      "type": "text",
+      "content": "Für Dateiübertragungen gibt es FTP (File Transfer Protocol) mit einem Steuerkanal auf Port 21 und separaten Datenverbindungen. FTP überträgt auch Benutzername und Passwort unverschlüsselt. Die sichere Alternative ist SFTP – trotz ähnlichem Namen ein ganz anderes Protokoll, das über SSH läuft (Port 22). SSH (Secure Shell) ermöglicht eine verschlüsselte Kommandozeile auf einem entfernten Rechner, z. B. auf einem Linux-Server im Schulnetz. Statt Passwörtern verwendet man oft Schlüsselpaare."
+    },
+    {
+      "type": "code",
+      "content": "# Anmelden per SSH\nssh schueler@192.168.1.20\n\n# Schlüsselpaar erzeugen\nssh-keygen -t ed25519\n\n# Datei per SFTP übertragen\nsftp schueler@192.168.1.20\nsftp> put bericht.pdf"
+    },
+    {
+      "type": "text",
+      "content": "NTP (Network Time Protocol, UDP-Port 123) synchronisiert die Uhrzeit von Geräten mit Zeitservern. Das klingt unwichtig, ist aber entscheidend: Zertifikate (HTTPS) werden bei falscher Uhrzeit als ungültig abgelehnt, Anmeldungen im Windows-Domänennetz scheitern, und Logdateien verschiedener Geräte lassen sich nur mit gleicher Zeit vergleichen. Zusammenfassung: HTTP/HTTPS (80/443) für das Web, SMTP zum Senden und IMAP zum Abholen von Mails, FTP unsicher – besser SFTP über SSH (22), NTP (123) für die richtige Uhrzeit."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Mit welchem Protokoll versendet dein Mailprogramm eine E-Mail an den Mailserver?",
+      "options": [
+        "IMAP",
+        "POP3",
+        "SMTP",
+        "NTP"
+      ],
+      "correctIndex": 2,
+      "explanation": "SMTP ist für das Versenden zuständig. IMAP und POP3 dienen zum Abholen von Mails."
+    },
+    {
+      "question": "Ein Webserver antwortet mit dem Statuscode 404. Was bedeutet das?",
+      "options": [
+        "Die angeforderte Ressource wurde nicht gefunden.",
+        "Der Server ist abgestürzt.",
+        "Die Seite wurde dauerhaft verschoben.",
+        "Alles in Ordnung."
+      ],
+      "correctIndex": 0,
+      "explanation": "4xx sind Fehler auf Client-Seite; 404 heißt „Not Found“. Ein Serverfehler wäre 5xx, eine Umleitung 3xx."
+    },
+    {
+      "question": "Welche Aussage über SFTP ist richtig?",
+      "options": [
+        "Es ist FTP mit einem anderen Port.",
+        "Es überträgt Passwörter im Klartext.",
+        "Es nutzt UDP-Port 123.",
+        "Es läuft über eine SSH-Verbindung (Port 22)."
+      ],
+      "correctIndex": 3,
+      "explanation": "SFTP ist ein eigenes Protokoll innerhalb von SSH und damit verschlüsselt. Mit klassischem FTP hat es außer dem Zweck wenig gemeinsam."
+    },
+    {
+      "question": "Ein Laptop hat eine völlig falsche Systemzeit. Welches Problem tritt am ehesten auf?",
+      "options": [
+        "Das WLAN-Signal wird schwächer.",
+        "HTTPS-Seiten melden Zertifikatsfehler.",
+        "Die MAC-Adresse ändert sich.",
+        "Der Switch flutet alle Frames."
+      ],
+      "correctIndex": 1,
+      "explanation": "Zertifikate haben ein Gültigkeitsdatum. Stimmt die Uhr nicht, wirkt ein gültiges Zertifikat abgelaufen oder noch nicht gültig. NTP verhindert das."
+    }
+  ]
+}

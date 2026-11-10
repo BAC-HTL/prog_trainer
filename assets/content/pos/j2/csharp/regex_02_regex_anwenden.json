@@ -1,0 +1,93 @@
+{
+  "id": "pos-j2-csharp-regex_02_regex_anwenden",
+  "title": "Regex in C# anwenden",
+  "summary": "Mit Regex.IsMatch, Match, Matches und Replace Eingaben prüfen, Daten herausholen und Text umbauen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Klasse Regex bietet vier statische Methoden, die du ständig brauchst:\n• Regex.IsMatch(text, muster) – passt das Muster? (bool)\n• Regex.Match(text, muster) – liefert den ersten Treffer\n• Regex.Matches(text, muster) – liefert alle Treffer\n• Regex.Replace(text, muster, ersatz) – ersetzt alle Treffer\nVergiss nicht: using System.Text.RegularExpressions; muss oben in der Datei stehen.\n\nBeginnen wir mit einer Validierung. Mit RegexOptions.IgnoreCase wird Groß-/Kleinschreibung ignoriert."
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.RegularExpressions;\n\nstring muster = @\"^[1-5][A-E]HIF$\";\nstring[] eingaben =\n    { \"2AHIF\", \"2ahif\", \"6AHIF\", \"2AHIFX\" };\n\nforeach (string k in eingaben)\n{\n    bool streng = Regex.IsMatch(k, muster);\n    bool locker = Regex.IsMatch(k, muster,\n        RegexOptions.IgnoreCase);\n    Console.WriteLine(\n        $\"{k}: {streng} {locker}\");\n}\n// Ausgabe:\n// 2AHIF: True True\n// 2ahif: False True\n// 6AHIF: False False\n// 2AHIFX: False False"
+    },
+    {
+      "type": "text",
+      "content": "Regex.Match liefert ein Match-Objekt:\n• Success – wurde etwas gefunden?\n• Value – der gefundene Text\n• Index – an welcher Position er beginnt\n• Groups[n].Value – der Text der n-ten runden Klammer (von links gezählt ab 1). Groups[0] ist der gesamte Treffer.\nPrüfe immer zuerst Success: Ohne Treffer ist Value einfach ein leerer String."
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.RegularExpressions;\n\nstring text = \"Test am 14.03.2026 in B3\";\nMatch m = Regex.Match(text,\n    @\"(\\d{2})\\.(\\d{2})\\.(\\d{4})\");\n\nif (m.Success)\n{\n    Console.WriteLine(m.Value);\n    Console.WriteLine(m.Index);\n    string monat = m.Groups[2].Value;\n    Console.WriteLine($\"Monat: {monat}\");\n}\n// Ausgabe:\n// 14.03.2026\n// 8\n// Monat: 03"
+    },
+    {
+      "type": "text",
+      "content": "Regex.Matches liefert eine MatchCollection mit allen Treffern. Du kannst sie mit foreach durchlaufen oder mit Count zählen.\n\nBei mehreren Gruppen werden Nummern schnell unübersichtlich. Benannte Gruppen schaffen Abhilfe: (?<name>…) definiert die Gruppe, m.Groups[\"name\"].Value liest sie aus."
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.RegularExpressions;\n\nstring liste = \"Max:2 Lena:1 Ali:4\";\nstring muster =\n    @\"(?<name>\\w+):(?<note>[1-5])\";\n\nforeach (Match m in\n         Regex.Matches(liste, muster))\n{\n    string n = m.Groups[\"name\"].Value;\n    string note = m.Groups[\"note\"].Value;\n    Console.WriteLine($\"{n} hat {note}\");\n}\n// Ausgabe:\n// Max hat 2\n// Lena hat 1\n// Ali hat 4"
+    },
+    {
+      "type": "text",
+      "content": "Regex.Replace ersetzt jeden Treffer. Im Ersatztext kannst du mit $1, $2 … (oder ${name}) auf die Gruppen zugreifen. So drehst du etwa ein österreichisches Datum ins ISO-Format um oder räumst überflüssige Leerzeichen weg."
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.RegularExpressions;\n\nstring d = \"Abgabe: 14.03.2026\";\nstring iso = Regex.Replace(d,\n    @\"(\\d{2})\\.(\\d{2})\\.(\\d{4})\",\n    \"$3-$2-$1\");\nConsole.WriteLine(iso);\n\nstring s = \"Hallo    Welt  !\";\nConsole.WriteLine(\n    Regex.Replace(s, @\"\\s+\", \" \"));\n// Ausgabe:\n// Abgabe: 2026-03-14\n// Hallo Welt !"
+    },
+    {
+      "type": "text",
+      "content": "Tipps für Validierungen:\n• Anker nicht vergessen: ohne ^ … $ reicht ein passender Teil.\n• Lieber mehrere einfache Prüfungen als ein unlesbares Monster-Muster. Ein Passwort-Check kann z. B. die Länge prüfen und dann je ein kurzes Muster für Groß-, Kleinbuchstaben und Ziffern verwenden.\n• Baust du ein Muster aus einer Benutzereingabe, maskiere sie mit Regex.Escape(eingabe). Sonst haben Zeichen wie . oder + plötzlich eine Sonderbedeutung.\n• Teste immer mit gültigen UND ungültigen Beispielen.\n• Perfekte E-Mail-Validierung per Regex ist praktisch unmöglich – eine grobe Plausibilitätsprüfung reicht.\n\nZusammenfassung: IsMatch prüft, Match holt den ersten Treffer samt Gruppen, Matches holt alle, Replace ersetzt (mit $1 … als Gruppenbezug)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var m = Regex.Match(\n    \"Raum E204, Stock 2\",\n    @\"([A-Z])(\\d+)\");\nConsole.WriteLine(m.Groups[2].Value);",
+      "options": [
+        "E204",
+        "E",
+        "204",
+        "2"
+      ],
+      "correctIndex": 2,
+      "explanation": "Groups[1] ist ([A-Z]) mit dem Wert E, Groups[2] ist (\\d+) mit 204. \\d+ ist gierig und nimmt alle drei Ziffern."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int n = Regex.Matches(\n    \"a1b22c333\", @\"\\d+\").Count;\nConsole.WriteLine(n);",
+      "options": [
+        "3",
+        "6",
+        "1",
+        "9"
+      ],
+      "correctIndex": 0,
+      "explanation": "\\d+ findet zusammenhängende Ziffernfolgen: 1, 22 und 333 – also 3 Treffer."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string s = Regex.Replace(\"Max Muster\",\n    @\"(\\w+) (\\w+)\", \"$2, $1\");\nConsole.WriteLine(s);",
+      "options": [
+        "Max Muster",
+        "$2, $1",
+        "Max, Muster",
+        "Muster, Max"
+      ],
+      "correctIndex": 3,
+      "explanation": "$1 steht für die erste Gruppe (Max), $2 für die zweite (Muster). Der Ersatztext \"$2, $1\" dreht die Reihenfolge um."
+    },
+    {
+      "question": "Welches Passwort akzeptiert diese Methode?",
+      "code": "static bool PasswortOk(string pw) =>\n    pw.Length >= 8\n    && Regex.IsMatch(pw, \"[A-Z]\")\n    && Regex.IsMatch(pw, \"[a-z]\")\n    && Regex.IsMatch(pw, @\"\\d\");",
+      "options": [
+        "htl20262026",
+        "Schule2026",
+        "HTLWIEN2026",
+        "Htl2026"
+      ],
+      "correctIndex": 1,
+      "explanation": "Schule2026 hat 10 Zeichen, Groß- und Kleinbuchstaben und Ziffern. htl20262026 hat keinen Großbuchstaben, HTLWIEN2026 keinen Kleinbuchstaben, Htl2026 ist nur 7 Zeichen lang."
+    }
+  ]
+}

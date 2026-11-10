@@ -1,0 +1,124 @@
+{
+  "id": "pos-j1-csharp-dateien_pruefung",
+  "title": "Abschlussprüfung: Textdateien, Tests & Fehlersuche",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "File.WriteAllText(\"a.txt\", \"x\");\nfor (int i = 0; i < 3; i++)\n{\n    File.AppendAllText(\"a.txt\", $\"{i}\");\n}\nConsole.WriteLine(File.ReadAllText(\"a.txt\"));",
+      "options": [
+        "012",
+        "x2",
+        "x012",
+        "x"
+      ],
+      "correctIndex": 2,
+      "explanation": "WriteAllText legt die Datei mit „x“ an. In der Schleife hängt AppendAllText nacheinander 0, 1 und 2 an – nichts wird überschrieben. Inhalt: x012."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string[] daten =\n    { \"Anna;12\", \"Ben;7\", \"Cem;15\" };\nFile.WriteAllLines(\"p.csv\", daten);\n\nint max = 0;\nstring bester = \"\";\nusing (StreamReader r =\n       new StreamReader(\"p.csv\"))\n{\n    while (!r.EndOfStream)\n    {\n        string[] t = r.ReadLine().Split(';');\n        int p = int.Parse(t[1]);\n        if (p > max)\n        {\n            max = p;\n            bester = t[0];\n        }\n    }\n}\nConsole.WriteLine($\"{bester} {max}\");",
+      "options": [
+        "Cem 15",
+        "Cem;15",
+        "Anna 12",
+        "Ben 7"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jede Zeile wird am Strichpunkt zerlegt, t[1] wird mit int.Parse zur Zahl. Die größte Punktezahl ist 15 von Cem. Ausgegeben werden Name und Zahl mit Leerzeichen dazwischen."
+    },
+    {
+      "question": "Das Programm wird zweimal hintereinander gestartet (die Datei gibt es anfangs noch nicht). Was gibt es beim zweiten Start aus?",
+      "code": "if (!File.Exists(\"x.txt\"))\n{\n    File.WriteAllText(\"x.txt\", \"1\");\n}\nFile.AppendAllText(\"x.txt\", \"2\");\nConsole.WriteLine(File.ReadAllText(\"x.txt\"));",
+      "options": [
+        "12",
+        "122",
+        "2",
+        "1212"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim ersten Start fehlt die Datei: Sie wird mit „1“ angelegt, dann wird „2“ angehängt → 12. Die Datei bleibt nach Programmende erhalten. Beim zweiten Start existiert sie schon, es wird nur „2“ angehängt → 122."
+    },
+    {
+      "question": "Welche dieser Zeilen führt zu einem Compilerfehler?",
+      "options": [
+        "int[] a = new int[2]; a[2] = 1;",
+        "int x = int.Parse(\"zwölf\");",
+        "double d = 1 / 2;",
+        "int y = \"12\";"
+      ],
+      "correctIndex": 3,
+      "explanation": "Einen string kann man nicht einer int-Variable zuweisen – das erkennt schon der Compiler (CS0029). a[2] und int.Parse(\"zwölf\") lassen sich kompilieren, stürzen aber zur Laufzeit ab. 1 / 2 ergibt 0 – ein typischer Logikfehler, aber kein Compilerfehler."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "double d = 7 / 2;\nConsole.WriteLine(d);",
+      "options": [
+        "3,5",
+        "4",
+        "3",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "7 / 2 ist eine Division zweier int-Werte, das Ergebnis ist 3 (abgeschnitten). Erst danach wird die 3 in der double-Variable gespeichert. Für 3,5 müsste es 7.0 / 2 oder (double)7 / 2 heißen."
+    },
+    {
+      "question": "Was passiert beim Ausführen dieses Codes?",
+      "code": "string[] teile = \"4;x;6\".Split(';');\nint summe = 0;\nforeach (string t in teile)\n{\n    summe += int.Parse(t);\n}\nConsole.WriteLine(summe);",
+      "options": [
+        "Es wird 10 ausgegeben, „x“ wird übersprungen",
+        "Es wird 4 ausgegeben",
+        "Der Compiler meldet einen Fehler in der Zeile mit int.Parse",
+        "Eine FormatException in der Zeile mit int.Parse, es wird keine Summe ausgegeben"
+      ],
+      "correctIndex": 3,
+      "explanation": "Split liefert \"4\", \"x\" und \"6\". Beim zweiten Durchlauf versucht int.Parse, \"x\" umzuwandeln – das ist ein Laufzeitfehler (FormatException). Das Programm bricht ab, bevor die Summe ausgegeben wird."
+    },
+    {
+      "question": "Eine Schleife läuft 1000-mal, ein falscher Wert entsteht erst bei i == 873. Wie kommst du mit dem Debugger am schnellsten an diese Stelle?",
+      "options": [
+        "873-mal F10 drücken",
+        "Einen bedingten Haltepunkt mit der Bedingung i == 873 setzen",
+        "Mit F11 in jede Methode hineinspringen",
+        "Umschalt+F5 drücken"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein bedingter Haltepunkt hält nur an, wenn seine Bedingung erfüllt ist. So stoppt das Programm genau im 873. Durchlauf. Umschalt+F5 würde das Debuggen beenden."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int fehler = 0;\nPruefe(IstSchaltjahr(2024) == true);\nPruefe(IstSchaltjahr(2023) == false);\nPruefe(IstSchaltjahr(1900) == false);\nPruefe(IstSchaltjahr(2000) == true);\nConsole.WriteLine(fehler);\n\nvoid Pruefe(bool ok)\n{\n    if (!ok) fehler++;\n}\n\nbool IstSchaltjahr(int j)\n{\n    return j % 4 == 0;\n}",
+      "options": [
+        "0",
+        "2",
+        "1",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Methode prüft nur die Teilbarkeit durch 4. Für 2024, 2023 und 2000 stimmt das Ergebnis zufällig. 1900 ist aber durch 100 und nicht durch 400 teilbar und damit kein Schaltjahr – die Methode liefert true. Genau ein Test schlägt fehl."
+    },
+    {
+      "question": "Ein Onlineshop gibt ab einem Einkauf von 100 € (ganze Euro) 10 % Rabatt. Mit welchen Beträgen testest du die Grenze am besten?",
+      "options": [
+        "50 und 150",
+        "99 und 100",
+        "0 und 1000",
+        "100 und 200"
+      ],
+      "correctIndex": 1,
+      "explanation": "Grenzwerte prüft man genau an der Grenze und knapp daneben: 99 € (kein Rabatt) und 100 € (Rabatt). Nur so fällt ein > statt >= auf. Die anderen Paare liegen weit von der Grenze entfernt oder auf derselben Seite."
+    },
+    {
+      "question": "Was passiert, wenn dieses Programm im Debug-Build ohne Debugger gestartet wird?",
+      "code": "using System.Diagnostics;\n\nConsole.Write(\"A\");\nDebug.Assert(Quadrat(3) == 9);\nConsole.Write(\"B\");\nDebug.Assert(Quadrat(-2) == -4, \"negativ\");\nConsole.Write(\"C\");\n\nint Quadrat(int x)\n{\n    return x * x;\n}",
+      "options": [
+        "Ausgabe ABC",
+        "Ausgabe A, dann Abbruch mit „Assertion failed“",
+        "Ausgabe AB, dann Abbruch mit „Assertion failed“ und der Meldung „negativ“",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Quadrat(3) == 9 stimmt, also wird B ausgegeben. Quadrat(-2) ist aber 4, nicht -4 – das zweite Assert schlägt fehl. Das Programm bricht mit „Assertion failed“ und der Meldung „negativ“ ab, C wird nie ausgegeben. (Eigentlich ist hier der Test falsch, nicht die Methode!)"
+    }
+  ]
+}

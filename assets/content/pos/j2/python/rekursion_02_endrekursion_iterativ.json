@@ -1,0 +1,95 @@
+{
+  "id": "pos-j2-python-rekursion_02_endrekursion_iterativ",
+  "title": "Endrekursion und Schleifen",
+  "summary": "Warum Rekursion an Grenzen stößt und wie du eine rekursive Funktion in eine Schleife umwandelst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Jeder rekursive Aufruf belegt einen Rahmen auf dem Aufrufstapel. Damit ein Programm nicht den ganzen Speicher füllt, begrenzt Python die Rekursionstiefe. Den aktuellen Wert liefert sys.getrecursionlimit() – standardmäßig sind das 1000 Aufrufe."
+    },
+    {
+      "type": "code",
+      "content": "import sys\nprint(sys.getrecursionlimit())  # 1000\n\ndef zaehle(n):\n    if n == 0:\n        return 0\n    return 1 + zaehle(n - 1)\n\nprint(zaehle(500))   # 500"
+    },
+    {
+      "type": "text",
+      "content": "Wird die Grenze überschritten, löst Python einen RecursionError aus. Den kannst du wie jede andere Exception mit try/except abfangen. Das passiert nicht nur bei Fehlern im Basisfall, sondern auch bei korrekten Funktionen mit sehr großen Eingaben."
+    },
+    {
+      "type": "code",
+      "content": "def zaehle(n):\n    if n == 0:\n        return 0\n    return 1 + zaehle(n - 1)\n\ntry:\n    zaehle(100000)\nexcept RecursionError:\n    print(\"Zu tief!\")   # Zu tief!"
+    },
+    {
+      "type": "text",
+      "content": "Mit sys.setrecursionlimit() könntest du die Grenze erhöhen. Das ist aber keine echte Lösung: Ist der Stapel des Betriebssystems voll, kann das ganze Programm abstürzen. Besser ist es, die Rekursion in eine Schleife umzuwandeln."
+    },
+    {
+      "type": "text",
+      "content": "Endrekursion: Eine Funktion ist endrekursiv, wenn der rekursive Aufruf die allerletzte Aktion ist – es wartet nichts mehr auf sein Ergebnis. return n * fakultaet(n - 1) ist NICHT endrekursiv, weil danach noch multipliziert wird. Mit einem zusätzlichen Parameter, dem Akkumulator, wird sie endrekursiv: Das Zwischenergebnis wird mitgegeben statt auf dem Rückweg berechnet."
+    },
+    {
+      "type": "code",
+      "content": "def fak_end(n, acc=1):\n    if n <= 1:\n        return acc\n    return fak_end(n - 1, acc * n)\n\nprint(fak_end(5))   # 120\n# fak_end(5, 1) → fak_end(4, 5)\n# → fak_end(3, 20) → fak_end(2, 60)\n# → fak_end(1, 120) → 120"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: Python optimiert Endrekursion NICHT – auch fak_end(5000) erzeugt einen RecursionError. Der Vorteil ist ein anderer: Eine endrekursive Funktion lässt sich ganz mechanisch in eine Schleife umwandeln. Parameter werden zu Variablen, der Basisfall wird zur Abbruchbedingung und der rekursive Aufruf wird zu einer neuen Zuweisung."
+    },
+    {
+      "type": "code",
+      "content": "def fak_iter(n):\n    acc = 1               # Startwert\n    while n > 1:          # nicht Basisfall\n        acc = acc * n     # wie fak_end(\n        n = n - 1         #  n - 1, acc * n)\n    return acc            # Basisfall\n\nprint(fak_iter(5))    # 120\nprint(len(str(fak_iter(1000))))  # 2568"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Den falschen Startwert für den Akkumulator wählen (bei Produkten 1, bei Summen 0) oder die Reihenfolge der Zuweisungen vertauschen.\n\nZusammenfassung: Python begrenzt die Rekursionstiefe (RecursionError). Endrekursive Funktionen haben den Aufruf als letzte Aktion und lassen sich leicht in Schleifen umwandeln. Für einfache Zählaufgaben ist die Schleife in Python meist die bessere Wahl."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche return-Zeile ist endrekursiv?",
+      "options": [
+        "return n * f(n - 1)",
+        "return f(n - 1) + 1",
+        "return f(n - 1, acc + n)",
+        "return 1 + f(n - 1)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur bei f(n - 1, acc + n) ist der Aufruf die letzte Aktion. Bei den anderen wird nach dem Aufruf noch gerechnet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def f(n):\n    return f(n + 1)\n\ntry:\n    f(1)\nexcept RecursionError:\n    print(\"zu tief\")",
+      "options": [
+        "Nichts, das Programm läuft ewig",
+        "zu tief",
+        "1",
+        "MemoryError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Funktion hat keinen Basisfall. Nach etwa 1000 Aufrufen löst Python einen RecursionError aus, der hier abgefangen wird."
+    },
+    {
+      "question": "Diese Schleife ist aus einer endrekursiven Summen-Funktion entstanden. Was gibt sie aus?",
+      "code": "n, acc = 4, 0\nwhile n > 0:\n    acc = acc + n\n    n = n - 1\nprint(acc)",
+      "options": [
+        "4",
+        "0",
+        "24",
+        "10"
+      ],
+      "correctIndex": 3,
+      "explanation": "acc wird nacheinander 4, 7, 9, 10. Das entspricht 4 + 3 + 2 + 1."
+    },
+    {
+      "question": "Welche Aussage über Endrekursion in Python stimmt?",
+      "options": [
+        "Python optimiert sie nicht – auch endrekursive Funktionen können einen RecursionError auslösen",
+        "Python wandelt endrekursive Funktionen automatisch in Schleifen um",
+        "Endrekursive Funktionen brauchen keinen Basisfall",
+        "Endrekursion ist in Python verboten"
+      ],
+      "correctIndex": 0,
+      "explanation": "Python hat keine Tail-Call-Optimierung. Jeder Aufruf belegt weiterhin einen Rahmen auf dem Stapel. Endrekursion hilft aber beim Umwandeln in eine Schleife."
+    }
+  ]
+}

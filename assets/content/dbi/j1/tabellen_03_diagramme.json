@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j1-tabellen_03_diagramme",
+  "title": "Diagramme",
+  "summary": "Den passenden Diagrammtyp wählen, Achsen sauber beschriften und irreführende Diagramme erkennen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Diagramm macht Zahlen auf einen Blick verständlich. So erstellst du es: Datenbereich inklusive Überschriften markieren, dann Einfügen → Diagramm. Ändern sich die Zahlen in der Tabelle, passt sich das Diagramm automatisch an. Die wichtigste Frage zuerst: Was will ich zeigen?"
+    },
+    {
+      "type": "code",
+      "content": "Ziel                 → Diagrammtyp\n-------------------    -------------\nKategorien\n  vergleichen        → Säule/Balken\nVerlauf über Zeit    → Linie\nAnteile eines\n  Ganzen             → Kreis\nZusammenhang zweier\n  Zahlenwerte        → Punkt (XY)"
+    },
+    {
+      "type": "text",
+      "content": "Säulendiagramm (Column Chart): senkrechte Säulen, gut zum Vergleichen weniger Kategorien, z. B. Durchschnittsnote je Klasse. Balkendiagramm (Bar Chart): waagrechte Balken – besser bei langen Beschriftungen oder vielen Kategorien, z. B. Freifächer nach Anmeldungen. Mehrere Datenreihen (z. B. 1. und 2. Semester) stehen nebeneinander und brauchen eine Legende."
+    },
+    {
+      "type": "text",
+      "content": "Liniendiagramm (Line Chart): zeigt Entwicklungen über die Zeit, z. B. Stromverbrauch der Schule pro Monat oder deine Testergebnisse im Schuljahr. Die Zeit läuft immer auf der x-Achse von links nach rechts. Achtung: Fehlen Zeitpunkte (z. B. 2018, 2020, 2024), stehen die Werte trotzdem gleich weit auseinander, wenn die Jahre nur Beschriftungen sind."
+    },
+    {
+      "type": "text",
+      "content": "Kreisdiagramm (Pie Chart): zeigt Anteile eines Ganzen – alle Teile ergeben zusammen 100 %. Nur sinnvoll bei wenigen Kategorien (etwa bis 5–6). Jeder Anteil bekommt den entsprechenden Teil von 360°. Beispiel: Umfrage „Lieblingsfach“ unter 120 Schüler:innen."
+    },
+    {
+      "type": "code",
+      "content": "Fach      Anz.  Anteil  Winkel\nPOS        48    40 %   144°\nMathe      30    25 %    90°\nEnglisch   24    20 %    72°\nSonstige   18    15 %    54°\n-----     ---   -----   ----\nSumme     120   100 %   360°\n\nAnteil = Anzahl / Summe\nWinkel = Anteil · 360°"
+    },
+    {
+      "type": "text",
+      "content": "Punktdiagramm (XY-Diagramm, Scatter Chart): beide Achsen sind Zahlen. Damit zeigst du, ob zwei Größen zusammenhängen, z. B. Lernzeit in Minuten (x) und Testpunkte (y). Jede Schülerin, jeder Schüler ist ein Punkt. Gute Beschriftung gilt für alle Typen: aussagekräftiger Titel, Achsentitel mit Einheit (z. B. „Verbrauch in kWh“), Legende nur bei mehreren Datenreihen, eventuell Datenbeschriftungen."
+    },
+    {
+      "type": "text",
+      "content": "Irreführende Diagramme: Der häufigste Trick ist eine abgeschnittene y-Achse. Bei der Klassensprecherwahl bekommt Lena 52 und Tom 48 Stimmen. Beginnt die Achse bei 45 statt 0, ist Lenas Säule 7 Einheiten hoch, Toms nur 3 – sie wirkt mehr als doppelt so hoch, obwohl Lena nur rund 8 % mehr Stimmen hat. Bei Säulen- und Balkendiagrammen sollte die Achse daher bei 0 beginnen."
+    },
+    {
+      "type": "code",
+      "content": "Achse ab 0:         Achse ab 45:\n\nLena ██████████ 52   Lena ███████ 52\nTom  █████████  48   Tom  ███     48\n\nSäulenhöhe 52 : 48   7 : 3 ≈ 2,33\n(echt ≈ 1,08)        (wirkt > doppelt)"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Tricks: 3D-Effekte (vordere Kreisstücke wirken größer), ein Kreisdiagramm, dessen Anteile nicht 100 % ergeben (z. B. bei Mehrfachantworten), fehlende Achsenbeschriftung oder Einheiten. Zusammenfassung: Typ nach Ziel wählen, sauber beschriften, Säulenachsen bei 0 starten lassen und bei fremden Diagrammen immer zuerst die Achsen prüfen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Du willst zeigen, wie sich die Zahl der Schüler:innen deiner Schule von 2015 bis 2025 entwickelt hat. Welcher Diagrammtyp passt am besten?",
+      "options": [
+        "Kreisdiagramm",
+        "Liniendiagramm",
+        "Punktdiagramm ohne Achsen",
+        "Gar keiner – nur eine Tabelle"
+      ],
+      "correctIndex": 1,
+      "explanation": "Entwicklungen über die Zeit zeigt man mit einem Liniendiagramm, die Jahre stehen auf der x-Achse."
+    },
+    {
+      "question": "Bei einer Umfrage unter 120 Schüler:innen wählen 30 Mathe als Lieblingsfach. Wie groß ist der Winkel dieses Stücks im Kreisdiagramm?",
+      "options": [
+        "30°",
+        "120°",
+        "90°",
+        "25°"
+      ],
+      "correctIndex": 2,
+      "explanation": "Anteil = 30 / 120 = 25 %. 25 % von 360° sind 90°. 25 ist der Prozentwert, nicht der Winkel."
+    },
+    {
+      "question": "Du willst prüfen, ob mehr Lernzeit (in Minuten) zu mehr Testpunkten führt. Welcher Diagrammtyp ist geeignet?",
+      "options": [
+        "Punktdiagramm (XY)",
+        "Kreisdiagramm",
+        "Balkendiagramm mit einer Säule",
+        "Liniendiagramm mit Monaten"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beim Punktdiagramm sind beide Achsen Zahlenwerte. Liegen die Punkte ungefähr auf einer steigenden Linie, gibt es einen Zusammenhang."
+    },
+    {
+      "question": "Lena hat 52 Stimmen, Tom 48. Die y-Achse des Säulendiagramms beginnt bei 45. Wie viel Mal so hoch wirkt Lenas Säule?",
+      "options": [
+        "Etwa 1,08-mal",
+        "Genau 2-mal",
+        "Etwa 1,5-mal",
+        "Etwa 2,33-mal"
+      ],
+      "correctIndex": 3,
+      "explanation": "Sichtbar sind nur die Teile über 45: 52 − 45 = 7 und 48 − 45 = 3. 7 / 3 ≈ 2,33. Tatsächlich sind 52 Stimmen nur etwa 1,08-mal so viele wie 48."
+    }
+  ]
+}
