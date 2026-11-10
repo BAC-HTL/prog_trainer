@@ -1,0 +1,91 @@
+{
+  "id": "pos-j2-csharp-listen_03_queue",
+  "title": "Die Queue (Warteschlange)",
+  "summary": "Das FIFO-Prinzip, Queue<T> in C#, eine eigene Warteschlange mit verketteten Knoten und typische Anwendungen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Queue (Warteschlange) ist das Gegenstück zum Stack: Wer zuerst kommt, wird zuerst bedient – wie in der Schlange beim Buffet. Man spricht von FIFO (First In, First Out). Neue Elemente stellen sich hinten an, entnommen wird vorne.\n\nBeispiele: Druckaufträge im EDV-Saal, Tastatureingaben, Nachrichten, die ein Server der Reihe nach abarbeitet."
+    },
+    {
+      "type": "code",
+      "content": "Enqueue(A), Enqueue(B), Enqueue(C):\n\nvorne              hinten\n[ A ][ B ][ C ]  <- rein\n\nDequeue() liefert A:\n[ B ][ C ]"
+    },
+    {
+      "type": "text",
+      "content": "In C# verwendest du die generische Klasse Queue<T>:\n• Enqueue(x) – hinten anstellen.\n• Dequeue() – vorderstes Element entfernen und zurückgeben.\n• Peek() – vorderstes Element ansehen, ohne es zu entfernen.\n• Count – Anzahl der Elemente.\nWie beim Stack lösen Dequeue und Peek auf einer leeren Queue eine InvalidOperationException aus. Die sichere Variante heißt TryDequeue(out var x)."
+    },
+    {
+      "type": "code",
+      "content": "var drucker = new Queue<string>();\ndrucker.Enqueue(\"Referat.pdf\");\ndrucker.Enqueue(\"Labor.docx\");\ndrucker.Enqueue(\"Plan.xlsx\");\n\nConsole.WriteLine(drucker.Peek());\nwhile (drucker.Count > 0)\n{\n    string d = drucker.Dequeue();\n    Console.WriteLine($\"Drucke {d}\");\n}\n// Ausgabe:\n// Referat.pdf\n// Drucke Referat.pdf\n// Drucke Labor.docx\n// Drucke Plan.xlsx"
+    },
+    {
+      "type": "text",
+      "content": "Willst du selbst eine Queue mit verketteten Knoten bauen, merkst du dir zwei Verweise: vorne (dort wird entnommen) und hinten (dort wird angehängt). So musst du beim Anhängen nicht die ganze Liste durchlaufen, und beide Operationen sind immer gleich schnell.\n\nAchtung, Sonderfälle: Ist die Queue leer, zeigen vorne und hinten auf den neuen Knoten. Wird das letzte Element entfernt, muss auch hinten wieder null werden."
+    },
+    {
+      "type": "code",
+      "content": "var q = new MeineQueue();\nq.Enqueue(10);\nq.Enqueue(20);\nq.Enqueue(30);\nConsole.WriteLine(q.Dequeue());\nConsole.WriteLine(q.Count);\n// Ausgabe:\n// 10\n// 2\n\nclass MeineQueue\n{\n    private Knoten? vorne, hinten;\n    public int Count { get; private set; }\n\n    public void Enqueue(int wert)\n    {\n        var neu = new Knoten(wert);\n        if (hinten == null)\n            vorne = hinten = neu;\n        else\n        {\n            hinten.Next = neu;\n            hinten = neu;\n        }\n        Count++;\n    }\n\n    public int Dequeue()\n    {\n        if (vorne == null)\n            throw new InvalidOperationException(\n                \"Queue ist leer\");\n        int wert = vorne.Wert;\n        vorne = vorne.Next;\n        if (vorne == null) hinten = null;\n        Count--;\n        return wert;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Eine wichtige Anwendung ist das Round-Robin-Verfahren, mit dem Betriebssysteme die CPU fair auf Prozesse verteilen: Jeder Prozess darf eine kurze Zeitscheibe lang rechnen. Ist er dann nicht fertig, stellt er sich wieder hinten an. So kommt jeder regelmäßig dran."
+    },
+    {
+      "type": "code",
+      "content": "var bereit = new Queue<Prozess>();\nbereit.Enqueue(new Prozess(\"A\", 30));\nbereit.Enqueue(new Prozess(\"B\", 10));\nbereit.Enqueue(new Prozess(\"C\", 20));\nint zeit = 0;\n\nwhile (bereit.Count > 0)\n{\n    Prozess p = bereit.Dequeue();\n    p.Rest -= 10; // Zeitscheibe 10 ms\n    zeit += 10;\n    if (p.Rest > 0)\n        bereit.Enqueue(p); // hinten an\n    else\n        Console.WriteLine(\n            $\"{p.Name} fertig: {zeit} ms\");\n}\n// Ausgabe:\n// B fertig: 20 ms\n// C fertig: 50 ms\n// A fertig: 60 ms\n\nclass Prozess\n{\n    public string Name;\n    public int Rest;\n    public Prozess(string name, int rest)\n    {\n        Name = name;\n        Rest = rest;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Stack oder Queue?\n• Stack (LIFO): Das Neueste zuerst – Rückgängig, Zurück-Button, Klammerprüfung, Rekursion.\n• Queue (FIFO): Das Älteste zuerst – Warteschlangen, Aufträge der Reihe nach, faire Verteilung.\nGut zu wissen: .NET kennt auch eine PriorityQueue<TElement, TPriority>. Dort kommt immer das Element mit der kleinsten Priorität zuerst dran, nicht das älteste – etwa in der Notaufnahme.\n\nZusammenfassung: Eine Queue arbeitet nach FIFO: Enqueue hinten, Dequeue und Peek vorne. Eine eigene Implementierung braucht Verweise auf beide Enden, damit alle Operationen gleich schnell bleiben."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var q = new Queue<int>();\nq.Enqueue(5);\nq.Enqueue(2);\nq.Enqueue(8);\nq.Dequeue();\nq.Enqueue(q.Dequeue() * 10);\nConsole.WriteLine(string.Join(\" \", q));",
+      "options": [
+        "20 8",
+        "2 8 20",
+        "5 8 20",
+        "8 20"
+      ],
+      "correctIndex": 3,
+      "explanation": "Start: 5, 2, 8. Das erste Dequeue entfernt 5. Das zweite Dequeue liefert 2, und 2 * 10 = 20 wird hinten angestellt. Übrig: 8, 20."
+    },
+    {
+      "question": "Für welche Aufgabe passt eine Queue besser als ein Stack?",
+      "options": [
+        "Rückgängig-Funktion in einem Editor",
+        "Prüfen, ob Klammern korrekt gesetzt sind",
+        "Tastatureingaben in der Reihenfolge verarbeiten, in der sie getippt wurden",
+        "Den Zurück-Button eines Browsers umsetzen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei Tastatureingaben muss das zuerst Getippte zuerst verarbeitet werden – FIFO. Die anderen Aufgaben brauchen das zuletzt Hinzugefügte zuerst, also LIFO (Stack)."
+    },
+    {
+      "question": "Warum merkt sich MeineQueue zusätzlich zu vorne auch den Verweis hinten?",
+      "options": [
+        "Damit Enqueue nicht jedes Mal die ganze Kette bis zum Ende durchlaufen muss",
+        "Damit Dequeue schneller wird",
+        "Weil die Liste dadurch doppelt verkettet wird",
+        "Weil eine Queue sonst nur ein Element speichern könnte"
+      ],
+      "correctIndex": 0,
+      "explanation": "Angehängt wird am Ende. Ohne hinten müsstest du bei jedem Enqueue von vorne bis zum letzten Knoten laufen. Mit hinten geht das sofort."
+    },
+    {
+      "question": "In Dequeue von MeineQueue fehlt die Zeile if (vorne == null) hinten = null;. Was passiert hier?",
+      "code": "var q = new MeineQueue();\nq.Enqueue(1);\nq.Dequeue();\nq.Enqueue(2);\nConsole.WriteLine(q.Dequeue());",
+      "options": [
+        "Ausgabe: 2",
+        "Ausgabe: 1",
+        "Eine InvalidOperationException, obwohl ein Element in der Queue sein sollte",
+        "Eine NullReferenceException in Enqueue"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nach dem ersten Dequeue ist vorne null, hinten zeigt aber noch auf den alten Knoten. Enqueue(2) hängt den neuen Knoten dort an – vorne bleibt null. Das nächste Dequeue meldet daher „Queue ist leer“."
+    }
+  ]
+}

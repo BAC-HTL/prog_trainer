@@ -1,0 +1,94 @@
+{
+  "id": "pos-j2-csharp-regex_01_regulaere_ausdruecke",
+  "title": "Reguläre Ausdrücke",
+  "summary": "Suchmuster für Text schreiben: Zeichenklassen, Quantoren, Anker und Gruppen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein regulärer Ausdruck (kurz Regex) ist ein Suchmuster für Text. Damit kannst du prüfen, ob eine Eingabe wie eine Postleitzahl oder eine Klassenbezeichnung aussieht, Datumsangaben aus einem Text fischen oder Logdateien durchsuchen.\n\nIn C# steckt alles in der Klasse Regex im Namespace System.Text.RegularExpressions. Für den Anfang reicht Regex.IsMatch(text, muster): Die Methode liefert true, wenn das Muster irgendwo im Text vorkommt.\n\nSchreib Muster immer als Verbatim-String mit @\"…\". Sonst musst du jeden Backslash verdoppeln (\"\\\\d\" statt @\"\\d\")."
+    },
+    {
+      "type": "text",
+      "content": "Zeichenklassen beschreiben, welches Zeichen an einer Stelle stehen darf:\n• [aeiou] – eines dieser Zeichen\n• [a-z], [0-9], [A-Za-z] – Bereiche\n• [^0-9] – jedes Zeichen außer diesen\n• \\d – eine Ziffer, \\w – Buchstabe, Ziffer oder _, \\s – Leerraum (Leerzeichen, Tab …)\n• \\D, \\W, \\S – jeweils das Gegenteil\n• . – ein beliebiges Zeichen (außer Zeilenumbruch)\nWillst du einen echten Punkt, schreibst du \\. – ein typischer Fehler ist, das zu vergessen."
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.RegularExpressions;\n\nvoid Teste(string t, string m) =>\n    Console.WriteLine(\n        $\"{m} in {t}: {Regex.IsMatch(t, m)}\");\n\nTeste(\"Ich bin in der HTL\", \"HTL\");\nTeste(\"Ich bin in der htl\", \"HTL\");\nTeste(\"Raum B3\", @\"[A-Z]\\d\");\nTeste(\"3x5\", @\"3.5\");\nTeste(\"3x5\", @\"3\\.5\");\n// Ausgabe:\n// HTL in Ich bin in der HTL: True\n// HTL in Ich bin in der htl: False\n// [A-Z]\\d in Raum B3: True\n// 3.5 in 3x5: True\n// 3\\.5 in 3x5: False"
+    },
+    {
+      "type": "text",
+      "content": "Quantoren legen fest, wie oft das Element davor vorkommen darf:\n• * – beliebig oft (auch 0-mal)\n• + – mindestens einmal\n• ? – optional (0- oder 1-mal)\n• {4} – genau 4-mal, {2,} – mindestens 2-mal, {2,4} – 2- bis 4-mal\nEin Quantor bezieht sich nur auf das Zeichen (oder die Zeichenklasse) direkt davor: Bei Hallo+ darf nur das o wiederholt werden.\n\nQuantoren sind gierig (greedy): Sie schnappen sich so viel Text wie möglich. Ein angehängtes ? (z. B. +?) macht sie genügsam – das wird beim Suchen wichtig."
+    },
+    {
+      "type": "code",
+      "content": "Teste(\"Hallooo\", \"Hallo+\");\nTeste(\"Hall\", \"Hallo+\");\nTeste(\"color\", \"colou?r\");\nTeste(\"A1\", @\"\\d{2}\");\nTeste(\"8020 Graz\", @\"\\d{4}\");\n// Ausgabe:\n// Hallo+ in Hallooo: True\n// Hallo+ in Hall: False\n// colou?r in color: True\n// \\d{2} in A1: False\n// \\d{4} in 8020 Graz: True"
+    },
+    {
+      "type": "text",
+      "content": "Bisher reicht es, wenn das Muster irgendwo im Text vorkommt. Zum Prüfen von Eingaben ist das gefährlich: \\d{4} findet auch in „12345“ vier Ziffern hintereinander!\n\nAnker legen die Position fest, ohne selbst ein Zeichen zu verbrauchen:\n• ^ – Anfang des Textes\n• $ – Ende des Textes\n• \\b – Wortgrenze (Übergang zwischen Wortzeichen und Nicht-Wortzeichen)\nFür Validierungen gilt daher: Muster fast immer mit ^ … $ umschließen."
+    },
+    {
+      "type": "code",
+      "content": "Teste(\"12345\", @\"\\d{4}\");\nTeste(\"12345\", @\"^\\d{4}$\");\nTeste(\"8020\", @\"^\\d{4}$\");\nTeste(\"Katzenfutter\", @\"\\bKatze\\b\");\nTeste(\"die Katze\", @\"\\bKatze\\b\");\n// Ausgabe:\n// \\d{4} in 12345: True\n// ^\\d{4}$ in 12345: False\n// ^\\d{4}$ in 8020: True\n// \\bKatze\\b in Katzenfutter: False\n// \\bKatze\\b in die Katze: True"
+    },
+    {
+      "type": "text",
+      "content": "Runde Klammern bilden Gruppen. Ein Quantor nach einer Gruppe wiederholt die ganze Gruppe: (ha)+ passt auf ha, haha, hahaha …\n\nMit | gibst du Alternativen an: ^(Mo|Di|Mi|Do|Fr)$ akzeptiert genau die Kürzel der Schultage. Achtung, ohne Klammern bedeutet ^Mo|Fr$ „beginnt mit Mo“ ODER „endet mit Fr“ – ein häufiger Fehler.\n\nGruppen merken sich außerdem den Teiltext, den sie gefunden haben. Wie du ihn ausliest, lernst du in der nächsten Lektion."
+    },
+    {
+      "type": "code",
+      "content": "Teste(\"hahaha\", \"^(ha)+$\");\nTeste(\"haa\", \"^(ha)+$\");\nTeste(\"Di\", \"^(Mo|Di|Mi|Do|Fr)$\");\nTeste(\"Sa\", \"^(Mo|Di|Mi|Do|Fr)$\");\nTeste(\"Montag\", \"^Mo|Fr$\");\n// Ausgabe:\n// ^(ha)+$ in hahaha: True\n// ^(ha)+$ in haa: False\n// ^(Mo|Di|Mi|Do|Fr)$ in Di: True\n// ^(Mo|Di|Mi|Do|Fr)$ in Sa: False\n// ^Mo|Fr$ in Montag: True"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung:\n• Zeichenklassen: [abc], [a-z], [^…], \\d, \\w, \\s, . (und \\. für einen echten Punkt)\n• Quantoren: *, +, ?, {n}, {n,m} – sie wirken auf das Element direkt davor und sind gierig\n• Anker: ^, $, \\b – für Validierungen immer ^ … $ verwenden\n• Gruppen ( ) und Alternativen |\nBeispiel zum Mitnehmen: ^[1-5][A-E]HIF$ prüft eine Klassenbezeichnung wie 2AHIF."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welcher Text passt vollständig auf das Muster ^[A-Z]\\d{2}$?",
+      "options": [
+        "b12",
+        "B12",
+        "B123",
+        "BB1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Gefordert sind genau ein Großbuchstabe und danach genau zwei Ziffern. b12 ist klein, B123 hat drei Ziffern, BB1 hat zwei Buchstaben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "string d = \"2026-11-10\";\nConsole.WriteLine(\n    Regex.IsMatch(d, @\"^\\d{4}$\"));\nConsole.WriteLine(\n    Regex.IsMatch(d, @\"\\d{4}\"));",
+      "options": [
+        "True True",
+        "False True",
+        "False False",
+        "True False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mit Ankern muss der ganze Text aus genau vier Ziffern bestehen – das stimmt nicht. Ohne Anker reicht es, dass irgendwo vier Ziffern hintereinander stehen (2026)."
+    },
+    {
+      "question": "Welches Muster findet „3.5“, aber nicht „3x5“?",
+      "options": [
+        "3.5",
+        "3*5",
+        "[3.5]",
+        "3\\.5"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Punkt steht für ein beliebiges Zeichen, also passt 3.5 auch auf 3x5. Erst \\. meint einen echten Punkt. 3*5 und [3.5] passen ebenfalls auf beide Texte."
+    },
+    {
+      "question": "Welches Muster akzeptiert als ganze Eingabe genau „ja“ oder „nein“?",
+      "options": [
+        "^(ja|nein)$",
+        "^ja|nein$",
+        "^[ja|nein]$",
+        "(ja|nein)"
+      ],
+      "correctIndex": 0,
+      "explanation": "^ja|nein$ heißt „beginnt mit ja“ oder „endet mit nein“, also passt z. B. auch „jawohl“. [ja|nein] ist eine Zeichenklasse für ein einzelnes Zeichen. (ja|nein) ohne Anker passt auch auf „neinnein“. Erst die Gruppe mit ^ und $ ist richtig."
+    }
+  ]
+}

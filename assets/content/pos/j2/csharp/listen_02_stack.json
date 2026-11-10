@@ -1,0 +1,92 @@
+{
+  "id": "pos-j2-csharp-listen_02_stack",
+  "title": "Der Stack (Stapel)",
+  "summary": "Das LIFO-Prinzip verstehen, einen Stack selbst bauen, Stack<T> verwenden und Klammern prüfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Stack (Stapel) funktioniert wie ein Tellerstapel in der Schulküche: Du legst Teller oben drauf und nimmst sie auch nur von oben wieder weg. Was zuletzt hineinkommt, kommt zuerst wieder heraus – das nennt man LIFO (Last In, First Out).\n\nStacks begegnen dir ständig: die Rückgängig-Funktion (Strg+Z) im Editor, der Zurück-Button im Browser – und der Aufrufstapel, den du bei der Rekursion kennengelernt hast."
+    },
+    {
+      "type": "code",
+      "content": "Push(5)  Push(8)  Pop()->8  Peek()->5\n          | 8 |\n| 5 |     | 5 |    | 5 |     | 5 |\n+---+     +---+    +---+     +---+"
+    },
+    {
+      "type": "text",
+      "content": "Ein Stack braucht nur wenige Operationen:\n• Push(x) – legt x oben drauf.\n• Pop() – entfernt das oberste Element und liefert es zurück.\n• Peek() – liefert das oberste Element, ohne es zu entfernen.\n• Count – Anzahl der Elemente.\n\nMit einer verketteten Liste ist das leicht selbst gebaut: Das „oben“ ist einfach der Kopf der Liste. Push entspricht AddFirst, Pop entfernt den ersten Knoten. Beides geht ohne Durchlaufen der Liste, also immer gleich schnell."
+    },
+    {
+      "type": "code",
+      "content": "var s = new MeinStack();\ns.Push(1);\ns.Push(2);\ns.Push(3);\nConsole.WriteLine(s.Pop());\nConsole.WriteLine(s.Peek());\nConsole.WriteLine(s.Count);\n// Ausgabe:\n// 3\n// 2\n// 2\n\nclass MeinStack\n{\n    private Knoten? oben;\n    public int Count { get; private set; }\n\n    public void Push(int wert)\n    {\n        var neu = new Knoten(wert);\n        neu.Next = oben;\n        oben = neu;\n        Count++;\n    }\n\n    public int Pop()\n    {\n        if (oben == null)\n            throw new InvalidOperationException(\n                \"Stack ist leer\");\n        int wert = oben.Wert;\n        oben = oben.Next;\n        Count--;\n        return wert;\n    }\n\n    public int Peek()\n    {\n        if (oben == null)\n            throw new InvalidOperationException(\n                \"Stack ist leer\");\n        return oben.Wert;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "In der Praxis nimmst du die fertige generische Klasse Stack<T> aus System.Collections.Generic. Sie hat Push, Pop, Peek und Count. Pop oder Peek auf einem leeren Stack lösen eine InvalidOperationException aus. Wenn der Stack leer sein könnte, sind TryPop(out var x) und TryPeek(out var x) praktisch: Sie liefern false statt einer Exception.\n\nWichtig: Wenn du einen Stack<T> mit foreach durchläufst, kommen die Elemente von oben nach unten – also in umgekehrter Einfüge-Reihenfolge."
+    },
+    {
+      "type": "code",
+      "content": "var verlauf = new Stack<string>();\nverlauf.Push(\"/start\");\nverlauf.Push(\"/termine\");\nverlauf.Push(\"/mensa\");\n\n// Zurück-Button\nstring weg = verlauf.Pop();\nConsole.WriteLine($\"Weg von {weg}\");\nConsole.WriteLine(verlauf.Peek());\nConsole.WriteLine(verlauf.Count);\nforeach (string seite in verlauf)\n    Console.Write(seite + \" \");\n// Ausgabe:\n// Weg von /mensa\n// /termine\n// 2\n// /termine /start"
+    },
+    {
+      "type": "text",
+      "content": "Eine klassische Anwendung: Prüfen, ob Klammern korrekt gesetzt sind – das macht auch der Compiler bei deinem Code. Der Algorithmus:\n1. Öffnende Klammer → auf den Stack legen.\n2. Schließende Klammer → der Stack darf nicht leer sein, und die oberste Klammer muss dazupassen. Sie wird entfernt.\n3. Am Ende muss der Stack leer sein – sonst wurde etwas nicht geschlossen.\nAndere Zeichen werden ignoriert."
+    },
+    {
+      "type": "code",
+      "content": "static bool Korrekt(string text)\n{\n    string auf = \"([{\", zu = \")]}\";\n    var st = new Stack<char>();\n    foreach (char c in text)\n    {\n        if (auf.Contains(c))\n            st.Push(c);\n        else if (zu.Contains(c))\n        {\n            if (st.Count == 0)\n                return false;\n            int i = zu.IndexOf(c);\n            if (st.Pop() != auf[i])\n                return false;\n        }\n    }\n    return st.Count == 0;\n}\n\nConsole.WriteLine(Korrekt(\"a[i] = (b+c);\"));\nConsole.WriteLine(Korrekt(\"{ (] }\"));\nConsole.WriteLine(Korrekt(\"((x)\"));\n// Ausgabe:\n// True\n// False\n// False"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• Pop oder Peek ohne Prüfung auf einem leeren Stack → InvalidOperationException. Prüfe vorher Count oder nimm TryPop.\n• Pop statt Peek, wenn du nur nachschauen willst – das Element ist dann weg.\n• Vergessen, dass foreach von oben nach unten läuft.\n\nZusammenfassung: Ein Stack arbeitet nach LIFO. Push, Pop und Peek arbeiten nur am oberen Ende und sind deshalb immer gleich schnell. Typische Anwendungen sind Rückgängig-Funktionen, Zurück-Navigation, Klammerprüfung und der Aufrufstapel."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var s = new Stack<int>();\ns.Push(4);\ns.Push(7);\ns.Push(1);\ns.Pop();\ns.Push(9);\nConsole.WriteLine(s.Pop() + s.Peek());",
+      "options": [
+        "16",
+        "10",
+        "8",
+        "13"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nach Push(4), Push(7), Push(1) und Pop() liegt 7 oben. Dann Push(9). s.Pop() liefert 9, danach liegt 7 oben, also liefert s.Peek() 7. 9 + 7 = 16."
+    },
+    {
+      "question": "Was passiert, wenn du Pop() auf einem leeren Stack<int> aufrufst?",
+      "code": "var s = new Stack<int>();\ns.Pop();",
+      "options": [
+        "Es wird 0 zurückgegeben",
+        "Es wird -1 zurückgegeben",
+        "Es wird eine InvalidOperationException ausgelöst",
+        "Es wird eine IndexOutOfRangeException ausgelöst"
+      ],
+      "correctIndex": 2,
+      "explanation": "Stack<T>.Pop() wirft bei leerem Stack eine InvalidOperationException. Wer das vermeiden will, prüft Count oder verwendet TryPop."
+    },
+    {
+      "question": "Für welchen Text liefert Korrekt aus der Lektion true?",
+      "options": [
+        "([)]",
+        "(()",
+        "})",
+        "{[()]}"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei {[()]} schließt jede Klammer genau die zuletzt geöffnete. Bei ([)] passt ) nicht zu [, bei (() bleibt eine Klammer offen, und bei }) ist der Stack beim ersten Zeichen leer."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var st = new Stack<char>();\nforeach (char c in \"POS\")\n    st.Push(c);\n\nstring r = \"\";\nwhile (st.Count > 0)\n    r += st.Pop();\nConsole.WriteLine(r);",
+      "options": [
+        "POS",
+        "SOP",
+        "OSP",
+        "PSO"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Zeichen werden in der Reihenfolge P, O, S auf den Stack gelegt. Pop liefert sie in umgekehrter Reihenfolge: S, O, P. Ein Stack dreht Reihenfolgen um."
+    }
+  ]
+}

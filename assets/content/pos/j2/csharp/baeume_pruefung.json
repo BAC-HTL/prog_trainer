@@ -1,0 +1,121 @@
+{
+  "id": "pos-j2-csharp-baeume_pruefung",
+  "title": "Abschlussprüfung: Bäume & Suchbäume",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Wie lautet die Preorder-Traversierung dieses Baums?",
+      "code": "       F\n      / \\\n     B   G\n    / \\   \\\n   A   D   I\n      / \\  /\n     C  E H",
+      "options": [
+        "ABCDEFGHI",
+        "FBADCEGIH",
+        "ACEDBHIGF",
+        "FBGADICEH"
+      ],
+      "correctIndex": 1,
+      "explanation": "Preorder ist W, L, R: F, dann der linke Teilbaum (B, A, D, C, E), dann der rechte (G, I, H). ABCDEFGHI wäre Inorder, ACEDBHIGF Postorder und FBGADICEH Level-Order."
+    },
+    {
+      "question": "Wie viele Blätter hat der Baum aus der vorigen Frage und welche Höhe (in Kanten)?",
+      "options": [
+        "3 Blätter, Höhe 3",
+        "4 Blätter, Höhe 4",
+        "5 Blätter, Höhe 3",
+        "4 Blätter, Höhe 3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Blätter sind A, C, E und H. Die längsten Wege (F → B → D → C bzw. F → G → I → H) haben 3 Kanten."
+    },
+    {
+      "question": "Welche Datenstruktur verwendet man üblicherweise für die Level-Order-Traversierung?",
+      "options": [
+        "Stack",
+        "SortedSet",
+        "Queue",
+        "Dictionary"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei Level-Order werden die Kinder hinten angestellt und vorne entnommen (FIFO). So kommen alle Knoten einer Ebene vor der nächsten Ebene dran."
+    },
+    {
+      "question": "Was gibt dieser Code aus? (Suchbaum mit int-Knoten)",
+      "code": "static int S(Knoten? k)\n{\n    if (k == null) return 0;\n    return k.Wert + S(k.Links)\n                  + S(k.Rechts);\n}\n\nvar w = new Knoten(8);\nw.Links = new Knoten(3);\nw.Rechts = new Knoten(10);\nw.Links.Links = new Knoten(1);\nConsole.WriteLine(S(w));",
+      "options": [
+        "8",
+        "22",
+        "4",
+        "11"
+      ],
+      "correctIndex": 1,
+      "explanation": "S addiert rekursiv die Werte aller Knoten: 8 + 3 + 10 + 1 = 22. Ein leerer Teilbaum liefert 0 (Basisfall)."
+    },
+    {
+      "question": "Welche Einfüge-Reihenfolge erzeugt (in einem leeren, nicht balancierten Suchbaum) genau diesen Baum?",
+      "code": "      4\n     / \\\n    2   6\n   / \\\n  1   3",
+      "options": [
+        "1, 2, 3, 4, 6",
+        "4, 6, 1, 2, 3",
+        "2, 4, 1, 3, 6",
+        "4, 2, 6, 1, 3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Wurzel muss zuerst kommen (4). Danach 2 und 6 als Kinder, dann 1 und 3 unter der 2. Bei 4, 6, 1, 2, 3 würde 1 linkes Kind von 4 werden und 2 rechts unter der 1 hängen."
+    },
+    {
+      "question": "Ein balancierter Suchbaum enthält 1 000 000 Werte. Wie viele Vergleiche braucht eine Suche ungefähr höchstens?",
+      "options": [
+        "1 000 000",
+        "500 000",
+        "1000",
+        "20"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Höhe eines ausgeglichenen Baums liegt bei etwa log₂(n). 2²⁰ ≈ 1 000 000, also reichen rund 20 Vergleiche (bei AVL-Bäumen im ungünstigsten Fall etwas mehr, aber in dieser Größenordnung)."
+    },
+    {
+      "question": "Bei welcher Einfüge-Reihenfolge entartet ein nicht balancierter Suchbaum garantiert zu einer Liste?",
+      "options": [
+        "Zufällig gemischt",
+        "Aufsteigend sortiert",
+        "Zuerst der mittlere Wert, dann jeweils die Mitten der Hälften",
+        "Die Reihenfolge spielt nie eine Rolle"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei aufsteigender Reihenfolge hängt jeder neue Wert rechts am vorigen – es entsteht eine Kette mit Höhe n − 1. „Mitte zuerst“ liefert dagegen einen perfekt ausgeglichenen Baum."
+    },
+    {
+      "question": "Im Baum 30 → (links) 20 → (links) 10 wird eine Rechtsrotation um 30 ausgeführt. Was liefert danach die Preorder-Traversierung?",
+      "options": [
+        "10 20 30",
+        "20 10 30",
+        "30 20 10",
+        "20 30 10"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das linke Kind 20 wird zur neuen Wurzel, 30 wird sein rechtes Kind, 10 bleibt links von 20. Preorder (W, L, R): 20 10 30."
+    },
+    {
+      "question": "Du fügst 30, 10, 20 in einen AVL-Baum ein. Welche Rotation(en) sind danach nötig?",
+      "options": [
+        "Nur eine Rechtsrotation um 30",
+        "Nur eine Linksrotation um 10",
+        "Erst eine Linksrotation um 10, dann eine Rechtsrotation um 30",
+        "Erst eine Rechtsrotation um 30, dann eine Linksrotation um 10"
+      ],
+      "correctIndex": 2,
+      "explanation": "20 liegt rechts unter 10, und 10 links unter 30 – der Links-Rechts-Fall. Zuerst macht eine Linksrotation um 10 daraus den Links-Links-Fall (30 → 20 → 10), dann gleicht eine Rechtsrotation um 30 aus. Ergebnis: 20 mit den Kindern 10 und 30."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var d =\n    new SortedDictionary<int, string>();\nd[3] = \"c\";\nd[1] = \"a\";\nd[2] = \"b\";\nConsole.WriteLine(\n    string.Join(\"\", d.Values));",
+      "options": [
+        "cab",
+        "123",
+        "abc",
+        "cba"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein SortedDictionary hält die Einträge nach dem Schlüssel sortiert (1, 2, 3). Values liefert die Werte in dieser Reihenfolge: a, b, c."
+    }
+  ]
+}

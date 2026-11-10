@@ -1,0 +1,91 @@
+{
+  "id": "pos-j2-csharp-rekursion_02_endrekursion_iterativ",
+  "title": "Endrekursion und Schleifen",
+  "summary": "Warum tiefe Rekursion abstürzen kann, was Endrekursion ist und wie du Rekursion in eine Schleife umwandelst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Jeder rekursive Aufruf belegt Platz am Aufrufstapel. Dieser Speicherbereich ist begrenzt – je nach System nur ein paar Megabyte. Bei ein paar hundert oder tausend Aufrufen ist das kein Problem. Bei Millionen verschachtelter Aufrufe ist der Stapel aber voll und das Programm stürzt mit einer StackOverflowException ab."
+    },
+    {
+      "type": "code",
+      "content": "static long Summe(long n)\n{\n    if (n == 0) return 0;\n    return n + Summe(n - 1);\n}\n\nConsole.WriteLine(Summe(1000));\n// Ausgabe: 500500\nConsole.WriteLine(Summe(10_000_000));\n// Absturz: Stack overflow."
+    },
+    {
+      "type": "text",
+      "content": "Besonders gemein: Eine StackOverflowException kannst du in C# nicht mit try-catch abfangen. Die Laufzeitumgebung beendet den Prozess sofort, der catch-Block wird nie erreicht. Du musst also schon beim Programmieren dafür sorgen, dass die Rekursion nicht zu tief wird."
+    },
+    {
+      "type": "code",
+      "content": "try\n{\n    Summe(10_000_000);\n}\ncatch (StackOverflowException)\n{\n    // wird NIE erreicht!\n    Console.WriteLine(\"Abgefangen\");\n}"
+    },
+    {
+      "type": "text",
+      "content": "Eine Methode ist endrekursiv, wenn der rekursive Aufruf das Allerletzte ist, was sie tut. Bei Summe ist das nicht so: Nach der Rückkehr von Summe(n - 1) muss noch n dazugezählt werden.\n\nDer Trick für Endrekursion ist ein Akkumulator – ein zusätzlicher Parameter, der das Zwischenergebnis mitnimmt. Dann gibt es nach dem Aufruf nichts mehr zu tun."
+    },
+    {
+      "type": "code",
+      "content": "// nicht endrekursiv: nach dem\n// Aufruf wird noch multipliziert\nstatic long Fak(int n)\n{\n    if (n <= 1) return 1;\n    return n * Fak(n - 1);\n}\n\n// endrekursiv: der Aufruf ist\n// das Letzte, was passiert\nstatic long FakE(int n, long akku = 1)\n{\n    if (n <= 1) return akku;\n    return FakE(n - 1, n * akku);\n}\n\nConsole.WriteLine(Fak(5) + \" \" + FakE(5));\n// Ausgabe: 120 120"
+    },
+    {
+      "type": "text",
+      "content": "Manche Sprachen wandeln Endrekursion automatisch in einen Sprung um, sodass der Stapel nicht wächst. C# garantiert das nicht – verlass dich also nicht darauf.\n\nDafür lässt sich jede endrekursive Methode nach einem festen Rezept in eine Schleife umwandeln:\n1. Parameter werden zu lokalen Variablen.\n2. Die Bedingung des Basisfalls, verneint, wird zur while-Bedingung.\n3. Der rekursive Aufruf wird zur Zuweisung der neuen Werte.\n4. Nach der Schleife kommt die Rückgabe des Basisfalls."
+    },
+    {
+      "type": "code",
+      "content": "static long FakI(int n)\n{\n    long akku = 1;\n    // solange kein Basisfall\n    while (n > 1)\n    {\n        // FakE(n - 1, n * akku)\n        akku = n * akku;\n        n = n - 1;\n    }\n    return akku; // Basisfall\n}\n\nConsole.WriteLine(FakI(20));\n// Ausgabe: 2432902008176640000"
+    },
+    {
+      "type": "text",
+      "content": "Achtung bei der Reihenfolge der Zuweisungen! Beim Aufruf FakE(n - 1, n * akku) werden beide neuen Werte aus den alten berechnet. In der Schleife muss akku deshalb mit dem alten n berechnet werden, bevor n verkleinert wird. Notfalls hilft eine Hilfsvariable.\n\nWann was? Rekursion ist oft kürzer und näher an der mathematischen Definition (Bäume, Teile-und-herrsche). Schleifen brauchen keinen Stapelplatz und sind bei großen Eingaben sicherer.\n\nZusammenfassung: Zu tiefe Rekursion führt zur nicht abfangbaren StackOverflowException. Endrekursive Methoden (Aufruf als letzte Aktion, meist mit Akkumulator) kannst du mechanisch in eine while-Schleife umwandeln."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche return-Zeile gehört zu einer endrekursiven Methode?",
+      "options": [
+        "return n * F(n - 1);",
+        "return F(n - 1) + 1;",
+        "return F(n - 1, akku + n);",
+        "return 1 + F(n / 2);"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur bei F(n - 1, akku + n) ist der Aufruf die letzte Aktion. Bei den anderen wird nach der Rückkehr noch multipliziert oder addiert."
+    },
+    {
+      "question": "Eine tief rekursive Methode steht in einem try-Block mit catch (StackOverflowException). Was passiert, wenn der Stapel überläuft?",
+      "options": [
+        "Der catch-Block gibt eine Meldung aus, das Programm läuft weiter",
+        "Das Programm wird sofort beendet – der catch-Block wird nie erreicht",
+        "Der Compiler meldet schon beim Übersetzen einen Fehler",
+        "C# wandelt die Rekursion automatisch in eine Schleife um"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine StackOverflowException lässt sich in .NET nicht abfangen. Der Prozess wird sofort beendet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int Ggt(int a, int b)\n{\n    if (b == 0) return a;\n    return Ggt(b, a % b);\n}\n\nConsole.WriteLine(Ggt(84, 36));",
+      "options": [
+        "6",
+        "36",
+        "4",
+        "12"
+      ],
+      "correctIndex": 3,
+      "explanation": "Euklidischer Algorithmus: Ggt(84, 36) → Ggt(36, 12) → Ggt(12, 0) → 12. Die Methode ist übrigens endrekursiv."
+    },
+    {
+      "question": "Diese Schleife soll FakE(n, akku) nachbauen. Was gibt sie aus?",
+      "code": "static long F(int n)\n{\n    long akku = 1;\n    while (n > 1)\n    {\n        n = n - 1;\n        akku = n * akku;\n    }\n    return akku;\n}\n\nConsole.WriteLine(F(4));",
+      "options": [
+        "24",
+        "6",
+        "4",
+        "1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Zuweisungen stehen in der falschen Reihenfolge: n wird verkleinert, bevor akku berechnet wird. So entsteht 3 · 2 · 1 = 6 statt 4 · 3 · 2 · 1 = 24."
+    }
+  ]
+}

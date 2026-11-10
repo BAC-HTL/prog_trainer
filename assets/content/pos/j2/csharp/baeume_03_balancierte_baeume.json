@@ -1,0 +1,95 @@
+{
+  "id": "pos-j2-csharp-baeume_03_balancierte_baeume",
+  "title": "Balancierte Bäume",
+  "summary": "Warum Suchbäume entarten, wie balancierte Bäume (AVL) mit Rotationen gegensteuern und wie du SortedSet und SortedDictionary nutzt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "In der letzten Lektion hast du gesehen: Die Form eines Suchbaums hängt von der Einfüge-Reihenfolge ab. Und sortierte Daten sind in der Praxis leider sehr häufig – fortlaufende Schülernummern, Zeitstempel oder eine alphabetische Namensliste.\n\nEin entarteter Baum ist in Wahrheit eine verkettete Liste: Höhe n − 1, Suchen braucht bis zu n Schritte."
+    },
+    {
+      "type": "code",
+      "content": "Einfügen 1, 2, 3, 4, 5:\n\nentartet:       ausgeglichen:\n1                    3\n \\                  / \\\n  2                2   4\n   \\              /     \\\n    3            1       5\n     \\\n      4\n       \\\n        5\nHöhe 4          Höhe 2"
+    },
+    {
+      "type": "text",
+      "content": "Die Idee balancierter Bäume: Nach jedem Einfügen oder Löschen wird geprüft, ob der Baum aus dem Gleichgewicht geraten ist. Wenn ja, wird er lokal umgebaut. So bleibt die Höhe immer in der Größenordnung von log₂(n).\n\nDer bekannteste Vertreter ist der AVL-Baum (benannt nach Adelson-Velski und Landis, 1962). Für jeden Knoten berechnet man den Balancefaktor = Höhe(rechter Teilbaum) − Höhe(linker Teilbaum). Bedingung: Bei jedem Knoten ist er −1, 0 oder +1."
+    },
+    {
+      "type": "code",
+      "content": "Balancefaktor = H(rechts) - H(links)\n(leerer Teilbaum: Höhe -1)\n\n        30 (+1)\n       /  \\\n  20 (0)   40 (+1)\n             \\\n              50 (0)\n\nAlle Faktoren in {-1, 0, +1}\n-> gültiger AVL-Baum.\nFügst du 60 ein, bekommt 40 den\nFaktor +2 -> Baum muss umgebaut werden."
+    },
+    {
+      "type": "text",
+      "content": "Das Werkzeug zum Umbauen heißt Rotation. Dabei wird ein Kind zur neuen Wurzel seines Teilbaums, und die Suchbaum-Eigenschaft bleibt erhalten: links kleiner, rechts größer.\n\nBei der Linksrotation um x wird das rechte Kind y zur neuen Wurzel. x wird linkes Kind von y, und der frühere linke Teilbaum B von y wandert zu x hinüber (er liegt ja zwischen x und y). Es werden nur drei Verweise umgehängt – das geht immer gleich schnell. Die Rechtsrotation funktioniert spiegelverkehrt."
+    },
+    {
+      "type": "code",
+      "content": "Linksrotation um x:\n\n  x                  y\n / \\                / \\\nA   y      ->      x   C\n   / \\            / \\\n  B   C          A   B\n\nstatic Knoten RotiereLinks(Knoten x)\n{\n    Knoten y = x.Rechts!;\n    x.Rechts = y.Links; // B wandert\n    y.Links = x;\n    return y;           // neue Wurzel\n}"
+    },
+    {
+      "type": "text",
+      "content": "Nach dem Einfügen sucht der AVL-Baum vom neuen Blatt aufwärts den ersten Knoten mit Faktor ±2. Je nachdem, wo der neue Wert gelandet ist, gibt es vier Fälle:\n• Rechts-Rechts: Linksrotation an diesem Knoten\n• Links-Links: Rechtsrotation\n• Rechts-Links: erst Rechtsrotation am rechten Kind, dann Linksrotation (Doppelrotation)\n• Links-Rechts: erst Linksrotation am linken Kind, dann Rechtsrotation\nBeispiel: Fügst du 1, 2, 3 ein, hat 1 danach den Faktor +2 (Rechts-Rechts). Eine Linksrotation macht 2 zur Wurzel mit den Kindern 1 und 3.\n\nNeben AVL-Bäumen gibt es Rot-Schwarz-Bäume. Sie sind etwas weniger streng ausgeglichen und müssen dafür seltener rotieren."
+    },
+    {
+      "type": "text",
+      "content": "Selbst programmieren musst du balancierte Bäume im Alltag nicht: .NET bringt sie mit.\n• SortedSet<T> – eine Menge ohne Duplikate, immer sortiert. Extras: Min, Max und GetViewBetween(von, bis) für Bereiche.\n• SortedDictionary<TKey, TValue> – ein Dictionary, das die Einträge nach dem Schlüssel sortiert hält.\nBeide sind intern als Rot-Schwarz-Bäume umgesetzt. Einfügen, Löschen und Suchen brauchen etwa log₂(n) Schritte – auch wenn du sortierte Daten einfügst."
+    },
+    {
+      "type": "code",
+      "content": "var punkte = new SortedSet<int>\n    { 42, 17, 88, 17, 63 };\nConsole.WriteLine(string.Join(\" \", punkte));\nConsole.WriteLine(\n    $\"{punkte.Min} {punkte.Max}\");\nvar mitte = punkte.GetViewBetween(40, 70);\nConsole.WriteLine(string.Join(\" \", mitte));\n\nvar noten =\n    new SortedDictionary<string, int>();\nnoten[\"Mayer\"] = 2;\nnoten[\"Huber\"] = 1;\nnoten[\"Bauer\"] = 3;\nforeach (var e in noten)\n    Console.WriteLine(\n        $\"{e.Key}: {e.Value}\");\n// Ausgabe:\n// 17 42 63 88\n// 17 88\n// 42 63\n// Bauer: 3\n// Huber: 1\n// Mayer: 2"
+    },
+    {
+      "type": "text",
+      "content": "Welche Collection wann?\n• Dictionary<TKey, TValue> / HashSet<T>: im Schnitt am schnellsten, aber ohne Reihenfolge.\n• SortedDictionary / SortedSet: etwas langsamer (log₂ n), dafür immer sortiert und mit Bereichsabfragen.\n• List<T> + Sort(): gut, wenn sich die Daten selten ändern.\n\nZusammenfassung: Unbalancierte Suchbäume können zur Liste entarten. Balancierte Bäume wie AVL- oder Rot-Schwarz-Bäume halten die Höhe durch Rotationen bei etwa log₂(n). Ein AVL-Baum verlangt bei jedem Knoten einen Balancefaktor von −1, 0 oder +1. In C# nutzt du dafür SortedSet<T> und SortedDictionary<TKey, TValue>."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Du fügst 10, 20, 30 in dieser Reihenfolge in einen AVL-Baum ein. Welcher Wert steht danach in der Wurzel?",
+      "options": [
+        "10",
+        "20",
+        "30",
+        "15"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nach dem Einfügen von 30 hat 10 den Balancefaktor +2 (Rechts-Rechts-Fall). Eine Linksrotation um 10 macht 20 zur Wurzel mit den Kindern 10 und 30."
+    },
+    {
+      "question": "Welcher ist der tiefste Knoten, an dem in diesem Baum die AVL-Bedingung verletzt ist?",
+      "code": "        50\n       /  \\\n     30    70\n    /\n  20\n  /\n10",
+      "options": [
+        "50",
+        "20",
+        "10",
+        "30"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei 30 hat der linke Teilbaum (20 → 10) die Höhe 1, der rechte ist leer (−1): Faktor −2. Auch 50 ist mit −2 verletzt, liegt aber höher. Am tiefsten Knoten (30) würde man mit einer Rechtsrotation reparieren."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var s = new SortedSet<string>\n    { \"Wien\", \"Graz\", \"Linz\", \"Graz\" };\ns.Remove(\"Linz\");\ns.Add(\"Bregenz\");\nConsole.WriteLine(string.Join(\",\", s));",
+      "options": [
+        "Wien,Graz,Bregenz",
+        "Graz,Wien,Bregenz",
+        "Bregenz,Graz,Wien",
+        "Bregenz,Graz,Graz,Wien"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein SortedSet speichert keine Duplikate (Graz nur einmal) und hält die Elemente immer sortiert. Nach Remove(\"Linz\") und Add(\"Bregenz\") bleiben Bregenz, Graz, Wien."
+    },
+    {
+      "question": "Warum bleibt ein SortedDictionary auch dann schnell, wenn du die Schlüssel streng aufsteigend einfügst?",
+      "options": [
+        "Weil der interne Rot-Schwarz-Baum sich beim Einfügen selbst ausbalanciert",
+        "Weil die Schlüssel gehasht werden",
+        "Weil sortiertes Einfügen bei Suchbäumen nie ein Problem ist",
+        "Weil SortedDictionary nur maximal 1000 Einträge erlaubt"
+      ],
+      "correctIndex": 0,
+      "explanation": "SortedDictionary verwendet intern einen Rot-Schwarz-Baum. Er hält die Höhe durch Umfärben und Rotationen bei etwa log₂(n) – unabhängig von der Einfüge-Reihenfolge."
+    }
+  ]
+}

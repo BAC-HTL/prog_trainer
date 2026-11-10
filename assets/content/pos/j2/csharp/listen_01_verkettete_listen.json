@@ -1,0 +1,96 @@
+{
+  "id": "pos-j2-csharp-listen_01_verkettete_listen",
+  "title": "Verkettete Listen",
+  "summary": "Daten als Kette von Knoten speichern: Knotenklasse, einfach und doppelt verkettete Listen und LinkedList<T>.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Array oder eine List<T> speichert alle Elemente direkt hintereinander im Speicher. Das macht den Zugriff über den Index sehr schnell. Willst du aber vorne etwas einfügen, müssen alle anderen Elemente einen Platz weiterrutschen.\n\nEine verkettete Liste funktioniert anders: Jedes Element steckt in einem eigenen Knoten. Der Knoten speichert den Wert und einen Verweis (eine Referenz) auf den nächsten Knoten – wie bei einer Schnitzeljagd, bei der jede Station den Weg zur nächsten verrät."
+    },
+    {
+      "type": "code",
+      "content": "var a = new Knoten(3);\nvar b = new Knoten(7);\nvar c = new Knoten(9);\na.Next = b;\nb.Next = c;\n\nKnoten? k = a;\nwhile (k != null)\n{\n    Console.Write(k.Wert + \" \");\n    k = k.Next;\n}\n// Ausgabe: 3 7 9\n\nclass Knoten\n{\n    public int Wert;\n    public Knoten? Next;\n    public Knoten(int wert) => Wert = wert;\n}"
+    },
+    {
+      "type": "code",
+      "content": "  a           b           c\n[3 | •]---->[7 | •]---->[9 | null]\n\nDer letzte Knoten zeigt auf null:\nhier endet die Liste."
+    },
+    {
+      "type": "text",
+      "content": "Damit man nicht mit einzelnen Variablen hantieren muss, packst du die Kette in eine eigene Klasse. Sie merkt sich nur den ersten Knoten, den kopf.\n• AddFirst: Der neue Knoten zeigt auf den alten Kopf und wird selbst zum Kopf. Das geht immer gleich schnell, egal wie lang die Liste ist.\n• AddLast: Du musst dich bis zum letzten Knoten durchhangeln (bei n Elementen n Schritte) und hängst dort an."
+    },
+    {
+      "type": "code",
+      "content": "var liste = new EinfachListe();\nliste.AddLast(7);\nliste.AddLast(9);\nliste.AddFirst(3);\nliste.Ausgeben();\n// Ausgabe: 3 7 9\n\nclass EinfachListe\n{\n    private Knoten? kopf;\n\n    public void AddFirst(int wert)\n    {\n        var neu = new Knoten(wert);\n        neu.Next = kopf;\n        kopf = neu;\n    }\n\n    public void AddLast(int wert)\n    {\n        var neu = new Knoten(wert);\n        if (kopf == null)\n        {\n            kopf = neu;\n            return;\n        }\n        Knoten k = kopf;\n        while (k.Next != null)\n            k = k.Next;\n        k.Next = neu;\n    }\n\n    public void Ausgeben()\n    {\n        var k = kopf;\n        while (k != null)\n        {\n            Console.Write(k.Wert + \" \");\n            k = k.Next;\n        }\n        Console.WriteLine();\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Entfernen ist bei verketteten Listen elegant: Du lässt den Vorgänger einfach am zu löschenden Knoten vorbeizeigen. Den „verwaisten“ Knoten räumt der Garbage Collector weg.\n\nTypische Fehler:\n• Sonderfall „erster Knoten“ vergessen – dort gibt es keinen Vorgänger, der kopf selbst muss weiterrücken.\n• k.Next.Wert abfragen, ohne zu prüfen, ob k.Next null ist → NullReferenceException.\n• Den kopf beim Durchlaufen verändern – dann ist der Listenanfang verloren. Nimm immer eine Hilfsvariable!"
+    },
+    {
+      "type": "code",
+      "content": "// in der Klasse EinfachListe:\npublic bool Remove(int wert)\n{\n    if (kopf == null) return false;\n    if (kopf.Wert == wert)\n    {\n        kopf = kopf.Next; // 1. Knoten\n        return true;\n    }\n    Knoten k = kopf;\n    while (k.Next != null)\n    {\n        if (k.Next.Wert == wert)\n        {\n            // Nachfolger überspringen\n            k.Next = k.Next.Next;\n            return true;\n        }\n        k = k.Next;\n    }\n    return false;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Bei einer doppelt verketteten Liste hat jeder Knoten zwei Verweise: Next auf den Nachfolger und Previous auf den Vorgänger. Dadurch kannst du die Liste in beide Richtungen durchlaufen und einen Knoten löschen, ohne vorher seinen Vorgänger zu suchen. Der Preis: mehr Speicher pro Knoten und mehr Verweise, die beim Einfügen und Löschen richtig gesetzt werden müssen.\n\n.NET bringt mit LinkedList<T> bereits eine fertige doppelt verkettete Liste mit. Ihre Knoten sind vom Typ LinkedListNode<T> mit Value, Next und Previous."
+    },
+    {
+      "type": "code",
+      "content": "var zug = new LinkedList<string>();\nzug.AddLast(\"Lok\");\nzug.AddLast(\"Wagen 1\");\nzug.AddLast(\"Wagen 2\");\n\nLinkedListNode<string> lok = zug.First!;\nzug.AddAfter(lok, \"Speisewagen\");\nzug.Remove(\"Wagen 1\");\nzug.AddFirst(\"Schublok\");\n\nConsole.WriteLine(string.Join(\", \", zug));\nvar v = zug.Last!.Previous!;\nConsole.WriteLine(v.Value);\n// Ausgabe:\n// Schublok, Lok, Speisewagen, Wagen 2\n// Speisewagen"
+    },
+    {
+      "type": "text",
+      "content": "Vergleich und Zusammenfassung:\n• Zugriff auf das i-te Element: List<T> sofort, verkettete Liste muss i Knoten weit laufen.\n• Einfügen/Löschen am Anfang oder bei einem bekannten Knoten: verkettete Liste sofort, List<T> muss Elemente verschieben.\n• In der Praxis ist List<T> meist die bessere Wahl. LinkedList<T> lohnt sich, wenn du oft mitten in der Liste einfügst oder löschst und den Knoten schon kennst.\n\nMerke: Ein Knoten = Wert + Verweis(e). Die Liste kennt nur ihren Anfang (und ev. ihr Ende), alles andere findest du durch Weiterhangeln."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus? (Knoten wie in der Lektion)",
+      "code": "var k1 = new Knoten(1);\nk1.Next = new Knoten(2);\nk1.Next.Next = new Knoten(3);\nk1.Next = k1.Next.Next;\n\nfor (var k = k1; k != null; k = k.Next)\n    Console.Write(k.Wert);",
+      "options": [
+        "123",
+        "13",
+        "12",
+        "3"
+      ],
+      "correctIndex": 1,
+      "explanation": "k1.Next = k1.Next.Next lässt Knoten 1 direkt auf Knoten 3 zeigen. Knoten 2 wird übersprungen – genau so funktioniert Entfernen."
+    },
+    {
+      "question": "Eine einfach verkettete Liste mit n Elementen kennt nur ihren kopf. Wie viele Schritte brauchst du, um das letzte Element zu lesen?",
+      "options": [
+        "1 – wie beim Array über den Index",
+        "Etwa log₂(n)",
+        "2 – erster und letzter Knoten sind verbunden",
+        "Etwa n – du musst dich von vorne durchhangeln"
+      ],
+      "correctIndex": 3,
+      "explanation": "Es gibt keinen Index-Zugriff. Du folgst den Next-Verweisen vom kopf aus Knoten für Knoten – bei n Elementen also etwa n Schritte."
+    },
+    {
+      "question": "Diese Methode steht in der Klasse EinfachListe. Was ist das Problem?",
+      "code": "public void Ausgeben()\n{\n    while (kopf != null)\n    {\n        Console.Write(kopf.Wert + \" \");\n        kopf = kopf.Next;\n    }\n}",
+      "options": [
+        "Nach dem Ausgeben ist die Liste leer, weil kopf selbst weitergeschoben wird",
+        "Es entsteht eine Endlosschleife",
+        "Der letzte Knoten wird nicht ausgegeben",
+        "Beim letzten Knoten tritt eine NullReferenceException auf"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Schleife verändert das Feld kopf. Am Ende ist kopf null – der Zugang zur Liste ist weg. Richtig ist eine Hilfsvariable: for (var k = kopf; k != null; k = k.Next)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var l = new LinkedList<int>();\nl.AddLast(2);\nl.AddFirst(1);\nl.AddLast(3);\nl.AddBefore(l.Last!, 9);\nConsole.WriteLine(string.Join(\"\", l));",
+      "options": [
+        "1239",
+        "9123",
+        "1293",
+        "2193"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nach AddLast(2), AddFirst(1) und AddLast(3) ist die Liste 1, 2, 3. AddBefore(l.Last!, 9) fügt 9 vor dem letzten Knoten (3) ein: 1, 2, 9, 3."
+    }
+  ]
+}

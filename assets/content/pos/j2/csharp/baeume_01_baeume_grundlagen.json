@@ -1,0 +1,95 @@
+{
+  "id": "pos-j2-csharp-baeume_01_baeume_grundlagen",
+  "title": "Bäume: Grundlagen",
+  "summary": "Hierarchische Daten als Baum: wichtige Begriffe, Binärbäume in C# und die Traversierungen Pre-, In-, Post- und Level-Order.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Daten sind hierarchisch aufgebaut: die Ordnerstruktur auf deinem Laptop, das Organigramm deiner Schule oder ein Stammbaum. In der Informatik stellt man so etwas als Baum dar.\n\nEin Baum besteht aus Knoten, die durch Kanten verbunden sind. Es gibt genau einen obersten Knoten. Jeder andere Knoten hat genau einen Elternknoten, und es gibt keine Kreise. Informatik-Bäume wachsen übrigens von oben nach unten."
+    },
+    {
+      "type": "code",
+      "content": "          Schule\n         /      \\\n  Informatik   Elektronik\n    /    \\          |\n 2AHIF  2BHIF     2AHEL"
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigsten Begriffe (am Beispiel oben):\n• Wurzel: der oberste Knoten (Schule)\n• Kind / Elternknoten: Informatik ist ein Kind von Schule, Schule ist der Elternknoten von Informatik\n• Blatt: Knoten ohne Kinder (2AHIF, 2BHIF, 2AHEL)\n• innerer Knoten: Knoten mit mindestens einem Kind\n• Teilbaum: ein Knoten mit allen seinen Nachfahren\n• Tiefe eines Knotens: Anzahl der Kanten von der Wurzel bis zu ihm (Wurzel: 0)\n• Höhe des Baums: die größte Tiefe, die vorkommt (hier 2)\nAchtung: Manche Bücher zählen bei der Höhe Ebenen statt Kanten. Schau immer nach, welche Definition gilt!"
+    },
+    {
+      "type": "text",
+      "content": "Besonders wichtig ist der Binärbaum: Jeder Knoten hat höchstens zwei Kinder, ein linkes und ein rechtes. In C# sieht ein Knoten fast so aus wie bei der verketteten Liste – nur mit zwei Verweisen statt einem.\n\nEin Baum ist rekursiv aufgebaut: Das linke und das rechte Kind sind jeweils selbst wieder Wurzeln eines (kleineren) Baums. Deshalb lassen sich Bäume so elegant rekursiv verarbeiten. Ein fehlendes Kind ist null – das ist der Basisfall."
+    },
+    {
+      "type": "code",
+      "content": "//        A\n//      /   \\\n//     B     C\n//    / \\     \\\n//   D   E     F\n\nvar wurzel = new Knoten('A');\nwurzel.Links = new Knoten('B');\nwurzel.Rechts = new Knoten('C');\nwurzel.Links.Links = new Knoten('D');\nwurzel.Links.Rechts = new Knoten('E');\nwurzel.Rechts.Rechts = new Knoten('F');\n\nclass Knoten\n{\n    public char Wert;\n    public Knoten? Links, Rechts;\n    public Knoten(char w) => Wert = w;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Traversieren heißt, jeden Knoten genau einmal zu besuchen. Bei den drei Tiefensuch-Varianten wird zuerst ein Teilbaum ganz abgearbeitet. Sie unterscheiden sich nur darin, wann der Knoten selbst (W) drankommt:\n• Preorder: W, L, R – zuerst der Knoten, dann die Teilbäume. Praktisch zum Ausgeben einer Ordnerstruktur.\n• Inorder: L, W, R – der Knoten zwischen den Teilbäumen.\n• Postorder: L, R, W – zuerst die Kinder. Praktisch, wenn die Kinder vorher fertig sein müssen, z. B. beim Berechnen von Ordnergrößen."
+    },
+    {
+      "type": "code",
+      "content": "static void Preorder(Knoten? k)\n{\n    if (k == null) return;\n    Console.Write(k.Wert);  // W\n    Preorder(k.Links);      // L\n    Preorder(k.Rechts);     // R\n}\n\nstatic void Inorder(Knoten? k)\n{\n    if (k == null) return;\n    Inorder(k.Links);       // L\n    Console.Write(k.Wert);  // W\n    Inorder(k.Rechts);      // R\n}\n\nstatic void Postorder(Knoten? k)\n{\n    if (k == null) return;\n    Postorder(k.Links);     // L\n    Postorder(k.Rechts);    // R\n    Console.Write(k.Wert);  // W\n}\n\nPreorder(wurzel);  Console.WriteLine();\nInorder(wurzel);   Console.WriteLine();\nPostorder(wurzel); Console.WriteLine();\n// Ausgabe:\n// ABDECF\n// DBEACF\n// DEBFCA"
+    },
+    {
+      "type": "text",
+      "content": "Die Level-Order-Traversierung (Breitensuche) geht Ebene für Ebene von oben nach unten, links nach rechts. Hier hilft dir die Queue: Wurzel einreihen, dann immer vorne einen Knoten herausnehmen, ausgeben und seine Kinder hinten anstellen.\n\nAuch Kennzahlen eines Baums berechnest du rekursiv. Die Höhe ist 1 + die größere Höhe der beiden Teilbäume. Ein leerer Baum bekommt die Höhe −1, damit ein einzelner Knoten die Höhe 0 hat."
+    },
+    {
+      "type": "code",
+      "content": "static void Ebenen(Knoten wurzel)\n{\n    var q = new Queue<Knoten>();\n    q.Enqueue(wurzel);\n    while (q.Count > 0)\n    {\n        Knoten k = q.Dequeue();\n        Console.Write(k.Wert);\n        if (k.Links != null)\n            q.Enqueue(k.Links);\n        if (k.Rechts != null)\n            q.Enqueue(k.Rechts);\n    }\n}\n\nstatic int Hoehe(Knoten? k)\n{\n    if (k == null) return -1;\n    return 1 + Math.Max(Hoehe(k.Links),\n                        Hoehe(k.Rechts));\n}\n\nEbenen(wurzel);\nConsole.WriteLine();\nConsole.WriteLine(Hoehe(wurzel));\n// Ausgabe:\n// ABCDEF\n// 2"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• null-Prüfung vergessen → NullReferenceException bei Blättern.\n• Pre-, In- und Postorder verwechseln – merk dir, wo das W steht.\n• Höhe und Anzahl der Ebenen verwechseln.\n\nZusammenfassung: Ein Baum besteht aus Knoten mit genau einem Elternknoten (außer der Wurzel). Beim Binärbaum hat jeder Knoten höchstens zwei Kinder. Bäume verarbeitest du am natürlichsten rekursiv mit null als Basisfall. Die Traversierungen heißen Preorder (WLR), Inorder (LWR), Postorder (LRW) und Level-Order (mit Queue)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Reihenfolge besucht die Postorder-Traversierung die Knoten dieses Baums?",
+      "code": "      M\n     / \\\n    K   T\n   /   / \\\n  A   P   Z",
+      "options": [
+        "MKATPZ",
+        "AKMPTZ",
+        "AKPZTM",
+        "MKTAPZ"
+      ],
+      "correctIndex": 2,
+      "explanation": "Postorder ist L, R, W: Links von M liegt K mit Kind A → A, K. Rechts liegt T mit P und Z → P, Z, T. Zum Schluss die Wurzel M."
+    },
+    {
+      "question": "Wie viele Blätter hat der Baum aus der vorigen Frage und welche Höhe hat er (in Kanten gezählt)?",
+      "options": [
+        "3 Blätter, Höhe 3",
+        "2 Blätter, Höhe 2",
+        "3 Blätter, Höhe 2",
+        "4 Blätter, Höhe 3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Blätter sind die Knoten ohne Kinder: A, P und Z. Der längste Weg von der Wurzel zu einem Blatt hat 2 Kanten (z. B. M → T → Z)."
+    },
+    {
+      "question": "Was berechnet diese Methode?",
+      "code": "static int F(Knoten? k)\n{\n    if (k == null) return 0;\n    if (k.Links == null &&\n        k.Rechts == null)\n        return 1;\n    return F(k.Links) + F(k.Rechts);\n}",
+      "options": [
+        "Die Anzahl aller Knoten",
+        "Die Anzahl der Blätter",
+        "Die Höhe des Baums",
+        "Die Anzahl der inneren Knoten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Knoten ohne Kinder liefert 1, ein leerer Teilbaum 0. Innere Knoten addieren nur die Ergebnisse ihrer Kinder. Gezählt werden also genau die Blätter."
+    },
+    {
+      "question": "Du willst für jeden Ordner die Gesamtgröße berechnen. Dazu brauchst du zuerst die Größen aller Unterordner. Welche Traversierung passt?",
+      "options": [
+        "Preorder",
+        "Inorder",
+        "Level-Order",
+        "Postorder"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei Postorder (L, R, W) sind alle Kinder fertig, bevor der Knoten selbst drankommt. Genau das brauchst du, um die Größen der Unterordner aufzusummieren."
+    }
+  ]
+}

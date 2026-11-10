@@ -1,0 +1,123 @@
+{
+  "id": "pos-j2-csharp-rekursion_pruefung",
+  "title": "Abschlussprüfung: Rekursion",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static string Umkehren(string s)\n{\n    if (s.Length <= 1) return s;\n    return Umkehren(s.Substring(1)) + s[0];\n}\n\nConsole.WriteLine(Umkehren(\"HTL\"));",
+      "options": [
+        "HTL",
+        "LTH",
+        "TLH",
+        "LHT"
+      ],
+      "correctIndex": 1,
+      "explanation": "Umkehren(\"HTL\") = Umkehren(\"TL\") + 'H' = (Umkehren(\"L\") + 'T') + 'H' = \"LTH\". Das erste Zeichen wandert jeweils ans Ende."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static void P(int n)\n{\n    if (n == 0) return;\n    Console.Write(n);\n    P(n - 1);\n    Console.Write(n);\n}\n\nP(3);",
+      "options": [
+        "123321",
+        "321",
+        "321123",
+        "332211"
+      ],
+      "correctIndex": 2,
+      "explanation": "Vor dem Selbstaufruf wird beim Abstieg 3, 2, 1 geschrieben, danach beim Aufstieg 1, 2, 3. Ergebnis: 321123."
+    },
+    {
+      "question": "Welche Aussage über Endrekursion in C# stimmt?",
+      "options": [
+        "Der C#-Compiler garantiert, dass endrekursive Methoden keinen Stapelplatz verbrauchen",
+        "Eine Methode ist endrekursiv, wenn der Basisfall ganz am Ende steht",
+        "Endrekursive Methoden brauchen keinen Basisfall",
+        "Endrekursive Methoden lassen sich nach einem festen Rezept in eine while-Schleife umwandeln"
+      ],
+      "correctIndex": 3,
+      "explanation": "Endrekursiv heißt: Der Selbstaufruf ist die letzte Aktion. Solche Methoden kannst du mechanisch in eine Schleife umwandeln. Eine automatische Optimierung garantiert C# aber nicht."
+    },
+    {
+      "question": "Was passiert bei diesem Aufruf?",
+      "code": "static int Z(int n)\n{\n    if (n == 0) return 0;\n    return 1 + Z(n - 2);\n}\n\nConsole.WriteLine(Z(5));",
+      "options": [
+        "Ausgabe: 2",
+        "Ausgabe: 3",
+        "Das Programm stürzt mit einem Stapelüberlauf ab",
+        "Ausgabe: 0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei ungeradem Start läuft n über 5, 3, 1, −1, −3, … und erreicht nie 0. Der Basisfall wird übersprungen, der Stapel läuft über. Besser wäre die Bedingung n <= 0."
+    },
+    {
+      "question": "Wie oft wird Fib(2) bei der naiven Berechnung von Fib(5) aufgerufen?",
+      "options": [
+        "1-mal",
+        "2-mal",
+        "3-mal",
+        "5-mal"
+      ],
+      "correctIndex": 2,
+      "explanation": "Fib(5) braucht Fib(4) und Fib(3), Fib(4) braucht nochmal Fib(3) und Fib(2). Jedes der beiden Fib(3) ruft Fib(2) auf – zusammen 3-mal. Genau diese Doppelarbeit vermeidet Memoisierung."
+    },
+    {
+      "question": "Hanoi(4, 'A', 'C', 'B') aus der Lektion gibt alle Züge aus. Was ist der 8. Zug?",
+      "options": [
+        "1: A -> B",
+        "4: A -> C",
+        "3: A -> B",
+        "4: A -> B"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zuerst werden 3 Scheiben mit 2³ − 1 = 7 Zügen von A nach B gebracht. Der 8. Zug bewegt die größte Scheibe 4 von A nach C."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int Q(int n, int s = 0)\n{\n    if (n == 0) return s;\n    return Q(n / 10, s + n % 10);\n}\n\nConsole.WriteLine(Q(2026));",
+      "options": [
+        "2026",
+        "6",
+        "10",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Methode summiert endrekursiv die Ziffern: Q(2026, 0) → Q(202, 6) → Q(20, 8) → Q(2, 8) → Q(0, 10) → 10."
+    },
+    {
+      "question": "Wie viele Halbierungsschritte braucht die Binärsuche in einem sortierten Array mit 1000 Elementen höchstens?",
+      "options": [
+        "10",
+        "100",
+        "500",
+        "1000"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jeder Schritt halbiert den Suchbereich: 1000 → 500 → 250 → … → 1. Weil 2¹⁰ = 1024 ≥ 1000 ist, reichen höchstens 10 Schritte."
+    },
+    {
+      "question": "Was stimmt über diese Variante des schnellen Potenzierens?",
+      "code": "static long P(long x, int n)\n{\n    if (n == 0) return 1;\n    if (n % 2 == 1)\n        return x * P(x, n - 1);\n    return P(x, n / 2) * P(x, n / 2);\n}",
+      "options": [
+        "Das Ergebnis ist für gerade n falsch",
+        "Das Ergebnis stimmt, aber P(x, n / 2) wird doppelt berechnet und der Geschwindigkeitsvorteil geht verloren",
+        "Bei n = 2 entsteht eine Endlosrekursion",
+        "Der Compiler meldet einen Fehler, weil P zweimal in einer Zeile vorkommt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mathematisch ist es richtig. Durch die zwei Aufrufe verdoppelt sich aber die Arbeit auf jeder Ebene, und du brauchst wieder etwa n Aufrufe. Richtig: einmal berechnen, in h speichern und h * h zurückgeben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int A(int n)\n{\n    if (n < 2) return n;\n    return A(n / 2) + n % 2;\n}\n\nConsole.WriteLine(A(13));",
+      "options": [
+        "4",
+        "6",
+        "13",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "A(13) = A(6) + 1 = (A(3) + 0) + 1 = (A(1) + 1) + 1 = 3. Die Methode zählt die Einser in der Binärdarstellung: 13 = 1101₂."
+    }
+  ]
+}

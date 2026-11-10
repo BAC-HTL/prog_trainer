@@ -1,0 +1,94 @@
+{
+  "id": "pos-j2-csharp-baeume_02_binaere_suchbaeume",
+  "title": "Binäre Suchbäume",
+  "summary": "Die Suchbaum-Eigenschaft, Suchen und Einfügen in C# und warum die Laufzeit von der Höhe abhängt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein binärer Suchbaum (BST, Binary Search Tree) ist ein Binärbaum mit einer festen Ordnung: Für jeden Knoten gilt, dass alle Werte im linken Teilbaum kleiner und alle Werte im rechten Teilbaum größer sind als der Wert des Knotens. In unserer Variante kommt jeder Wert höchstens einmal vor.\n\nDas erinnert an das Zahlenraten-Spiel: „Ist es 50?“ – „Kleiner!“ – und schon ist die Hälfte der Möglichkeiten weg."
+    },
+    {
+      "type": "code",
+      "content": "Einfügen: 50, 30, 70, 20, 40, 60, 80\n\n            50\n          /    \\\n        30      70\n       /  \\    /  \\\n     20   40  60   80"
+    },
+    {
+      "type": "text",
+      "content": "Suchen geht genau wie Zahlenraten: Beginne bei der Wurzel.\n• Gleich → gefunden.\n• Gesuchter Wert kleiner → weiter im linken Teilbaum.\n• Größer → weiter im rechten Teilbaum.\n• Landest du bei null, ist der Wert nicht im Baum.\nMit jedem Schritt geht es eine Ebene tiefer. Du brauchst also höchstens so viele Vergleiche, wie der Baum Ebenen hat – egal wie viele Knoten insgesamt drin sind."
+    },
+    {
+      "type": "code",
+      "content": "public bool Enthaelt(int wert)\n{\n    Knoten? k = wurzel;\n    while (k != null)\n    {\n        if (wert == k.Wert)\n            return true;\n        if (wert < k.Wert)\n            k = k.Links;\n        else\n            k = k.Rechts;\n    }\n    return false;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Einfügen funktioniert wie Suchen: Du gehst den Weg nach unten, bis du auf null stößt. Genau dort hängst du den neuen Knoten als Blatt an. Ein bestehender Knoten wird nie verschoben.\n\nRekursiv ist das besonders elegant: Einf(k, wert) liefert die Wurzel des Teilbaums zurück. Ist k null, ist das der neue Knoten. Sonst wird links oder rechts weiter eingefügt und k unverändert zurückgegeben."
+    },
+    {
+      "type": "code",
+      "content": "int[] werte =\n    { 50, 30, 70, 20, 40, 60, 80 };\nvar baum = new Suchbaum();\nforeach (int x in werte)\n    baum.Einfuegen(x);\n\nbaum.Ausgeben();\nConsole.WriteLine(baum.Enthaelt(60));\nConsole.WriteLine(baum.Enthaelt(65));\n// Ausgabe:\n// 20 30 40 50 60 70 80\n// True\n// False\n\nclass Suchbaum\n{\n    private Knoten? wurzel;\n\n    public void Einfuegen(int wert) =>\n        wurzel = Einf(wurzel, wert);\n\n    private static Knoten Einf(\n        Knoten? k, int wert)\n    {\n        // Platz gefunden: neues Blatt\n        if (k == null)\n            return new Knoten(wert);\n        if (wert < k.Wert)\n            k.Links = Einf(k.Links, wert);\n        else if (wert > k.Wert)\n            k.Rechts = Einf(k.Rechts, wert);\n        return k; // gleich: ignorieren\n    }\n\n    // Enthaelt wie oben\n\n    public void Ausgeben()\n    {\n        Inorder(wurzel);\n        Console.WriteLine();\n    }\n\n    private static void Inorder(Knoten? k)\n    {\n        if (k == null) return;\n        Inorder(k.Links);\n        Console.Write(k.Wert + \" \");\n        Inorder(k.Rechts);\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Hast du es bemerkt? Die Inorder-Traversierung (L, W, R) liefert die Werte eines Suchbaums automatisch sortiert. Kleinere Werte stehen ja immer links. Einfügen und danach Inorder ausgeben ist sogar ein eigenes Sortierverfahren.\n\nLaufzeit: Suchen und Einfügen brauchen so viele Schritte, wie der Baum hoch ist. Bei einem gut gefüllten Baum ist die Höhe etwa log₂(n): Bei 1 000 000 Werten reichen rund 20 Vergleiche statt bis zu einer Million beim Durchsuchen einer Liste. Aber: Die Form des Baums hängt von der Einfüge-Reihenfolge ab!"
+    },
+    {
+      "type": "code",
+      "content": "// Suchbaum wie oben, ergänzt um eine\n// Methode Hoehe() wie in der letzten\n// Lektion\nint[] gemischt = { 4, 2, 6, 1, 3, 5, 7 };\nvar a = new Suchbaum();\nforeach (int x in gemischt)\n    a.Einfuegen(x);\n\nvar b = new Suchbaum();\nfor (int x = 1; x <= 7; x++)\n    b.Einfuegen(x);\n\nConsole.WriteLine(a.Hoehe());\nConsole.WriteLine(b.Hoehe());\n// Ausgabe:\n// 2\n// 6"
+    },
+    {
+      "type": "text",
+      "content": "Werden die Werte sortiert eingefügt, hängt jeder neue Wert rechts am vorigen. Der Baum entartet zu einer Liste mit Höhe n − 1. Suchen braucht dann wieder bis zu n Schritte – der ganze Vorteil ist weg. Wie man das verhindert, lernst du in der nächsten Lektion.\n\nKurz zum Löschen (nur die Idee): Ein Blatt entfernst du einfach. Ein Knoten mit einem Kind wird durch dieses Kind ersetzt. Bei zwei Kindern ersetzt du den Wert durch den kleinsten Wert des rechten Teilbaums und löschst dann dort."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung:\n• Suchbaum-Eigenschaft: links kleiner, rechts größer – für jeden Knoten.\n• Suchen und Einfügen laufen einen Pfad von der Wurzel nach unten. Neue Knoten werden immer Blätter.\n• Inorder liefert die Werte sortiert.\n• Die Laufzeit hängt von der Höhe ab: etwa log₂(n), wenn der Baum ausgeglichen ist, aber bis zu n bei sortiert eingefügten Daten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus? (Suchbaum aus der Lektion)",
+      "code": "var baum = new Suchbaum();\nforeach (int x in\n         new[] { 5, 3, 8, 1, 4, 9 })\n    baum.Einfuegen(x);\nbaum.Ausgeben();",
+      "options": [
+        "5 3 8 1 4 9",
+        "1 3 4 5 8 9",
+        "9 8 5 4 3 1",
+        "5 3 1 4 8 9"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ausgeben verwendet Inorder. Bei einem Suchbaum liefert Inorder die Werte immer aufsteigend sortiert – unabhängig von der Einfüge-Reihenfolge."
+    },
+    {
+      "question": "Im Suchbaum mit 50, 30, 70, 20, 40, 60, 80 (Bild aus der Lektion) suchst du 65. Mit wie vielen Knoten wird verglichen, bis feststeht, dass 65 fehlt?",
+      "options": [
+        "3",
+        "7",
+        "2",
+        "4"
+      ],
+      "correctIndex": 0,
+      "explanation": "65 > 50 → rechts zu 70. 65 < 70 → links zu 60. 65 > 60 → rechts, dort ist null. Verglichen wurde mit 50, 70 und 60 – also 3 Knoten."
+    },
+    {
+      "question": "Wo findest du in einem binären Suchbaum den kleinsten Wert?",
+      "options": [
+        "Immer in der Wurzel",
+        "Im Blatt ganz unten rechts",
+        "Ganz links: Du folgst dem linken Kind, bis es keines mehr gibt",
+        "Man muss alle Knoten durchsuchen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Kleinere Werte liegen immer links. Der kleinste Wert ist daher der Knoten, den du erreichst, wenn du von der Wurzel aus nur nach links gehst, bis Links null ist. Er muss aber kein Blatt sein – er kann noch ein rechtes Kind haben."
+    },
+    {
+      "question": "Du fügst 10, 20, 30, 40, 50 in genau dieser Reihenfolge in einen leeren Suchbaum ein. Welche Höhe hat er (in Kanten)?",
+      "options": [
+        "2",
+        "4",
+        "5",
+        "3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder Wert ist größer als alle vorigen und wird rechts angehängt. Es entsteht eine Kette 10 → 20 → 30 → 40 → 50 mit 4 Kanten – der Baum ist zur Liste entartet."
+    }
+  ]
+}
