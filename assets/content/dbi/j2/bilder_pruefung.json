@@ -1,0 +1,117 @@
+{
+  "id": "dbi-j2-bilder_pruefung",
+  "title": "Abschlussprüfung: Bilddaten & Multimedia",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Bild hat 1200 × 800 Pixel und 32 Bit Farbtiefe (RGB + Alpha). Wie groß ist es unkomprimiert?",
+      "options": [
+        "2.880.000 Byte",
+        "3.840.000 Byte",
+        "30.720.000 Byte",
+        "960.000 Byte"
+      ],
+      "correctIndex": 1,
+      "explanation": "1200 × 800 = 960.000 Pixel × 4 Byte = 3.840.000 Byte (≈ 3,8 MB). 30.720.000 wäre der Wert in Bit."
+    },
+    {
+      "question": "Ein Schwarz-Weiß-Bild (1 Bit Farbtiefe) hat 640 × 480 Pixel. Wie viele Byte belegt es unkomprimiert?",
+      "options": [
+        "307.200 Byte",
+        "921.600 Byte",
+        "38.400 Byte",
+        "4.800 Byte"
+      ],
+      "correctIndex": 2,
+      "explanation": "640 × 480 = 307.200 Pixel × 1 Bit = 307.200 Bit. Geteilt durch 8 sind das 38.400 Byte."
+    },
+    {
+      "question": "Ein Screenshot mit scharfem Text und einfarbigen Flächen soll ohne Qualitätsverlust gespeichert werden. Welches Format wählst du?",
+      "options": [
+        "PNG",
+        "JPEG mit 60 % Qualität",
+        "GIF mit Animation",
+        "MP4"
+      ],
+      "correctIndex": 0,
+      "explanation": "PNG komprimiert verlustfrei und eignet sich perfekt für Text und Flächen. JPEG erzeugt an scharfen Kanten sichtbare Artefakte."
+    },
+    {
+      "question": "Warum wird ein JPEG-Bild bei jedem erneuten Speichern etwas schlechter?",
+      "options": [
+        "Weil die Auflösung halbiert wird",
+        "Weil JPEG nur 256 Farben kann",
+        "Weil die Farbtiefe auf 1 Bit fällt",
+        "Weil die verlustbehaftete Kompression jedes Mal erneut Details verwirft"
+      ],
+      "correctIndex": 3,
+      "explanation": "JPEG ist verlustbehaftet. Jede neue Kompression entfernt wieder Informationen – deshalb arbeitest du in einem verlustfreien Format und exportierst erst am Schluss als JPEG."
+    },
+    {
+      "question": "Ein Banner hat 1920 × 1080 Pixel. Du verkleinerst es proportional auf 1200 Pixel Breite. Wie hoch ist es dann?",
+      "options": [
+        "675 Pixel",
+        "720 Pixel",
+        "600 Pixel",
+        "1080 Pixel"
+      ],
+      "correctIndex": 0,
+      "explanation": "Faktor 1200 / 1920 = 0,625. 1080 × 0,625 = 675 Pixel."
+    },
+    {
+      "question": "Welche Bearbeitung ist bei einem Foto für einen Zeitungsbericht über die Schulsportwoche ethisch problematisch?",
+      "options": [
+        "Den Ausschnitt so wählen, dass der Sieger gut zu sehen ist",
+        "Die Helligkeit eines zu dunklen Fotos korrigieren",
+        "Eine Person, die nicht ins Bild passt, unbemerkt wegretuschieren",
+        "Das Bild für das Web verkleinern"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuschneiden und Helligkeitskorrekturen sind übliche Bearbeitungen. Wer Personen entfernt, verfälscht die Realität – bei Nachrichtenbildern ist das unzulässig."
+    },
+    {
+      "question": "Warum arbeitest du mit Ebenen und Ebenenmasken statt mit dem Radiergummi direkt auf dem Foto?",
+      "options": [
+        "Weil Ebenen die Datei immer kleiner machen",
+        "Weil man Änderungen jederzeit zurücknehmen oder anpassen kann (nicht-destruktiv)",
+        "Weil der Radiergummi nur bei Vektorgrafiken geht",
+        "Weil JPEG Ebenen speichert"
+      ],
+      "correctIndex": 1,
+      "explanation": "Masken verstecken Pixel nur, statt sie zu löschen. So bleibt das Original erhalten. Ebenen speichert man z. B. in XCF oder PSD, nicht in JPEG."
+    },
+    {
+      "question": "Wie viele Byte belegt 1 Sekunde unkomprimiertes Stereo-Audio mit 48 kHz und 24 Bit?",
+      "options": [
+        "144.000 Byte",
+        "2.304.000 Byte",
+        "96.000 Byte",
+        "288.000 Byte"
+      ],
+      "correctIndex": 3,
+      "explanation": "48.000 × 24 × 2 = 2.304.000 Bit pro Sekunde. Geteilt durch 8 ergibt 288.000 Byte."
+    },
+    {
+      "question": "Ein Podcast wird als MP3 mit 320 kbit/s gespeichert und dauert 4 Minuten. Wie groß ist die Datei?",
+      "options": [
+        "9,6 MB",
+        "1,28 MB",
+        "76,8 MB",
+        "80 MB"
+      ],
+      "correctIndex": 0,
+      "explanation": "320.000 Bit/s × 240 s = 76.800.000 Bit. Geteilt durch 8 sind das 9.600.000 Byte = 9,6 MB."
+    },
+    {
+      "question": "Wie viele Pixel hat ein 4K-UHD-Bild (3840 × 2160) im Vergleich zu Full HD (1920 × 1080)?",
+      "options": [
+        "Doppelt so viele",
+        "Viermal so viele",
+        "Achtmal so viele",
+        "Gleich viele, nur schärfer"
+      ],
+      "correctIndex": 1,
+      "explanation": "Breite und Höhe verdoppeln sich, also 2 × 2 = 4-mal so viele Pixel: 8.294.400 statt 2.073.600."
+    }
+  ]
+}

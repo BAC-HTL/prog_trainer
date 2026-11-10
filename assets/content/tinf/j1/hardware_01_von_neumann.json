@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-hardware_01_von_neumann",
+  "title": "Die Von-Neumann-Architektur",
+  "summary": "Aus welchen Grundbausteinen ein Computer besteht und wie die CPU einen Befehl nach dem anderen abarbeitet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Egal ob Laptop, Smartphone oder Server im Schulkeller: Fast alle Computer folgen einem Grundbauplan, den John von Neumann 1945 beschrieben hat. Die Kernidee: Programm und Daten liegen gemeinsam im selben Speicher. Ein Computer wird also nicht umgebaut, um etwas anderes zu tun – man lädt einfach ein anderes Programm."
+    },
+    {
+      "type": "text",
+      "content": "Die Von-Neumann-Architektur besteht aus vier Teilen:\n• Rechenwerk (ALU) – rechnet und vergleicht\n• Steuerwerk – holt Befehle und steuert den Ablauf\n• Speicher – enthält Programm und Daten\n• Ein-/Ausgabewerk – Verbindung zur Außenwelt\nRechenwerk und Steuerwerk bilden zusammen die CPU (Prozessor)."
+    },
+    {
+      "type": "code",
+      "content": "┌─────────── CPU ───────────┐\n│ Steuerwerk   Rechenwerk   │\n│        Register           │\n└────────────┬──────────────┘\n             │  Bussystem\n   ┌─────────┴─────────┐\n┌──┴─────┐      ┌──────┴───┐\n│Speicher│      │ Ein-/Aus-│\n│(RAM)   │      │ gabe     │\n└────────┘      └──────────┘"
+    },
+    {
+      "type": "text",
+      "content": "Verbunden sind die Teile über das Bussystem – gemeinsame Leitungen, über die Daten fließen. Man unterscheidet drei Busse:\n• Adressbus: Welche Speicherzelle ist gemeint?\n• Datenbus: Der eigentliche Wert, der übertragen wird\n• Steuerbus: Lesen oder schreiben? Wann ist der Wert gültig?"
+    },
+    {
+      "type": "text",
+      "content": "Die Breite des Adressbusses bestimmt, wie viele Speicherzellen die CPU ansprechen kann: Mit n Adressleitungen gibt es 2ⁿ Adressen. Hier kommt dein Wissen über Bits wieder ins Spiel."
+    },
+    {
+      "type": "code",
+      "content": "Adressbus  Adressen     bei 1 Byte\n                         je Adresse\n16 Bit     2¹⁶ = 65 536   64 KiB\n32 Bit     2³²            4 GiB\n\n→ Darum konnten 32-Bit-Systeme\n  höchstens 4 GiB direkt\n  adressieren."
+    },
+    {
+      "type": "text",
+      "content": "Die CPU arbeitet ein Programm im Befehlszyklus ab, immer wieder dieselben Schritte:\n1. Fetch: Befehl aus dem Speicher holen. Der Befehlszähler (Program Counter) enthält die Adresse.\n2. Decode: Das Steuerwerk entschlüsselt den Befehl.\n3. Execute: Die ALU führt ihn aus, ggf. werden Operanden geladen.\n4. Write back: Das Ergebnis landet in einem Register oder im Speicher.\nDanach zeigt der Befehlszähler auf den nächsten Befehl – außer bei einem Sprung."
+    },
+    {
+      "type": "code",
+      "content": "Befehlszähler = 100\n\nFETCH   Befehl an Adresse 100\nDECODE  \"ADD R1, R2\"\nEXECUTE R1 + R2 in der ALU\nWRITE   Ergebnis → R1\n\nBefehlszähler = 101 → nächster"
+    },
+    {
+      "type": "text",
+      "content": "Weil Programm und Daten über denselben Bus müssen, kann die CPU nicht gleichzeitig einen Befehl holen und Daten lesen. Und der Speicher ist viel langsamer als die CPU. Diesen Engpass nennt man Von-Neumann-Flaschenhals. Moderne CPUs mildern ihn mit schnellen Zwischenspeichern (Caches). Die Harvard-Architektur trennt dagegen Programm- und Datenspeicher – man findet sie z. B. bei vielen Mikrocontrollern."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Von Neumann = CPU (Steuerwerk + Rechenwerk), gemeinsamer Speicher für Programm und Daten, Ein-/Ausgabe, verbunden über Adress-, Daten- und Steuerbus. Die CPU wiederholt ständig Fetch → Decode → Execute → Write back."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was ist das zentrale Merkmal der Von-Neumann-Architektur?",
+      "options": [
+        "Programm und Daten liegen im selben Speicher",
+        "Jedes Programm braucht eine eigene CPU",
+        "Daten werden nur auf Festplatten gespeichert",
+        "Programm- und Datenspeicher sind strikt getrennt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Gemeinsamer Speicher für Programm und Daten ist die Kernidee. Getrennte Speicher kennzeichnen die Harvard-Architektur."
+    },
+    {
+      "question": "Über welchen Bus teilt die CPU mit, welche Speicherzelle sie lesen will?",
+      "options": [
+        "Datenbus",
+        "Steuerbus",
+        "Adressbus",
+        "USB"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Adressbus überträgt die Adresse. Der Datenbus transportiert den Wert, der Steuerbus Signale wie „lesen“ oder „schreiben“."
+    },
+    {
+      "question": "Ein einfacher Mikrocontroller hat einen 16-Bit-Adressbus, jede Adresse spricht 1 Byte an. Wie viel Speicher kann er adressieren?",
+      "options": [
+        "16 KiB",
+        "64 KiB",
+        "16 MiB",
+        "4 GiB"
+      ],
+      "correctIndex": 1,
+      "explanation": "2¹⁶ = 65 536 Adressen = 64 KiB."
+    },
+    {
+      "question": "In welcher Reihenfolge läuft der Befehlszyklus ab?",
+      "options": [
+        "Decode → Fetch → Execute → Write back",
+        "Execute → Decode → Fetch → Write back",
+        "Fetch → Execute → Decode → Write back",
+        "Fetch → Decode → Execute → Write back"
+      ],
+      "correctIndex": 3,
+      "explanation": "Zuerst wird der Befehl geholt, dann entschlüsselt, dann ausgeführt und das Ergebnis zurückgeschrieben."
+    }
+  ]
+}

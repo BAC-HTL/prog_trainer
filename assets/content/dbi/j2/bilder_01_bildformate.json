@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j2-bilder_01_bildformate",
+  "title": "Bildformate und Farbtiefe",
+  "summary": "Raster- und Vektorgrafiken, Auflösung, Farbtiefe, Farbmodelle und die wichtigsten Bildformate verstehen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Digitale Bilder gibt es in zwei Grundarten. Eine Rastergrafik (Pixelgrafik) besteht aus einem Gitter winziger Farbpunkte, den Pixeln – so wie ein Handyfoto. Eine Vektorgrafik speichert dagegen geometrische Formen: „Kreis mit Mittelpunkt, Radius und Farbe“. Sie wird erst beim Anzeigen berechnet."
+    },
+    {
+      "type": "code",
+      "content": "Rastergrafik       Vektorgrafik\n----------------   ----------------\nPixel-Gitter       Formen + Pfade\nFotos              Logos, Icons\nVergrößern →       Vergrößern →\n  pixelig            bleibt scharf\nJPEG, PNG, GIF     SVG (auch PDF)"
+    },
+    {
+      "type": "text",
+      "content": "Die Auflösung einer Rastergrafik gibst du in Pixeln an, z. B. 1920 × 1080. Für den Druck zählt zusätzlich die Pixeldichte in ppi bzw. dpi (Punkte pro Zoll, 1 Zoll = 2,54 cm). Für gute Fotodrucke gelten 300 dpi als Faustregel, am Bildschirm zählen nur die Pixelmaße."
+    },
+    {
+      "type": "code",
+      "content": "Foto 10 × 15 cm mit 300 dpi:\n\n10 cm / 2,54 = 3,94 Zoll\n3,94 × 300   ≈ 1181 Pixel\n15 cm / 2,54 = 5,91 Zoll\n5,91 × 300   ≈ 1772 Pixel\n\n→ mind. ca. 1181 × 1772 Pixel"
+    },
+    {
+      "type": "text",
+      "content": "Die Farbtiefe sagt, wie viele Bit pro Pixel gespeichert werden. Mit n Bit sind 2ⁿ verschiedene Farben möglich. „True Color“ nutzt 8 Bit pro Kanal für Rot, Grün und Blau, also 24 Bit. Ein zusätzlicher Alpha-Kanal (8 Bit) speichert die Transparenz – dann sind es 32 Bit pro Pixel."
+    },
+    {
+      "type": "code",
+      "content": "Farbtiefe   Farben\n---------   ---------------\n 1 Bit      2 (schwarz/weiß)\n 8 Bit      256\n16 Bit      65.536\n24 Bit      16.777.216\n32 Bit      24 Bit + Alpha"
+    },
+    {
+      "type": "text",
+      "content": "Farbmodelle: RGB (Rot, Grün, Blau) ist additiv – Licht wird gemischt, alle drei voll ergeben Weiß. So arbeiten Bildschirme. CMYK (Cyan, Magenta, Yellow, Key = Schwarz) ist subtraktiv – Druckfarben schlucken Licht. Für die Schülerzeitung in der Druckerei brauchst du CMYK, für die Schulwebsite RGB. Manche RGB-Farben (z. B. knalliges Grün) lassen sich nicht exakt drucken."
+    },
+    {
+      "type": "text",
+      "content": "Kompression: Verlustfrei (PNG, GIF, FLAC …) bedeutet, das Original lässt sich exakt wiederherstellen. Verlustbehaftet (JPEG) wirft Details weg, die das Auge kaum bemerkt – kleinere Dateien, aber bei jedem neuen Speichern wird es schlechter.\n• JPEG – Fotos, verlustbehaftet, keine Transparenz\n• PNG – verlustfrei, Transparenz (Alpha), ideal für Screenshots und Grafiken\n• GIF – max. 256 Farben, einfache Transparenz, Animation\n• WebP – modernes Webformat, verlustbehaftet oder verlustfrei, mit Transparenz\n• SVG – Vektorformat (XML-Text) für Logos und Icons"
+    },
+    {
+      "type": "code",
+      "content": "Unkomprimierte Dateigröße:\nBreite × Höhe × Farbtiefe / 8\n\n1920 × 1080 × 24 Bit / 8\n= 6.220.800 Byte\n≈ 6,2 MB (bzw. ≈ 5,9 MiB)\n\n1 Byte = 8 Bit, 1 MB = 1.000.000 B\n1 MiB = 1024 × 1024 Byte"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Bit und Byte verwechseln (durch 8 teilen!), ein Logo als JPEG speichern (unscharfe Kanten, kein transparenter Hintergrund) oder ein kleines Bild hochskalieren und hoffen, dass es schärfer wird. Zusammenfassung: Fotos → JPEG/WebP, Grafiken mit Transparenz → PNG, Logos → SVG; Größe = Pixel × Bit pro Pixel / 8."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie groß ist ein unkomprimiertes Bild mit 800 × 600 Pixel und 24 Bit Farbtiefe?",
+      "options": [
+        "480.000 Byte",
+        "11.520.000 Byte",
+        "1.440.000 Byte",
+        "14.400 Byte"
+      ],
+      "correctIndex": 2,
+      "explanation": "800 × 600 = 480.000 Pixel. 24 Bit = 3 Byte pro Pixel → 480.000 × 3 = 1.440.000 Byte (≈ 1,44 MB). 11.520.000 wäre der Wert in Bit."
+    },
+    {
+      "question": "Wie viele verschiedene Farben kann ein Bild mit 8 Bit Farbtiefe darstellen?",
+      "options": [
+        "256",
+        "8",
+        "16",
+        "65.536"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit n Bit gibt es 2ⁿ Möglichkeiten: 2⁸ = 256. Deshalb ist GIF auf 256 Farben beschränkt."
+    },
+    {
+      "question": "Das Schullogo soll auf der Website, auf Visitenkarten und auf einem großen Banner gestochen scharf sein. Welches Format eignet sich am besten?",
+      "options": [
+        "JPEG",
+        "GIF",
+        "PNG",
+        "SVG"
+      ],
+      "correctIndex": 3,
+      "explanation": "SVG ist eine Vektorgrafik und lässt sich ohne Qualitätsverlust beliebig skalieren. Rasterformate werden beim Vergrößern pixelig."
+    },
+    {
+      "question": "Welches Farbmodell verwendet eine Druckerei für Flyer?",
+      "options": [
+        "RGB – additiv",
+        "CMYK – subtraktiv",
+        "RGB – subtraktiv",
+        "CMYK – additiv"
+      ],
+      "correctIndex": 1,
+      "explanation": "Druckfarben schlucken Licht, das Modell ist subtraktiv: CMYK. RGB ist additiv und wird für Bildschirme genutzt."
+    }
+  ]
+}

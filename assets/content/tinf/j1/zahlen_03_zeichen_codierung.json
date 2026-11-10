@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-zahlen_03_zeichen_codierung",
+  "title": "Zeichencodierung: ASCII, Unicode, UTF-8",
+  "summary": "Wie Texte als Zahlen gespeichert werden und warum manchmal „GrÃ¶ÃŸe“ statt „Größe“ erscheint.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Computer speichert keine Buchstaben, sondern Zahlen. Eine Zeichencodierung legt fest, welche Zahl für welches Zeichen steht. Sender und Empfänger müssen dieselbe Codierung verwenden – sonst entsteht Zeichensalat."
+    },
+    {
+      "type": "text",
+      "content": "ASCII (1963) ist der Klassiker: 7 Bit, also 128 Zeichen. Enthalten sind englische Buchstaben, Ziffern, Satzzeichen und Steuerzeichen wie Zeilenumbruch. Umlaute, ß oder € fehlen."
+    },
+    {
+      "type": "code",
+      "content": "Zeichen  dezimal  hex\n'0'      48       0x30\n'A'      65       0x41\n'a'      97       0x61\n' '      32       0x20\n\n'a' − 'A' = 32"
+    },
+    {
+      "type": "text",
+      "content": "Weil 128 Zeichen nicht reichen, entstanden viele 8-Bit-Erweiterungen, z. B. ISO-8859-1 (Latin-1) oder Windows-1252 für westeuropäische Sprachen. Problem: Jede Erweiterung belegt die Werte 128–255 anders. Ein Text war nur dann richtig lesbar, wenn man wusste, welche Tabelle gemeint war."
+    },
+    {
+      "type": "text",
+      "content": "Unicode löst das grundsätzlich: Es ist ein einziger, weltweiter Zeichensatz, in dem jedes Zeichen eine eindeutige Nummer bekommt, den Codepoint (geschrieben U+ und hex). Unicode umfasst alle Schriften der Welt, mathematische Symbole und Emojis. Die ersten 128 Codepoints sind identisch mit ASCII."
+    },
+    {
+      "type": "text",
+      "content": "Unicode sagt nur, welche Nummer ein Zeichen hat – nicht, wie diese Nummer als Bytes gespeichert wird. Das macht eine Codierung wie UTF-8. UTF-8 braucht 1 bis 4 Byte pro Zeichen: ASCII-Zeichen 1 Byte, Umlaute 2 Byte, € 3 Byte, Emojis 4 Byte. Damit ist jede reine ASCII-Datei automatisch gültiges UTF-8. UTF-8 ist heute der Standard im Web und in den meisten Programmen."
+    },
+    {
+      "type": "code",
+      "content": "Zeichen Codepoint UTF-8-Bytes\nA      U+0041    41\nä      U+00E4    C3 A4\n€      U+20AC    E2 82 AC\n😀     U+1F600   F0 9F 98 80"
+    },
+    {
+      "type": "text",
+      "content": "Zeichensalat (Mojibake) entsteht, wenn UTF-8-Bytes mit einer falschen Codierung gelesen werden. Aus „ö“ (C3 B6) wird bei Windows-1252 „Ã¶“, weil jedes der zwei Bytes als eigenes Zeichen interpretiert wird. Umgekehrt: Wird ein Windows-1252-Text als UTF-8 gelesen, erscheint oft das Ersatzzeichen � für ungültige Bytes."
+    },
+    {
+      "type": "code",
+      "content": "gespeichert (UTF-8): Größe\ngelesen als 1252:    GrÃ¶ÃŸe\n\ngespeichert (UTF-8): Jänner\ngelesen als 1252:    JÃ¤nner"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: ASCII = 128 Zeichen, Unicode = Nummer für jedes Zeichen, UTF-8 = Speicherung in 1–4 Byte. Lösung bei Zeichensalat: Datei mit der richtigen Codierung öffnen und beim Speichern immer bewusst UTF-8 wählen (z. B. im Editor unten rechts in der Statusleiste)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Byte belegt das Wort „Jänner“ in UTF-8?",
+      "options": [
+        "6",
+        "12",
+        "7",
+        "8"
+      ],
+      "correctIndex": 2,
+      "explanation": "5 ASCII-Zeichen mit je 1 Byte plus „ä“ mit 2 Byte = 7 Byte."
+    },
+    {
+      "question": "Welcher ASCII-Code gehört zu 'C', wenn 'A' den Code 65 hat?",
+      "options": [
+        "66",
+        "67",
+        "99",
+        "3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Buchstaben stehen der Reihe nach: A = 65, B = 66, C = 67."
+    },
+    {
+      "question": "Ein Webformular zeigt „SchÃ¶ne GrÃ¼ÃŸe“. Was ist die wahrscheinlichste Ursache?",
+      "options": [
+        "UTF-8-Text wurde als Windows-1252 bzw. Latin-1 gelesen",
+        "Der Text wurde in ASCII gespeichert",
+        "Die Festplatte ist defekt",
+        "Windows-1252-Text wurde als UTF-8 gelesen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Je zwei UTF-8-Bytes eines Umlauts werden als zwei einzelne Zeichen angezeigt (z. B. Ã¶ für ö) – typisch für UTF-8, das mit einer 8-Bit-Codierung gelesen wird."
+    },
+    {
+      "question": "Was ist der Unterschied zwischen Unicode und UTF-8?",
+      "options": [
+        "Es gibt keinen, beides sind Namen für dasselbe",
+        "UTF-8 hat mehr Zeichen als Unicode",
+        "Unicode ist eine ältere Form von ASCII",
+        "Unicode vergibt Nummern, UTF-8 legt die Bytes fest"
+      ],
+      "correctIndex": 3,
+      "explanation": "Unicode ordnet jedem Zeichen einen Codepoint zu. UTF-8 ist eine Codierung, die diese Codepoints in 1–4 Byte umsetzt."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "id": "dbi-j2-datenbanken_03_abfragen_sql",
+  "title": "Abfragen mit SQL",
+  "summary": "Mit SELECT, WHERE und ORDER BY Daten abfragen, Tabellen mit JOIN verbinden und mit COUNT und AVG auswerten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "SQL (Structured Query Language) ist die Standardsprache für relationale Datenbanken – sie funktioniert in MySQL, PostgreSQL, SQLite und auch in Access. In dieser Lektion verwenden wir eine kleine Schuldatenbank mit den Tabellen klassen, schueler und noten (Fremdschlüssel wie in der letzten Lektion)."
+    },
+    {
+      "type": "code",
+      "content": "klassen: 1=2AHIT, 2=2BHIT\n\nschueler (id, vorname, klasse_id)\n1 Anna  1   2 Ben   1\n3 Clara 2   4 David 2\n5 Eva   1\n\nnoten (schueler_id, fach, note)\n1 AM 2   1 DBI 1\n2 AM 4   2 DBI 3\n3 AM 1   3 DBI 2\n4 AM 5   5 DBI 1"
+    },
+    {
+      "type": "text",
+      "content": "Jede Abfrage beginnt mit SELECT (welche Spalten?) und FROM (aus welcher Tabelle?). SELECT * liefert alle Spalten. WHERE filtert die Zeilen, ORDER BY sortiert sie – aufsteigend (ASC, Standard) oder absteigend (DESC). Die Reihenfolge der Klauseln ist fix: SELECT – FROM – WHERE – ORDER BY."
+    },
+    {
+      "type": "code",
+      "content": "SELECT vorname, nachname\nFROM schueler\nWHERE klasse_id = 1\nORDER BY nachname;\n\n-- Anna  Berger\n-- Eva   Gruber\n-- Ben   Huber"
+    },
+    {
+      "type": "text",
+      "content": "In WHERE vergleichst du mit =, <>, <, >, <=, >= und verknüpfst Bedingungen mit AND, OR und NOT. Texte stehen in einfachen Anführungszeichen: fach = 'AM'. Typischer Fehler: Zahlen in Anführungszeichen oder Text ohne – und == wie in Python statt = verwenden."
+    },
+    {
+      "type": "code",
+      "content": "SELECT *\nFROM noten\nWHERE fach = 'AM' AND note <= 2;\n\n-- 1 | 1 | AM | 2\n-- 5 | 3 | AM | 1"
+    },
+    {
+      "type": "text",
+      "content": "Mit JOIN verbindest du Tabellen über Primär- und Fremdschlüssel. Nach ON steht die Verknüpfungsbedingung. Kurze Aliasnamen (s, k) sparen Tipparbeit. Vergisst du die Bedingung (z. B. FROM schueler, klassen ohne WHERE), wird jede Zeile mit jeder kombiniert: 5 × 2 = 10 sinnlose Zeilen."
+    },
+    {
+      "type": "code",
+      "content": "SELECT s.vorname, n.fach, n.note\nFROM schueler s\nJOIN noten n\n  ON s.schueler_id = n.schueler_id\nWHERE n.fach = 'DBI'\nORDER BY n.note, s.vorname;\n\n-- Anna  | DBI | 1\n-- Eva   | DBI | 1\n-- Clara | DBI | 2\n-- Ben   | DBI | 3"
+    },
+    {
+      "type": "text",
+      "content": "Aggregatfunktionen fassen viele Zeilen zu einem Wert zusammen: COUNT zählt, AVG bildet den Durchschnitt (weiters gibt es SUM, MIN, MAX). Das WHERE wird dabei zuerst ausgeführt, erst danach wird gezählt oder gemittelt."
+    },
+    {
+      "type": "code",
+      "content": "SELECT COUNT(*) FROM schueler;\n-- 5\n\nSELECT AVG(note)\nFROM noten\nWHERE fach = 'DBI';\n-- (1+3+2+1) / 4 = 1.75\n\nZusammenfassung:\nSELECT Spalten FROM Tabelle\nJOIN … ON …  WHERE Bedingung\nORDER BY Spalte [DESC]"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was liefert diese Abfrage mit den Beispieldaten der Lektion?",
+      "code": "SELECT COUNT(*)\nFROM noten\nWHERE note >= 4;",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "8"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur die Noten 4 (Ben, AM) und 5 (David, AM) sind >= 4. COUNT(*) zählt diese 2 Zeilen."
+    },
+    {
+      "question": "Welcher Name steht in der ersten Ergebniszeile?",
+      "code": "SELECT vorname\nFROM schueler\nWHERE klasse_id = 2\nORDER BY vorname DESC;",
+      "options": [
+        "Clara",
+        "Anna",
+        "Eva",
+        "David"
+      ],
+      "correctIndex": 3,
+      "explanation": "In Klasse 2 sind Clara und David. DESC sortiert absteigend (Z → A), also kommt David zuerst."
+    },
+    {
+      "question": "Welchen Wert liefert die Abfrage? (Noten in AM: 2, 4, 1, 5)",
+      "code": "SELECT AVG(note)\nFROM noten\nWHERE fach = 'AM';",
+      "options": [
+        "3",
+        "2,5",
+        "12",
+        "4"
+      ],
+      "correctIndex": 0,
+      "explanation": "AVG berechnet den Durchschnitt: (2 + 4 + 1 + 5) / 4 = 12 / 4 = 3."
+    },
+    {
+      "question": "Wie viele Zeilen zählt diese Abfrage?",
+      "code": "SELECT COUNT(*)\nFROM schueler s\nJOIN noten n\n  ON s.schueler_id = n.schueler_id\nWHERE s.klasse_id = 1;",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "8"
+      ],
+      "correctIndex": 2,
+      "explanation": "Klasse 1 = Anna (2 Noten), Ben (2 Noten) und Eva (1 Note). Der JOIN erzeugt eine Zeile pro Note: 2 + 2 + 1 = 5."
+    }
+  ]
+}

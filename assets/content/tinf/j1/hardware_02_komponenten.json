@@ -1,0 +1,89 @@
+{
+  "id": "tinf-j1-hardware_02_komponenten",
+  "title": "PC-Komponenten und ihre Kenngrößen",
+  "summary": "CPU, RAM, SSD/HDD, Mainboard, Grafik und Netzteil verstehen und Datenblätter richtig lesen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die CPU ist das Herzstück. Wichtige Kenngrößen:\n• Taktfrequenz (GHz): Wie viele Takte pro Sekunde\n• Kerne: unabhängige Recheneinheiten, die parallel arbeiten\n• Threads: oft 2 pro Kern (Hyper-Threading/SMT)\n• Cache (L1, L2, L3): sehr schneller Speicher direkt auf der CPU\n• TDP: Abwärme in Watt, wichtig für die Kühlung\nTypischer Fehler: nur auf die GHz schauen. Zwei CPUs mit gleichem Takt können sehr unterschiedlich schnell sein, weil sie pro Takt unterschiedlich viel erledigen."
+    },
+    {
+      "type": "text",
+      "content": "Der Arbeitsspeicher (RAM) hält die gerade laufenden Programme und ihre Daten. Er ist flüchtig: Ohne Strom ist der Inhalt weg. Desktop-PCs nutzen DIMM-Module, Laptops die kleineren SO-DIMM – oder der RAM ist fest aufgelötet und nicht erweiterbar. Zwei gleiche Module in den richtigen Steckplätzen ermöglichen Dual-Channel und damit mehr Bandbreite."
+    },
+    {
+      "type": "text",
+      "content": "Massenspeicher behalten Daten dauerhaft. Eine HDD (Festplatte) speichert magnetisch auf rotierenden Scheiben – viel Platz pro Euro, aber langsam beim Zugriff und stoßempfindlich. Eine SSD speichert in Flash-Chips ohne bewegliche Teile: deutlich schneller, leise, robust, aber Flash-Zellen vertragen nur eine begrenzte Zahl an Schreibvorgängen."
+    },
+    {
+      "type": "code",
+      "content": "Speicherhierarchie\n\nschnell, klein, teuer\n   ▲  Register (in der CPU)\n   │  Cache L1 / L2 / L3\n   │  RAM\n   │  SSD\n   ▼  HDD\nlangsam, groß, billig pro GB"
+    },
+    {
+      "type": "text",
+      "content": "Das Mainboard (Hauptplatine) verbindet alles. Darauf sitzen der CPU-Sockel, die RAM-Steckplätze, PCIe-Slots, Anschlüsse für Laufwerke, der Chipsatz und ein Flash-Chip mit der Firmware (BIOS/UEFI). Der Formfaktor (z. B. ATX, Micro-ATX, Mini-ITX) legt Größe und Befestigungslöcher fest. CPU und Mainboard müssen zusammenpassen – ein falscher Sockel passt mechanisch nicht."
+    },
+    {
+      "type": "text",
+      "content": "Die Grafikeinheit (GPU) berechnet das Bild. Integrierte Grafik steckt in der CPU und nutzt einen Teil des Arbeitsspeichers – reicht für Office und Programmieren. Eine dedizierte Grafikkarte hat einen eigenen Grafikspeicher (VRAM) und ist für Spiele, 3D-CAD, Videoschnitt oder KI-Berechnungen gedacht – sie braucht aber deutlich mehr Strom."
+    },
+    {
+      "type": "text",
+      "content": "Das Netzteil wandelt die Netzspannung (230 V Wechselspannung) in die Gleichspannungen um, die der PC braucht, vor allem 12 V, 5 V und 3,3 V. Wichtig sind die maximale Leistung in Watt und der Wirkungsgrad: Ein Teil der Energie geht immer als Wärme verloren. Ein zu schwaches oder billiges Netzteil ist eine häufige Ursache für Abstürze unter Last."
+    },
+    {
+      "type": "text",
+      "content": "Laptops, Tablets und Smartphones sind auf geringen Stromverbrauch und kleine Bauform optimiert. Oft sind CPU, GPU, Speichercontroller und mehr in einem einzigen Chip vereint, dem System on a Chip (SoC). RAM und Speicher sind häufig verlötet, dazu kommt ein Akku. Folge: Aufrüsten ist kaum möglich, die Ausstattung muss beim Kauf passen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: CPU (Takt, Kerne, Cache), RAM (flüchtig, schnell), SSD/HDD (dauerhaft), Mainboard (verbindet, Sockel und Formfaktor), GPU (integriert oder dediziert), Netzteil (230 V AC → Gleichspannung). Je näher ein Speicher an der CPU liegt, desto schneller und kleiner ist er."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was passiert mit dem Inhalt des RAM, wenn der PC ausgeschaltet wird?",
+      "options": [
+        "Er bleibt erhalten",
+        "Er wird auf die GPU kopiert",
+        "Er geht verloren",
+        "Er wird im Cache gesichert"
+      ],
+      "correctIndex": 2,
+      "explanation": "RAM ist flüchtiger Speicher. Ohne Strom gehen die Daten verloren – darum musst du Dateien speichern."
+    },
+    {
+      "question": "Welcher Speicher ist am schnellsten?",
+      "options": [
+        "L1-Cache",
+        "RAM",
+        "SSD",
+        "HDD"
+      ],
+      "correctIndex": 0,
+      "explanation": "In der Speicherhierarchie liegen Register und L1-Cache am nächsten an der CPU und sind am schnellsten."
+    },
+    {
+      "question": "Welcher Vorteil gilt für eine SSD gegenüber einer HDD?",
+      "options": [
+        "Unbegrenzt viele Schreibvorgänge",
+        "Keine beweglichen Teile, daher schneller und robuster",
+        "Immer billiger pro Gigabyte",
+        "Daten bleiben ohne Strom nur bei der SSD erhalten"
+      ],
+      "correctIndex": 1,
+      "explanation": "SSDs haben keine Mechanik. HDDs sind pro GB meist billiger, und beide speichern dauerhaft. Flash-Zellen haben eine begrenzte Zahl an Schreibzyklen."
+    },
+    {
+      "question": "Was macht das Netzteil eines PCs?",
+      "options": [
+        "Es speichert Energie für Stromausfälle",
+        "Es erhöht die Taktfrequenz der CPU",
+        "Es wandelt Gleichspannung in 230 V um",
+        "Es wandelt 230 V Wechselspannung in Gleichspannungen wie 12 V um"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die PC-Komponenten brauchen niedrige Gleichspannungen. Eine Notstromversorgung wäre eine USV, kein Netzteil."
+    }
+  ]
+}

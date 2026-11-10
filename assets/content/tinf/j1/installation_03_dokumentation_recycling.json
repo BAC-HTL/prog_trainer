@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-installation_03_dokumentation_recycling",
+  "title": "Dokumentation, Qualitätssicherung und Recycling",
+  "summary": "Arbeiten nachvollziehbar dokumentieren, Qualität sichern und Altgeräte sicher löschen und richtig entsorgen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "In der IT gilt: Was nicht dokumentiert ist, ist nicht passiert. Wer einen PC aufsetzt, ein Netzwerk konfiguriert oder einen Fehler behebt, schreibt das so auf, dass jemand anderer – oder du selbst in einem halben Jahr – es nachvollziehen kann. Das spart bei der nächsten Störung enorm viel Zeit."
+    },
+    {
+      "type": "text",
+      "content": "Zur technischen Dokumentation gehören z. B.:\n• Inventarliste: Gerät, Seriennummer, Standort, Kaufdatum, Garantie\n• Konfiguration: Hostname, IP-Adresse, installierte Software\n• Installationsprotokoll: Was wurde wann wie installiert?\n• Änderungsprotokoll: Wer hat wann was geändert und warum?\n• Störungsprotokoll: Fehler, Ursache, Lösung\nPasswörter gehören nicht in die normale Doku, sondern in einen Passwortmanager."
+    },
+    {
+      "type": "code",
+      "content": "Störungsprotokoll\n─────────────────\nDatum:    12.03.\nGerät:    PC-EDV2-07\nFehler:   kein Bild nach Start\nUrsache:  RAM-Modul locker\nLösung:   RAM neu eingesetzt\nTest:     Start OK, 3× geprüft\nBearb.:   M. Huber"
+    },
+    {
+      "type": "text",
+      "content": "Qualitätssicherung heißt: sicherstellen, dass die Arbeit wirklich passt, bevor das Gerät übergeben wird. Dazu helfen Checklisten (nichts wird vergessen), ein Funktionstest mit festgelegten Prüfpunkten, das Vier-Augen-Prinzip (eine zweite Person kontrolliert) und eine Abnahme durch den Kunden bzw. die Lehrkraft. Wer immer nach derselben Checkliste arbeitet, liefert gleichbleibende Qualität."
+    },
+    {
+      "type": "text",
+      "content": "Elektroschrott gehört nie in den Restmüll. Altgeräte enthalten wertvolle Rohstoffe wie Kupfer, Gold oder seltene Erden, aber auch Schadstoffe wie Blei oder Quecksilber. Das Symbol der durchgestrichenen Mülltonne auf Geräten bedeutet: getrennt sammeln. In Österreich kannst du Elektroaltgeräte z. B. im Altstoffsammelzentrum kostenlos abgeben, auch der Handel nimmt unter bestimmten Bedingungen Altgeräte zurück."
+    },
+    {
+      "type": "text",
+      "content": "Batterien und Akkus werden getrennt gesammelt. Wenn möglich, entnimm sie vor der Abgabe aus dem Gerät. Beschädigte oder aufgeblähte Lithium-Akkus sind brandgefährlich – nicht weiter benutzen, nicht aufladen, die Pole abkleben und sicher zur Sammelstelle bringen."
+    },
+    {
+      "type": "text",
+      "content": "Bevor ein Gerät die Schule oder Firma verlässt, müssen die Daten sicher gelöscht werden – das verlangt schon der Datenschutz (DSGVO). Typischer Fehler: Dateien in den Papierkorb zu legen oder schnell zu formatieren reicht nicht. Dabei werden nur die Verweise entfernt, die Daten lassen sich oft mit einfachen Tools wiederherstellen."
+    },
+    {
+      "type": "code",
+      "content": "Sichere Datenlöschung\n\nHDD:  vollständig überschreiben\nSSD:  Secure-Erase-Funktion\n      (Hersteller-Tool / UEFI)\nalle: Datenträger verschlüsselt\n      + Schlüssel vernichten\nletzter Ausweg:\n      physische Zerstörung\n      (zertifizierter Dienst)"
+    },
+    {
+      "type": "text",
+      "content": "Warum unterscheiden sich HDD und SSD? Eine SSD verteilt Schreibvorgänge intern auf andere Speicherzellen (Wear Leveling), damit sie nicht so schnell verschleißt. Überschreiben vom Betriebssystem aus erreicht daher nicht sicher alle Zellen. Deshalb nutzt man die eingebaute Secure-Erase-Funktion oder verschlüsselt von Anfang an, sodass nach dem Löschen des Schlüssels nur noch unlesbare Daten übrig bleiben."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Inventar, Konfiguration, Änderungen und Störungen dokumentieren. Qualität mit Checklisten, Funktionstest und Vier-Augen-Prinzip sichern. Elektroschrott und Akkus getrennt entsorgen. Vor der Weitergabe Daten sicher löschen – Formatieren reicht nicht."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gehört NICHT in ein Störungsprotokoll?",
+      "options": [
+        "Fehlerbeschreibung",
+        "Das Administrator-Passwort im Klartext",
+        "Ursache und Lösung",
+        "Datum und bearbeitende Person"
+      ],
+      "correctIndex": 1,
+      "explanation": "Passwörter gehören in einen Passwortmanager, nicht in die allgemein lesbare Dokumentation."
+    },
+    {
+      "question": "Ein Laptop mit SSD wird verkauft. Welche Methode löscht die Daten zuverlässig?",
+      "options": [
+        "Dateien in den Papierkorb und diesen leeren",
+        "Schnellformatierung",
+        "Secure Erase bzw. Verschlüsselung und Vernichten des Schlüssels",
+        "Den Desktop aufräumen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Papierkorb und Schnellformatierung entfernen nur Verweise. Bei SSDs ist wegen Wear Leveling Secure Erase oder Verschlüsselung der sichere Weg."
+    },
+    {
+      "question": "Was bedeutet das Vier-Augen-Prinzip in der Qualitätssicherung?",
+      "options": [
+        "Eine zweite Person kontrolliert die Arbeit",
+        "Zwei Monitore pro Arbeitsplatz",
+        "Der Fehler wird zweimal reproduziert",
+        "Jede Arbeit dauert doppelt so lang"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eine unabhängige zweite Kontrolle findet Fehler, die man selbst übersieht."
+    },
+    {
+      "question": "Wohin gehört ein alter, defekter Monitor?",
+      "options": [
+        "In den Restmüll",
+        "In die Papiertonne",
+        "In den Gelben Sack",
+        "Zur Elektroaltgeräte-Sammelstelle, z. B. im Altstoffsammelzentrum"
+      ],
+      "correctIndex": 3,
+      "explanation": "Elektroaltgeräte enthalten Wertstoffe und Schadstoffe und müssen getrennt gesammelt werden."
+    }
+  ]
+}

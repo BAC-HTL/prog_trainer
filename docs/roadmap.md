@@ -2,8 +2,9 @@
 
 ## Erledigt
 
-- Lehrplan bis Senior für Python und C#
-- Einsteiger und Fortgeschritten komplett, mit Abschlussprüfungen
+- Lehrplan nach HTL Informatik (1.–5. Jahrgang) plus Junior, Senior, Expert
+- 1. und 2. Jahrgang in allen Fächern ausgearbeitet
+- Filter nach Stufe, Fach und Thema
 - PDF-Zertifikate pro Kapitel
 - Achievements
 - Herausforderungen mit echter Code-Ausführung und Punkten pro Sprache
@@ -13,12 +14,12 @@
 
 ## Als Nächstes
 
-- Inhalte für **Profi** und **Senior**
-- Lernpfade Software-Architektur, Testing, Requirements Engineering
+- Inhalte für den **3.–5. Jahrgang**
+- Inhalte für **Junior, Senior und Expert**
 - Python offline: Pyodide in die App packen statt aus dem Internet laden
-- Herausforderungen für Profi/Senior
+- Herausforderungen für höhere Jahrgänge
 - Dunkler Modus
-- Weitere Spielmissionen (Profi/Senior), z. B. mit Klassen und Rekursion
+- Weitere Spielmissionen für höhere Jahrgänge, z. B. mit Klassen und Rekursion
 
 ## Code-Ausführung: Hintergrund
 

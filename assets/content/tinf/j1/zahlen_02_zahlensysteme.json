@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-zahlen_02_zahlensysteme",
+  "title": "Zahlensysteme: dezimal, binär, hexadezimal",
+  "summary": "Zahlen zwischen Dezimal-, Binär- und Hexadezimalsystem umrechnen und negative Zahlen im Zweierkomplement verstehen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im Alltag rechnest du im Dezimalsystem (Basis 10, Ziffern 0–9). Jede Stelle hat einen Stellenwert, der eine Potenz der Basis ist. Genau dasselbe Prinzip gilt für jede andere Basis – nur die Stellenwerte ändern sich."
+    },
+    {
+      "type": "code",
+      "content": "Dezimal 345:\n3·10² + 4·10¹ + 5·10⁰\n= 300 + 40 + 5\n\nBinär 10110:\n1·16 + 0·8 + 1·4 + 1·2 + 0·1\n= 22"
+    },
+    {
+      "type": "text",
+      "content": "Binär → dezimal: Schreib die Stellenwerte 1, 2, 4, 8, 16, 32, 64, 128 … von rechts nach links über die Bits und addiere die Werte, unter denen eine 1 steht. Dezimal → binär: Teile immer wieder durch 2 und notiere den Rest. Die Reste von unten nach oben gelesen ergeben die Binärzahl."
+    },
+    {
+      "type": "code",
+      "content": "45 : 2 = 22  Rest 1\n22 : 2 = 11  Rest 0\n11 : 2 =  5  Rest 1\n 5 : 2 =  2  Rest 1\n 2 : 2 =  1  Rest 0\n 1 : 2 =  0  Rest 1\n\nvon unten gelesen: 45 = 101101₂"
+    },
+    {
+      "type": "text",
+      "content": "Lange Binärzahlen sind schwer lesbar. Deshalb verwendet man das Hexadezimalsystem (Basis 16, Ziffern 0–9 und A–F für 10–15). Der Trick: Eine Hex-Ziffer entspricht genau 4 Bit (einem Nibble). Du teilst die Binärzahl von rechts in Vierergruppen und übersetzt jede Gruppe einzeln. Hex-Zahlen schreibt man oft mit 0x davor, z. B. bei Farben (#FF0000) oder MAC-Adressen."
+    },
+    {
+      "type": "code",
+      "content": "Binär 1101 0110\n      ────  ────\n      1101 = 13 = D\n      0110 =  6 = 6\n→ 0xD6\n\n0xD6 = 13·16 + 6 = 214"
+    },
+    {
+      "type": "text",
+      "content": "Wie speichert man negative Zahlen? Im Zweierkomplement: Bei einer festen Bitbreite (z. B. 8 Bit) hat das höchste Bit den Wert −128 statt +128. Beginnt die Zahl mit 1, ist sie negativ. Der Wertebereich bei 8 Bit ist damit −128 bis +127."
+    },
+    {
+      "type": "text",
+      "content": "Kochrezept für −x: Schreib x binär mit voller Bitbreite, invertiere alle Bits (0↔1) und addiere 1. Der Vorteil: Die CPU kann Subtraktion als Addition erledigen, und es gibt nur eine einzige Null."
+    },
+    {
+      "type": "code",
+      "content": "+5   = 0000 0101\ninvert. 1111 1010\n+1   = 1111 1011  → −5\n\nProbe: −128+64+32+16+8+2+1\n     = −5  ✓"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Jede Stelle ist eine Potenz der Basis. Binär ↔ dezimal über Stellenwerte bzw. Division durch 2, binär ↔ hex über Vierergruppen. Negative Zahlen: Zweierkomplement = invertieren + 1. Typischer Fehler: die Bitbreite vergessen – 11111011 ist als 8-Bit-Zweierkomplement −5, als vorzeichenlose Zahl aber 251."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welchen Dezimalwert hat die Binärzahl 1011 0010?",
+      "options": [
+        "178",
+        "89",
+        "162",
+        "77"
+      ],
+      "correctIndex": 0,
+      "explanation": "128 + 32 + 16 + 2 = 178."
+    },
+    {
+      "question": "Wie lautet 0x2F im Dezimalsystem?",
+      "options": [
+        "32",
+        "215",
+        "47",
+        "29"
+      ],
+      "correctIndex": 2,
+      "explanation": "2·16 + 15 = 47. F steht für 15."
+    },
+    {
+      "question": "Wie lautet −42 als 8-Bit-Zweierkomplement?",
+      "options": [
+        "1010 1010",
+        "1101 0101",
+        "0010 1010",
+        "1101 0110"
+      ],
+      "correctIndex": 3,
+      "explanation": "42 = 0010 1010. Invertiert: 1101 0101. Plus 1: 1101 0110."
+    },
+    {
+      "question": "Welche Hexadezimalzahl entspricht 1011 1100₂?",
+      "options": [
+        "0xB12",
+        "0xBC",
+        "0xCB",
+        "0x188"
+      ],
+      "correctIndex": 1,
+      "explanation": "1011 = B (11), 1100 = C (12) → 0xBC."
+    }
+  ]
+}

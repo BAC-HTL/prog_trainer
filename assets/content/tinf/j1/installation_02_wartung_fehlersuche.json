@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-installation_02_wartung_fehlersuche",
+  "title": "PC zusammenbauen, warten und Fehler finden",
+  "summary": "Einen PC assemblieren, Fehler systematisch eingrenzen, POST-Meldungen deuten und Daten richtig sichern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Beim Zusammenbau (Assemblierung) gilt: ESD-Schutz zuerst, Netzteil ausgesteckt. Eine bewährte Reihenfolge:\n1. CPU in den Sockel (Markierung beachten, keine Gewalt)\n2. Kühler mit Wärmeleitpaste montieren\n3. RAM-Module einsetzen (Handbuch: welche Slots?)\n4. Mainboard mit Abstandshaltern ins Gehäuse\n5. Netzteil, Laufwerke, Grafikkarte\n6. Kabel: 24-Pin-Hauptstecker, CPU-Stromstecker, Frontpanel"
+    },
+    {
+      "type": "text",
+      "content": "Nach dem Einschalten führt die Firmware den POST (Power-On Self-Test) durch: Sie prüft CPU, RAM, Grafik und weitere Grundfunktionen. Klappt das, startet der Bootvorgang. Schlägt der Test fehl, meldet das Mainboard den Fehler über Pieptöne (Beep-Codes), Diagnose-LEDs oder eine Code-Anzeige. Die Bedeutung ist herstellerabhängig – schau ins Handbuch des Mainboards."
+    },
+    {
+      "type": "text",
+      "content": "Bei der Fehlersuche ist systematisches Vorgehen wichtiger als Raten. Typischer Fehler: mehrere Dinge gleichzeitig ändern – dann weißt du nicht, was geholfen hat. Ändere immer nur eine Sache und prüfe dann erneut."
+    },
+    {
+      "type": "code",
+      "content": "Systematische Fehlersuche\n\n1. Fehler genau beschreiben\n   (Was? Seit wann? Reprodu-\n   zierbar? Was wurde geändert?)\n2. Informationen sammeln\n3. Vermutung aufstellen\n4. Vermutung testen\n   (eine Änderung!)\n5. Lösung umsetzen, prüfen\n6. Dokumentieren"
+    },
+    {
+      "type": "text",
+      "content": "Bewährte Strategien:\n• Einfaches zuerst: Ist der Stecker drin? Schalter am Netzteil an? Monitor am richtigen Anschluss?\n• Tauschmethode: verdächtiges Teil gegen ein sicher funktionierendes tauschen\n• Minimalkonfiguration: nur CPU, ein RAM-Modul, Grafik – startet das, Teile einzeln wieder dazu\n• Logs und Fehlermeldungen lesen, Fehlercodes nachschlagen"
+    },
+    {
+      "type": "text",
+      "content": "Wartung beugt Fehlern vor: Staub aus Lüftern und Kühlkörpern entfernen (Lüfter dabei festhalten), Updates einspielen, freien Speicherplatz und den Zustand der Laufwerke im Blick behalten (z. B. SMART-Werte). Überhitzung durch verstaubte Kühler ist eine häufige Ursache für plötzliche Abstürze unter Last."
+    },
+    {
+      "type": "text",
+      "content": "Das Wichtigste bei jeder Wartung: das Backup. Hardware ist ersetzbar, deine Diplomarbeit nicht. Die bekannte 3-2-1-Regel: 3 Kopien der Daten, auf 2 verschiedenen Medien, davon 1 an einem anderen Ort (z. B. Cloud oder externe Platte zu Hause). Achtung: Ein RAID-Verbund oder eine Synchronisierung ist kein Backup – ein versehentlich gelöschtes oder verschlüsseltes File ist sofort überall weg."
+    },
+    {
+      "type": "text",
+      "content": "Backup-Arten:\n• Vollsicherung: alles wird gesichert\n• Inkrementell: nur Änderungen seit der letzten Sicherung (egal welcher Art)\n• Differenziell: alle Änderungen seit der letzten Vollsicherung\nInkrementell spart Platz, für die Wiederherstellung brauchst du aber die Vollsicherung und alle Inkremente. Differenziell braucht mehr Platz, zum Wiederherstellen reichen Vollsicherung plus letzte Differenzsicherung."
+    },
+    {
+      "type": "code",
+      "content": "Voll am So: 100 GB\nMo–Fr je 2 GB neue Änderungen\n\nTag  inkrementell  differenziell\nMo   2 GB          2 GB\nDi   2 GB          4 GB\nMi   2 GB          6 GB\nDo   2 GB          8 GB\nFr   2 GB         10 GB"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Beim Zusammenbau ESD beachten und nach Handbuch vorgehen. Der POST meldet Hardwarefehler über Beep-Codes oder LEDs – Bedeutung im Handbuch. Fehler systematisch eingrenzen, immer nur eine Änderung. Backups nach 3-2-1 und die Wiederherstellung regelmäßig testen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein frisch gebauter PC piept beim Start mehrmals und zeigt kein Bild. Was ist der sinnvollste nächste Schritt?",
+      "options": [
+        "Betriebssystem neu installieren",
+        "Die Bedeutung des Beep-Codes im Mainboard-Handbuch nachschlagen",
+        "Ein neues Netzteil kaufen",
+        "Alle Komponenten gleichzeitig tauschen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der POST meldet einen Hardwarefehler. Beep-Codes sind herstellerspezifisch – das Handbuch sagt, welches Teil betroffen ist (häufig RAM oder Grafik)."
+    },
+    {
+      "question": "Was ist bei systematischer Fehlersuche ein typischer Fehler?",
+      "options": [
+        "Mehrere Änderungen gleichzeitig vornehmen",
+        "Den Fehler zuerst genau beschreiben",
+        "Einfache Ursachen zuerst prüfen",
+        "Die Lösung dokumentieren"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ändert man mehrere Dinge auf einmal, weiß man nicht, welche Änderung gewirkt hat."
+    },
+    {
+      "question": "Vollsicherung am Sonntag, dann täglich inkrementelle Sicherungen. Am Freitagabend fällt die Platte aus. Was brauchst du für die Wiederherstellung?",
+      "options": [
+        "Nur die Sicherung von Freitag",
+        "Vollsicherung und die Sicherung von Freitag",
+        "Nur die Vollsicherung",
+        "Vollsicherung und alle Inkremente von Montag bis Freitag"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jedes Inkrement enthält nur die Änderungen seit der vorherigen Sicherung. Darum werden alle in der richtigen Reihenfolge benötigt."
+    },
+    {
+      "question": "Was beschreibt die 3-2-1-Regel?",
+      "options": [
+        "3 Festplatten im RAID, 2 Netzteile, 1 USV",
+        "3 Backups pro Tag, 2 pro Woche, 1 pro Monat",
+        "3 Kopien, 2 verschiedene Medien, 1 Kopie an einem anderen Ort",
+        "3 Partitionen, 2 Betriebssysteme, 1 Bootloader"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mehrere Kopien auf unterschiedlichen Medien und eine räumlich getrennte Kopie schützen auch vor Brand, Diebstahl oder Ransomware."
+    }
+  ]
+}

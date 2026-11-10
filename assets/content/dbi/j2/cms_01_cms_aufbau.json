@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j2-cms_01_cms_aufbau",
+  "title": "Aufbau eines Content-Management-Systems",
+  "summary": "Verstehen, aus welchen Teilen ein CMS besteht, warum Inhalt und Layout getrennt sind und wie sich klassische und Headless-CMS unterscheiden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Schulwebsite soll jede Woche neue News bekommen – aber nicht jede Lehrkraft kann HTML. Ein Content-Management-System (CMS) löst das: Redakteur:innen schreiben Inhalte in einer Weboberfläche, das System erzeugt daraus automatisch fertige Webseiten. Bekannte Beispiele sind WordPress, Joomla und TYPO3 (im deutschsprachigen Raum bei Unis und Behörden beliebt)."
+    },
+    {
+      "type": "text",
+      "content": "Ein klassisches CMS besteht aus mehreren Komponenten:\n• Backend – der geschützte Verwaltungsbereich zum Bearbeiten\n• Frontend – die öffentliche Website für Besucher:innen\n• Datenbank – speichert Texte, Benutzer, Einstellungen (z. B. MySQL/MariaDB)\n• Dateisystem – Bilder, Videos, PDFs\n• Templates/Themes – bestimmen das Aussehen\n• Erweiterungen (Plugins, Extensions) – zusätzliche Funktionen"
+    },
+    {
+      "type": "code",
+      "content": "Redakteurin\n    |  schreibt im Backend\n    v\n+-----------+     +-----------+\n|   CMS     |<--->| Datenbank |\n|  (PHP)    |     +-----------+\n+-----------+\n    |  Inhalt + Template\n    v\n  HTML-Seite\n    |\n    v\nBesucher:in im Browser"
+    },
+    {
+      "type": "text",
+      "content": "Kernidee ist die Trennung von Inhalt und Layout. Der Inhalt (Titel, Text, Bild) liegt in der Datenbank, das Layout (HTML-Gerüst, CSS) im Template. Bekommt die Schule ein neues Corporate Design, tauschst du nur das Template – alle 500 Artikel sehen sofort neu aus. Das kennst du schon von HTML und CSS: Struktur und Gestaltung getrennt halten."
+    },
+    {
+      "type": "text",
+      "content": "Ein Template ist eine HTML-Vorlage mit Platzhaltern. Bei jedem Seitenaufruf setzt das CMS die passenden Inhalte aus der Datenbank ein. Jedes CMS hat dafür eigene Mittel: WordPress nutzt PHP-Dateien in Themes, TYPO3 die Template-Sprache Fluid. Das Prinzip ist aber immer gleich:"
+    },
+    {
+      "type": "code",
+      "content": "<!-- Template (vereinfacht) -->\n<article>\n  <h2>{{ titel }}</h2>\n  <time>{{ datum }}</time>\n  <img src=\"{{ bild }}\">\n  <p>{{ text }}</p>\n</article>"
+    },
+    {
+      "type": "text",
+      "content": "Welches CMS passt? WordPress ist am weitesten verbreitet und schnell eingerichtet – ideal für Blogs und kleinere Websites. Joomla bietet von Haus aus viel Struktur für Community-Seiten. TYPO3 ist mächtig, aufwändiger zu lernen und für große Websites mit vielen Redakteur:innen und Sprachen gedacht. Alle drei sind Open Source und in PHP geschrieben."
+    },
+    {
+      "type": "text",
+      "content": "Ein Headless CMS hat „keinen Kopf“, also kein eigenes Frontend. Es verwaltet nur Inhalte und liefert sie über eine Schnittstelle (API, meist im JSON-Format) aus. So kann dieselbe News auf der Website, in der Schul-App und auf dem Bildschirm im Foyer erscheinen. Das Frontend programmieren Entwickler:innen selbst. Beispiele: Strapi, Contentful; auch WordPress bietet eine REST-API."
+    },
+    {
+      "type": "code",
+      "content": "GET /api/news/42\n\n{\n  \"id\": 42,\n  \"typ\": \"news\",\n  \"titel\": \"Tag der offenen Tür\",\n  \"datum\": \"2027-01-15\",\n  \"text\": \"Am 15. Jänner zeigen …\",\n  \"bild\": \"/media/todt.webp\"\n}"
+    },
+    {
+      "type": "text",
+      "content": "Typische Missverständnisse: Ein CMS ist nicht dasselbe wie ein Homepage-Baukasten, und „Template ändern“ löscht keine Inhalte. Zusammenfassung: Backend zum Bearbeiten, Frontend zum Anzeigen, Datenbank für Inhalte, Templates für das Aussehen. Klassisches CMS = Inhalt + Darstellung, Headless CMS = nur Inhalt per API."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Die Schule bekommt ein neues Logo und neue Farben. Was musst du in einem CMS ändern, damit alle Seiten neu aussehen?",
+      "options": [
+        "Jeden Artikel einzeln neu formatieren",
+        "Das Template bzw. Theme",
+        "Die Datenbank neu anlegen",
+        "Alle Benutzerkonten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Weil Inhalt und Layout getrennt sind, steckt das Aussehen im Template. Eine Änderung dort wirkt auf alle Seiten."
+    },
+    {
+      "question": "Wo speichert ein klassisches CMS wie WordPress die Texte der Beiträge?",
+      "options": [
+        "In einer Datenbank",
+        "Direkt im Template",
+        "Im Browser der Besucher:innen",
+        "In der CSS-Datei"
+      ],
+      "correctIndex": 0,
+      "explanation": "Inhalte wie Texte, Titel und Benutzer liegen in der Datenbank. Bilder und andere Dateien liegen im Dateisystem."
+    },
+    {
+      "question": "Was ist das Besondere an einem Headless CMS?",
+      "options": [
+        "Es braucht keine Datenbank",
+        "Es hat kein Backend zum Bearbeiten",
+        "Es kann nur Bilder verwalten",
+        "Es liefert Inhalte nur über eine API aus und hat kein eigenes Frontend"
+      ],
+      "correctIndex": 3,
+      "explanation": "„Headless“ = ohne Kopf, also ohne fertige Darstellung. Die Inhalte kommen z. B. als JSON, und Website oder App stellen sie selbst dar."
+    },
+    {
+      "question": "Welches Template-Ergebnis entsteht, wenn titel = \"Schulball\" ist?",
+      "code": "<h2>{{ titel }}</h2>",
+      "options": [
+        "<h2>{{ titel }}</h2>",
+        "<h2>titel</h2>",
+        "<h2>Schulball</h2>",
+        "{{ Schulball }}"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das CMS ersetzt den Platzhalter {{ titel }} durch den Wert aus der Datenbank."
+    }
+  ]
+}

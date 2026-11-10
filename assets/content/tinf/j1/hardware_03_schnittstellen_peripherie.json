@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-hardware_03_schnittstellen_peripherie",
+  "title": "Schnittstellen und Peripherie",
+  "summary": "USB, HDMI, DisplayPort, PCIe, SATA, NVMe und Bluetooth unterscheiden und Geräte richtig anschließen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Peripheriegeräte sind alles, was außerhalb der Kernkomponenten angeschlossen wird:\n• Eingabe: Tastatur, Maus, Scanner, Mikrofon\n• Ausgabe: Monitor, Drucker, Lautsprecher\n• Ein- und Ausgabe: Touchscreen, Headset\n• Speicher: USB-Stick, externe SSD\nSie werden über Schnittstellen verbunden – genormte Stecker und Übertragungsregeln."
+    },
+    {
+      "type": "text",
+      "content": "USB (Universal Serial Bus) ist die wichtigste externe Schnittstelle. Geräte sind Hot-Plug-fähig (Anstecken im laufenden Betrieb) und werden meist automatisch erkannt. Wichtig: Steckerform und Geschwindigkeit sind zwei verschiedene Dinge! USB-A ist der klassische rechteckige Stecker, USB-C der kleine, verdrehsichere Stecker. Ein USB-C-Anschluss sagt allein noch nichts über die Geschwindigkeit aus."
+    },
+    {
+      "type": "code",
+      "content": "Standard         max. Datenrate\nUSB 2.0          480 Mbit/s\nUSB 5 Gbit/s     (USB 3.x Gen 1)\nUSB 10 Gbit/s    (USB 3.x Gen 2)\nUSB 20 Gbit/s    (Gen 2x2)\nUSB4             bis 40 Gbit/s\n                 und mehr"
+    },
+    {
+      "type": "text",
+      "content": "Über USB-C kann auch Strom fließen. Mit USB Power Delivery (PD) handeln Netzteil und Gerät die Spannung und Leistung aus – so lädt dasselbe Netzteil Handy und Laptop. Über USB-C können je nach Gerät auch Bildsignale (DisplayPort Alt Mode) oder Thunderbolt übertragen werden. Ob ein Anschluss das kann, steht im Handbuch oder ist durch Symbole am Gehäuse gekennzeichnet."
+    },
+    {
+      "type": "text",
+      "content": "Für Monitore gibt es vor allem HDMI und DisplayPort. Beide übertragen Bild und Ton digital. HDMI ist bei Fernsehern und Beamern Standard, DisplayPort vor allem bei PC-Monitoren. VGA (analog) und DVI sind ältere Anschlüsse, die du in Schulen noch bei Beamern findest – oft braucht es dann einen Adapter."
+    },
+    {
+      "type": "text",
+      "content": "Im Inneren steckt die Grafikkarte, eine Netzwerkkarte oder eine schnelle SSD in einem PCIe-Slot (PCI Express). PCIe arbeitet mit Lanes (Spuren): x1, x4, x8 oder x16. Mehr Lanes bedeuten mehr Bandbreite – Grafikkarten nutzen meist x16. Jede neue PCIe-Generation verdoppelt ungefähr die Datenrate pro Lane."
+    },
+    {
+      "type": "text",
+      "content": "Für Laufwerke gibt es SATA und NVMe. SATA ist die ältere Schnittstelle für HDDs und 2,5\"-SSDs (bis 6 Gbit/s, nutzbar rund 600 MB/s). NVMe ist ein Protokoll, das SSDs direkt über PCIe anbindet und viel schneller ist. Achtung, häufige Verwechslung: M.2 ist nur ein Formfaktor (ein Steckplatz für kleine Kärtchen). Eine M.2-SSD kann SATA oder NVMe sprechen – der Steckplatz muss das passende unterstützen."
+    },
+    {
+      "type": "code",
+      "content": "Begriff  Was ist es?\nSATA     Schnittstelle (Kabel)\nNVMe     Protokoll über PCIe\nM.2      Formfaktor/Steckplatz\nPCIe     interner Bus mit Lanes"
+    },
+    {
+      "type": "text",
+      "content": "Bluetooth ist eine Funkverbindung für kurze Distanzen (typisch wenige Meter bis etwa zehn Meter) und wenig Strom, z. B. für Kopfhörer, Mäuse oder Tastaturen. Vor der ersten Nutzung werden Geräte gekoppelt (Pairing). Für große Datenmengen ist WLAN oder ein Kabel besser geeignet."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: USB-C ist eine Steckerform, keine Geschwindigkeit. HDMI und DisplayPort für Bildschirme, PCIe für Erweiterungskarten und NVMe-SSDs, SATA für ältere Laufwerke, M.2 ist nur ein Formfaktor. Bluetooth für drahtlose Peripherie auf kurze Distanz."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Laptop hat einen USB-C-Anschluss. Was kannst du daraus sicher schließen?",
+      "options": [
+        "Er überträgt immer 40 Gbit/s",
+        "Er kann immer einen Monitor ansteuern",
+        "Nur die Steckerform – Geschwindigkeit und Funktionen hängen vom Gerät ab",
+        "Er unterstützt Thunderbolt"
+      ],
+      "correctIndex": 2,
+      "explanation": "USB-C beschreibt nur den Stecker. Datenrate, Bildausgabe und Ladeleistung muss man im Datenblatt nachsehen."
+    },
+    {
+      "question": "Wie viele MB/s überträgt USB 2.0 theoretisch maximal?",
+      "options": [
+        "60 MB/s",
+        "480 MB/s",
+        "48 MB/s",
+        "3840 MB/s"
+      ],
+      "correctIndex": 0,
+      "explanation": "480 Mbit/s / 8 = 60 MB/s. Praktisch ist es wegen Overhead weniger."
+    },
+    {
+      "question": "Welche Aussage über M.2 ist richtig?",
+      "options": [
+        "M.2 ist immer schneller als SATA",
+        "M.2 ist ein Formfaktor; die SSD kann SATA oder NVMe nutzen",
+        "M.2 ist ein Bluetooth-Standard",
+        "M.2 ersetzt den Arbeitsspeicher"
+      ],
+      "correctIndex": 1,
+      "explanation": "M.2 legt nur Größe und Stecker fest. Eine M.2-SATA-SSD ist nicht schneller als eine 2,5\"-SATA-SSD."
+    },
+    {
+      "question": "Welche Schnittstelle nutzt eine Grafikkarte im Desktop-PC typischerweise?",
+      "options": [
+        "SATA",
+        "USB-A",
+        "HDMI",
+        "PCIe x16"
+      ],
+      "correctIndex": 3,
+      "explanation": "Grafikkarten stecken in einem PCIe-Slot mit 16 Lanes. HDMI ist der Ausgang der Grafikkarte zum Monitor, nicht ihre Verbindung zum Mainboard."
+    }
+  ]
+}

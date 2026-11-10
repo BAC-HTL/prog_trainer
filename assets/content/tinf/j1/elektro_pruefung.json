@@ -1,0 +1,117 @@
+{
+  "id": "tinf-j1-elektro_pruefung",
+  "title": "Abschlussprüfung: Elektrotechnische Grundlagen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was ist die Aussage des Ohmschen Gesetzes?",
+      "options": [
+        "P = U · I",
+        "U = R · I",
+        "E = P · t",
+        "R = U · I"
+      ],
+      "correctIndex": 1,
+      "explanation": "Spannung = Widerstand mal Strom. P = U · I ist die Leistung, E = P · t die Energie."
+    },
+    {
+      "question": "Welche Aussage über die Netzspannung in Österreich stimmt?",
+      "options": [
+        "230 V Gleichspannung",
+        "230 V Wechselspannung, 50 Hz, Spitzenwert ca. 325 V",
+        "325 V Gleichspannung",
+        "12 V Wechselspannung, 60 Hz"
+      ],
+      "correctIndex": 1,
+      "explanation": "230 V ist der Effektivwert der Wechselspannung. Der Spitzenwert ist 230 V · √2 ≈ 325 V."
+    },
+    {
+      "question": "Drei Widerstände mit 220 Ω, 330 Ω und 450 Ω sind in Reihe geschaltet. Wie groß ist der Gesamtwiderstand?",
+      "options": [
+        "1 kΩ",
+        "100 Ω",
+        "450 Ω",
+        "132 Ω"
+      ],
+      "correctIndex": 0,
+      "explanation": "In Reihe werden die Widerstände addiert: 220 + 330 + 450 = 1000 Ω = 1 kΩ."
+    },
+    {
+      "question": "An 6 V hängen 60 Ω und 30 Ω parallel. Wie groß ist der Gesamtstrom?",
+      "options": [
+        "0,067 A",
+        "0,1 A",
+        "0,3 A",
+        "0,2 A"
+      ],
+      "correctIndex": 2,
+      "explanation": "I1 = 6/60 = 0,1 A, I2 = 6/30 = 0,2 A, zusammen 0,3 A. Kontrolle: R = 60·30/(60+30) = 20 Ω, 6 V / 20 Ω = 0,3 A."
+    },
+    {
+      "question": "Ein PC braucht 300 W Gleichstromleistung, das Netzteil hat 90 % Wirkungsgrad. Wie viel Leistung nimmt es ungefähr aus der Steckdose auf?",
+      "options": [
+        "270 W",
+        "300 W",
+        "390 W",
+        "333 W"
+      ],
+      "correctIndex": 3,
+      "explanation": "Aufnahme = 300 W / 0,9 ≈ 333 W. Die rund 33 W Differenz werden im Netzteil zu Wärme."
+    },
+    {
+      "question": "Ein Router braucht dauerhaft 10 W. Wie viel Energie verbraucht er in einem Jahr (365 Tage)?",
+      "options": [
+        "87,6 kWh",
+        "3,65 kWh",
+        "876 kWh",
+        "8,76 kWh"
+      ],
+      "correctIndex": 0,
+      "explanation": "E = 10 W · 24 h · 365 = 87 600 Wh = 87,6 kWh."
+    },
+    {
+      "question": "Eine LED (3 V, 15 mA) soll an einer 9-V-Batterie leuchten. Welcher Vorwiderstand ist rechnerisch nötig?",
+      "options": [
+        "600 Ω",
+        "400 Ω",
+        "200 Ω",
+        "0,4 Ω"
+      ],
+      "correctIndex": 1,
+      "explanation": "U_R = 9 V − 3 V = 6 V. R = 6 V / 0,015 A = 400 Ω. 600 Ω erhält man, wenn man die LED-Spannung vergisst."
+    },
+    {
+      "question": "Was gilt für eine Parallelschaltung?",
+      "options": [
+        "Der Strom ist in allen Zweigen gleich",
+        "Der Gesamtwiderstand ist größer als der größte Einzelwiderstand",
+        "An allen Zweigen liegt dieselbe Spannung",
+        "Die Spannungen der Zweige werden addiert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Parallel: gleiche Spannung, Ströme addieren sich, Gesamtwiderstand kleiner als der kleinste Einzelwiderstand."
+    },
+    {
+      "question": "Welche Reihenfolge der 5 Sicherheitsregeln ist richtig?",
+      "options": [
+        "Freischalten → Sichern → Spannungsfreiheit feststellen → Erden und kurzschließen → Abdecken",
+        "Spannungsfreiheit feststellen → Freischalten → Sichern → Abdecken → Erden",
+        "Erden → Freischalten → Abdecken → Sichern → Prüfen",
+        "Freischalten → Erden und kurzschließen → Sichern → Abdecken → Spannungsfreiheit feststellen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Erst freischalten und sichern, dann prüfen, ob wirklich keine Spannung anliegt – und erst danach erden und abdecken."
+    },
+    {
+      "question": "Warum soll man ein PC-Netzteil auch im ausgesteckten Zustand nicht öffnen?",
+      "options": [
+        "Weil es dann nicht mehr ESD-geschützt ist",
+        "Weil Kondensatoren noch gefährliche Ladung speichern können",
+        "Weil das Gehäuse magnetisch ist",
+        "Weil dann der Wirkungsgrad sinkt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Große Kondensatoren im Netzteil können auch nach dem Ausstecken noch eine gefährliche Spannung halten."
+    }
+  ]
+}

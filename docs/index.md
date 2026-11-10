@@ -17,20 +17,22 @@ Wie man sie installiert, steht unter [Installation](installation.md).
 
 ## Funktionen
 
-- **Lehrplan bis Senior.** Pro Sprache gibt es 4 Level (Einsteiger, Fortgeschritten, Profi, Senior) mit je 5 Kapiteln.
-- **Lektionen.** Jede Lektion hat Erklärungen, Code-Beispiele und ein Quiz mit sofortigem Feedback.
-- **Abschlussprüfung pro Kapitel.** Ab 70 % ist sie bestanden, und es gibt ein **PDF-Zertifikat** mit deinem Namen zum Herunterladen.
-- **Herausforderungen.** Du schreibst echten Code, der ausgeführt und gegen Testfälle geprüft wird. Für gelöste Aufgaben bekommst du Punkte. Punkte und Aufgaben werden **pro Sprache getrennt** geführt.
-- **Spielmodus „Expedition Xeno-7“.** Du steuerst einen Forschungsroboter mit echtem Code, sammelst Proben und braust im Labor neue Stoffe. Jede Mission bringt bis zu 3 Sterne. [Mehr dazu](spiel.md)
-- **Achievements** für Meilensteine wie die erste Lektion, eine fehlerfreie Prüfung oder 500 Punkte.
+- **Lehrplan der HTL für Informatik.** Die Inhalte sind nach Jahrgang (1.–5.) und Fach gegliedert: Programmieren (POS), Datenbanken (DBI), Netzwerke (NVS), Technische Informatik (TINF) und Projektentwicklung (SYP). Danach folgen die Stufen **Junior, Senior und Expert**. [Zum Lehrplan](lehrplan.md)
+- **Nicht nur Programmieren.** Es gibt auch Module zu Netzwerken, Datenbanken, Hardware, Web, Logik, UML und Office.
+- **Themenfilter.** Du kannst nach Stufe, Fach und Thema filtern.
+- **Python und C#.** Programmier-Module gibt es in beiden Sprachen. Beide laufen direkt am Handy, ohne Anmeldung.
+- **Lektionen.** Jede Lektion hat Erklärungen, Beispiele und ein Quiz mit sofortigem Feedback.
+- **Abschlussprüfung pro Modul.** Ab 70 % ist sie bestanden, und es gibt ein **PDF-Zertifikat** mit deinem Namen.
+- **Herausforderungen.** Du schreibst echten Code, der ausgeführt und gegen Testfälle geprüft wird. Punkte gibt es pro Sprache getrennt.
+- **Spielmodus „Expedition Xeno-7“.** Du steuerst einen Forschungsroboter mit echtem Code. [Mehr dazu](spiel.md)
+- **Achievements** für Meilensteine.
 
 ## Stand der Inhalte
 
-| | Python | C# |
-|---|---|---|
-| Einsteiger | ✅ 5 Kapitel | ✅ 5 Kapitel |
-| Fortgeschritten | ✅ 5 Kapitel | ✅ 5 Kapitel |
-| Profi | Lehrplan steht | Lehrplan steht |
-| Senior | Lehrplan steht | Lehrplan steht |
-| Herausforderungen | 24 | 24 |
-| Spielmissionen | 16 | 16 |
+| Stufe | Stand |
+|---|---|
+| 1. und 2. Jahrgang | ✅ alle Fächer ausgearbeitet |
+| 3.–5. Jahrgang | Lehrplan angelegt, Inhalte folgen |
+| Junior, Senior, Expert | Module angelegt, Inhalte folgen |
+| Herausforderungen | 24 pro Sprache |
+| Spielmissionen | 16 pro Sprache |

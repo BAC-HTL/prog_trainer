@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j1-installation_01_betriebssystem_installieren",
+  "title": "Betriebssystem installieren",
+  "summary": "Von BIOS/UEFI über Bootmedium und Partitionierung bis zu Treibern, Updates und Standardsoftware.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Nach dem Einschalten startet nicht sofort das Betriebssystem, sondern die Firmware auf dem Mainboard. Früher war das das BIOS, heute ist es UEFI (Unified Extensible Firmware Interface). UEFI prüft die Hardware, sucht ein startfähiges Medium und übergibt an den Bootloader. Umgangssprachlich sagt man oft weiterhin „BIOS“ dazu."
+    },
+    {
+      "type": "text",
+      "content": "Ins UEFI-Setup kommst du mit einer Taste direkt nach dem Einschalten – je nach Hersteller z. B. Entf, F2 oder F10, ein Boot-Menü oft mit F12 oder Esc. Dort stellst du u. a. die Bootreihenfolge ein. Secure Boot sorgt dafür, dass nur signierte Bootloader starten, und schützt so vor Schadsoftware, die sich vor dem Betriebssystem einnistet."
+    },
+    {
+      "type": "text",
+      "content": "Für die Installation brauchst du ein Bootmedium, meist einen USB-Stick. Er wird mit einem Werkzeug des Herstellers oder einem Image-Schreibprogramm aus einer ISO-Datei erstellt – einfaches Kopieren der ISO-Datei reicht nicht. Achtung: Dabei wird der Stick komplett überschrieben. Lade Images nur von der offiziellen Quelle herunter."
+    },
+    {
+      "type": "text",
+      "content": "Vor der Installation wird die Festplatte partitioniert, also in Bereiche aufgeteilt. Die Partitionstabelle gibt es in zwei Formaten:\n• MBR (Master Boot Record): alt, höchstens 4 primäre Partitionen, Datenträger nur bis 2 TiB nutzbar\n• GPT (GUID Partition Table): modern, viele Partitionen, sehr große Datenträger, Standard bei UEFI"
+    },
+    {
+      "type": "code",
+      "content": "Typische GPT-Aufteilung (UEFI)\n\n┌─────┬──────────────┬────────┐\n│ EFI │  System (C:) │ Wieder-│\n│ FAT │  NTFS / ext4 │ herst. │\n└─────┴──────────────┴────────┘\nEFI = EFI-Systempartition mit\n      den Bootloadern"
+    },
+    {
+      "type": "text",
+      "content": "Jede Partition bekommt ein Dateisystem: NTFS bei Windows, ext4 bei vielen Linux-Distributionen, FAT32 für die EFI-Partition und ältere USB-Sticks, exFAT für Wechseldatenträger zwischen verschiedenen Systemen. Typischer Fehler: FAT32 kann keine einzelne Datei über 4 GiB speichern – ein großes Video oder ISO-Image lässt sich nicht kopieren, obwohl genug Platz frei ist."
+    },
+    {
+      "type": "text",
+      "content": "Nach der Installation fehlen oft Treiber – kleine Programme, über die das Betriebssystem mit der Hardware spricht. Im Geräte-Manager erkennst du fehlende Treiber an einem gelben Warnsymbol. Treiber holst du am besten über das Update-System des Betriebssystems oder von der Website des Geräteherstellers, nicht von dubiosen „Treiber-Download“-Seiten."
+    },
+    {
+      "type": "text",
+      "content": "Dann: Updates einspielen, bis keine mehr angeboten werden – viele Angriffe nutzen bekannte, längst geschlossene Lücken. Dazu kommt die Standardsoftware, die in der Schule oder Firma vorgegeben ist, z. B. Browser, Office-Paket, PDF-Reader, Entwicklungsumgebung, Virenschutz. In größeren Umgebungen wird das automatisiert über Images oder Softwareverteilung erledigt."
+    },
+    {
+      "type": "code",
+      "content": "Checkliste Neuinstallation\n\n[ ] Daten gesichert?\n[ ] Bootmedium erstellt\n[ ] UEFI: Bootreihenfolge\n[ ] Partitionierung (GPT)\n[ ] Betriebssystem installiert\n[ ] Treiber vollständig\n[ ] alle Updates eingespielt\n[ ] Standardsoftware\n[ ] Funktionstest"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: UEFI startet den PC und das Bootmedium. GPT ist der Standard für UEFI, MBR ist veraltet (max. 4 primäre Partitionen, 2 TiB). Danach Dateisystem, Treiber, Updates und Standardsoftware. Vor jeder Neuinstallation: Daten sichern!"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Partitionstabelle wird bei modernen UEFI-Systemen standardmäßig verwendet?",
+      "options": [
+        "MBR",
+        "FAT32",
+        "GPT",
+        "NTFS"
+      ],
+      "correctIndex": 2,
+      "explanation": "GPT ist der Standard bei UEFI. FAT32 und NTFS sind Dateisysteme, keine Partitionstabellen."
+    },
+    {
+      "question": "Du willst ein 6 GB großes Video auf einen leeren 32-GB-Stick mit FAT32 kopieren. Was passiert?",
+      "options": [
+        "Es klappt ohne Probleme",
+        "Es scheitert, weil FAT32 keine Dateien über 4 GiB erlaubt",
+        "Der Stick wird automatisch auf GPT umgestellt",
+        "Das Video wird automatisch komprimiert"
+      ],
+      "correctIndex": 1,
+      "explanation": "FAT32 speichert Dateien nur bis 4 GiB − 1 Byte. Lösung: Stick mit exFAT oder NTFS formatieren (Achtung, dabei gehen die Daten verloren)."
+    },
+    {
+      "question": "Wie erkennst du im Geräte-Manager ein Gerät ohne passenden Treiber?",
+      "options": [
+        "Am gelben Warnsymbol",
+        "An einem grünen Haken",
+        "Das Gerät wird fett gedruckt",
+        "Gar nicht"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein gelbes Dreieck oder Ausrufezeichen zeigt Probleme oder fehlende Treiber an."
+    },
+    {
+      "question": "Welche Grenze gilt für MBR-partitionierte Datenträger (mit 512-Byte-Sektoren)?",
+      "options": [
+        "Max. 128 Partitionen",
+        "Nur für SSDs geeignet",
+        "Max. 32 GB",
+        "Max. 4 primäre Partitionen und 2 TiB nutzbar"
+      ],
+      "correctIndex": 3,
+      "explanation": "MBR adressiert Sektoren mit 32 Bit: 2³² · 512 Byte = 2 TiB. Außerdem sind nur 4 primäre Partitionen möglich."
+    }
+  ]
+}

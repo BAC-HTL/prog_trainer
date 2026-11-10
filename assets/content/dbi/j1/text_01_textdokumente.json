@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j1-text_01_textdokumente",
+  "title": "Textdokumente formatieren",
+  "summary": "Zeichen- und Absatzformat, Formatvorlagen, Aufzählungen und Tabellen sauber einsetzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ob Word (Microsoft Office) oder Writer (LibreOffice): Ein Textdokument besteht aus Absätzen. Ein Absatz endet immer dort, wo du die Enter-Taste drückst. Mit der Schaltfläche ¶ (Formatierungszeichen ein-/ausblenden) siehst du diese unsichtbaren Zeichen – das hilft enorm bei der Fehlersuche."
+    },
+    {
+      "type": "code",
+      "content": "Hallo·Welt¶        ← Absatzende (Enter)\nErste·Zeile↵       ← Zeilenumbruch\nzweite·Zeile¶         (Umschalt+Enter)\n→Text¶             ← Tabulator\n\n·  = Leerzeichen"
+    },
+    {
+      "type": "text",
+      "content": "Zeichenformat wirkt auf einzelne markierte Zeichen: Schriftart, Schriftgröße (in Punkt, pt), fett, kursiv, unterstrichen, Schriftfarbe, hoch-/tiefgestellt (z. B. m² oder H₂O). Absatzformat wirkt immer auf den ganzen Absatz: Ausrichtung (linksbündig, zentriert, rechtsbündig, Blocksatz), Einzüge, Zeilenabstand und Abstand vor/nach dem Absatz."
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Leerzeilen oder viele Leerzeichen, um Text zu verschieben. Sobald sich Schrift oder Text ändert, verrutscht alles. Besser: Abstand vor/nach dem Absatz statt Leerzeilen, Einzug statt Leerzeichen am Anfang, Tabstopps statt Leerzeichen für Spalten und Strg+Enter für einen neuen Seitenanfang."
+    },
+    {
+      "type": "text",
+      "content": "Formatvorlagen (Styles) sind gespeicherte Bündel aus Zeichen- und Absatzformaten mit einem Namen, z. B. „Standard“, „Überschrift 1“, „Überschrift 2“. Statt jede Überschrift einzeln auf 16 pt fett zu stellen, weist du ihr die Vorlage „Überschrift 1“ zu. Änderst du später die Vorlage, ändern sich alle Überschriften im ganzen Dokument auf einmal."
+    },
+    {
+      "type": "code",
+      "content": "Formatvorlage   Verwendung\n--------------  ---------------------\nÜberschrift 1   Kapitel\nÜberschrift 2   Unterkapitel\nStandard        normaler Fließtext\nZitat           Zitate\n\nWord:   Start → Formatvorlagen\nWriter: Seitenleiste (F11)"
+    },
+    {
+      "type": "text",
+      "content": "Aufzählungen (mit Punkten) nimmst du für gleichwertige Punkte, Nummerierungen (1., 2., 3.) für Reihenfolgen, z. B. Arbeitsschritte. Mit der Tab-Taste rückst du einen Punkt eine Ebene tiefer, mit Umschalt+Tab wieder höher. Die Nummern zählt das Programm selbst – tippe sie nie von Hand, sonst stimmt nach dem Einfügen eines Punktes die Reihenfolge nicht mehr."
+    },
+    {
+      "type": "text",
+      "content": "Tabellen ordnen Daten in Zeilen und Spalten, z. B. einen Stundenplan oder eine Materialliste. Die erste Zeile ist meist die Überschriftenzeile; bei langen Tabellen stellst du ein, dass sie auf jeder neuen Seite wiederholt wird. Zahlen richtest du rechtsbündig aus, damit Einer unter Einern stehen. Tabellen nie mit Leerzeichen „nachbauen“!"
+    },
+    {
+      "type": "code",
+      "content": "| Stunde | Mo    | Di    |\n|--------|-------|-------|\n| 1.     | POS   | AM    |\n| 2.     | POS   | D     |\n| 3.     | DBI   | E     |"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Zeichenformat für einzelne Zeichen, Absatzformat für ganze Absätze, Formatvorlagen für einheitliches Aussehen. Aufzählungen und Nummerierungen automatisch erzeugen, Tabellen statt Leerzeichen-Spalten. Mit ¶ siehst du, was wirklich im Dokument steht."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Du markierst ein einziges Wort und stellst „zentriert“ ein. Was passiert?",
+      "options": [
+        "Nur das markierte Wort wird zentriert",
+        "Der ganze Absatz wird zentriert",
+        "Die ganze Seite wird zentriert",
+        "Nichts – Ausrichtung geht nur bei Tabellen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Ausrichtung ist ein Absatzformat. Sie gilt immer für den ganzen Absatz, in dem die Markierung steht."
+    },
+    {
+      "question": "Dein Bericht hat 20 Überschriften, die alle von 14 pt auf 16 pt geändert werden sollen. Wie geht das am schnellsten?",
+      "options": [
+        "Jede Überschrift einzeln markieren und ändern",
+        "Alles markieren und die Schriftgröße auf 16 pt setzen",
+        "Die Formatvorlage „Überschrift 1“ ändern",
+        "Den Zoom auf 115 % stellen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Wurde den Überschriften eine Formatvorlage zugewiesen, genügt eine Änderung der Vorlage – alle Überschriften passen sich an. „Alles markieren“ würde auch den Fließtext ändern."
+    },
+    {
+      "question": "Welche Taste rückt einen Aufzählungspunkt eine Ebene tiefer?",
+      "options": [
+        "Enter",
+        "Leertaste",
+        "Strg+Enter",
+        "Tab"
+      ],
+      "correctIndex": 3,
+      "explanation": "Tab rückt den Punkt eine Ebene tiefer, Umschalt+Tab wieder eine Ebene höher. Strg+Enter erzeugt einen Seitenumbruch."
+    },
+    {
+      "question": "Lena richtet in ihrer Materialliste die Preise mit vielen Leerzeichen untereinander aus. Nach einer Schriftänderung verrutscht alles. Was wäre richtig gewesen?",
+      "options": [
+        "Mehr Leerzeichen verwenden",
+        "Eine Tabelle oder Tabstopps verwenden",
+        "Eine Schrift mit kleinerer Größe wählen",
+        "Den Text als Bild einfügen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Leerzeichen sind je nach Schrift unterschiedlich breit. Tabellen oder Tabstopps richten Spalten unabhängig von der Schrift exakt aus."
+    }
+  ]
+}

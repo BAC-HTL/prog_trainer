@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j2-cms_02_inhalte_berechtigungen",
+  "title": "Inhalte, Benutzer und Sicherheit im CMS",
+  "summary": "Inhalte und Medien in einem CMS verwalten, Benutzer mit passenden Rollen und Rechten ausstatten und das System durch Updates sicher halten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Inhalte in einem CMS haben verschiedene Typen. In WordPress gibt es z. B. Seiten für dauerhafte Inhalte („Über uns“, „Anmeldung“, „Impressum“) und Beiträge für zeitbezogene News („Sieg beim Robotik-Wettbewerb“). Beiträge werden mit Kategorien und Schlagwörtern (Tags) geordnet, Seiten über das Menü."
+    },
+    {
+      "type": "text",
+      "content": "Jeder Inhalt durchläuft einen Arbeitsablauf (Workflow): Entwurf → Überprüfung → Veröffentlicht. Beiträge lassen sich auch zeitgesteuert veröffentlichen, etwa um 8 Uhr am Tag der offenen Tür. Viele CMS speichern Revisionen, also frühere Versionen – so kannst du einen Fehler rückgängig machen."
+    },
+    {
+      "type": "text",
+      "content": "Die Medienbibliothek verwaltet Bilder, Videos und PDFs zentral. Hier gilt alles aus dem Modul Bilddaten: Bilder vor dem Hochladen verkleinern, passendes Format (JPEG/WebP für Fotos, SVG/PNG für Grafiken) und Metadaten entfernen. Gib jedem Bild einen Alternativtext – für Screenreader (Barrierefreiheit) und falls das Bild nicht lädt. Und: Nur Bilder verwenden, für die ihr die Rechte habt."
+    },
+    {
+      "type": "text",
+      "content": "Nicht jede Person soll alles dürfen. Deshalb arbeiten CMS mit Benutzern, Rollen und Rechten: Ein Recht ist eine einzelne Aktion (z. B. „Beiträge veröffentlichen“), eine Rolle bündelt mehrere Rechte, und jedem Benutzerkonto wird eine Rolle zugewiesen. WordPress bringt fünf Standardrollen mit:"
+    },
+    {
+      "type": "code",
+      "content": "Rolle (WordPress)  darf …\n------------------ ----------------------\nAdministrator      alles, auch Plugins,\n                   Themes, Benutzer\nRedakteur          alle Beiträge und\n                   Seiten bearbeiten\nAutor              eigene Beiträge\n                   schreiben + veröff.\nMitarbeiter        eigene Beiträge nur\n                   schreiben (Freigabe!)\nAbonnent           nur eigenes Profil"
+    },
+    {
+      "type": "text",
+      "content": "Wichtigster Grundsatz ist das Prinzip der minimalen Rechte (Least Privilege): Jede:r bekommt nur die Rechte, die er oder sie für die Aufgabe braucht. Die Schülerzeitungsredaktion braucht keine Administratorrechte, um Artikel zu schreiben. Jede Person bekommt ein eigenes Konto – geteilte Logins machen unklar, wer was geändert hat."
+    },
+    {
+      "type": "text",
+      "content": "CMS sind ein beliebtes Angriffsziel, weil sie so verbreitet sind. Angreifer:innen suchen automatisiert nach Websites mit bekannten Sicherheitslücken. Die meisten Angriffe nutzen veraltete Plugins oder Themes oder schwache Passwörter. Deshalb musst du Kern (Core), Plugins und Themes regelmäßig aktualisieren."
+    },
+    {
+      "type": "code",
+      "content": "Update-Checkliste\n-----------------\n1. Backup: Datenbank + Dateien\n2. Ggf. zuerst auf Testsystem\n3. Core aktualisieren\n4. Plugins + Themes aktualisieren\n5. Website testen\n6. Ungenutzte Plugins löschen"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Schutzmaßnahmen: starke, einzigartige Passwörter und Zwei-Faktor-Authentifizierung für das Backend, Erweiterungen nur aus vertrauenswürdigen Quellen, HTTPS für die ganze Website, regelmäßige automatische Backups, die auch außerhalb des Servers liegen."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Alle Lehrkräfte als Administratoren anlegen, „admin“ als Benutzername mit schwachem Passwort, deaktivierte, aber nie gelöschte Plugins und Updates ohne Backup. Zusammenfassung: Seiten für Dauerhaftes, Beiträge für News; Medien optimiert und mit Alt-Text; Rollen nach minimalen Rechten; Updates regelmäßig, aber erst nach dem Backup."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Schüler:innen der Zeitungs-AG sollen Artikel schreiben, die vor der Veröffentlichung von einer Lehrkraft geprüft werden. Welche WordPress-Rolle passt für die Schüler:innen?",
+      "options": [
+        "Administrator",
+        "Redakteur",
+        "Mitarbeiter",
+        "Autor"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mitarbeiter:innen dürfen eigene Beiträge schreiben, aber nicht veröffentlichen. Die Lehrkraft (z. B. Redakteur) gibt sie frei. Autor:innen könnten selbst veröffentlichen."
+    },
+    {
+      "question": "Was beschreibt das Prinzip der minimalen Rechte?",
+      "options": [
+        "Jede:r bekommt nur die Rechte, die für die eigene Aufgabe nötig sind",
+        "Alle teilen sich ein Konto mit wenigen Rechten",
+        "Nur Administratoren dürfen sich anmelden",
+        "Rechte werden nach einem Monat automatisch gelöscht"
+      ],
+      "correctIndex": 0,
+      "explanation": "Least Privilege begrenzt den Schaden, wenn ein Konto gehackt wird oder jemand einen Fehler macht."
+    },
+    {
+      "question": "Was solltest du unbedingt tun, bevor du Updates für Core und Plugins einspielst?",
+      "options": [
+        "Alle Benutzer löschen",
+        "Das Template wechseln",
+        "Die Website auf HTTP umstellen",
+        "Ein Backup von Datenbank und Dateien anlegen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Update kann die Website beschädigen. Mit einem Backup kannst du den alten Zustand wiederherstellen."
+    },
+    {
+      "question": "Wofür ist der Alternativtext eines Bildes in der Medienbibliothek wichtig?",
+      "options": [
+        "Er verkleinert die Bilddatei",
+        "Er beschreibt das Bild für Screenreader und wird angezeigt, wenn das Bild nicht lädt",
+        "Er schützt das Bild vor Kopien",
+        "Er legt das Seitenverhältnis fest"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Alt-Text macht Bilder für blinde und sehbehinderte Menschen zugänglich (Barrierefreiheit) und ersetzt das Bild, falls es nicht geladen werden kann."
+    }
+  ]
+}

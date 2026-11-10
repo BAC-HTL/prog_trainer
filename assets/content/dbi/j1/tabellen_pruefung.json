@@ -1,0 +1,121 @@
+{
+  "id": "dbi-j1-tabellen_pruefung",
+  "title": "Abschlussprüfung: Tabellenkalkulation",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "In C1 steht =$A1*B1. Du kopierst die Zelle nach E3 (2 Spalten nach rechts, 2 Zeilen nach unten). Welche Formel steht in E3?",
+      "options": [
+        "=$A1*D1",
+        "=$A3*D3",
+        "=$C3*D3",
+        "=$A3*B3"
+      ],
+      "correctIndex": 1,
+      "explanation": "$A1: Spalte fixiert, Zeile wandert → $A3. B1 ist relativ: Spalte +2, Zeile +2 → D3."
+    },
+    {
+      "question": "A1 enthält 7,849 und ist mit einer Nachkommastelle formatiert. Welchen Wert liefert B1?",
+      "code": "B1: =RUNDEN(A1;1)*10",
+      "options": [
+        "78,49",
+        "78,5",
+        "78",
+        "7,8"
+      ],
+      "correctIndex": 2,
+      "explanation": "RUNDEN(7,849;1) ergibt wirklich 7,8 – mal 10 ist 78. Das Zahlenformat allein hätte den Wert nicht verändert: =A1*10 ergäbe 78,49."
+    },
+    {
+      "question": "Was liefert die Formel?",
+      "code": "A1: 8\nA2: (leer)\nA3: 5\nA4: x\nA5: 7\n\n=RUNDEN(MITTELWERT(A1:A5);2)",
+      "options": [
+        "4",
+        "5",
+        "#WERT!",
+        "6,67"
+      ],
+      "correctIndex": 3,
+      "explanation": "MITTELWERT ignoriert leere Zellen und Text: (8 + 5 + 7) / 3 = 6,666… Gerundet auf 2 Stellen: 6,67."
+    },
+    {
+      "question": "B2 enthält 31. Was liefert die Formel?",
+      "code": "=WENN(B2>=44;\"Sehr gut\";\n  WENN(B2>=25;\"positiv\";\"negativ\"))",
+      "options": [
+        "positiv",
+        "Sehr gut",
+        "negativ",
+        "FALSCH"
+      ],
+      "correctIndex": 0,
+      "explanation": "31 >= 44 ist falsch, daher wird das innere WENN ausgewertet: 31 >= 25 ist wahr → „positiv“."
+    },
+    {
+      "question": "Notenliste: B2:B7 enthält 45, 23, 38, „fehlt“, 31, 12. Was liefert =ZÄHLENWENN(B2:B7;\"<25\")?",
+      "options": [
+        "3",
+        "2",
+        "1",
+        "6"
+      ],
+      "correctIndex": 1,
+      "explanation": "Kleiner als 25 sind 23 und 12. Der Text „fehlt“ ist keine Zahl und erfüllt das Kriterium nicht."
+    },
+    {
+      "question": "Klassenkassa: B2:B6 enthält 120; 15,50; 34,80; 8,20; 45. Was liefert =SUMMEWENN(B2:B6;\">20\")?",
+      "options": [
+        "223,5",
+        "3",
+        "199,8",
+        "154,8"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ohne drittes Argument wird im Kriterienbereich selbst summiert: 120 + 34,80 + 45 = 199,80. 3 wäre die Anzahl (ZÄHLENWENN)."
+    },
+    {
+      "question": "In A2:A30 stehen Artikelnummern, in B2:B30 Preise. Die Nummer 99 kommt nicht vor. Was liefert die Formel?",
+      "code": "=XVERWEIS(99;A2:A30;B2:B30;\n  \"nicht gefunden\")",
+      "options": [
+        "nicht gefunden",
+        "0",
+        "#NV",
+        "den Preis des letzten Artikels"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das vierte Argument von XVERWEIS (XLOOKUP) legt fest, was bei keinem Treffer ausgegeben wird. Ohne dieses Argument käme #NV."
+    },
+    {
+      "question": "Eine Umfrage mit Mehrfachantworten ergibt: Handy 90 %, Laptop 45 %, Tablet 25 %. Warum ist ein Kreisdiagramm ungeeignet?",
+      "options": [
+        "Kreisdiagramme können keine Prozente darstellen",
+        "Die Anteile ergeben 160 % und bilden kein Ganzes",
+        "Es sind zu viele Kategorien",
+        "Kreisdiagramme brauchen eine y-Achse"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Kreis stellt Teile eines Ganzen (100 %) dar. Bei Mehrfachantworten überschneiden sich die Gruppen – ein Säulen- oder Balkendiagramm ist richtig."
+    },
+    {
+      "question": "Zwei Säulen zeigen 95 und 100, die y-Achse beginnt bei 90. Welche Aussage stimmt?",
+      "options": [
+        "Die Darstellung ist korrekt, 100 ist doppelt so viel wie 95",
+        "Die Säule für 100 wirkt doppelt so hoch, ist aber nur rund 5 % größer",
+        "Die Säule für 95 wirkt größer",
+        "Die Achse muss bei 95 beginnen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Sichtbar sind 100 − 90 = 10 und 95 − 90 = 5, also wirkt es wie das Doppelte. Tatsächlich ist 100 nur etwa 5,3 % mehr als 95."
+    },
+    {
+      "question": "Du hast die Durchschnittsnote von 12 Freifächern mit langen Namen (z. B. „Robotik und Mikrocontroller“). Welches Diagramm ist am besten lesbar?",
+      "options": [
+        "Kreisdiagramm",
+        "Liniendiagramm",
+        "Balkendiagramm",
+        "Punktdiagramm (XY)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Kategorien werden mit Säulen oder Balken verglichen. Bei vielen, langen Beschriftungen sind waagrechte Balken lesbarer. Eine Linie würde einen zeitlichen Verlauf vortäuschen."
+    }
+  ]
+}

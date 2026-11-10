@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j1-text_02_layout_dokumente",
+  "title": "Layout und lange Dokumente",
+  "summary": "Seitenlayout, Kopf-/Fußzeile, Inhaltsverzeichnis, Abschnitte, typische Schriftstücke und die Idee des Serienbriefs.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Das Seitenlayout legt fest, wie jede Seite aussieht: Papierformat (in Österreich meist A4, 210 × 297 mm), Ausrichtung (Hochformat oder Querformat) und Seitenränder. Diese Einstellungen findest du in Word unter „Layout“, in Writer unter Format → Seitenvorlage."
+    },
+    {
+      "type": "text",
+      "content": "Kopf- und Fußzeile stehen auf jeder Seite automatisch an derselben Stelle: z. B. Name, Klasse, Titel oben und die Seitenzahl unten. Die Seitenzahl tippst du nicht ein, sondern fügst sie als Feld ein – das Programm zählt dann selbst. Auf dem Deckblatt blendest du Kopf-/Fußzeile meist aus („erste Seite anders“)."
+    },
+    {
+      "type": "code",
+      "content": "+--------------------------+\n| Max Muster, 1AHIF   DBI  | ← Kopfzeile\n|--------------------------|\n|                          |\n|  Fließtext ...           |\n|                          |\n|--------------------------|\n|        Seite 2 von 5     | ← Fußzeile\n+--------------------------+   (Felder)"
+    },
+    {
+      "type": "text",
+      "content": "Ein Inhaltsverzeichnis erstellst du automatisch – aber nur, wenn deine Überschriften mit den Formatvorlagen „Überschrift 1“, „Überschrift 2“ usw. formatiert sind. Word: Referenzen → Inhaltsverzeichnis, Writer: Einfügen → Verzeichnis. Nach Änderungen musst du das Verzeichnis aktualisieren (Rechtsklick → aktualisieren), sonst stimmen Seitenzahlen nicht."
+    },
+    {
+      "type": "code",
+      "content": "Inhaltsverzeichnis\n\n1 Einleitung ................ 2\n2 Aufbau eines PCs ......... 3\n  2.1 Mainboard ............ 3\n  2.2 Speicher ............. 5\n3 Zusammenfassung .......... 7\n\nEbene 1 ← Überschrift 1\nEbene 2 ← Überschrift 2"
+    },
+    {
+      "type": "text",
+      "content": "Abschnitte brauchst du, wenn sich das Seitenlayout mitten im Dokument ändern soll: z. B. eine einzelne Seite im Querformat für eine breite Tabelle oder ein Deckblatt ohne Seitenzahl. In Word fügst du dafür einen Abschnittsumbruch ein (Layout → Umbrüche), in Writer weist du der Seite eine andere Seitenvorlage zu. Ein normaler Seitenumbruch (Strg+Enter) beginnt nur eine neue Seite."
+    },
+    {
+      "type": "text",
+      "content": "Typische Schriftstücke haben feste Bestandteile. Bewerbungsschreiben (z. B. für ein Ferialpraktikum): Absender, Empfänger, Ort und Datum, Betreff, Anrede, Text (Warum diese Firma? Was kann ich?), Grußformel, Unterschrift, Beilagen. In Österreich orientiert man sich am Aufbau nach ÖNORM A 1080. Protokoll: Titel, Datum, Ort, Anwesende, Protokollführer:in, Tagesordnungspunkte, Ergebnisse. Ein Ergebnisprotokoll hält nur Beschlüsse fest, ein Verlaufsprotokoll auch den Ablauf der Diskussion. Bericht: Deckblatt, Inhaltsverzeichnis, Einleitung, Hauptteil, Zusammenfassung, Quellen."
+    },
+    {
+      "type": "text",
+      "content": "Serienbrief: Du willst denselben Brief an 25 Eltern schicken, nur Name und Adresse ändern sich. Statt 25 Kopien zu bearbeiten, verbindest du ein Hauptdokument (Text mit Platzhaltern) mit einer Datenquelle (Tabelle mit einer Zeile pro Empfänger:in). Beim Zusammenführen entsteht für jede Datenzeile ein fertiger Brief. Word: Sendungen → Seriendruck starten; Writer: Extras → Serienbrief-Assistent."
+    },
+    {
+      "type": "code",
+      "content": "Datenquelle (Tabelle):\nAnrede | Nachname | Ort\nFrau   | Huber    | Linz\nHerr   | Novak    | Wels\n\nHauptdokument:\nSehr geehrte «Anrede» «Nachname»!\n\nErgebnis: 2 fertige Briefe"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Layout über Seiteneinstellungen statt Leerzeilen, Seitenzahlen als Feld, Inhaltsverzeichnis aus Überschrift-Formatvorlagen (und aktualisieren!), Abschnitte für unterschiedliche Seitenlayouts, Serienbrief = Hauptdokument + Datenquelle."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Dein automatisches Inhaltsverzeichnis zeigt das Kapitel „Netzwerke“ nicht an. Was ist die wahrscheinlichste Ursache?",
+      "options": [
+        "Die Überschrift ist nur fett und groß, aber nicht mit „Überschrift 1“ formatiert",
+        "Das Kapitel ist zu kurz",
+        "Das Dokument hat keine Fußzeile",
+        "Die Überschrift steht auf einer ungeraden Seite"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Inhaltsverzeichnis sammelt Absätze mit den Überschrift-Formatvorlagen. Eine nur „von Hand“ fett formatierte Zeile erkennt das Programm nicht als Überschrift."
+    },
+    {
+      "question": "Du hast im Bericht drei Seiten eingefügt. Die Seitenzahlen im Inhaltsverzeichnis stimmen nicht mehr. Was tust du?",
+      "options": [
+        "Die Zahlen von Hand ausbessern",
+        "Das Inhaltsverzeichnis aktualisieren",
+        "Das Dokument als PDF speichern",
+        "Die Seitenränder verkleinern"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Inhaltsverzeichnis wird nicht immer sofort angepasst. Mit „aktualisieren“ werden Einträge und Seitenzahlen neu erzeugt. Handänderungen gehen beim nächsten Aktualisieren verloren."
+    },
+    {
+      "question": "In deinem Hochformat-Bericht soll nur Seite 4 im Querformat sein. Was brauchst du in Word?",
+      "options": [
+        "Einen Zeilenumbruch mit Umschalt+Enter",
+        "Eine neue Formatvorlage „Quer“",
+        "Abschnittsumbrüche vor und nach Seite 4",
+        "Eine Tabelle über die ganze Seite"
+      ],
+      "correctIndex": 2,
+      "explanation": "Seitenformat und Ausrichtung gelten pro Abschnitt. Mit einem Abschnittsumbruch vor und nach der Seite kannst du nur diese Seite auf Querformat stellen (in Writer: eigene Seitenvorlage)."
+    },
+    {
+      "question": "Ein Serienbrief soll an 30 Firmen gehen. Die Datenquelle hat eine Überschriftenzeile und 30 Datenzeilen. Wie viele fertige Briefe entstehen beim Zusammenführen?",
+      "options": [
+        "1",
+        "29",
+        "31",
+        "30"
+      ],
+      "correctIndex": 3,
+      "explanation": "Für jede Datenzeile entsteht ein Brief. Die Überschriftenzeile enthält nur die Feldnamen (z. B. «Firma») und erzeugt keinen Brief."
+    }
+  ]
+}
