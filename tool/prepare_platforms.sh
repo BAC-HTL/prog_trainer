@@ -29,4 +29,22 @@ if [ -f "$PLIST" ]; then
   perl -0pi -e 's#(<key>CFBundleDisplayName</key>\s*<string>)[^<]*(</string>)#$1Prog Trainer$2#' "$PLIST"
 fi
 
+# App-Icon (Roboter mit ">_") aus assets/icon/ erzeugen – nur für die
+# Plattformen, deren Ordner es gibt.
+HAS_ANDROID=false; [ -d android ] && HAS_ANDROID=true
+HAS_IOS=false; [ -d ios ] && HAS_IOS=true
+ICON_CONFIG="$(mktemp -t icons-XXXX.yaml)"
+cat > "$ICON_CONFIG" <<YAML
+flutter_launcher_icons:
+  android: $HAS_ANDROID
+  ios: $HAS_IOS
+  image_path: "assets/icon/icon.png"
+  remove_alpha_ios: true
+  adaptive_icon_background: "#3949AB"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+YAML
+flutter pub get
+dart run flutter_launcher_icons -f "$ICON_CONFIG"
+rm -f "$ICON_CONFIG"
+
 echo "Plattform-Ordner bereit."

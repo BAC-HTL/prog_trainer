@@ -1,3 +1,5 @@
+<img src="docs/assets/logo.svg" width="120" align="right" alt="Logo">
+
 # prog_trainer
 
 Eine Handy-App zum Programmierenlernen, auch für komplette Anfänger.

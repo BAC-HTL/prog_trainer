@@ -40,7 +40,12 @@ window.runCSharp = async (code, stdin, timeoutMs = 15000) => {
     result = await runOnce(code, stdin, timeoutMs);
     if (result.error === 'CRASH') {
       stopWorker();
-      result = { stdout: '', stderr: '', error: 'Die C#-Laufzeit ist abgestürzt: ' + result.detail };
+      result = {
+        stdout: '',
+        stderr: '',
+        error: 'Dein Programm hat die C#-Laufzeit zum Absturz gebracht – ' +
+          'meist wegen einer Endlosschleife oder zu viel Speicherverbrauch.',
+      };
     }
   }
   delete result.type;

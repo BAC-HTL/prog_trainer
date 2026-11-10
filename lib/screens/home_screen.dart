@@ -45,9 +45,17 @@ class _HomeScreenState extends State<HomeScreen> {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Text(
-              'Was möchtest du heute lernen?',
-              style: Theme.of(context).textTheme.headlineSmall,
+            Row(
+              children: [
+                Image.asset('assets/icon/logo_mark.png', width: 56, height: 56),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Was möchtest du heute lernen?',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             const _SectionHeader('Programmiersprachen'),

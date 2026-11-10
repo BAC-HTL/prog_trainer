@@ -2,7 +2,7 @@
 
 ## Android
 
-1. Am Handy die [APK herunterladen](https://bac-htl.github.io/prog_trainer/download/prog_trainer.apk).
+1. Am Handy die [APK herunterladen](https://github.com/BAC-HTL/prog_trainer/releases/download/latest/prog_trainer.apk).
 2. Die Datei `prog_trainer.apk` antippen.
 3. Wenn Android fragt, **Installation aus unbekannten Quellen** für den Browser bzw. die Dateien-App erlauben.
 4. **Installieren** antippen.
@@ -14,7 +14,7 @@
 ## iOS (iPhone/iPad)
 
 Apple erlaubt Apps außerhalb des App Stores nur signiert. Die
-[IPA-Datei](https://bac-htl.github.io/prog_trainer/download/prog_trainer-unsigned.ipa)
+[IPA-Datei](https://github.com/BAC-HTL/prog_trainer/releases/download/latest/prog_trainer-unsigned.ipa)
 ist unsigniert und muss vor der Installation signiert werden:
 
 1. Am PC oder Mac [Sideloadly](https://sideloadly.io) oder

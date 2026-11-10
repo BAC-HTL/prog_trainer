@@ -35,22 +35,15 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
-      - name: Laufzeit bauen
-        run: dotnet publish csharp_runtime -c Release -o csharp_runtime/out
-      - name: Größe
-        run: |
-          cd csharp_runtime/out/wwwroot/_framework
-          echo "Gesamt: $(du -sh --exclude='*.gz' --exclude='*.br' . | cut -f1)"
-          echo "Gesamt gzip: $(du -ch *.gz | tail -1 | cut -f1)"
-          echo "Gesamt brotli: $(du -ch *.br | tail -1 | cut -f1)"
-          ls -lS --block-size=K | grep -v '\.gz$' | grep -v '\.br$' | head -25
+      - name: Laufzeit bauen und packen (wie auf Pages)
+        run: bash tool/package_csharp_runtime.sh /tmp/csharp
       - name: Playwright installieren
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
       - name: Im Browser testen
         run: |
-          python3 -m http.server 8000 --directory csharp_runtime/out/wwwroot &
+          python3 -m http.server 8000 --directory /tmp/csharp &
           sleep 2
           node tool/test_csharp_runtime.mjs http://localhost:8000/
 
