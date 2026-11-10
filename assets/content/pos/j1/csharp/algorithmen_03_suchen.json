@@ -1,0 +1,96 @@
+{
+  "id": "pos-j1-csharp-algorithmen_03_suchen",
+  "title": "Suchen: linear und binär",
+  "summary": "Werte in Arrays mit linearer und binärer Suche finden und den Aufwand beider Verfahren vergleichen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Suchen gehört zu den häufigsten Aufgaben überhaupt: Steht ein Name in der Klassenliste? An welcher Stelle steht ein Produkt im Lager?\n\nDie einfachste Methode ist die lineare Suche (sequenzielle Suche): Du schaust dir ein Element nach dem anderen an, bis du den gesuchten Wert findest oder das Array zu Ende ist. Gefunden wird die Position (der Index); gibt es den Wert nicht, liefert der Algorithmus üblicherweise -1 – denn -1 ist nie ein gültiger Index."
+    },
+    {
+      "type": "code",
+      "content": "FUNKTION LineareSuche(a, gesucht)\n  FÜR i ← 0 BIS Länge(a) - 1\n    WENN a[i] = gesucht DANN\n      RÜCKGABE i\n    ENDE WENN\n  ENDE FÜR\n  RÜCKGABE -1\nENDE FUNKTION"
+    },
+    {
+      "type": "code",
+      "content": "int[] nummern = { 17, 4, 23, 8, 42, 15 };\n\nConsole.WriteLine(LineareSuche(nummern, 8));\nConsole.WriteLine(LineareSuche(nummern, 99));\n// Ausgabe:\n// 3\n// -1\n\nint LineareSuche(int[] a, int gesucht)\n{\n    for (int i = 0; i < a.Length; i++)\n    {\n        if (a[i] == gesucht)\n        {\n            return i;  // sofort fertig\n        }\n    }\n    return -1;  // nichts gefunden\n}"
+    },
+    {
+      "type": "text",
+      "content": "Die lineare Suche funktioniert mit jedem Array, auch unsortiert. Sie ist aber langsam bei vielen Daten: Im besten Fall steht der Wert ganz vorne (1 Vergleich), im schlechtesten Fall ganz hinten oder gar nicht drin (n Vergleiche bei n Elementen).\n\nIst das Array sortiert, geht es viel schneller – mit der binären Suche. Die Idee kennst du vom Zahlenraten („höher“/„tiefer“) oder vom Nachschlagen im Wörterbuch: Du schaust in die Mitte. Ist der Wert dort zu klein, suchst du nur noch in der rechten Hälfte weiter, sonst in der linken. Mit jedem Schritt halbiert sich der Suchbereich."
+    },
+    {
+      "type": "code",
+      "content": "Index:  0  1  2  3  4  5  6  7\nWert:   3  7 12 18 23 31 40 52\ngesucht: 40\n\nlinks rechts mitte a[mitte]\n  0     7     3     18 < 40\n  4     7     5     31 < 40\n  6     7     6     40 gefunden!\n\n→ 3 Schritte statt 7 bei linear"
+    },
+    {
+      "type": "text",
+      "content": "Du merkst dir den Suchbereich mit zwei Indizes: links und rechts. Die Mitte ist (links + rechts) / 2 – durch die Ganzzahldivision automatisch ein gültiger Index. Ist a[mitte] kleiner als der gesuchte Wert, setzt du links = mitte + 1; ist er größer, rechts = mitte - 1. Das + 1 bzw. - 1 ist wichtig, denn a[mitte] hast du ja schon geprüft. Sobald links größer als rechts ist, ist der Bereich leer – der Wert ist nicht im Array."
+    },
+    {
+      "type": "code",
+      "content": "int[] a = { 3, 7, 12, 18, 23, 31, 40, 52 };\nConsole.WriteLine(BinaereSuche(a, 40)); // 6\nConsole.WriteLine(BinaereSuche(a, 5));  // -1\n\nint BinaereSuche(int[] a, int gesucht)\n{\n    int links = 0;\n    int rechts = a.Length - 1;\n    while (links <= rechts)\n    {\n        int mitte = (links + rechts) / 2;\n        if (a[mitte] == gesucht)\n        {\n            return mitte;\n        }\n        else if (a[mitte] < gesucht)\n        {\n            links = mitte + 1;\n        }\n        else\n        {\n            rechts = mitte - 1;\n        }\n    }\n    return -1;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Wie groß ist der Unterschied? Weil sich der Bereich jedes Mal halbiert, braucht die binäre Suche im schlimmsten Fall nur rund log₂(n) Schritte. Faustregel: Die kleinste Zahl k mit 2ᵏ > n ist die maximale Anzahl an Schritten."
+    },
+    {
+      "type": "code",
+      "content": "Schritte im schlimmsten Fall:\nElemente      linear   binär\n       10         10       4\n      100        100       7\n    1.000      1.000      10\n1.000.000  1.000.000      20"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler:\n• Binäre Suche auf einem unsortierten Array – das Ergebnis ist dann zufällig falsch.\n• while (links < rechts) statt <= – dann wird das letzte verbleibende Element nie geprüft.\n• links = mitte statt mitte + 1 – das kann eine Endlosschleife ergeben.\n• return -1 vergessen – der Compiler meldet, dass nicht alle Codepfade einen Wert zurückgeben.\n\nC# bringt beide Verfahren auch fertig mit: Array.IndexOf(a, 8) sucht linear, Array.BinarySearch(a, 40) binär (liefert bei „nicht gefunden“ eine negative Zahl).\n\nZusammenfassung: Lineare Suche – einfach, funktioniert immer, aber bis zu n Schritte. Binäre Suche – braucht ein sortiertes Array, dafür extrem schnell."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus? (LineareSuche wie in der Lektion)",
+      "code": "int[] a = { 5, 9, 2, 9, 7 };\nint x = LineareSuche(a, 9);\nint y = LineareSuche(a, 4);\nConsole.WriteLine(x + y);",
+      "options": [
+        "3",
+        "1",
+        "0",
+        "-1"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die 9 kommt zweimal vor, die lineare Suche liefert aber den ersten Treffer: Index 1. Die 4 ist nicht enthalten, also -1. 1 + (-1) = 0."
+    },
+    {
+      "question": "Die binäre Suche sucht 23 in diesem Array. Welche Werte a[mitte] werden der Reihe nach angeschaut?",
+      "code": "int[] a = { 2, 5, 8, 12, 16,\n            23, 38, 56, 72, 91 };",
+      "options": [
+        "16, 23",
+        "16, 56, 23",
+        "16, 38, 23",
+        "2, 5, 8, 12, 16, 23"
+      ],
+      "correctIndex": 1,
+      "explanation": "links = 0, rechts = 9 → mitte 4 (16 < 23) → links = 5. mitte = (5 + 9) / 2 = 7 (56 > 23) → rechts = 6. mitte = (5 + 6) / 2 = 5 → 23 gefunden."
+    },
+    {
+      "question": "Was gibt dieser Code aus? (BinaereSuche wie in der Lektion)",
+      "code": "int[] a = { 9, 3, 7, 1, 5 };\nConsole.WriteLine(BinaereSuche(a, 1));",
+      "options": [
+        "3",
+        "0",
+        "-1",
+        "Es tritt ein Laufzeitfehler auf"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Array ist nicht sortiert! mitte = 2: 7 > 1, also rechts = 1. mitte = 0: 9 > 1, also rechts = -1. Jetzt ist links > rechts und die Suche liefert -1 – obwohl die 1 an Index 3 steht."
+    },
+    {
+      "question": "Ein sortiertes Array hat 500 Elemente. Wie viele Schritte braucht die binäre Suche höchstens?",
+      "options": [
+        "250",
+        "500",
+        "25",
+        "9"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die kleinste Zweierpotenz über 500 ist 2⁹ = 512. Nach 9 Halbierungen ist der Suchbereich sicher leer oder der Wert gefunden. Die lineare Suche bräuchte im schlimmsten Fall 500 Schritte."
+    }
+  ]
+}
