@@ -40,7 +40,8 @@ jobs:
       - name: Playwright installieren
         run: |
           npm install --no-save playwright
-          npx playwright install --with-deps chromium
+          # Ubuntu-Spiegel sind manchmal kurz nicht erreichbar → einmal wiederholen
+          npx playwright install --with-deps chromium || (sleep 30 && npx playwright install --with-deps chromium)
       - name: Im Browser testen
         run: |
           python3 -m http.server 8000 --directory /tmp/csharp &

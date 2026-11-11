@@ -26,7 +26,7 @@ if [ -f "$WEB_INDEX" ]; then
   grep -q 'runners.js' "$WEB_INDEX" ||
     perl -0pi -e 's#</head>#  <script src="runners.js"></script>\n</head>#' "$WEB_INDEX"
   perl -0pi -e 's#<title>[^<]*</title>#<title>Prog Trainer</title>#' "$WEB_INDEX"
-  perl -0pi -e 's#(<meta name="description" content=")[^"]*#$1Informatik lernen nach dem HTL-Lehrplan – Python, C# und mehr.#' "$WEB_INDEX"
+  perl -0pi -e 's{(<meta name="description" content=")[^"]*}{${1}Informatik lernen nach dem HTL-Lehrplan – Python, C# und mehr.}' "$WEB_INDEX"
 fi
 
 PODFILE=ios/Podfile
