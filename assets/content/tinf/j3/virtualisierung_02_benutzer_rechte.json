@@ -1,0 +1,94 @@
+{
+  "id": "tinf-j3-virtualisierung_02_benutzer_rechte",
+  "title": "Benutzer, Gruppen und Rechte",
+  "summary": "Benutzer und Gruppen unter Linux anlegen, Rechte mit chmod berechnen und NTFS-Berechtigungen unter Windows verstehen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mehrere Menschen, ein System: Damit jede:r nur das darf, was nötig ist, arbeitet ein BS mit Benutzerkonten und Gruppen. Unter Linux hat jedes Konto eine Nummer (UID), jede Gruppe eine GID. root hat UID 0 und darf alles. Die Daten stehen in Textdateien:\n• /etc/passwd: Konten (Name, UID, GID, Home-Verzeichnis, Shell)\n• /etc/shadow: Passwort-Hashes, nur für root lesbar\n• /etc/group: Gruppen und ihre Mitglieder\nJedes Konto hat eine primäre Gruppe und kann in weiteren Gruppen sein."
+    },
+    {
+      "type": "code",
+      "content": "$ sudo groupadd htl3a\n$ sudo useradd -m -s /bin/bash \\\n    -G htl3a anna\n$ sudo passwd anna\n$ id anna\nuid=1001(anna) gid=1001(anna)\ngroups=1001(anna),1002(htl3a)\n$ grep htl3a /etc/group\nhtl3a:x:1002:anna\n\n# Nummern bei dir anders\n# später dazu: usermod -aG grp anna"
+    },
+    {
+      "type": "text",
+      "content": "Jede Datei gehört einem Besitzer und einer Gruppe. ls -l zeigt dazu zehn Zeichen: den Typ (- Datei, d Verzeichnis) und drei Dreiergruppen für Besitzer (u), Gruppe (g) und Andere (o). Jede Dreiergruppe besteht aus r (lesen), w (schreiben) und x (ausführen). Für Oktalzahlen gilt r = 4, w = 2, x = 1 – die Summe ergibt eine Ziffer pro Gruppe.\nBei Verzeichnissen heißt r: Inhalt auflisten, w: Dateien anlegen und löschen, x: hineinwechseln und auf Dateien zugreifen."
+    },
+    {
+      "type": "code",
+      "content": "rwx r-x r--\n421 4-1 4--\n 7   5   4   -> chmod 754\n\nrw- r-- ---\n42- 4-- ---\n 6   4   0   -> chmod 640\n\n$ chmod 754 skript.sh\n$ chmod 640 notizen.txt\n$ ls -l\n-rwxr-xr-- … skript.sh\n-rw-r----- … notizen.txt"
+    },
+    {
+      "type": "code",
+      "content": "# symbolisch: wer +/-/= was\n$ chmod g+w,o-r skript.sh\n$ stat -c '%a %A' skript.sh\n770 -rwxrwx---\n\n$ chmod u=rw,g=r,o= notizen.txt\n$ stat -c '%a %A' notizen.txt\n640 -rw-r-----\n\n# Besitzer und Gruppe ändern:\n$ sudo chown anna:htl3a notizen.txt"
+    },
+    {
+      "type": "text",
+      "content": "Welche Rechte bekommt eine neue Datei? Das regelt die umask. Sie gibt an, welche Rechte weggenommen werden: Dateien starten bei 666, Verzeichnisse bei 777, die Bits der umask werden entfernt. Mit der üblichen umask 022 entstehen Dateien mit 644 und Ordner mit 755; mit 027 sind es 640 und 750."
+    },
+    {
+      "type": "code",
+      "content": "$ umask 027\n$ touch neu.txt; mkdir neuordner\n$ stat -c '%a %n' neu.txt neuordner\n640 neu.txt\n750 neuordner\n\n# Rechte wirken wirklich:\n$ ls -l notizen.txt\n-rw-r----- anna htl3a notizen.txt\n$ su ben -c \"cat notizen.txt\"\ncat: notizen.txt: Permission denied"
+    },
+    {
+      "type": "text",
+      "content": "Normale Benutzer:innen arbeiten ohne Root-Rechte und holen sie sich mit sudo nur für einen einzelnen Befehl. Zwei Sonderrechte siehst du oft:\n• SUID (s beim Besitzer, z. B. -rwsr-xr-x bei /usr/bin/passwd): Das Programm läuft mit den Rechten des Besitzers, damit du dein Passwort in /etc/shadow ändern kannst.\n• Sticky Bit (t bei Andere, drwxrwxrwt bei /tmp): Alle dürfen anlegen, aber nur eigene Dateien löschen.\nTypischer Fehler: chmod 777, „damit es endlich geht“. Dann darf jede:r alles ändern – stattdessen gezielt Gruppe und Rechte setzen."
+    },
+    {
+      "type": "text",
+      "content": "Unter Windows werden Rechte auf NTFS über Zugriffssteuerungslisten (ACLs) vergeben – beliebig viele Einträge für Benutzer und Gruppen (lokal oder aus dem Active Directory). Die Standardberechtigungen: Vollzugriff, Ändern, Lesen & Ausführen, Ordnerinhalt anzeigen, Lesen, Schreiben. Wichtige Regeln:\n• Rechte werden vom übergeordneten Ordner vererbt, außer die Vererbung wird deaktiviert.\n• Die Rechte aus allen Gruppen eines Benutzers addieren sich.\n• Ein explizites Verweigern hat Vorrang vor einem expliziten Zulassen.\n• Bei Zugriff über eine Netzwerkfreigabe gelten Freigabe- und NTFS-Rechte gemeinsam – wirksam ist die restriktivere.\nAuf der Kommandozeile zeigt icacls die ACL an; berechtige möglichst Gruppen statt einzelner Personen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Linux kennt Benutzer (UID), Gruppen (GID) und root. Rechte rwx für Besitzer, Gruppe und Andere; r = 4, w = 2, x = 1. chmod setzt Rechte oktal oder symbolisch, chown ändert den Besitz, die umask bestimmt Standardrechte. NTFS arbeitet mit ACLs, Vererbung und Zulassen/Verweigern – Verweigern gewinnt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was zeigt ls -l nach chmod 751 skript.sh am Anfang der Zeile?",
+      "options": [
+        "-rwxr-x--x",
+        "-rwxr-xr--",
+        "-rwxrw---x",
+        "-rw-r-x--x"
+      ],
+      "correctIndex": 0,
+      "explanation": "7 = rwx (4+2+1), 5 = r-x (4+1), 1 = --x."
+    },
+    {
+      "question": "Eine Datei hat die Rechte 750. Welche Rechte hat sie danach?",
+      "code": "$ chmod o+r,g-x datei",
+      "options": [
+        "755",
+        "744",
+        "754",
+        "740"
+      ],
+      "correctIndex": 1,
+      "explanation": "750 = rwx r-x ---. o+r macht aus --- ein r-- (4), g-x macht aus r-x ein r-- (4). Ergebnis 744."
+    },
+    {
+      "question": "Mit umask 077 legst du eine neue Datei an. Welche Rechte hat sie?",
+      "options": [
+        "700",
+        "644",
+        "077",
+        "600"
+      ],
+      "correctIndex": 3,
+      "explanation": "Dateien starten bei 666. Die umask 077 nimmt Gruppe und Anderen alles weg: übrig bleibt 600 (rw-------). Ein neues Verzeichnis bekäme 700."
+    },
+    {
+      "question": "Am selben NTFS-Ordner sind zwei Einträge direkt gesetzt: Gruppe „Lehrer“ – Ändern: Zulassen, Gruppe „Praktikanten“ – Schreiben: Verweigern. Frau Huber ist in beiden Gruppen. Darf sie eine Datei bearbeiten?",
+      "options": [
+        "Ja, weil Ändern mehr ist als Schreiben",
+        "Ja, weil sich die Rechte aller Gruppen addieren",
+        "Nein, weil das explizite Verweigern Vorrang hat",
+        "Nur, wenn sie über eine Freigabe zugreift"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Rechte addieren sich zwar, ein explizites Verweigern hat aber Vorrang vor einem expliziten Zulassen. Lesen darf sie weiterhin, schreiben nicht."
+    }
+  ]
+}

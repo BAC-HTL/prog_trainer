@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j3-semistrukturiert_02_json",
+  "title": "JSON: Aufbau und Datentypen",
+  "summary": "Du lernst die Syntax und die sechs Datentypen von JSON kennen und verarbeitest JSON mit Python.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "JSON (JavaScript Object Notation) ist ein schlankes Textformat für strukturierte Daten. Es stammt aus JavaScript, ist aber sprachunabhängig standardisiert. Heute ist JSON das Standardformat von Web-APIs, steckt in Konfigurationsdateien wie package.json und wird von Dokumentdatenbanken wie MongoDB verwendet. Auch PostgreSQL kann JSON-Spalten speichern und abfragen."
+    },
+    {
+      "type": "code",
+      "content": "{\n  \"klasse\": \"3AHIF\",\n  \"raum\": \"E07\",\n  \"schueler\": [\n    {\n      \"id\": 1,\n      \"vorname\": \"Anna\",\n      \"noten\": {\"DBI\": 1, \"POS\": 2},\n      \"ausweis\": true\n    },\n    {\n      \"id\": 2,\n      \"vorname\": \"Ben\",\n      \"noten\": {\"DBI\": 3},\n      \"email\": null\n    }\n  ]\n}"
+    },
+    {
+      "type": "text",
+      "content": "JSON kennt genau sechs Datentypen:\n• object: { \"schlüssel\": wert, … } – ungeordnete Schlüssel-Wert-Paare\n• array: [ wert, wert, … ] – geordnete Liste\n• string: \"Text\" in doppelten Anführungszeichen\n• number: 3, -2.5, 1e3 – keine Trennung von Ganz- und Kommazahl\n• boolean: true oder false\n• null: kein Wert\nEs gibt keinen Datumstyp. Datumswerte schreibt man als String, am besten im ISO-Format \"2026-03-02\"."
+    },
+    {
+      "type": "code",
+      "content": "JSON        Python\n-------     -------\nobject  ⇄   dict\narray   ⇄   list\nstring  ⇄   str\nnumber  ⇄   int / float\ntrue    ⇄   True\nfalse   ⇄   False\nnull    ⇄   None"
+    },
+    {
+      "type": "text",
+      "content": "JSON ist streng – typische Fehler, die ein Parser ablehnt:\n• einfache Anführungszeichen: {'name': 'Anna'}\n• Schlüssel ohne Anführungszeichen: {name: \"Anna\"}\n• Beistrich nach dem letzten Element: [1, 2, 3,]\n• True, False, None in Python-Schreibweise statt true, false, null\n• Kommentare (// oder /* */) – gibt es in JSON nicht\n• führende Nullen oder Punkt am Anfang: 007, .5"
+    },
+    {
+      "type": "code",
+      "content": "import json\n\nfor t in ['{\"a\": 1}',\n          \"{'a': 1}\",\n          '[1, 2, 3,]',\n          '{\"a\": True}']:\n    try:\n        print(json.loads(t))\n    except json.JSONDecodeError:\n        print(\"ungültig:\", t)\n\n# {'a': 1}\n# ungültig: {'a': 1}\n# ungültig: [1, 2, 3,]\n# ungültig: {\"a\": True}"
+    },
+    {
+      "type": "text",
+      "content": "In Python liest json.loads() einen JSON-String in dict und list ein, json.dumps() wandelt Python-Daten in einen JSON-String um. Für Dateien gibt es json.load(datei) und json.dump(daten, datei). Mit indent=2 wird die Ausgabe schön eingerückt, mit ensure_ascii=False bleiben Umlaute lesbar statt \\u00f6."
+    },
+    {
+      "type": "code",
+      "content": "import json\n\nwith open(\"klasse.json\",\n          encoding=\"utf-8\") as f:\n    k = json.load(f)\n\nfor s in k[\"schueler\"]:\n    n = s[\"noten\"]\n    schnitt = sum(n.values()) / len(n)\n    print(s[\"vorname\"], schnitt)\n\n# Anna 1.5\n# Ben 3.0"
+    },
+    {
+      "type": "code",
+      "content": "d = {\"name\": \"Jörg\",\n     \"aktiv\": True,\n     \"note\": None}\nprint(json.dumps(d))\n# {\"name\": \"J\\u00f6rg\", \"aktiv\":\n#  true, \"note\": null}\n\nprint(json.dumps(d,\n      ensure_ascii=False))\n# {\"name\": \"Jörg\", \"aktiv\":\n#  true, \"note\": null}"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: JSON besteht aus Objekten und Arrays, die beliebig verschachtelt werden; die Werte sind string, number, boolean oder null. Schlüssel und Strings stehen immer in doppelten Anführungszeichen, ein Beistrich am Ende und Kommentare sind verboten. In Python übernehmen json.load/loads und json.dump/dumps die Umwandlung zwischen JSON und dict/list."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welcher Text ist gültiges JSON?",
+      "options": [
+        "{'fach': 'DBI', 'note': 1}",
+        "{\"fach\": \"DBI\", \"note\": 1,}",
+        "{fach: \"DBI\", note: 1}",
+        "{\"fach\": \"DBI\", \"note\": 1}"
+      ],
+      "correctIndex": 3,
+      "explanation": "JSON verlangt doppelte Anführungszeichen für Schlüssel und Strings und erlaubt keinen Beistrich nach dem letzten Element."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import json\nprint(json.dumps(\n  {\"aktiv\": True, \"email\": None}))",
+      "options": [
+        "{\"aktiv\": True, \"email\": None}",
+        "{\"aktiv\": true, \"email\": null}",
+        "{'aktiv': True, 'email': None}",
+        "{\"aktiv\": \"true\", \"email\": \"null\"}"
+      ],
+      "correctIndex": 1,
+      "explanation": "json.dumps wandelt True in true und None in null um und verwendet doppelte Anführungszeichen."
+    },
+    {
+      "question": "Wie speicherst du ein Geburtsdatum in JSON üblicherweise?",
+      "options": [
+        "als eigenen Datentyp date",
+        "als String im ISO-Format, z. B. \"2008-05-14\"",
+        "als boolean",
+        "gar nicht – JSON kann keine Datumswerte speichern"
+      ],
+      "correctIndex": 1,
+      "explanation": "JSON hat keinen Datumstyp. Üblich ist ein String im ISO-8601-Format, den das Programm beim Einlesen umwandelt."
+    },
+    {
+      "question": "k ist das Klassen-JSON aus der Lektion, eingelesen mit json.load. Was gibt der Code aus?",
+      "code": "print(k[\"schueler\"][1][\"noten\"][\"DBI\"])",
+      "options": [
+        "3",
+        "1",
+        "Ben",
+        "KeyError"
+      ],
+      "correctIndex": 0,
+      "explanation": "k[\"schueler\"][1] ist der zweite Schüler (Ben, Index beginnt bei 0). Seine DBI-Note ist 3."
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "id": "dbi-j3-sql_03_abfragen_joins_gruppen",
+  "title": "Abfragen: JOIN-Arten und Gruppierung",
+  "summary": "INNER, LEFT und Selbst-Join, Aggregatfunktionen sowie GROUP BY und HAVING sicher einsetzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im 2. Jahrgang hast du mit JOIN … ON zwei Tabellen verbunden. Das war ein INNER JOIN – das Wort INNER ist optional. Jetzt lernst du, was mit Datensätzen ohne Partner passiert (LEFT JOIN), wie du eine Tabelle mit sich selbst verbindest und wie du Gruppen bildest. Die Daten der Schulverwaltung (Ausgangszustand):"
+    },
+    {
+      "type": "code",
+      "content": "lehrer: id kuerzel chef_id\n 1 HUB NULL   2 MAI 1\n 3 GRU 1      4 WEI 2\n\nklassen: id bezeichnung kv_id\n 1 3AHIT 2   2 3BHIT 3\n 3 5AHIT 1   (ohne Schüler:innen)\n\nschueler: id vorname klasse_id\n 1 Anna  1   2 Ben   1\n 3 Clara 2   4 David 2\n 5 Eva   1   6 Filip 2 (keine Noten)\n\nnoten: schueler_id fach note\n 1 DBI 1  1 POS 2  1 AM 2\n 2 DBI 3  2 POS 4\n 3 DBI 2  3 POS 1  3 AM 3\n 4 DBI 5  4 AM  4\n 5 DBI 2  5 POS 3"
+    },
+    {
+      "type": "code",
+      "content": "-- INNER JOIN über drei Tabellen\nSELECT s.vorname, k.bezeichnung,\n       n.note\nFROM schueler s\nINNER JOIN klassen k\n  ON s.klasse_id = k.klasse_id\nINNER JOIN noten n\n  ON n.schueler_id = s.schueler_id\nWHERE n.fach = 'DBI'\nORDER BY n.note, s.vorname;\n-- Anna  | 3AHIT | 1\n-- Clara | 3BHIT | 2\n-- Eva   | 3AHIT | 2\n-- Ben   | 3AHIT | 3\n-- David | 3BHIT | 5"
+    },
+    {
+      "type": "text",
+      "content": "Ein INNER JOIN liefert nur Zeilen, die in beiden Tabellen einen Partner haben. Filip (keine Noten) fehlt oben, die 5AHIT (keine Schüler:innen) würde bei klassen JOIN schueler fehlen.\n\nEin LEFT (OUTER) JOIN behält zusätzlich alle Zeilen der linken Tabelle; wo kein Partner existiert, stehen in den rechten Spalten NULL. Damit findest du auch „Lücken“: WHERE … IS NULL liefert genau die Zeilen ohne Partner. Achtung beim Zählen: COUNT(*) zählt auch die NULL-Zeile mit, COUNT(s.schueler_id) zählt nur echte Partner."
+    },
+    {
+      "type": "code",
+      "content": "SELECT k.bezeichnung,\n       COUNT(s.schueler_id) AS anz,\n       COUNT(*) AS falsch\nFROM klassen k\nLEFT JOIN schueler s\n  ON s.klasse_id = k.klasse_id\nGROUP BY k.bezeichnung;\n-- 3AHIT | 3 | 3\n-- 3BHIT | 3 | 3\n-- 5AHIT | 0 | 1\n\n-- Wer hat noch gar keine Note?\nSELECT s.vorname\nFROM schueler s\nLEFT JOIN noten n\n  ON n.schueler_id = s.schueler_id\nWHERE n.schueler_id IS NULL;\n-- Filip"
+    },
+    {
+      "type": "text",
+      "content": "Beim Selbst-Join (Self Join) kommt dieselbe Tabelle zweimal vor – mit zwei verschiedenen Aliasen. lehrer.chef_id zeigt auf eine andere Zeile in lehrer. Mit LEFT JOIN erscheint auch Huber, der keine vorgesetzte Lehrkraft hat.\n\nDialekt-Hinweis: RIGHT JOIN behält alle Zeilen der rechten Tabelle – das ist nur ein LEFT JOIN mit vertauschten Tabellen. FULL OUTER JOIN behält beide Seiten. PostgreSQL und SQL Server können beides, SQLite erst seit Version 3.39. MySQL/MariaDB kennen RIGHT JOIN, aber kein FULL OUTER JOIN – dort kombinierst du LEFT JOIN und RIGHT JOIN mit UNION."
+    },
+    {
+      "type": "code",
+      "content": "SELECT l.kuerzel AS lehrer,\n       c.kuerzel AS chef\nFROM lehrer l\nLEFT JOIN lehrer c\n  ON l.chef_id = c.lehrer_id\nORDER BY l.lehrer_id;\n-- HUB | NULL\n-- MAI | HUB\n-- GRU | HUB\n-- WEI | MAI"
+    },
+    {
+      "type": "text",
+      "content": "Mit GROUP BY fasst du Zeilen mit gleichem Wert zu einer Gruppe zusammen; Aggregatfunktionen (COUNT, SUM, AVG, MIN, MAX) rechnen dann pro Gruppe. WHERE filtert einzelne Zeilen VOR dem Gruppieren, HAVING filtert ganze Gruppen DANACH – nur in HAVING darfst du Aggregate wie AVG(note) verwenden.\n\nAusführungsreihenfolge: FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY.\n\nTypischer Fehler: eine Spalte im SELECT, die weder in GROUP BY steht noch aggregiert ist. PostgreSQL meldet einen Fehler, MySQL ebenfalls (Standardmodus ONLY_FULL_GROUP_BY) – SQLite nimmt stillschweigend irgendeinen Wert der Gruppe."
+    },
+    {
+      "type": "code",
+      "content": "SELECT fach, COUNT(*) AS anz,\n       ROUND(AVG(note), 2) AS schnitt,\n       MIN(note) AS beste\nFROM noten\nGROUP BY fach\nHAVING COUNT(*) >= 4\nORDER BY schnitt;\n-- POS | 4 | 2.5 | 1\n-- DBI | 5 | 2.6 | 1\n\n-- Schnitt pro Klasse, nur\n-- Noten besser als 5\nSELECT k.bezeichnung,\n       ROUND(AVG(n.note), 2) AS schnitt\nFROM klassen k\nJOIN schueler s\n  ON s.klasse_id = k.klasse_id\nJOIN noten n\n  ON n.schueler_id = s.schueler_id\nWHERE n.note < 5\nGROUP BY k.bezeichnung;\n-- 3AHIT | 2.43\n-- 3BHIT | 2.5"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: INNER JOIN – nur Zeilen mit Partner. LEFT JOIN – alle Zeilen links, fehlende Partner als NULL (mit IS NULL findest du Lücken). Selbst-Join – dieselbe Tabelle mit zwei Aliasen. GROUP BY bildet Gruppen, Aggregatfunktionen rechnen pro Gruppe, WHERE filtert Zeilen vorher, HAVING Gruppen nachher. RIGHT und FULL JOIN sind nicht in jedem DBMS verfügbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Zeilen liefert diese Abfrage? (6 Schüler:innen, 12 Noten, Filip hat keine Note)",
+      "code": "SELECT s.vorname, n.note\nFROM schueler s\nLEFT JOIN noten n\n  ON n.schueler_id = s.schueler_id;",
+      "options": [
+        "12",
+        "6",
+        "13",
+        "18"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jede der 12 Noten ergibt eine Zeile. Durch den LEFT JOIN kommt Filip ohne Partner zusätzlich mit NULL-Werten dazu: 12 + 1 = 13."
+    },
+    {
+      "question": "Was liefert diese Abfrage?",
+      "code": "SELECT s.vorname\nFROM schueler s\nJOIN noten n\n  ON n.schueler_id = s.schueler_id\nGROUP BY s.vorname\nHAVING COUNT(*) = 3;",
+      "options": [
+        "Anna und Clara",
+        "Anna, Clara und Ben",
+        "Nur Anna",
+        "Fehler: COUNT ist in HAVING nicht erlaubt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Anna (DBI, POS, AM) und Clara (DBI, POS, AM) haben je 3 Noten. Ben, David und Eva haben 2, Filip fällt durch den INNER JOIN weg."
+    },
+    {
+      "question": "Welche Kürzel liefert dieser Selbst-Join?",
+      "code": "SELECT l.kuerzel\nFROM lehrer l\nJOIN lehrer c\n  ON l.chef_id = c.lehrer_id\nWHERE c.kuerzel = 'HUB';",
+      "options": [
+        "HUB",
+        "MAI, GRU und WEI",
+        "WEI",
+        "MAI und GRU"
+      ],
+      "correctIndex": 3,
+      "explanation": "c ist die vorgesetzte Lehrkraft. Nur Maier und Gruber haben chef_id 1 (HUB); Weiss untersteht Maier."
+    },
+    {
+      "question": "Du willst nur Fächer mit einem Notenschnitt von höchstens 2,5. Welche Bedingung ist richtig?",
+      "options": [
+        "WHERE AVG(note) <= 2.5 vor GROUP BY",
+        "HAVING AVG(note) <= 2.5 nach GROUP BY fach",
+        "WHERE note <= 2.5 nach GROUP BY fach",
+        "ORDER BY AVG(note) <= 2.5"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Aggregat über die Gruppe kann erst nach dem Gruppieren geprüft werden – das macht HAVING. Aggregate in WHERE sind ein Fehler."
+    }
+  ]
+}

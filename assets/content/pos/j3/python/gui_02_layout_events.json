@@ -1,0 +1,92 @@
+{
+  "id": "pos-j3-python-gui_02_layout_events",
+  "title": "Layout und Eventhandling",
+  "summary": "Widgets mit pack und grid anordnen und mit bind auf Tastatur- und Mausereignisse reagieren.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wo ein Widget erscheint, bestimmt ein Geometriemanager. tkinter hat drei: pack() stapelt Widgets übereinander oder nebeneinander (side=\"left\", fill=\"x\", expand=True) – gut für einfache Leisten. grid() ordnet Widgets in Zeilen und Spalten an – ideal für Formulare. place() setzt Widgets auf feste Koordinaten; das passt sich aber nicht an Fenstergröße, Schriftgröße oder Bildschirmauflösung an und wird daher selten verwendet."
+    },
+    {
+      "type": "code",
+      "content": "import tkinter as tk\n\nf = tk.Tk()\nf.title(\"Temperatur\")\ntk.Label(f, text=\"Grad Celsius:\").grid(\n    row=0, column=0, sticky=\"w\",\n    padx=5, pady=5)\neingabe = tk.Entry(f)\neingabe.grid(row=0, column=1,\n             padx=5, pady=5)\nergebnis = tk.Label(f, text=\"\")\nergebnis.grid(row=1, column=0,\n              columnspan=2)\n\ndef umrechnen(event=None):\n    c = float(eingabe.get())\n    ergebnis.config(\n        text=f\"{c * 9 / 5 + 32:.1f} °F\")\n\nknopf = tk.Button(f, text=\"Umrechnen\",\n                  command=umrechnen)\nknopf.grid(row=2, column=0, columnspan=2,\n           sticky=\"ew\")\nf.mainloop()"
+    },
+    {
+      "type": "text",
+      "content": "Bei grid() gibst du row und column an (ab 0). sticky bestimmt, an welche Zellränder sich das Widget heftet: \"w\" = links (Westen), \"ew\" = über die ganze Breite. columnspan=2 lässt ein Widget über zwei Spalten reichen, padx/pady sorgen für Abstand. Zwei typische Fehler: Erstens darfst du pack() und grid() nicht im selben Container mischen – tkinter löst dann einen TclError aus. Zweitens liefert grid() (wie pack()) None zurück. Wer Erzeugen und Platzieren in eine Zeile schreibt, speichert None statt des Widgets."
+    },
+    {
+      "type": "code",
+      "content": "# FALSCH: eingabe ist None!\neingabe = tk.Entry(f).grid(row=0,\n                           column=1)\neingabe.get()\n# AttributeError: 'NoneType' object\n# has no attribute 'get'\n\n# RICHTIG: erst erzeugen, dann platzieren\neingabe = tk.Entry(f)\neingabe.grid(row=0, column=1)"
+    },
+    {
+      "type": "text",
+      "content": "command= gibt es nur bei manchen Widgets (z. B. Button). Für alle anderen Ereignisse verwendest du bind(ereignis, handler). Wichtige Ereignisnamen: \"<Return>\" (Enter-Taste), \"<Button-1>\" (linke Maustaste), \"<Double-Button-1>\" (Doppelklick), \"<KeyRelease>\" (Taste losgelassen). Anders als bei command bekommt der Handler ein Event-Objekt als Parameter, z. B. mit event.x, event.y (Mausposition) oder event.widget. Fehlt der Parameter, gibt es einen TypeError."
+    },
+    {
+      "type": "code",
+      "content": "# Enter im Eingabefeld = Klick auf Knopf\neingabe.bind(\"<Return>\", umrechnen)\n# umrechnen(event=None) passt für beides:\n# command ruft ohne, bind mit Event auf\n\ndef geklickt(event):\n    print(\"Klick bei\", event.x, event.y)\n\nbild = tk.Label(f, text=\"Klick mich!\")\nbild.grid(row=3, column=0)\nbild.bind(\"<Button-1>\", geklickt)"
+    },
+    {
+      "type": "text",
+      "content": "Manchmal soll ein Callback einen Parameter bekommen, etwa bei einem Ziffernblock. command erwartet aber eine Funktion ohne Parameter. Die Lösung ist ein lambda. Achtung, Falle in Schleifen: Ein lambda merkt sich nicht den Wert der Schleifenvariable, sondern die Variable selbst. Nach der Schleife zeigen alle Buttons den letzten Wert. Abhilfe: den aktuellen Wert als Standardparameter einfrieren."
+    },
+    {
+      "type": "code",
+      "content": "anzeige = tk.Label(f, text=\"\")\nanzeige.pack()\n\ndef zeige(z):\n    anzeige.config(text=str(z))\n\nknoepfe = []\nfor zahl in [1, 2, 3]:\n    # FALSCH: lambda: zeige(zahl)\n    #   -> jeder Knopf zeigt 3\n    b = tk.Button(f, text=str(zahl),\n        command=lambda z=zahl: zeige(z))\n    b.pack(side=\"left\")\n    knoepfe.append(b)"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: pack() für einfache Stapel, grid() mit row, column, sticky und columnspan für Formulare, place() nur in Ausnahmefällen – und nie pack und grid im selben Container. Erzeugen und Platzieren in getrennten Zeilen. Mit bind() reagierst du auf beliebige Ereignisse; der Handler bekommt ein Event-Objekt. Parameter für Callbacks übergibst du mit lambda, in Schleifen mit Standardparameter."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was steht nach dem Klick in ergebnis?",
+      "code": "eingabe.insert(0, \"25\")\nknopf.invoke()  # simuliert Klick\n# umrechnen:\n# c * 9 / 5 + 32, Format :.1f",
+      "options": [
+        "77.0 °F",
+        "45.0 °F",
+        "25.0 °F",
+        "ValueError"
+      ],
+      "correctIndex": 0,
+      "explanation": "25 * 9 / 5 + 32 = 45 + 32 = 77, formatiert mit einer Nachkommastelle: 77.0 °F."
+    },
+    {
+      "question": "Welchen Text zeigt das Label, wenn der erste Button („1“) geklickt wird?",
+      "code": "for zahl in [1, 2, 3]:\n    b = tk.Button(f, text=str(zahl),\n        command=lambda: zeige(zahl))\n    b.pack(side=\"left\")",
+      "options": [
+        "1",
+        "3",
+        "Nichts, es wird ein Fehler ausgelöst",
+        "123"
+      ],
+      "correctIndex": 1,
+      "explanation": "Alle drei lambdas greifen auf dieselbe Variable zahl zu. Beim Klick ist die Schleife längst fertig, zahl hat den Wert 3. Abhilfe: lambda z=zahl: zeige(z)."
+    },
+    {
+      "question": "Finde den Fehler: Beim Drücken der Enter-Taste erscheint ein TypeError. Warum?",
+      "code": "def suchen():\n    print(feld.get())\n\nfeld.bind(\"<Return>\", suchen)",
+      "options": [
+        "\"<Return>\" ist kein gültiger Ereignisname",
+        "bind() funktioniert nur bei Buttons",
+        "Ein Handler für bind() bekommt ein Event-Objekt als Argument, suchen() hat aber keinen Parameter",
+        "Die Funktion muss vor dem Entry definiert werden"
+      ],
+      "correctIndex": 2,
+      "explanation": "bind() ruft den Handler mit einem Event-Objekt auf. suchen() nimmt keinen Parameter an – TypeError. Lösung: def suchen(event=None)."
+    },
+    {
+      "question": "Du baust ein Login-Formular mit Beschriftungen links und Eingabefeldern rechts. Welcher Geometriemanager passt am besten?",
+      "options": [
+        "place(), weil man Koordinaten genau festlegen kann",
+        "pack() mit side=\"left\" für alle Widgets",
+        "Man mischt pack() für die Labels und grid() für die Felder",
+        "grid(), weil sich Labels und Felder in Zeilen und Spalten ausrichten lassen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Formulare sind Tabellen aus Zeilen und Spalten – genau dafür ist grid() gemacht. place() skaliert nicht mit, und pack/grid zu mischen ist im selben Container verboten."
+    }
+  ]
+}

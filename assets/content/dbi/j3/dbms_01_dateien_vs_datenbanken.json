@@ -1,0 +1,89 @@
+{
+  "id": "dbi-j3-dbms_01_dateien_vs_datenbanken",
+  "title": "Dateien vs. Datenbanksystem",
+  "summary": "Warum Dateien bei vielen Daten und Benutzer:innen an Grenzen stoßen und was ein DBMS besser macht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Stell dir eine Schule ohne gemeinsame Datenbank vor: Das Sekretariat führt die Schülerdaten in einer Tabellenkalkulation, jede Lehrkraft hat ihre eigene Notenliste, die Bibliothek eine eigene Datei mit Ausweisen. Jedes Programm hat seine eigenen Dateien und sein eigenes Format. Das nennt man dateibasierte Datenhaltung – und sie funktioniert, bis die Daten wachsen und mehrere Leute gleichzeitig damit arbeiten."
+    },
+    {
+      "type": "code",
+      "content": "sekretariat.csv\nid;name;klasse;adresse\n17;Anna Berger;3AHIT;Hauptstr. 5\n\nbibliothek.csv\nausweis;name;klasse;adresse\nB-204;Anna Berger;2AHIT;Gartenweg 2\n\n-- Welche Klasse und welche\n-- Adresse stimmen jetzt?"
+    },
+    {
+      "type": "text",
+      "content": "Die typischen Probleme der Dateiverwaltung:\n• Redundanz: Dieselben Daten (Name, Klasse, Adresse) liegen mehrfach vor – das kostet Speicher und Pflegeaufwand.\n• Inkonsistenz: Wird nur eine Kopie geändert, widersprechen sich die Daten (Anna ist umgezogen und aufgestiegen, die Bibliothek weiß es nicht).\n• Keine Integritätsprüfung: Niemand hindert dich, eine Note 7 oder eine nicht existierende Klasse einzutragen.\n• Datenabhängigkeit: Jedes Programm kennt den genauen Dateiaufbau. Kommt eine Spalte dazu, müssen alle Programme angepasst werden.\n• Schlechter Datenschutz: Eine Datei kannst du meist nur ganz oder gar nicht freigeben, nicht einzelne Spalten."
+    },
+    {
+      "type": "code",
+      "content": "noten.csv: Anna DBI 2, Ben POS 4\n\nZeit  Prof. Maier    Prof. Gruber\nt1    öffnet Datei\nt2                   öffnet Datei\nt3    Anna DBI -> 1\nt4    speichert\nt5                   Ben POS -> 3\nt6                   speichert\n\nErgebnis: Anna DBI 2, Ben POS 3\nMaiers Änderung ist verloren!"
+    },
+    {
+      "type": "text",
+      "content": "Das ist das Mehrbenutzerproblem, genauer ein Lost Update (verlorene Änderung): Beide lesen denselben Stand, der zuletzt Speichernde überschreibt die Arbeit des anderen. Mit Dateien hilft nur, die Datei ganz zu sperren – dann muss Gruber warten, obwohl er etwas ganz anderes ändert.\n\nDie Lösung ist ein Datenbanksystem (DBS). Es besteht aus der Datenbank (DB) – den gespeicherten Daten – und dem Datenbankmanagementsystem (DBMS) – der Software, über die jeder Zugriff läuft. Programme öffnen keine Dateien mehr selbst, sondern schicken Anfragen (meist SQL) an das DBMS."
+    },
+    {
+      "type": "code",
+      "content": "Dateisystem:\nSekretariat -> schueler.csv\nNotenliste  -> noten.xlsx\nBibliothek  -> ausweise.csv\n\nDatenbanksystem:\nSekretariat \\\nNotenliste  -->  DBMS  -->  DB\nBibliothek  /\n\nDBS = DB + DBMS"
+    },
+    {
+      "type": "text",
+      "content": "Aufgaben eines DBMS (nach den Anforderungen von E. F. Codd, vereinfacht):\n• Integration: Jedes Datum wird nur einmal gespeichert, alle Programme nutzen denselben Bestand.\n• Integritätssicherung: Constraints wie NOT NULL, CHECK und Fremdschlüssel werden zentral geprüft.\n• Mehrbenutzerbetrieb: Viele greifen gleichzeitig zu; Sperren und Transaktionen verhindern Lost Updates.\n• Datenschutz: Benutzer und Rechte bis auf Tabellen- oder Spaltenebene.\n• Datensicherheit: Backup und Wiederherstellung nach Abstürzen.\n• Datenunabhängigkeit: Programme hängen nicht vom Speicherformat ab.\n• Abfragesprache und Katalog: SQL für alle Zugriffe, die Struktur selbst ist in der DB beschrieben."
+    },
+    {
+      "type": "text",
+      "content": "Änderungen laufen in Transaktionen ab, die die ACID-Eigenschaften garantieren:\n• Atomicity (Atomarität): ganz oder gar nicht – wechselt Anna die Klasse, gibt es keinen halben Zustand.\n• Consistency (Konsistenz): Nach der Transaktion sind alle Regeln erfüllt.\n• Isolation: Gleichzeitige Transaktionen stören einander nicht.\n• Durability (Dauerhaftigkeit): Bestätigte Änderungen überleben auch einen Stromausfall."
+    },
+    {
+      "type": "text",
+      "content": "Dateien sind deshalb nicht „schlecht“: Für Konfigurationen, Logdateien oder den Datenaustausch (CSV-Export) sind sie genau richtig. Ein DBS lohnt sich, wenn Daten zusammenhängen, wachsen, wichtig sind und von mehreren genutzt werden – es kostet dafür Ressourcen, Einrichtung und Know-how. Typischer Irrtum: Eine große Excel-Tabelle ist keine Datenbank – es fehlen DBMS, Integritätsprüfung und echter Mehrbenutzerbetrieb.\n\nZusammenfassung: Dateibasierte Datenhaltung führt zu Redundanz, Inkonsistenz, fehlender Integrität, Datenabhängigkeit und Mehrbenutzerproblemen wie dem Lost Update. Ein Datenbanksystem (DB + DBMS) löst das durch zentrale Verwaltung, Constraints, Transaktionen (ACID) und Rechte."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Annas Adresse steht im Sekretariat als „Hauptstr. 5“, in der Bibliothek als „Gartenweg 2“. Wie heißt dieses Problem?",
+      "options": [
+        "Inkonsistenz",
+        "Atomarität",
+        "Datenunabhängigkeit",
+        "Lost Update"
+      ],
+      "correctIndex": 0,
+      "explanation": "Widersprüchliche Kopien derselben Information sind eine Inkonsistenz – eine Folge der Redundanz."
+    },
+    {
+      "question": "In noten.csv steht: Ben POS 4, Clara AM 3. Maier öffnet die Datei, dann öffnet Gruber sie. Maier ändert Ben auf 3 und speichert. Danach ändert Gruber Clara auf 2 und speichert. Was steht am Ende in der Datei?",
+      "options": [
+        "Ben 3, Clara 2",
+        "Ben 4, Clara 2",
+        "Ben 3, Clara 3",
+        "Ben 4, Clara 3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Gruber hat den alten Stand (Ben 4) geladen und speichert zuletzt – Maiers Änderung geht verloren (Lost Update)."
+    },
+    {
+      "question": "Woraus besteht ein Datenbanksystem (DBS)?",
+      "options": [
+        "Aus mehreren CSV-Dateien und einem Texteditor",
+        "Aus der Datenbank (Daten) und dem Datenbankmanagementsystem (Software)",
+        "Nur aus dem DBMS",
+        "Aus Tabellenkalkulation und Makros"
+      ],
+      "correctIndex": 1,
+      "explanation": "DBS = DB + DBMS. Die DB enthält die Daten, das DBMS verwaltet alle Zugriffe darauf."
+    },
+    {
+      "question": "Welche ACID-Eigenschaft sorgt dafür, dass eine bestätigte Änderung auch nach einem Stromausfall erhalten bleibt?",
+      "options": [
+        "Atomicity",
+        "Consistency",
+        "Isolation",
+        "Durability"
+      ],
+      "correctIndex": 3,
+      "explanation": "Durability (Dauerhaftigkeit): Nach dem COMMIT ist die Änderung dauerhaft gespeichert."
+    }
+  ]
+}

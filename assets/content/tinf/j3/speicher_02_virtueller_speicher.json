@@ -1,0 +1,91 @@
+{
+  "id": "tinf-j3-speicher_02_virtueller_speicher",
+  "title": "Virtueller Speicher und Seitenersetzung",
+  "summary": "Wie Seiten zwischen RAM und SSD wandern und welche Seite bei FIFO und LRU hinausfliegt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit Paging muss nicht jede Seite eines Prozesses im RAM liegen. Selten gebrauchte Seiten können auf die SSD ausgelagert werden – unter Windows in die Auslagerungsdatei, unter Linux in den Swap-Bereich. Jeder Prozess sieht trotzdem seinen vollständigen, zusammenhängenden Adressraum: Das ist virtueller Speicher. In der Seitentabelle merkt sich ein Bit pro Seite, ob sie gerade im RAM liegt (Present-Bit)."
+    },
+    {
+      "type": "text",
+      "content": "Greift ein Programm auf eine Seite zu, die nicht im RAM ist, meldet die MMU einen Seitenfehler (Page Fault). Dann:\n1. Der Prozess wird blockiert.\n2. Das BS sucht einen freien Rahmen (oder macht einen frei).\n3. Es lädt die Seite von der SSD und trägt den Rahmen in die Seitentabelle ein.\n4. Der Prozess wird wieder bereit, der Befehl wird wiederholt.\nTypischer Fehler: Ein Seitenfehler ist kein Programmfehler, sondern ein ganz normaler Vorgang. Linux legt Seiten sogar erst beim ersten Zugriff an:"
+    },
+    {
+      "type": "code",
+      "content": "import resource\n\ndef seitenfehler():\n    r = resource.getrusage(\n        resource.RUSAGE_SELF)\n    return r.ru_minflt\n\nvorher = seitenfehler()\ndaten = bytearray(40_000_000)\nprint(seitenfehler() - vorher)\nprint(40_000_000 // 4096)\n\n# in unserem Testlauf:\n# 9765\n# 9765"
+    },
+    {
+      "type": "text",
+      "content": "Jede der rund 9765 Seiten der 40 MB löste beim ersten Beschreiben einen Seitenfehler aus. Das waren „minor faults“: Die Seite musste nur bereitgestellt, nicht von der SSD gelesen werden. Muss wirklich von der SSD geladen werden, spricht man von „major faults“ – die sind viel teurer.\nIst der RAM voll, muss bei einem Seitenfehler eine Seite weichen. Welche, entscheidet die Seitenersetzungsstrategie:\n• FIFO: Die Seite, die am längsten im RAM ist, fliegt raus.\n• LRU (Least Recently Used): Die Seite, die am längsten nicht benutzt wurde, fliegt raus.\n• Optimal: Die Seite, die am längsten nicht mehr gebraucht wird – nur theoretisch, weil man die Zukunft kennen müsste. Dient als Vergleichsmaßstab."
+    },
+    {
+      "type": "code",
+      "content": "Referenzfolge:\n1 2 3 1 4 1 5 2 1 4\n3 Rahmen, Liste: älteste zuerst\n\nZugriff Rahmen   Fehler?\n1       [1]      F\n2       [1,2]    F\n3       [1,2,3]  F\n1       [1,2,3]  -\n4       [2,3,4]  F  (1 raus)\n1       [3,4,1]  F  (2 raus)\n5       [4,1,5]  F  (3 raus)\n2       [1,5,2]  F  (4 raus)\n1       [1,5,2]  -\n4       [5,2,4]  F  (1 raus)\nFIFO: 8 Seitenfehler"
+    },
+    {
+      "type": "code",
+      "content": "Bei LRU: Liste nach letzter\nBenutzung, vorne = am längsten\nunbenutzt\n\nZugriff Rahmen   Fehler?\n1       [1]      F\n2       [1,2]    F\n3       [1,2,3]  F\n1       [2,3,1]  -  (1 frisch)\n4       [3,1,4]  F  (2 raus)\n1       [3,4,1]  -\n5       [4,1,5]  F  (3 raus)\n2       [1,5,2]  F  (4 raus)\n1       [5,2,1]  -\n4       [2,1,4]  F  (5 raus)\nLRU: 7 Seitenfehler"
+    },
+    {
+      "type": "text",
+      "content": "LRU nutzt die zeitliche Lokalität: Seite 1 wird oft gebraucht und bleibt deshalb drin. Bei FIFO fliegt sie trotzdem raus, nur weil sie früh geladen wurde. So lässt sich LRU in Python nachrechnen – die Liste wird bei jedem Treffer neu sortiert:"
+    },
+    {
+      "type": "code",
+      "content": "def lru(refs, n):\n    rahmen, fehler = [], 0\n    for s in refs:\n        if s in rahmen:\n            rahmen.remove(s)\n        else:\n            fehler += 1\n            if len(rahmen) == n:\n                rahmen.pop(0)\n        rahmen.append(s)\n    return fehler\n\nrefs = [1,2,3,1,4,1,5,2,1,4]\nprint(lru(refs, 3))   # 7"
+    },
+    {
+      "type": "text",
+      "content": "Zwei Stolperfallen:\n• Belady-Anomalie: Bei FIFO kann mehr RAM mehr Seitenfehler bringen. Für 1 2 3 4 1 2 5 1 2 3 4 5 gibt es mit 3 Rahmen 9, mit 4 Rahmen aber 10 Fehler. LRU hat dieses Problem nicht.\n• Thrashing (Seitenflattern): Laufen zu viele Programme für zu wenig RAM, ist das System fast nur noch mit Ein- und Auslagern beschäftigt. Die SSD arbeitet ununterbrochen, alles wird extrem zäh. Abhilfe: Programme schließen oder mehr RAM.\nZusammenfassung: Virtueller Speicher lagert Seiten aus; ein Seitenfehler lädt sie nach. FIFO ersetzt die älteste, LRU die am längsten unbenutzte Seite."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Seitenfehler entstehen mit FIFO und 3 anfangs leeren Rahmen?",
+      "code": "Referenzfolge: 3 1 3 2 4 3 1",
+      "options": [
+        "5",
+        "4",
+        "7",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "3, 1 (F, F), 3 (Treffer), 2 (F) → [3,1,2]. 4 (F, 3 raus) → [1,2,4]. 3 (F, 1 raus) → [2,4,3]. 1 (F, 2 raus) → [4,3,1]. Zusammen 6 Fehler."
+    },
+    {
+      "question": "Dieselbe Folge mit LRU und 3 Rahmen – wie viele Seitenfehler?",
+      "code": "Referenzfolge: 3 1 3 2 4 3 1",
+      "options": [
+        "5",
+        "6",
+        "4",
+        "7"
+      ],
+      "correctIndex": 0,
+      "explanation": "3, 1, 2 sind Fehler; der Treffer bei 3 macht 3 „frisch“. Bei 4 ist 1 am längsten unbenutzt → raus (F). 3 ist ein Treffer. Bei 1 ist 2 am längsten unbenutzt → raus (F). Zusammen 5."
+    },
+    {
+      "question": "Was passiert bei einem Seitenfehler?",
+      "options": [
+        "Das Programm wird mit einer Fehlermeldung beendet",
+        "Das BS lädt die fehlende Seite in einen Rahmen, aktualisiert die Seitentabelle und lässt den Befehl wiederholen",
+        "Die CPU ignoriert den Zugriff und liefert 0",
+        "Der Rechner startet neu"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Seitenfehler ist ein normaler Vorgang beim virtuellen Speicher. Der Prozess ist währenddessen blockiert und läuft danach einfach weiter."
+    },
+    {
+      "question": "Ein Laptop wird nach dem Öffnen vieler Programme extrem langsam, die SSD-Aktivität ist dauerhaft hoch, die CPU-Last aber gering. Was liegt am wahrscheinlichsten vor?",
+      "options": [
+        "Ein Deadlock",
+        "Belady-Anomalie",
+        "Thrashing",
+        "Externe Fragmentierung"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beim Thrashing reicht der RAM nicht; Seiten werden ständig ein- und ausgelagert. Die CPU wartet fast nur auf die SSD."
+    }
+  ]
+}

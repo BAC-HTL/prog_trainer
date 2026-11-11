@@ -1,0 +1,118 @@
+{
+  "id": "syp-j3-qualitaet_pruefung",
+  "title": "Abschlussprüfung: Qualitätsmanagement & Dokumentation",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "„Die App muss mit einem Screenreader vollständig bedienbar sein.“ Zu welchem Merkmal der ISO/IEC 25010 gehört diese Anforderung?",
+      "options": [
+        "Kompatibilität",
+        "Übertragbarkeit",
+        "Funktionale Eignung",
+        "Benutzbarkeit"
+      ],
+      "correctIndex": 3,
+      "explanation": "Barrierefreiheit ist ein Teilmerkmal der Benutzbarkeit."
+    },
+    {
+      "question": "„Telefonnummern der Kinder sind nur für ihre Trainer:innen sichtbar.“ Welches Teilmerkmal der Sicherheit ist gemeint?",
+      "options": [
+        "Vertraulichkeit",
+        "Integrität",
+        "Verfügbarkeit",
+        "Interoperabilität"
+      ],
+      "correctIndex": 0,
+      "explanation": "Vertraulichkeit bedeutet, dass nur Berechtigte auf Daten zugreifen können. Integrität betrifft das unbemerkte Verändern von Daten."
+    },
+    {
+      "question": "Welche der folgenden Maßnahmen ist eine dynamische Qualitätssicherung?",
+      "options": [
+        "Code-Review eines Pull Requests",
+        "Linter-Lauf mit pyflakes",
+        "Ausführen der Unit-Tests mit pytest",
+        "Inspektion des Pflichtenhefts"
+      ],
+      "correctIndex": 2,
+      "explanation": "Dynamisch heißt: Das Programm wird ausgeführt. Reviews, Inspektionen und statische Analyse prüfen ohne Ausführung."
+    },
+    {
+      "question": "Was meldet pyflakes für diese Datei?",
+      "code": "def summe(liste):\n    ergebnis = 0\n    for x in liste:\n        ergebnis += x\n    return ergebniss",
+      "options": [
+        "g.py:5:12: undefined name 'ergebniss'",
+        "g.py:2:5: local variable 'ergebnis' is assigned but never used",
+        "Keine Meldung – pyflakes erkennt nur Stilfehler",
+        "NameError beim Ausführen von pyflakes"
+      ],
+      "correctIndex": 0,
+      "explanation": "Durch den Tippfehler wird in Zeile 5 der nicht existierende Name ergebniss verwendet. pyflakes findet das, ohne das Programm auszuführen."
+    },
+    {
+      "question": "Welche Review-Art wird beschrieben: Die Autorin präsentiert ihren Entwurf Schritt für Schritt, die anderen stellen Fragen und geben Hinweise?",
+      "options": [
+        "Inspektion",
+        "Walkthrough",
+        "Statische Analyse",
+        "Abnahmetest"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim Walkthrough führt der Autor bzw. die Autorin durch das Ergebnis. Die Inspektion wird dagegen von einem Moderator mit Checklisten geleitet."
+    },
+    {
+      "question": "Eine Story erfüllt alle Akzeptanzkriterien, aber der Code wurde noch nicht reviewt. Laut Definition of Done ist ein Review Pflicht. Ist die Story fertig?",
+      "options": [
+        "Ja – die Akzeptanzkriterien sind entscheidend",
+        "Ja, wenn der Product Owner zustimmt",
+        "Ja, das Review kann im nächsten Sprint folgen",
+        "Nein – erst wenn auch die Definition of Done erfüllt ist"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine Story ist erst fertig, wenn ihre Akzeptanzkriterien und die für alle geltende Definition of Done erfüllt sind."
+    },
+    {
+      "question": "Anforderung: „Ab 18 Jahren darf man sich als Trainer:in registrieren.“ Welche Testwerte für das Alter prüfen die Grenze am besten?",
+      "options": [
+        "5 und 50",
+        "17 und 18",
+        "0 und 100",
+        "20 und 30"
+      ],
+      "correctIndex": 1,
+      "explanation": "Grenzwerttests prüfen den letzten ungültigen (17) und den ersten gültigen Wert (18). Genau dort entstehen typische Fehler wie > statt >=."
+    },
+    {
+      "question": "Welcher Inhalt gehört in die Entwicklerdokumentation?",
+      "options": [
+        "Anleitung zum Absagen eines Trainings mit Screenshots",
+        "Architekturübersicht und Anleitung zum Bauen des Projekts",
+        "Rechnung an den Verein",
+        "Das Passwort des Datenbank-Admins im Klartext"
+      ],
+      "correctIndex": 1,
+      "explanation": "Architektur, Datenmodell, Schnittstellen und Build-Anleitung brauchen Entwickler:innen. Die Anleitung mit Screenshots ist Benutzerdoku, Passwörter gehören in einen Passwortmanager."
+    },
+    {
+      "question": "Ein Vereinsmitglied meldet: „Beim CSV-Export steht bei allen Trainings das falsche Datum.“ Welche Art von Wartung ist die Behebung?",
+      "options": [
+        "Korrektiv",
+        "Adaptiv",
+        "Perfektiv",
+        "Präventiv"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Fehler in der bestehenden Funktion wird behoben – das ist korrektive Wartung."
+    },
+    {
+      "question": "Kurz vor der Abgabe hat das Team viel Code kopiert und keine Tests geschrieben. Welche Maßnahme baut diese technischen Schulden am sinnvollsten ab?",
+      "options": [
+        "Die Probleme nicht erwähnen, damit die Note passt",
+        "Die App komplett neu in einer anderen Sprache schreiben",
+        "Tests ergänzen und den doppelten Code dann schrittweise refaktorisieren",
+        "Kommentare „TODO“ löschen, damit der Linter ruhig ist"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst Tests als Sicherheitsnetz, dann schrittweises Refactoring. So werden Schulden abgebaut, ohne neue Fehler einzubauen."
+    }
+  ]
+}

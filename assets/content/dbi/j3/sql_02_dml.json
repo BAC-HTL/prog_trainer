@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j3-sql_02_dml",
+  "title": "DML: Daten einfügen, ändern, löschen",
+  "summary": "Mit INSERT, UPDATE und DELETE Daten sicher verändern – inklusive Constraints und Transaktionen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit der DML (Data Manipulation Language) veränderst du die Daten selbst: INSERT fügt Zeilen ein, UPDATE ändert sie, DELETE löscht sie. Wir arbeiten mit der Schulverwaltung aus der letzten Lektion: 4 Lehrkräfte, 3 Klassen (3AHIT, 3BHIT, 5AHIT), 6 Schüler:innen und 12 Noten. Alle Constraints – NOT NULL, UNIQUE, CHECK, Fremdschlüssel – prüft das DBMS bei jeder dieser Anweisungen."
+    },
+    {
+      "type": "code",
+      "content": "INSERT INTO schueler\n  (vorname, nachname, klasse_id)\nVALUES ('Lena', 'Kurz', 3);\n-- OK (1 Zeile)\n\nINSERT INTO noten\n  (schueler_id, fach, note)\nVALUES (7, 'DBI', 2),\n       (7, 'POS', 1);\n-- OK (2 Zeilen)\n\nSELECT schueler_id, vorname,\n       email, status\nFROM schueler\nWHERE nachname = 'Kurz';\n-- 7 | Lena | NULL | aktiv"
+    },
+    {
+      "type": "text",
+      "content": "Was ist passiert? Die ID 7 hat SQLite automatisch vergeben (INTEGER PRIMARY KEY), status bekam den DEFAULT 'aktiv', email ist NULL, weil sie nicht angegeben wurde. Mit einem INSERT kannst du mehrere Zeilen auf einmal einfügen.\n\nGib die Spaltenliste immer an! INSERT INTO schueler VALUES (…) ohne Liste verlangt alle Werte in genau der Tabellenreihenfolge – kommt später per ALTER TABLE eine Spalte dazu, bricht dein Programm.\n\nStatt VALUES kann auch ein SELECT die Zeilen liefern (INSERT … SELECT). Praktisch, um vor einer riskanten Änderung eine Sicherungskopie zu machen:"
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE noten_alt (\n  schueler_id INTEGER,\n  fach VARCHAR(5),\n  note INTEGER\n);\n\nINSERT INTO noten_alt\n  (schueler_id, fach, note)\nSELECT schueler_id, fach, note\nFROM noten;\n-- OK (14 Zeilen)"
+    },
+    {
+      "type": "text",
+      "content": "UPDATE ändert vorhandene Zeilen: Nach SET stehen die neuen Werte, WHERE wählt die betroffenen Zeilen aus. Der neue Wert darf aus dem alten berechnet werden. Beispiel: Ben hat die Nachprüfung in POS bestanden, und alle Schüler:innen der 5AHIT bekommen den Status 'matura'. Auch bei UPDATE gelten alle Constraints – eine Note 0 lehnt der CHECK ab."
+    },
+    {
+      "type": "code",
+      "content": "UPDATE noten\nSET note = note - 1\nWHERE schueler_id = 2\n  AND fach = 'POS';\n-- OK (1 Zeile)\n\nUPDATE schueler\nSET status = 'matura'\nWHERE klasse_id = 3;\n-- OK (1 Zeile)\n\nUPDATE noten SET note = 0\nWHERE schueler_id = 1;\n-- Fehler:\n-- CHECK constraint failed: note BETWEEN 1 AND 5"
+    },
+    {
+      "type": "text",
+      "content": "Die gefährlichste Zeile der Datenbankwelt ist ein UPDATE oder DELETE ohne WHERE – es trifft ALLE Zeilen. Zwei Schutzmaßnahmen:\n1. Teste die Bedingung zuerst mit SELECT … WHERE und ersetze dann SELECT durch UPDATE/DELETE.\n2. Arbeite in einer Transaktion: Nach BEGIN kannst du mit ROLLBACK alles rückgängig machen, erst COMMIT macht die Änderung endgültig. (Transaktionen lernst du später noch genauer kennen.)"
+    },
+    {
+      "type": "code",
+      "content": "BEGIN;\nUPDATE noten SET note = 1;\n-- OK (14 Zeilen)\n-- Hoppla, WHERE vergessen!\nROLLBACK;\n\nSELECT COUNT(*) FROM noten\nWHERE note = 1;\n-- 3"
+    },
+    {
+      "type": "text",
+      "content": "DELETE FROM … WHERE löscht ganze Zeilen. Hier greifen die referenziellen Aktionen aus der letzten Lektion: Beim Löschen eines Schülers verschwinden dank ON DELETE CASCADE auch seine Noten, eine Klasse mit Schüler:innen ist durch RESTRICT geschützt.\n\nDialekt-Hinweis: Um eine Tabelle komplett zu leeren, gibt es in MySQL, PostgreSQL und SQL Server TRUNCATE TABLE noten; (schneller, aber nicht für Tabellen, auf die Fremdschlüssel zeigen). SQLite kennt TRUNCATE nicht – dort schreibst du DELETE FROM noten;"
+    },
+    {
+      "type": "code",
+      "content": "DELETE FROM schueler\nWHERE schueler_id = 4;\n-- OK (1 Zeile)\nSELECT COUNT(*) FROM noten\nWHERE schueler_id = 4;\n-- 0\n\nDELETE FROM klassen\nWHERE bezeichnung = '3BHIT';\n-- Fehler:\n-- FOREIGN KEY constraint failed\n\n-- Zusammenfassung:\n-- INSERT INTO t (spalten)\n--   VALUES (...) | SELECT ...\n-- UPDATE t SET s = wert WHERE ...\n-- DELETE FROM t WHERE ...\n-- Ohne WHERE: alle Zeilen!"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Zeilen ändert dieses UPDATE? (DBI-Noten: 1, 3, 2, 5, 2)",
+      "code": "UPDATE noten\nSET note = note + 1\nWHERE fach = 'DBI'\n  AND note < 5;",
+      "options": [
+        "5",
+        "4",
+        "0",
+        "1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Note 5 wird durch note < 5 ausgeschlossen, die anderen vier DBI-Noten werden um 1 erhöht."
+    },
+    {
+      "question": "Was passiert, wenn du in diesem UPDATE die Bedingung AND note < 5 weglässt?",
+      "options": [
+        "Die Note 5 wird zu 6, der Rest wird erhöht",
+        "Nur die Note 5 bleibt, alle anderen werden erhöht",
+        "Alle Noten aller Fächer werden erhöht",
+        "Fehler wegen CHECK – keine einzige Note wird geändert"
+      ],
+      "correctIndex": 3,
+      "explanation": "Note 6 verletzt CHECK (note BETWEEN 1 AND 5). Eine Anweisung wird ganz oder gar nicht ausgeführt, daher bleiben auch die anderen DBI-Noten unverändert."
+    },
+    {
+      "question": "Die 3AHIT (Anna, Ben, Eva mit zusammen 7 Noten) wird so gelöscht. Wie viele der 12 Noten bleiben übrig?",
+      "code": "DELETE FROM schueler\nWHERE klasse_id = 1;",
+      "options": [
+        "12",
+        "7",
+        "5",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Wegen ON DELETE CASCADE werden die 7 Noten der drei gelöschten Schüler:innen mitgelöscht: 12 − 7 = 5."
+    },
+    {
+      "question": "Wie leerst du in SQLite die Tabelle noten vollständig?",
+      "options": [
+        "TRUNCATE TABLE noten;",
+        "DELETE FROM noten;",
+        "DROP TABLE noten;",
+        "UPDATE noten SET note = NULL;"
+      ],
+      "correctIndex": 1,
+      "explanation": "SQLite kennt kein TRUNCATE. DELETE FROM ohne WHERE löscht alle Zeilen, die Tabelle selbst bleibt bestehen – DROP würde sie ganz entfernen."
+    }
+  ]
+}

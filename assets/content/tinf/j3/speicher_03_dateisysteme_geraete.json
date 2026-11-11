@@ -1,0 +1,94 @@
+{
+  "id": "tinf-j3-speicher_03_dateisysteme_geraete",
+  "title": "Dateisysteme und Geräteverwaltung",
+  "summary": "FAT32, NTFS und ext4 im Vergleich, Journaling, Inodes und Links sowie wie das BS mit Geräten spricht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Dateisystem legt fest, wie Daten auf einem Datenträger organisiert sind: Dateinamen und Verzeichnisse, welche Blöcke zu welcher Datei gehören und welche Metadaten (Größe, Zeitstempel, Besitzer, Rechte) gespeichert werden. Ohne Dateisystem wäre eine SSD nur eine lange Reihe nummerierter Blöcke."
+    },
+    {
+      "type": "text",
+      "content": "Drei Dateisysteme, die du kennen musst:\n• FAT32: alt und einfach, fast jedes Gerät kann es lesen (USB-Sticks, Kameras, EFI-Systempartition). Keine Zugriffsrechte, kein Journal, maximale Dateigröße 4 GiB − 1 Byte. Für große Wechseldatenträger gibt es den Nachfolger exFAT.\n• NTFS: Standard bei Windows. Journaling, Zugriffsrechte über Zugriffssteuerungslisten (ACLs), Kompression und Verschlüsselung.\n• ext4: verbreitet bei Linux. Journaling, Unix-Rechte (Besitzer, Gruppe, Andere), Verwaltung über Inodes."
+    },
+    {
+      "type": "code",
+      "content": "# FAT32 speichert die Dateigröße\n# in 32 Bit:\ngrenze = 2**32 - 1\nprint(grenze)        # 4294967295\nprint(grenze / 2**30)\n# 3.9999999990686774 (GiB)\n\n# Ein 5-GiB-Video passt also\n# nicht als Datei auf FAT32!"
+    },
+    {
+      "type": "text",
+      "content": "Was passiert, wenn mitten beim Schreiben der Strom ausfällt? Ohne Schutz können die Verwaltungsdaten halb geändert sein – das Dateisystem ist inkonsistent, und beim nächsten Start muss es komplett geprüft werden. Journaling löst das: Geplante Änderungen werden zuerst in ein Protokoll (Journal) geschrieben und erst dann ausgeführt. Nach einem Absturz wird nur das Journal abgearbeitet oder verworfen. Meist werden nur die Metadaten so geschützt.\nTypischer Fehler: Journaling ersetzt kein Backup – gelöschte oder vom Virus verschlüsselte Dateien bringt es nicht zurück."
+    },
+    {
+      "type": "text",
+      "content": "ext4 speichert die Metadaten einer Datei in einem Inode (Größe, Besitzer, Rechte, Zeiten, Verweise auf die Datenblöcke). Der Dateiname steht nicht im Inode, sondern im Verzeichnis, das Namen auf Inode-Nummern abbildet. Daraus ergeben sich zwei Arten von Links:\n• Harter Link: ein zweiter Name für denselben Inode\n• Symbolischer Link: eine eigene kleine Datei, die nur den Pfad zum Ziel enthält (ähnlich einer Verknüpfung unter Windows)"
+    },
+    {
+      "type": "code",
+      "content": "$ echo \"Hallo\" > a.txt\n$ ln a.txt b_hard.txt\n$ ln -s a.txt c_sym.txt\n$ stat -c '%h %i' a.txt b_hard.txt\n2 1368128\n2 1368128\n# 2 Namen, gleicher Inode\n# (Nummer bei dir anders)\n$ rm a.txt\n$ cat b_hard.txt\nHallo\n$ cat c_sym.txt\ncat: c_sym.txt: No such file or\ndirectory"
+    },
+    {
+      "type": "text",
+      "content": "%h ist die Anzahl der Namen (Links) des Inodes. Nach rm a.txt existiert der Inode weiter, weil b_hard.txt noch auf ihn zeigt – erst wenn der letzte Name gelöscht ist, werden die Blöcke freigegeben. Der symbolische Link zeigt dagegen ins Leere.\nAuch die Zugriffsrechte unterscheiden sich: ext4 kennt rwx für Besitzer, Gruppe und Andere, NTFS feinere ACL-Einträge pro Benutzer oder Gruppe, FAT32 gar keine. Die Details folgen im Modul „Virtualisierung & Administration“."
+    },
+    {
+      "type": "text",
+      "content": "Bleibt die Geräteverwaltung. Für jedes Gerät braucht das BS einen Treiber, der die allgemeinen Befehle des Kernels in die Sprache der Hardware übersetzt. Ist ein Gerät fertig (Taste gedrückt, Daten von der SSD gelesen), meldet es sich per Interrupt, statt dass die CPU ständig nachfragen muss (Polling). Große Datenmengen überträgt der DMA-Controller (Direct Memory Access) direkt in den RAM, ohne dass die CPU jedes Byte kopieren muss.\nUnter Linux erscheinen Geräte als Gerätedateien in /dev – „alles ist eine Datei“. Das erste Zeichen von ls -l zeigt die Art: b = Blockgerät (Datenträger, blockweise Zugriff), c = Zeichengerät (Terminal, /dev/null, zeichenweise)."
+    },
+    {
+      "type": "code",
+      "content": "$ ls -l /dev/null /dev/vda\ncrw-rw-rw- … /dev/null\nbrw------- … /dev/vda\n\n$ df -T /\nFilesystem Type …  Mounted on\n/dev/vda   ext4 …  /\n\n# Gerätenamen hängen vom System\n# ab, z. B. /dev/sda, /dev/nvme0n1"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: FAT32 ist einfach und kompatibel, aber ohne Rechte und mit 4-GiB-Grenze; NTFS und ext4 bieten Journaling und Rechte. Journaling hält das Dateisystem nach Abstürzen konsistent. ext4 speichert Metadaten in Inodes; harte Links sind weitere Namen, symbolische Links Verweise auf Pfade. Treiber, Interrupts und DMA verbinden Kernel und Hardware; unter Linux sind Geräte Dateien in /dev."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt der letzte Befehl aus?",
+      "code": "$ echo \"Hallo\" > info.txt\n$ ln info.txt kopie.txt\n$ rm info.txt\n$ cat kopie.txt",
+      "options": [
+        "Hallo",
+        "Nichts – die Datei ist leer",
+        "cat: kopie.txt: No such file or directory",
+        "Den Pfad info.txt"
+      ],
+      "correctIndex": 0,
+      "explanation": "kopie.txt ist ein harter Link auf denselben Inode. Gelöscht wird nur der Name info.txt; die Daten bleiben, solange noch ein Name existiert."
+    },
+    {
+      "question": "Du willst eine 6 GiB große Videodatei auf einen USB-Stick mit FAT32 kopieren. Was passiert?",
+      "options": [
+        "Es klappt, solange der Stick groß genug ist",
+        "Es klappt nicht, weil FAT32 Dateien nur bis 4 GiB − 1 Byte erlaubt",
+        "Es klappt nur unter Linux",
+        "Es klappt, aber die Zugriffsrechte gehen verloren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Dateigröße wird bei FAT32 in 32 Bit gespeichert. Abhilfe: den Stick mit exFAT oder NTFS formatieren."
+    },
+    {
+      "question": "ls -l zeigt eine Zeile, die mit brw-rw---- beginnt. Worum handelt es sich?",
+      "options": [
+        "Eine Datei mit Backup-Kennzeichen",
+        "Ein Zeichengerät wie ein Terminal",
+        "Ein Blockgerät wie eine Festplattenpartition",
+        "Einen symbolischen Link"
+      ],
+      "correctIndex": 2,
+      "explanation": "b steht für Blockgerät, c für Zeichengerät, l für symbolischen Link, d für Verzeichnis und - für eine normale Datei."
+    },
+    {
+      "question": "Wobei hilft Journaling?",
+      "options": [
+        "Es stellt versehentlich gelöschte Dateien wieder her",
+        "Es verschlüsselt alle Dateien",
+        "Es ersetzt das Backup",
+        "Es hält die Verwaltungsdaten des Dateisystems nach einem Absturz konsistent"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das Journal protokolliert Änderungen, bevor sie ausgeführt werden. Nach einem Absturz kann das Dateisystem so rasch in einen konsistenten Zustand gebracht werden. Gelöschte Dateien holt es nicht zurück."
+    }
+  ]
+}

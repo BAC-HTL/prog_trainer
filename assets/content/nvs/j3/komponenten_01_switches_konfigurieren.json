@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j3-komponenten_01_switches_konfigurieren",
+  "title": "Switches konfigurieren",
+  "summary": "Einen Managed Switch grundkonfigurieren, VLANs und Trunks sauber einrichten, Ports mit Port Security absichern und verstehen, wozu Spanning Tree da ist.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im 2. Jahrgang hast du gelernt, wie ein Switch MAC-Adressen lernt und was VLANs, Access- und Trunk-Ports sind. Jetzt geht es um die Praxis: Wie richtest du einen Managed Switch so ein, dass er im Schulnetz sicher und zuverlässig läuft? Die Beispiele verwenden Cisco IOS (wie in Packet Tracer), weil es im Unterricht am häufigsten vorkommt – andere Hersteller haben ähnliche Konzepte mit anderen Befehlen.\n\nCisco IOS kennt mehrere Modi: User EXEC (Prompt „>“, nur anschauen), Privileged EXEC („#“, nach „enable“), den globalen Konfigurationsmodus („(config)#“) und Untermodi wie „(config-if)#“ für ein Interface. Alle Änderungen landen sofort in der running-config im RAM."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS - Grundkonfiguration\nenable\nconfigure terminal\nhostname SW-A-OG1-01\nenable secret <Passwort>\n! Management-IP im VLAN 99\ninterface vlan 99\n ip address 10.10.99.11\n            255.255.255.224\n no shutdown\nexit\nip default-gateway 10.10.99.1\nend\ncopy running-config startup-config"
+    },
+    {
+      "type": "text",
+      "content": "Ein Layer-2-Switch braucht eine IP-Adresse nur, damit du ihn verwalten kannst. Sie liegt auf einem virtuellen Interface (SVI, „interface vlan 99“) – am besten in einem eigenen Management-VLAN statt im Standard-VLAN 1. Mit „ip default-gateway“ ist der Switch auch aus anderen Netzen erreichbar. „enable secret“ speichert das Passwort als Hash. Für die Fernwartung verwendet man SSH, nicht Telnet, denn Telnet überträgt alles im Klartext.\n\nTypischer Fehler: „copy running-config startup-config“ vergessen. Die running-config liegt im RAM – nach einem Stromausfall startet der Switch mit der alten startup-config, und die Arbeit ist weg."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS - Ports zuordnen\ninterface range fa0/1 - 20\n switchport mode access\n switchport access vlan 30\ninterface gi0/1\n switchport mode trunk\n switchport trunk native vlan 999\n switchport trunk allowed vlan\n            10,20,30,99\n! (eine Zeile, hier umgebrochen)\n! ungenutzte Ports parken\ninterface range fa0/21 - 24\n switchport access vlan 999\n shutdown"
+    },
+    {
+      "type": "text",
+      "content": "Ein paar Regeln für saubere VLAN-Konfiguration:\n• Ports ausdrücklich auf „switchport mode access“ oder „trunk“ setzen, statt sie automatisch aushandeln zu lassen.\n• Auf Trunks nur die VLANs erlauben, die wirklich gebraucht werden („allowed vlan“).\n• Das Native VLAN (ungetaggte Frames) auf ein unbenutztes VLAN legen – und auf BEIDEN Seiten des Trunks gleich einstellen, sonst landen Frames im falschen VLAN.\n• Ungenutzte Ports in ein „Park-VLAN“ geben und abschalten.\nKontrollieren kannst du das mit „show vlan brief“ und „show interfaces trunk“. Hinweis: Manche ältere Switch-Modelle verlangen vor „switchport mode trunk“ noch „switchport trunk encapsulation dot1q“."
+    },
+    {
+      "type": "text",
+      "content": "Port Security legt fest, wie viele (und welche) MAC-Adressen an einem Access-Port erlaubt sind. Damit verhinderst du, dass jemand im Klassenzimmer das Kabel vom Lehrer-PC abzieht und seinen eigenen Laptop oder einen kleinen Switch ansteckt. Außerdem schützt es vor MAC-Flooding: Ein Angreifer überschwemmt die MAC-Tabelle mit Fantasieadressen, bis der Switch alles flutet wie ein Hub.\n\nMit „sticky“ lernt der Switch die erste MAC-Adresse selbst und schreibt sie in die running-config. Bei einem Verstoß reagiert er je nach Modus: „protect“ verwirft Frames still, „restrict“ verwirft und zählt/meldet den Verstoß, „shutdown“ (Standard) schaltet den Port in den Zustand err-disabled."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS - Port Security\ninterface fa0/5\n switchport mode access\n switchport port-security\n switchport port-security maximum 1\n switchport port-security\n            mac-address sticky\n switchport port-security\n            violation shutdown\n\nshow port-security interface fa0/5\n! Port wieder aktivieren:\n! shutdown, dann no shutdown"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: „switchport mode access“ vergessen. Auf einem Port, der seinen Modus automatisch aushandelt (dynamic), lehnt IOS Port Security mit „Command rejected: … is a dynamic port“ ab.\n\nSpanning Tree (STP): Damit ein Kabelbruch nicht das halbe Gebäude lahmlegt, verbindet man Switches redundant. Dadurch entstehen aber Schleifen auf Schicht 2. Ethernet-Frames haben – anders als IP-Pakete – keine TTL. Ein Broadcast würde ewig im Kreis laufen und sich vervielfachen (Broadcast-Sturm), die MAC-Tabellen springen ständig um, das Netz steht. STP (IEEE 802.1D) blockiert deshalb redundante Ports logisch und aktiviert sie erst, wenn ein anderer Weg ausfällt."
+    },
+    {
+      "type": "code",
+      "content": "         SW1 (Root)\n        /          \\\n      DP            DP\n      RP            RP\n    SW2 ------------ SW3\n       DP          BLK\n\nRP  = Root Port (bester Weg\n      zur Root Bridge)\nDP  = Designated Port\nBLK = blockiert (Schleife weg)"
+    },
+    {
+      "type": "text",
+      "content": "So entscheidet STP: Zuerst wird die Root Bridge gewählt – der Switch mit der kleinsten Bridge-ID (Priorität, Standard 32768, plus MAC-Adresse). Jeder andere Switch wählt seinen Root Port (geringste Pfadkosten zur Root). Pro Leitung gibt es einen Designated Port; alle übrigen Ports werden blockiert. Im Bild haben SW2 und SW3 gleiche Kosten zur Root, also gewinnt die kleinere Bridge-ID – hier SW2.\n\nIn der Praxis legst du die Root Bridge bewusst fest (z. B. „spanning-tree vlan 10 priority 4096“ auf dem zentralen Switch), verwendest das schnellere Rapid STP (802.1w) und setzt auf Ports zu Endgeräten „spanning-tree portfast“ mit „spanning-tree bpduguard enable“. Zusammenfassung: Grundkonfiguration + Speichern, VLANs und Trunks explizit setzen, Access-Ports mit Port Security schützen, STP nie abschalten, sondern gezielt steuern."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Port ist mit „port-security maximum 1“ und „violation shutdown“ konfiguriert. Ein Schüler steckt statt des Lehrer-PCs seinen Laptop an. Was passiert?",
+      "options": [
+        "Der Laptop bekommt Zugang, der Verstoß wird nur protokolliert.",
+        "Die Frames des Laptops werden still verworfen, der Port bleibt aktiv.",
+        "Der Port geht in den Zustand err-disabled und leitet nichts mehr weiter.",
+        "Der Switch ersetzt die gespeicherte MAC-Adresse durch die neue."
+      ],
+      "correctIndex": 2,
+      "explanation": "„shutdown“ ist der Standardmodus: Der Port wird err-disabled, bis ein Admin ihn mit shutdown/no shutdown wieder aktiviert. Still verwerfen wäre „protect“, verwerfen und melden „restrict“."
+    },
+    {
+      "question": "Drei Switches haben folgende Bridge-IDs. Welcher wird Root Bridge?",
+      "code": "Switch  Priorität  MAC-Adresse\n------  ---------  --------------\nSW1     32768      0011.2233.000a\nSW2     4096       0011.2233.00ff\nSW3     32768      0011.2233.0001",
+      "options": [
+        "SW2",
+        "SW1",
+        "SW3",
+        "Der Switch mit den meisten Ports"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die kleinste Bridge-ID gewinnt, und zuerst zählt die Priorität. SW2 hat mit 4096 die kleinste Priorität – die MAC-Adresse entscheidet nur bei Gleichstand."
+    },
+    {
+      "question": "Nach einem Stromausfall sind die neuen Portzuordnungen eines Switches verschwunden. Was wurde am wahrscheinlichsten vergessen?",
+      "options": [
+        "„no shutdown“ auf den Ports",
+        "Das Native VLAN auf dem Trunk zu ändern",
+        "Spanning Tree zu aktivieren",
+        "„copy running-config startup-config“"
+      ],
+      "correctIndex": 3,
+      "explanation": "Änderungen landen zuerst nur in der running-config im RAM. Beim Neustart lädt der Switch die startup-config – wer nicht speichert, verliert seine Arbeit."
+    },
+    {
+      "question": "Warum führt eine Schleife zwischen Switches ohne STP zu einem Broadcast-Sturm, eine Schleife zwischen Routern aber nicht dauerhaft?",
+      "options": [
+        "Router leiten keine Pakete weiter, die sie schon einmal gesehen haben.",
+        "Ethernet-Frames haben keine TTL, IP-Pakete schon.",
+        "Switches arbeiten mit Halbduplex, Router mit Vollduplex.",
+        "Broadcasts sind auf Schicht 3 verboten."
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder Router verringert die TTL im IP-Header; bei 0 wird das Paket verworfen. Ein Ethernet-Frame hat kein solches Feld und kreist ohne STP endlos."
+    }
+  ]
+}

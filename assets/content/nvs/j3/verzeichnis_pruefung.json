@@ -1,0 +1,118 @@
+{
+  "id": "nvs-j3-verzeichnis_pruefung",
+  "title": "Abschlussprüfung: Verzeichnis- & Authentifizierungsdienste",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Maria Gruber steht im Verzeichnis in der OU „Lehrer“ unter „dc=htl,dc=local“. Welcher DN ist korrekt?",
+      "options": [
+        "dc=local,dc=htl,ou=Lehrer,cn=Maria Gruber",
+        "cn=Maria Gruber,ou=Lehrer,dc=htl,dc=local",
+        "cn=Maria Gruber/ou=Lehrer/htl.local",
+        "ou=Lehrer,cn=Maria Gruber,dc=htl,dc=local"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein DN beginnt links mit dem Eintrag selbst (RDN) und endet rechts bei der Wurzel, getrennt durch Kommas."
+    },
+    {
+      "question": "Welcher LDAP-Filter findet alle Personen, die eine E-Mail-Adresse eingetragen haben?",
+      "options": [
+        "(objectClass=person)&(mail=*)",
+        "(&(objectClass=person)(mail=*))",
+        "(|(objectClass=person)(mail=*))",
+        "(&(objectClass=person)(!(mail=*)))"
+      ],
+      "correctIndex": 1,
+      "explanation": "UND = &, vorangestellt, jede Bedingung in eigenen Klammern; (mail=*) prüft, ob das Attribut vorhanden ist. Mit | käme jeder Eintrag mit Mail-Adresse dazu, auch Nicht-Personen."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "def im_teilbaum(dn, base):\n    return dn.lower().endswith(\n        \",\" + base.lower())\n\ndn = \"cn=Ben Novak,ou=3BHIF,dc=htl,dc=at\"\nb1 = \"OU=3BHIF,DC=htl,DC=at\"\nprint(im_teilbaum(dn, b1))\nprint(im_teilbaum(dn, \"dc=at\"))\nprint(im_teilbaum(dn, dn))",
+      "options": [
+        "True / True / True",
+        "True / False / False",
+        "False / True / False",
+        "True / True / False"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Vergleich ignoriert Groß-/Kleinschreibung, daher passt die erste Base. „dc=at“ ist ebenfalls ein Vorfahre. Der DN selbst endet nicht mit „,“ + DN – die Funktion prüft nur echte Nachfahren. (Ein LDAP-Scope „sub“ würde den Base-Eintrag dagegen mitliefern.)"
+    },
+    {
+      "question": "Eine LDAP-Suche verwendet Base DN „cn=Anna Huber,ou=3AHIF,ou=Schueler,dc=htl,dc=local“ mit Scope „base“. Wofür ist das typisch?",
+      "options": [
+        "Um alle Schüler:innen der 3AHIF aufzulisten",
+        "Um die ganze Schule zu durchsuchen",
+        "Um genau diesen einen Eintrag (z. B. seine Attribute) abzufragen",
+        "Um den Eintrag zu löschen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Scope „base“ liefert nur den Base-Eintrag selbst – praktisch, wenn man den DN schon kennt und Attribute lesen will."
+    },
+    {
+      "question": "Der Klassenvorstand der 3AHIF soll Passwörter nur für die eigene Klasse zurücksetzen dürfen. Wie löst man das in AD am saubersten?",
+      "options": [
+        "Ihn zum Domänen-Admin machen",
+        "Ihm das Administrator-Passwort geben",
+        "Eine GPO mit dem Domänen-Stamm verknüpfen",
+        "Das Recht „Kennwort zurücksetzen“ auf der OU 3AHIF delegieren"
+      ],
+      "correctIndex": 3,
+      "explanation": "OUs ermöglichen Delegation: Rechte gelten nur für Objekte in dieser OU. Das entspricht auch dem Prinzip der minimalen Rechte."
+    },
+    {
+      "question": "Eine neue Lehrerin soll dieselben Rechte wie alle Lehrkräfte bekommen. Die Rechte sind nach AGDLP vergeben. Was ist zu tun?",
+      "options": [
+        "Sie in die globale Gruppe GG_Lehrer aufnehmen",
+        "Auf jedem Ordner ihr Konto eintragen",
+        "Sie direkt in jede domänenlokale Gruppe aufnehmen",
+        "Eine neue GPO erstellen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Genau dafür ist AGDLP da: Nur die Gruppenmitgliedschaft ändert sich, die Berechtigungen auf den Ressourcen bleiben unverändert."
+    },
+    {
+      "question": "Eine GPO, die per Computerkonfiguration USB-Speicher sperrt, ist mit „OU Lehrer“ verknüpft. Dort liegen nur Benutzerkonten. Was passiert?",
+      "options": [
+        "USB wird für Lehrkräfte auf allen PCs gesperrt.",
+        "Die Einstellung wirkt nicht, weil Computereinstellungen nur für Computerobjekte in der OU gelten.",
+        "Die GPO wird automatisch in die Computer-OU kopiert.",
+        "USB wird auf dem Domain Controller gesperrt."
+      ],
+      "correctIndex": 1,
+      "explanation": "Computerkonfiguration gilt für Computerobjekte, Benutzerkonfiguration für Benutzerobjekte in der verknüpften OU. Die GPO müsste mit der OU verknüpft werden, in der die PCs liegen."
+    },
+    {
+      "question": "Warum kann ein Benutzer sein TGT nicht so verändern, dass er sich mehr Rechte oder eine längere Gültigkeit verschafft?",
+      "options": [
+        "Weil das TGT im Klartext nur 8 Byte lang ist",
+        "Weil das TGT nach jedem Zugriff gelöscht wird",
+        "Weil das TGT mit einem Schlüssel verschlüsselt ist, den nur das KDC kennt",
+        "Weil das TGT auf dem Dateiserver gespeichert wird"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das TGT ist mit dem Schlüssel des KDC (in AD: des Kontos krbtgt) verschlüsselt. Der Client kann es nur vorzeigen, nicht lesen oder fälschen."
+    },
+    {
+      "question": "Nach dem Austausch eines Switches scheitern an ihm alle 802.1X-Anmeldungen, an anderen Switches funktioniert es. Der RADIUS-Server meldet Probleme mit diesem Client. Was ist eine wahrscheinliche Ursache?",
+      "options": [
+        "Die Benutzerpasswörter sind abgelaufen.",
+        "Das Shared Secret am neuen Switch stimmt nicht mit dem Server überein (oder der Switch ist dort nicht als Client eingetragen).",
+        "Die Clients verwenden WPA3 statt WPA2.",
+        "Kerberos ist am Switch deaktiviert."
+      ],
+      "correctIndex": 1,
+      "explanation": "Der RADIUS-Server akzeptiert nur Anfragen von eingetragenen Clients mit passendem Shared Secret. Da nur dieser Switch betroffen ist, liegt der Fehler bei seiner RADIUS-Konfiguration."
+    },
+    {
+      "question": "Was unterscheidet EAP-TLS von PEAP-MSCHAPv2?",
+      "options": [
+        "EAP-TLS braucht keinen RADIUS-Server.",
+        "PEAP verwendet gar keine Verschlüsselung.",
+        "EAP-TLS funktioniert nur über Kabel.",
+        "Bei EAP-TLS weist sich auch der Client mit einem Zertifikat aus, ein Passwort ist nicht nötig."
+      ],
+      "correctIndex": 3,
+      "explanation": "PEAP schützt Benutzername/Passwort in einem TLS-Tunnel mit Serverzertifikat. EAP-TLS nutzt Zertifikate auf beiden Seiten – sicherer, aber mit PKI-Aufwand."
+    }
+  ]
+}

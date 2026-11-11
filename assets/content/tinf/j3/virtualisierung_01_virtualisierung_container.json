@@ -1,0 +1,89 @@
+{
+  "id": "tinf-j3-virtualisierung_01_virtualisierung_container",
+  "title": "Virtuelle Maschinen und Container",
+  "summary": "Hypervisor Typ 1 und Typ 2, was Container anders machen und wann du was einsetzt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Virtualisierung heißt: Auf einer physischen Hardware laufen mehrere Betriebssysteme gleichzeitig, jedes in seiner eigenen virtuellen Maschine (VM). Die Software, die CPU-Zeit, RAM, Festplatten und Netzwerk an die VMs verteilt, heißt Hypervisor. Das System, auf dem alles läuft, ist der Host, die BS in den VMs sind Gäste. Typische Einsätze: eine Linux-VM für den TINF-Unterricht auf deinem Windows-Laptop, viele Server auf wenigen physischen Rechnern im Rechenzentrum, Testumgebungen."
+    },
+    {
+      "type": "text",
+      "content": "Man unterscheidet zwei Arten von Hypervisoren:\n• Typ 1 (Bare Metal): läuft direkt auf der Hardware, ohne Host-BS darunter. Effizient und typisch für Server, z. B. VMware ESXi, Microsoft Hyper-V, Xen. KVM macht den Linux-Kernel selbst zum Hypervisor und wird meist ebenfalls zu Typ 1 gezählt.\n• Typ 2 (Hosted): ein normales Programm auf einem Host-BS, z. B. VirtualBox oder VMware Workstation. Einfach zu installieren, ideal für Desktop und Unterricht, aber mit etwas mehr Overhead.\nTypischer Fehler: Hyper-V für Typ 2 halten, weil man es unter Windows als Feature aktiviert. Tatsächlich startet dann der Hypervisor zuerst, und Windows läuft selbst als besondere Partition darüber."
+    },
+    {
+      "type": "code",
+      "content": "Typ 1 (Bare Metal)\n+------+ +------+ +------+\n| VM 1 | | VM 2 | | VM 3 |\n+------+ +------+ +------+\n|       Hypervisor       |\n+------------------------+\n|        Hardware        |\n+------------------------+\n\nTyp 2 (Hosted)\n+------+ +------+\n| VM 1 | | VM 2 | Programme\n+------+ +------+\n|  Hypervisor   |   …\n+------------------------+\n|  Host-BS (z. B. Win)   |\n+------------------------+\n|        Hardware        |\n+------------------------+"
+    },
+    {
+      "type": "text",
+      "content": "Damit VMs schnell laufen, hilft die CPU mit Virtualisierungserweiterungen (Intel VT-x, AMD-V). Sie sind manchmal im UEFI deaktiviert – startet keine VM, ist das die erste Stelle zum Nachsehen. Praktische Funktionen von VMs:\n• Snapshot: Zustand einfrieren und nach einem missglückten Versuch zurückspringen\n• Klonen: dieselbe Übungs-VM für die ganze Klasse\n• Virtuelle Netzwerke: NAT (VM surft über den Host), Bridge (VM hängt wie ein eigener PC im Netz), Host-only (nur Host und VMs)"
+    },
+    {
+      "type": "text",
+      "content": "Container gehen einen anderen Weg: Sie virtualisieren nicht die Hardware, sondern isolieren Prozesse auf demselben Kernel. Ein Container hat eigenes Dateisystem, eigene Prozess- und Netzwerksicht, aber keinen eigenen Kernel. Unter Linux sorgen dafür Namespaces (was ein Prozess sieht) und cgroups (wie viel CPU und RAM er verbrauchen darf). Ein Image ist die Vorlage, ein Container eine laufende Instanz davon – bekanntestes Werkzeug ist Docker."
+    },
+    {
+      "type": "code",
+      "content": "$ uname -r             # Host\n6.18.44-fc-v378\n$ docker run --rm alpine uname -r\n6.18.44-fc-v378\n# derselbe Kernel!\n\n# eigene Prozesssicht per\n# PID-Namespace:\n$ sudo unshare --pid --fork \\\n    --mount-proc ps -o pid,comm\n    PID COMMAND\n      1 ps"
+    },
+    {
+      "type": "text",
+      "content": "Im neuen PID-Namespace ist ps selbst Prozess Nummer 1 – die vielen anderen Prozesse des Hosts sind unsichtbar. Genau so fühlt sich ein Container „wie ein eigener Rechner“ an, obwohl er nur ein isolierter Prozess ist. Ein paar Docker-Grundbefehle:"
+    },
+    {
+      "type": "code",
+      "content": "docker run -d --name web \\\n  -p 8080:80 nginx\n# Container im Hintergrund,\n# Host-Port 8080 -> Port 80\ndocker ps           # laufende\ndocker stop web     # anhalten\ndocker rm web       # löschen\ndocker images       # Images"
+    },
+    {
+      "type": "text",
+      "content": "VM oder Container?\n• VM: eigenes BS samt Kernel, stärkere Isolation, auch ein anderes BS als der Host möglich (Windows-VM auf Linux). Dafür groß (oft mehrere GB) und langsamer beim Starten.\n• Container: kein eigener Kernel, klein, startet in Sekunden, ideal für Microservices und dafür, dass Entwicklung und Server dieselbe Umgebung haben. Ein Linux-Container braucht aber einen Linux-Kernel – Docker Desktop unter Windows nutzt dafür im Hintergrund eine Linux-VM (z. B. über WSL 2).\nZusammenfassung: Typ-1-Hypervisoren laufen direkt auf der Hardware, Typ 2 auf einem Host-BS. Container teilen den Kernel und isolieren per Namespaces und cgroups."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Zu welcher Art gehört VirtualBox, das du als Programm unter Windows installierst?",
+      "options": [
+        "Typ-1-Hypervisor",
+        "Container-Engine",
+        "Typ-2-Hypervisor",
+        "Mikrokernel"
+      ],
+      "correctIndex": 2,
+      "explanation": "VirtualBox läuft als Anwendung auf einem Host-BS – das ist ein Typ-2-Hypervisor (hosted)."
+    },
+    {
+      "question": "Was gibt docker run --rm alpine uname -r auf einem Linux-Host aus?",
+      "options": [
+        "Die Kernel-Version des Hosts, weil Container keinen eigenen Kernel haben",
+        "Die Kernel-Version von Alpine, die im Image steckt",
+        "Nichts, weil Container uname nicht kennen",
+        "Die Version von Docker"
+      ],
+      "correctIndex": 0,
+      "explanation": "Container teilen sich den Kernel des Hosts. uname -r fragt den Kernel – also erscheint die Version des Hosts."
+    },
+    {
+      "question": "Welche Linux-Funktion sorgt dafür, dass ein Container nur seine eigenen Prozesse sieht?",
+      "options": [
+        "cgroups",
+        "Journaling",
+        "Paging",
+        "Namespaces"
+      ],
+      "correctIndex": 3,
+      "explanation": "Namespaces bestimmen, was ein Prozess sieht (Prozesse, Netzwerk, Hostname, Dateisystem). cgroups begrenzen dagegen, wie viele Ressourcen er verbraucht."
+    },
+    {
+      "question": "Ihr wollt im Labor ein Windows-Server-System auf einem Linux-Rechner testen. Was ist geeignet?",
+      "options": [
+        "Ein Docker-Container mit Windows-Image auf dem Linux-Kernel",
+        "Eine virtuelle Maschine",
+        "Ein PID-Namespace",
+        "Ein Snapshot des Linux-Hosts"
+      ],
+      "correctIndex": 1,
+      "explanation": "Windows braucht seinen eigenen Kernel. Den bekommt es nur in einer VM – Container teilen sich den Kernel des Hosts."
+    }
+  ]
+}

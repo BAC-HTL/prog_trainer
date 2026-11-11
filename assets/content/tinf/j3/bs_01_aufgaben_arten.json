@@ -1,0 +1,90 @@
+{
+  "id": "tinf-j3-bs_01_aufgaben_arten",
+  "title": "Aufgaben und Arten von Betriebssystemen",
+  "summary": "Wozu ein Betriebssystem da ist, welche Arten es gibt und warum Programme nicht direkt auf die Hardware zugreifen dürfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im 1. Jahrgang hast du ein Betriebssystem installiert – jetzt schauen wir hinein. Das Betriebssystem (BS) vermittelt zwischen Hardware und Programmen. Es hat drei Hauptaufgaben:\n• Ressourcen verwalten: CPU-Zeit, Arbeitsspeicher, Geräte und Dateien gerecht und effizient verteilen\n• Abstrahieren: Programme arbeiten mit „Dateien“ und „Fenstern“, nicht mit Sektoren und Grafikregistern\n• Schützen: Programme und Benutzer:innen voneinander abschotten"
+    },
+    {
+      "type": "code",
+      "content": "+------------------------------+\n| Anwendungen (Browser, IDE)   |\n+------------------------------+\n| Systemaufrufe (Schnittstelle)|\n+------------------------------+\n| Kernel: Prozesse, Speicher,  |\n| Dateisysteme, Treiber        |\n+------------------------------+\n| Hardware (CPU, RAM, SSD, …)  |\n+------------------------------+"
+    },
+    {
+      "type": "text",
+      "content": "Nicht jedes Betriebssystem hat dieselben Ziele:\n• Desktop-BS (Windows, macOS, Linux-Distributionen): bequeme Bedienung, sehr viele unterschiedliche Geräte und Programme\n• Server-BS (z. B. Windows Server, Linux): Stabilität, viele gleichzeitige Zugriffe, Betrieb oft ohne grafische Oberfläche und per Fernwartung\n• Mobile BS (Android, iOS): Akku sparen, Touch-Bedienung, Apps streng voneinander getrennt, Berechtigungen pro App\n• Eingebettete Systeme (Router, Waschmaschine, Steuergerät im Auto): wenig Speicher, eine feste Aufgabe, oft ganz ohne Bildschirm"
+    },
+    {
+      "type": "text",
+      "content": "Eine eigene Gruppe sind Echtzeitbetriebssysteme. Bei ihnen zählt nicht nur, dass das Ergebnis stimmt, sondern dass es rechtzeitig kommt.\n• Harte Echtzeit: Eine Frist darf nie überschritten werden – sonst Schaden (Airbag, ABS, Robotersteuerung).\n• Weiche Echtzeit: Gelegentliches Zuspätkommen ist ärgerlich, aber tolerierbar (Video ruckelt kurz).\nTypischer Fehler: „Echtzeit = besonders schnell“. Gemeint ist vorhersagbar – die maximale Reaktionszeit ist garantiert."
+    },
+    {
+      "type": "text",
+      "content": "Damit ein fehlerhaftes Programm nicht das ganze System mitreißt, kennt die CPU Privilegstufen:\n• Kernel Mode: Alle Befehle sind erlaubt, direkter Zugriff auf Hardware und gesamten Speicher. Hier läuft der Kernel (der Kern des BS) samt Treibern.\n• User Mode: Eingeschränkte Rechte. Normale Programme dürfen weder direkt auf Geräte noch auf fremden Speicher zugreifen.\nStürzt deine App im User Mode ab, beendet das BS nur sie. Ein Fehler im Kernel Mode, etwa in einem Treiber, kann dagegen das ganze System lahmlegen (Bluescreen bzw. Kernel Panic)."
+    },
+    {
+      "type": "text",
+      "content": "Wie liest ein Programm dann überhaupt eine Datei? Über einen Systemaufruf (System Call). Das Programm bittet den Kernel um einen Dienst, die CPU wechselt kontrolliert in den Kernel Mode, der Kernel prüft die Rechte, erledigt die Arbeit und kehrt in den User Mode zurück. Unter Linux macht das Werkzeug strace diese Aufrufe sichtbar – hier für cat gruss.txt (gekürzt):"
+    },
+    {
+      "type": "code",
+      "content": "$ strace -e trace=openat,read,write \\\n    cat gruss.txt\nopenat(AT_FDCWD, \"gruss.txt\",\n       O_RDONLY) = 3\nread(3, \"Hallo HTL\\n\", 131072) = 10\nwrite(1, \"Hallo HTL\\n\", 10) = 10\nread(3, \"\", 131072) = 0\n\n# 3 = Nummer der geöffneten Datei\n# 1 = Standardausgabe (Terminal)\n# Rückgabe = Anzahl Bytes"
+    },
+    {
+      "type": "text",
+      "content": "Auch der Aufbau des Kernels unterscheidet sich:\n• Monolithischer Kernel: Treiber, Dateisysteme und Netzwerk laufen alle im Kernel Mode. Schnell, aber ein fehlerhafter Treiber gefährdet alles. Beispiel: Linux (mit nachladbaren Kernel-Modulen).\n• Mikrokernel: Nur das Nötigste (Prozesse, Speicher, Nachrichten) im Kernel, der Rest als Dienste im User Mode. Robuster, aber mehr Moduswechsel.\n• Hybridkernel: Mischform, z. B. der Windows-NT-Kernel."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein BS verwaltet Ressourcen, abstrahiert die Hardware und schützt. Je nach Einsatz gibt es Desktop-, Server-, Mobil-, eingebettete und Echtzeitsysteme (hart/weich). Programme laufen im User Mode und erreichen Hardware nur über Systemaufrufe, die der Kernel im Kernel Mode ausführt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Art von Betriebssystem braucht die Steuerung eines Airbags?",
+      "options": [
+        "Ein Server-Betriebssystem",
+        "Ein System mit weicher Echtzeit",
+        "Ein System mit harter Echtzeit",
+        "Ein Desktop-Betriebssystem mit schneller CPU"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beim Airbag darf die Reaktionsfrist nie überschritten werden – das ist harte Echtzeit. Eine schnelle CPU allein garantiert keine Fristen."
+    },
+    {
+      "question": "Was passiert bei einem Systemaufruf?",
+      "options": [
+        "Die CPU wechselt kontrolliert in den Kernel Mode, der Kernel prüft die Rechte und führt den Dienst aus",
+        "Das Programm schaltet sich selbst in den Kernel Mode und greift direkt auf die Hardware zu",
+        "Das Betriebssystem wird neu gestartet",
+        "Das Programm wird in den Arbeitsspeicher geladen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Programm kann sich nicht selbst höhere Rechte geben. Es bittet den Kernel per Systemaufruf, der Wechsel in den Kernel Mode passiert kontrolliert über einen festen Einsprungpunkt."
+    },
+    {
+      "question": "Was bedeutet die 1 in dieser strace-Zeile?",
+      "code": "write(1, \"hallo\\n\", 6) = 6",
+      "options": [
+        "Es wurde 1 Byte geschrieben",
+        "Es ist der erste Systemaufruf des Programms",
+        "Der Aufruf war erfolgreich (1 = true)",
+        "Die Ausgabe geht an die Standardausgabe"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das erste Argument von write ist die Nummer des Ziels (Dateideskriptor). 1 steht für die Standardausgabe, also das Terminal. Die Anzahl der Bytes steht hinter dem Gleichheitszeichen (6)."
+    },
+    {
+      "question": "Welche Aussage über User Mode und Kernel Mode stimmt?",
+      "options": [
+        "Treiber laufen grundsätzlich im User Mode",
+        "Im User Mode darf ein Programm beliebig auf den Speicher anderer Programme zugreifen",
+        "Der Kernel Mode ist nur bei Echtzeitsystemen vorhanden",
+        "Stürzt ein Programm im User Mode ab, kann das BS es beenden, ohne dass das System abstürzt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Genau das ist der Sinn der Trennung: Fehler im User Mode bleiben auf das Programm beschränkt. Treiber laufen bei Desktop-Systemen meist im Kernel Mode – deshalb sind Treiberfehler so gefährlich."
+    }
+  ]
+}

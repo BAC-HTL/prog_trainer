@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j3-komponenten_02_router_konfigurieren",
+  "title": "Router konfigurieren",
+  "summary": "Router-Interfaces einrichten, Inter-VLAN-Routing mit Subinterfaces, Default- und Backup-Routen sowie NAT/PAT auf einem Cisco-Router konfigurieren und überprüfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Routingtabelle, statische Routen und das Prinzip von NAT kennst du aus dem 2. Jahrgang. In dieser Lektion konfigurierst du einen Router für eine Schule: ein Anschluss zum Provider, ein Anschluss ins Schulnetz mit mehreren VLANs. Die Befehle sind wieder Cisco IOS – andere Hersteller lösen dieselben Aufgaben mit anderer Syntax."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS - Interfaces\ninterface gi0/1\n description Uplink Provider\n ip address 203.0.113.2\n            255.255.255.252\n no shutdown\ninterface gi0/0\n description LAN Gebaeude A\n no shutdown"
+    },
+    {
+      "type": "text",
+      "content": "Wichtiger Unterschied zum Switch: Router-Interfaces sind im Auslieferungszustand abgeschaltet. Ohne „no shutdown“ passiert gar nichts – das ist der häufigste Anfängerfehler. Eine „description“ kostet nichts und hilft enorm bei der Fehlersuche. Den Zustand aller Interfaces zeigt „show ip interface brief“: „administratively down“ heißt, das Interface ist per Befehl abgeschaltet; „up/down“ deutet auf ein Problem auf Schicht 1 oder 2 hin (Kabel, Gegenstelle)."
+    },
+    {
+      "type": "code",
+      "content": "R1# show ip interface brief\n(gekürzt)\nInterface IP-Address  Status Prot.\nGi0/0     unassigned  up     up\nGi0/1     203.0.113.2 up     up\nGi0/2     unassigned  administratively\n                      down   down"
+    },
+    {
+      "type": "text",
+      "content": "Inter-VLAN-Routing mit „Router-on-a-Stick“: Statt für jedes VLAN ein eigenes Kabel zu ziehen, verbindest du den Router über EINEN Trunk mit dem Switch. Am Router legst du pro VLAN ein Subinterface an (z. B. gi0/0.10), sagst ihm mit „encapsulation dot1Q“, welches VLAN-Tag es bedient, und gibst ihm die Gateway-Adresse dieses VLANs. Der Switch-Port zum Router muss ein Trunk sein. In größeren Netzen übernimmt diese Aufgabe meist ein Layer-3-Switch mit SVIs – schneller, weil das Routing in Hardware passiert."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS - Router-on-a-Stick\ninterface gi0/0.10\n encapsulation dot1Q 10\n ip address 10.10.10.1 255.255.255.0\ninterface gi0/0.30\n encapsulation dot1Q 30\n ip address 10.10.32.1 255.255.252.0\n! Gegenstelle am Switch: Trunk!"
+    },
+    {
+      "type": "code",
+      "content": "! Default Route zum Provider\nip route 0.0.0.0 0.0.0.0 203.0.113.1\n! Backup über LTE-Router, AD 10\nip route 0.0.0.0 0.0.0.0 10.0.0.2 10\n\nR1# show ip route (Auszug)\nS*  0.0.0.0/0 [1/0]\n      via 203.0.113.1\nC   10.10.32.0/22 is directly ...\nL   10.10.32.1/32 is directly ..."
+    },
+    {
+      "type": "text",
+      "content": "Die zweite Route oben ist eine Floating Static Route: Durch die angehängte administrative Distanz 10 ist sie „schlechter“ als die normale statische Route (AD 1) und erscheint erst in der Routingtabelle, wenn die Hauptroute verschwindet – etwa weil der Next Hop nicht mehr erreichbar ist. Achtung: Fällt beim Provider weiter hinten etwas aus, bemerkt das eine statische Route nicht. In „show ip route“ bedeutet [1/0] = [administrative Distanz/Metrik]; C steht für direkt verbunden, L für die eigene Interface-Adresse, S* für eine statische Default Route."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS - PAT (NAT-Overload)\ninterface gi0/0.10\n ip nat inside\ninterface gi0/0.30\n ip nat inside\ninterface gi0/1\n ip nat outside\naccess-list 1 permit 10.10.0.0\n                     0.0.255.255\nip nat inside source list 1\n           interface gi0/1 overload\n! (Zeilen hier umgebrochen)\nshow ip nat translations"
+    },
+    {
+      "type": "text",
+      "content": "Die ACL legt fest, WELCHE inneren Adressen übersetzt werden. Sie verwendet eine Wildcard-Maske: das Gegenteil der Subnetzmaske (0 = Bit muss passen, 1 = egal). Aus 255.255.252.0 (/22) wird 0.0.3.255. „overload“ aktiviert PAT – alle teilen sich die Adresse von gi0/1. Soll ein interner Webserver von außen erreichbar sein, brauchst du zusätzlich eine statische Übersetzung (Portweiterleitung), z. B. „ip nat inside source static tcp 10.10.40.10 443 203.0.113.2 443“.\n\nTypische Fehler: inside und outside vertauscht, oder die ACL erfasst das VLAN-Netz nicht. Zusammenfassung: Interfaces mit „no shutdown“ aktivieren, VLANs über Subinterfaces routen, Default Route plus Floating Route als Backup, PAT mit inside/outside und ACL."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Wildcard-Maske gehört in eine ACL, die das Netz 10.10.32.0/22 erfassen soll?",
+      "options": [
+        "0.0.3.255",
+        "255.255.252.0",
+        "0.0.0.255",
+        "0.0.4.255"
+      ],
+      "correctIndex": 0,
+      "explanation": "/22 = 255.255.252.0. Die Wildcard ist die Umkehrung: 255 − 255 = 0, 255 − 252 = 3, 255 − 0 = 255 → 0.0.3.255."
+    },
+    {
+      "question": "In „show ip route“ steht: S* 0.0.0.0/0 [1/0] via 203.0.113.1. Wofür steht die erste Zahl in der Klammer?",
+      "options": [
+        "Für die Anzahl der Hops",
+        "Für die Metrik",
+        "Für die administrative Distanz",
+        "Für die Nummer des Interfaces"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Format ist [administrative Distanz/Metrik]. Statische Routen haben standardmäßig AD 1."
+    },
+    {
+      "question": "Ein Router hat zwei Default Routes: eine über den Provider (ohne AD-Angabe) und eine über einen LTE-Router mit AD 10. Beide Next Hops sind erreichbar. Welche Route steht in der Routingtabelle?",
+      "options": [
+        "Beide, der Verkehr wird aufgeteilt",
+        "Nur die LTE-Route, weil 10 größer ist",
+        "Keine, weil sie sich widersprechen",
+        "Nur die Provider-Route mit AD 1"
+      ],
+      "correctIndex": 3,
+      "explanation": "Kleinere administrative Distanz ist vertrauenswürdiger. Die LTE-Route ist eine Floating Static Route und wird erst aktiv, wenn die Hauptroute wegfällt."
+    },
+    {
+      "question": "Ein frisch konfigurierter Router-Port mit korrekter IP-Adresse zeigt „administratively down“. Was fehlt?",
+      "options": [
+        "Ein gekreuztes Kabel",
+        "„no shutdown“ auf dem Interface",
+        "„ip default-gateway“",
+        "Eine Default Route"
+      ],
+      "correctIndex": 1,
+      "explanation": "Router-Interfaces sind standardmäßig abgeschaltet. „administratively down“ bedeutet genau das – mit „no shutdown“ wird das Interface aktiviert."
+    }
+  ]
+}

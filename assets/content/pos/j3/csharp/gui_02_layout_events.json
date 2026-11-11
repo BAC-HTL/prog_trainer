@@ -1,0 +1,97 @@
+{
+  "id": "pos-j3-csharp-gui_02_layout_events",
+  "title": "Layout & Events",
+  "summary": "Controls mit StackPanel und Grid anordnen und Ereignisse sauber behandeln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Controls mit festen Pixel-Koordinaten zu platzieren, ist keine gute Idee: Das Fenster wird vergrößert, Windows skaliert die Anzeige auf 125 %, eine Beschriftung wird länger. In WPF ordnest du Controls deshalb mit Layout-Containern an. Sie berechnen Größe und Position selbst. Die zwei wichtigsten sind StackPanel und Grid."
+    },
+    {
+      "type": "text",
+      "content": "Ein StackPanel stapelt seine Kinder – standardmäßig untereinander (Orientation=\"Vertical\"), mit Orientation=\"Horizontal\" nebeneinander. StackPanels kann man ineinander verschachteln.\n\nAbstände setzt du mit Margin (Außenabstand). Margin=\"10\" gilt für alle Seiten, Margin=\"5,0,0,10\" bedeutet links, oben, rechts, unten. Padding ist der Innenabstand, z. B. zwischen Rand und Text eines Buttons."
+    },
+    {
+      "type": "code",
+      "content": "<StackPanel Margin=\"10\">\n  <TextBlock Text=\"Name:\" />\n  <TextBox x:Name=\"txtName\"\n           Margin=\"0,0,0,10\" />\n  <StackPanel Orientation=\"Horizontal\">\n    <Button Content=\"OK\" Width=\"80\" />\n    <Button Content=\"Abbrechen\"\n            Width=\"80\"\n            Margin=\"5,0,0,0\" />\n  </StackPanel>\n</StackPanel>"
+    },
+    {
+      "type": "text",
+      "content": "Ein Grid teilt die Fläche in Zeilen und Spalten – ideal für Formulare. Für Höhe und Breite gibt es drei Arten:\n• Zahl (z. B. 100) – feste Größe.\n• Auto – so groß wie der Inhalt.\n• * (Stern) – teilt den restlichen Platz auf. 2* bekommt doppelt so viel wie *.\n\nBeispiel: Zwei Spalten mit * und 2* in 300 Einheiten Breite → 100 und 200.\n\nMit Grid.Row und Grid.Column legst du fest, in welche Zelle ein Control kommt. Gezählt wird ab 0, ohne Angabe landet es in Zeile 0, Spalte 0. Grid.ColumnSpan lässt ein Control über mehrere Spalten reichen."
+    },
+    {
+      "type": "code",
+      "content": "<Grid Margin=\"10\">\n  <Grid.RowDefinitions>\n    <RowDefinition Height=\"Auto\" />\n    <RowDefinition Height=\"Auto\" />\n    <RowDefinition Height=\"*\" />\n  </Grid.RowDefinitions>\n  <Grid.ColumnDefinitions>\n    <ColumnDefinition Width=\"Auto\" />\n    <ColumnDefinition Width=\"*\" />\n  </Grid.ColumnDefinitions>\n\n  <Label Content=\"Vorname:\" />\n  <TextBox Grid.Column=\"1\" />\n  <Label Grid.Row=\"1\" Content=\"Klasse:\" />\n  <TextBox Grid.Row=\"1\" Grid.Column=\"1\" />\n  <ListBox Grid.Row=\"2\"\n           Grid.ColumnSpan=\"2\" />\n</Grid>"
+    },
+    {
+      "type": "text",
+      "content": "Ein Eventhandler hat in WPF meist die Form void Name(object sender, …EventArgs e). sender ist das Control, das das Ereignis ausgelöst hat, e enthält Zusatzinfos.\n\nNeben Click gibt es viele weitere Ereignisse, z. B.:\n• TextChanged – Text einer TextBox ändert sich.\n• SelectionChanged – andere Auswahl in ComboBox/ListBox.\n• Checked/Unchecked – CheckBox wird an- oder abgehakt.\n• Loaded – das Fenster ist fertig aufgebaut."
+    },
+    {
+      "type": "code",
+      "content": "<!-- XAML: alle Ziffern-Tasten -->\n<Button Content=\"1\" Click=\"Ziffer_Click\" />\n<Button Content=\"2\" Click=\"Ziffer_Click\" />\n<Button Content=\"3\" Click=\"Ziffer_Click\" />\n\n// Code-Behind: ein Handler für alle\nprivate void Ziffer_Click(\n    object sender, RoutedEventArgs e)\n{\n    var btn = (Button)sender;\n    txtAnzeige.Text += btn.Content.ToString();\n}"
+    },
+    {
+      "type": "text",
+      "content": "Beim Taschenrechner bekommen zehn Ziffern-Buttons denselben Handler. Über sender erfährst du, welcher Button geklickt wurde. So schreibst du die Logik einmal statt zehnmal.\n\nNoch wichtiger: Trenne die eigentliche Logik vom UI. Rechnungen, Prüfungen und Umwandlungen kommen in eigene Klassen mit Methoden, die keine Controls kennen. Der Handler „klebt“ nur: Eingabe lesen, Logik aufrufen, Ergebnis anzeigen. Die Logik kannst du dann mit Unit-Tests prüfen – ganz ohne Fenster."
+    },
+    {
+      "type": "code",
+      "content": "public static class Rechner\n{\n    public static int Berechne(\n        int a, int b, string op) => op switch\n    {\n        \"+\" => a + b,\n        \"*\" => a * b,\n        _ => throw new ArgumentException(\n                 \"Unbekannter Operator\")\n    };\n}\n// Rechner.Berechne(3, 4, \"*\")  -> 12\n\nprivate void BtnPlus_Click(\n    object sender, RoutedEventArgs e)\n{\n    int a = int.Parse(txtA.Text);\n    int b = int.Parse(txtB.Text);\n    lblErgebnis.Text = Rechner\n        .Berechne(a, b, \"+\").ToString();\n}"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: StackPanel stapelt, Grid ordnet in Zeilen und Spalten (Auto, *, feste Größe). Margin heißt links, oben, rechts, unten. Typischer Fehler: Grid.Row oder Grid.Column vergessen – dann liegen mehrere Controls übereinander in Zelle 0/0. Handler bekommen über sender das auslösende Control. Logik gehört in eigene Klassen. Achtung: int.Parse stürzt bei ungültiger Eingabe ab – wie du Eingaben prüfst, lernst du in der nächsten Lektion."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Der Grid-Inhalt ist 300 Einheiten breit. Wie breit ist die rechte Spalte?",
+      "code": "<Grid.ColumnDefinitions>\n  <ColumnDefinition Width=\"*\" />\n  <ColumnDefinition Width=\"2*\" />\n</Grid.ColumnDefinitions>",
+      "options": [
+        "100",
+        "150",
+        "200",
+        "300"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Sterne teilen den Platz im Verhältnis 1 : 2 auf, also in 3 Teile zu je 100. Die rechte Spalte (2*) bekommt 2 Teile = 200."
+    },
+    {
+      "question": "Finde den Fehler: Im laufenden Programm liegen beide TextBoxen übereinander. Warum?",
+      "code": "<Grid>\n  <Grid.RowDefinitions>\n    <RowDefinition Height=\"Auto\" />\n    <RowDefinition Height=\"Auto\" />\n  </Grid.RowDefinitions>\n  <Grid.ColumnDefinitions>\n    <ColumnDefinition Width=\"Auto\" />\n    <ColumnDefinition Width=\"*\" />\n  </Grid.ColumnDefinitions>\n  <Label Content=\"Vorname:\" />\n  <TextBox Grid.Column=\"1\" />\n  <Label Content=\"Nachname:\" />\n  <TextBox Grid.Column=\"1\" />\n</Grid>",
+      "options": [
+        "Beim zweiten Label und der zweiten TextBox fehlt Grid.Row=\"1\" – ohne Angabe landen sie in Zeile 0",
+        "RowDefinitions müssen nach den Controls stehen",
+        "Eine TextBox darf nicht in Spalte 1 stehen",
+        "Height=\"Auto\" ist im Grid nicht erlaubt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Fehlt Grid.Row, gilt der Standardwert 0. Das zweite Label und die zweite TextBox landen daher in Zeile 0 über dem ersten Paar. Richtig wäre Grid.Row=\"1\"."
+    },
+    {
+      "question": "Wie groß ist bei diesem Button der Abstand nach unten?",
+      "code": "<Button Content=\"OK\"\n        Margin=\"10,0,20,5\" />",
+      "options": [
+        "10",
+        "0",
+        "20",
+        "5"
+      ],
+      "correctIndex": 3,
+      "explanation": "Mit vier Werten gilt die Reihenfolge links, oben, rechts, unten. Unten ist also 5."
+    },
+    {
+      "question": "txtAnzeige ist anfangs leer. Die Benutzerin klickt zuerst auf den Button „7“, dann auf „3“. Was steht danach in der TextBox?",
+      "code": "private void Ziffer_Click(\n    object sender, RoutedEventArgs e)\n{\n    var btn = (Button)sender;\n    txtAnzeige.Text += btn.Content.ToString();\n}",
+      "options": [
+        "37",
+        "10",
+        "73",
+        "3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beide Buttons rufen Ziffer_Click auf. sender ist jeweils der geklickte Button, sein Content wird hinten an den Text angehängt: erst \"7\", dann \"73\". Es werden Strings verkettet, nicht Zahlen addiert."
+    }
+  ]
+}

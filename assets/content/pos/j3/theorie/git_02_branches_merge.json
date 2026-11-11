@@ -1,0 +1,94 @@
+{
+  "id": "pos-j3-theorie-git_02_branches_merge",
+  "title": "Branches und Merge",
+  "summary": "Parallel an Features arbeiten, Branches zusammenführen und Merge-Konflikte lösen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Branch ist ein eigener Entwicklungszweig. So kannst du ein neues Feature ausprobieren, ohne den funktionierenden Stand zu gefährden. Technisch ist ein Branch nur ein beweglicher Zeiger auf einen Commit. HEAD zeigt auf den Branch, auf dem du gerade arbeitest. Der Hauptbranch heißt je nach Einstellung main oder master."
+    },
+    {
+      "type": "code",
+      "content": "$ git switch -c feature/login\nSwitched to a new branch\n'feature/login'\n# ... Datei anlegen, add, commit ...\n$ git switch main\nSwitched to branch 'main'\n\n$ git branch\n  feature/login\n* main"
+    },
+    {
+      "type": "text",
+      "content": "git switch -c legt einen Branch an und wechselt hinein (ältere Anleitungen verwenden dafür git checkout -b). Commits landen immer auf dem aktuellen Branch. Um die Arbeit zurückzuholen, wechselst du auf den Ziel-Branch und rufst git merge auf. Hat sich main seit dem Abzweigen nicht verändert, schiebt Git den Zeiger einfach nach vorne – ein Fast-Forward."
+    },
+    {
+      "type": "code",
+      "content": "$ git merge feature/login\nUpdating 75f731c..d233891\nFast-forward\n login.py | 1 +\n 1 file changed, 1 insertion(+)\n\n$ git branch -d feature/login\nDeleted branch feature/login\n(was d233891)."
+    },
+    {
+      "type": "text",
+      "content": "Gibt es auf beiden Branches neue Commits, erstellt Git einen Merge-Commit mit zwei Eltern (Three-Way-Merge). Ändern beide Seiten aber dieselbe Stelle derselben Datei, kann Git nicht entscheiden, welche Version richtig ist: Es entsteht ein Merge-Konflikt."
+    },
+    {
+      "type": "code",
+      "content": "$ git merge englisch\nAuto-merging app.py\nCONFLICT (content): Merge\nconflict in app.py\nAutomatic merge failed; fix\nconflicts and then commit the\nresult.\n\n$ git status --short\nUU app.py"
+    },
+    {
+      "type": "text",
+      "content": "Git schreibt beide Versionen mit Konfliktmarkern in die Datei. Zwischen <<<<<<< HEAD und ======= steht deine Version (aktueller Branch), zwischen ======= und >>>>>>> die Version des anderen Branches. Du entscheidest, was bleibt, entfernst alle Marker, und schließt den Merge mit git add und git commit ab."
+    },
+    {
+      "type": "code",
+      "content": "def begruessung():\n<<<<<<< HEAD\n    return \"Servus\"\n=======\n    return \"Hello\"\n>>>>>>> englisch\n\n# gelöst:\ndef begruessung():\n    return \"Servus\"\n\n$ git add app.py\n$ git commit -m \"Merge englisch\""
+    },
+    {
+      "type": "code",
+      "content": "$ git log --oneline --graph\n*   fb84b06 Merge englisch\n|\\\n| * 22a54c2 Begrüßung auf Englisch\n* | 621fcf3 Begrüßung auf Deutsch\n|/\n* d233891 Login-Funktion anlegen\n* 75f731c Begrüßung anlegen"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Für jedes Feature einen eigenen Branch, oft fertig mergen, danach löschen. Typische Fehler: versehentlich direkt auf main committen (vorher git status oder git branch prüfen), Konfliktmarker im Code stehen lassen – dann läuft das Programm nicht mehr – oder beim Konflikt einfach eine Seite übernehmen, ohne zu verstehen, was die andere geändert hat. Mit git merge --abort brichst du einen missglückten Merge ab."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was macht git switch -c bugfix?",
+      "options": [
+        "Es wechselt auf einen bestehenden Branch bugfix",
+        "Es legt den Branch bugfix an und wechselt hinein",
+        "Es löscht den Branch bugfix",
+        "Es mergt bugfix in den aktuellen Branch"
+      ],
+      "correctIndex": 1,
+      "explanation": "-c steht für create: Der Branch wird beim aktuellen Commit angelegt, und HEAD zeigt danach auf ihn."
+    },
+    {
+      "question": "Wann führt git merge feature einen Fast-Forward durch?",
+      "options": [
+        "Wenn main seit dem Abzweigen von feature keine neuen Commits bekommen hat",
+        "Wenn beide Branches dieselbe Datei geändert haben",
+        "Immer, wenn es keinen Konflikt gibt",
+        "Nur mit der Option --force"
+      ],
+      "correctIndex": 0,
+      "explanation": "Liegt main direkt in der Geschichte von feature, kann Git den Zeiger einfach vorschieben – es entsteht kein Merge-Commit."
+    },
+    {
+      "question": "Du bist auf main und mergst den Branch neu. Welche Zeile übernimmst du, wenn du die Version von neu behalten willst?",
+      "code": "<<<<<<< HEAD\npreis = 10\n=======\npreis = 12\n>>>>>>> neu",
+      "options": [
+        "preis = 10",
+        "preis = 12",
+        "Beide Zeilen inklusive Marker",
+        "Keine, Git entscheidet automatisch"
+      ],
+      "correctIndex": 1,
+      "explanation": "Oberhalb von ======= steht die Version von HEAD (main), darunter die von neu. Du behältst preis = 12 und löschst alle Markerzeilen."
+    },
+    {
+      "question": "Du hast einen Konflikt in app.py gelöst und alle Marker entfernt. Was ist der nächste Schritt?",
+      "options": [
+        "git merge --abort",
+        "git branch -d app.py",
+        "git push --force",
+        "git add app.py und dann git commit"
+      ],
+      "correctIndex": 3,
+      "explanation": "Mit git add markierst du den Konflikt als gelöst, git commit schließt den Merge ab. --abort würde den Merge verwerfen."
+    }
+  ]
+}

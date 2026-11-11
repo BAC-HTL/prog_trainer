@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-python-graphen_02_tiefen_breitensuche",
+  "title": "Breitensuche und Tiefensuche",
+  "summary": "Wie du mit BFS und DFS systematisch alle erreichbaren Knoten eines Graphen besuchst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Fragen an einen Graphen lauten: Welche Knoten erreiche ich von hier aus? Wie komme ich mit möglichst wenigen Umstiegen ans Ziel? Ist das Netz zusammenhängend? Dafür gibt es zwei Grundverfahren: die Breitensuche (BFS, breadth-first search) und die Tiefensuche (DFS, depth-first search). Beide merken sich, welche Knoten schon besucht wurden – sonst würden sie in einem Zyklus ewig im Kreis laufen."
+    },
+    {
+      "type": "code",
+      "content": "graph = {\n    \"A\": [\"B\", \"C\"],\n    \"B\": [\"A\", \"D\", \"E\"],\n    \"C\": [\"A\", \"F\"],\n    \"D\": [\"B\"],\n    \"E\": [\"B\", \"F\"],\n    \"F\": [\"C\", \"E\"],\n}\n\n#      A\n#     / \\\n#    B   C\n#   / \\   \\\n#  D   E---F"
+    },
+    {
+      "type": "text",
+      "content": "Die Breitensuche arbeitet Schicht für Schicht: zuerst der Start, dann alle direkten Nachbarn, dann deren Nachbarn usw. Dafür verwendet sie eine Queue (FIFO) – wie im 2. Jahrgang mit collections.deque. Ein Knoten wird beim Einreihen als besucht markiert, damit er nicht doppelt in die Queue kommt."
+    },
+    {
+      "type": "code",
+      "content": "graph = {\n    \"A\": [\"B\", \"C\"],\n    \"B\": [\"A\", \"D\", \"E\"],\n    \"C\": [\"A\", \"F\"],\n    \"D\": [\"B\"],\n    \"E\": [\"B\", \"F\"],\n    \"F\": [\"C\", \"E\"],\n}\n\nfrom collections import deque\n\ndef bfs(graph, start):\n    besucht = [start]\n    queue = deque([start])\n    while queue:\n        k = queue.popleft()\n        for n in graph[k]:\n            if n not in besucht:\n                besucht.append(n)\n                queue.append(n)\n    return besucht\n\nprint(bfs(graph, \"A\"))\n# ['A', 'B', 'C', 'D', 'E', 'F']"
+    },
+    {
+      "type": "text",
+      "content": "Die Tiefensuche geht dagegen so weit wie möglich in eine Richtung und kehrt erst um, wenn es nicht mehr weitergeht (Backtracking) – wie du im Labyrinth immer der rechten Wand folgst. Am elegantesten schreibst du sie rekursiv. Die Reihenfolge hängt davon ab, in welcher Reihenfolge die Nachbarn gespeichert sind."
+    },
+    {
+      "type": "code",
+      "content": "graph = {\n    \"A\": [\"B\", \"C\"],\n    \"B\": [\"A\", \"D\", \"E\"],\n    \"C\": [\"A\", \"F\"],\n    \"D\": [\"B\"],\n    \"E\": [\"B\", \"F\"],\n    \"F\": [\"C\", \"E\"],\n}\n\ndef dfs(graph, k, besucht=None):\n    if besucht is None:\n        besucht = []\n    besucht.append(k)\n    for n in graph[k]:\n        if n not in besucht:\n            dfs(graph, n, besucht)\n    return besucht\n\nprint(dfs(graph, \"A\"))\n# ['A', 'B', 'D', 'E', 'F', 'C']"
+    },
+    {
+      "type": "text",
+      "content": "Statt Rekursion kann die Tiefensuche auch einen Stack (LIFO) verwenden – das vermeidet bei sehr großen Graphen einen RecursionError. Merke: BFS = Queue, DFS = Stack (oder Rekursion, die intern den Aufrufstack nutzt). Achtung: Die Liste besucht ist hier zur Übersicht eine Liste; bei großen Graphen nimmst du besser ein set, weil „in“ dort viel schneller ist."
+    },
+    {
+      "type": "text",
+      "content": "Großer Vorteil der BFS: In einem ungewichteten Graphen findet sie den Weg mit den wenigsten Kanten – im Öffi-Netz also die Verbindung mit den wenigsten Stationen. Dazu merkst du dir für jeden Knoten seinen Vorgänger und gehst am Ende vom Ziel rückwärts zum Start."
+    },
+    {
+      "type": "code",
+      "content": "graph = {\n    \"A\": [\"B\", \"C\"],\n    \"B\": [\"A\", \"D\", \"E\"],\n    \"C\": [\"A\", \"F\"],\n    \"D\": [\"B\"],\n    \"E\": [\"B\", \"F\"],\n    \"F\": [\"C\", \"E\"],\n}\nfrom collections import deque\n\ndef weg(graph, start, ziel):\n    vorg = {start: None}\n    queue = deque([start])\n    while queue:\n        k = queue.popleft()\n        for n in graph[k]:\n            if n not in vorg:\n                vorg[n] = k\n                queue.append(n)\n    if ziel not in vorg:\n        return None   # nicht erreichbar\n    pfad = []\n    while ziel is not None:\n        pfad.append(ziel)\n        ziel = vorg[ziel]\n    return pfad[::-1]\n\nprint(weg(graph, \"D\", \"F\"))\n# ['D', 'B', 'E', 'F']"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: BFS besucht Knoten nach Entfernung (Queue) und liefert in ungewichteten Graphen kürzeste Wege. DFS geht in die Tiefe (Rekursion/Stack) und eignet sich z. B. zum Finden von Zusammenhangskomponenten, Zyklen oder Wegen durch ein Labyrinth. Beide besuchen jeden erreichbaren Knoten genau einmal. Typische Fehler: besucht vergessen (Endlosschleife im Zyklus) oder eine Liste als Standardparameter (besucht=[]) – die würde zwischen Aufrufen geteilt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Reihenfolge besucht bfs(q, 1) die Knoten?",
+      "code": "q = {1: [2, 3], 2: [4],\n     3: [4, 5], 4: [], 5: []}",
+      "options": [
+        "[1, 2, 4, 3, 5]",
+        "[1, 2, 3, 4, 5]",
+        "[1, 3, 5, 4, 2]",
+        "[1, 2, 3, 5, 4]"
+      ],
+      "correctIndex": 1,
+      "explanation": "BFS arbeitet schichtweise: zuerst 1, dann seine Nachbarn 2 und 3, dann deren noch unbesuchte Nachbarn 4 (von 2) und 5 (von 3)."
+    },
+    {
+      "question": "Und in welcher Reihenfolge besucht die rekursive dfs(q, 1) denselben Graphen?",
+      "code": "q = {1: [2, 3], 2: [4],\n     3: [4, 5], 4: [], 5: []}",
+      "options": [
+        "[1, 2, 3, 4, 5]",
+        "[1, 3, 5, 4, 2]",
+        "[1, 2, 4, 3, 5]",
+        "[1, 2, 4, 5, 3]"
+      ],
+      "correctIndex": 2,
+      "explanation": "DFS geht von 1 zuerst zu 2, von dort sofort tiefer zu 4. 4 hat keine Nachbarn, also zurück zu 1 und weiter zu 3, dann zu 5 (4 ist schon besucht)."
+    },
+    {
+      "question": "Welche Datenstruktur verwendet die Breitensuche, um die nächsten Knoten zu verwalten?",
+      "options": [
+        "Einen Stack (LIFO)",
+        "Ein sortiertes Array",
+        "Einen binären Suchbaum",
+        "Eine Queue (FIFO)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die BFS bearbeitet Knoten in der Reihenfolge, in der sie entdeckt wurden – das ist genau FIFO. Ein Stack ergibt dagegen eine Tiefensuche."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert, wenn du in der BFS die Prüfung „if n not in besucht“ weglässt und der Graph einen Zyklus hat?",
+      "options": [
+        "Die Schleife läuft endlos, weil Knoten immer wieder in die Queue kommen",
+        "Es wird ein KeyError ausgelöst",
+        "Die BFS liefert dasselbe Ergebnis, nur langsamer",
+        "Python meldet sofort einen SyntaxError"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ohne Merken der besuchten Knoten wird z. B. A → B → A → B … immer wieder eingereiht. Die Queue wird nie leer, das Programm hängt."
+    }
+  ]
+}

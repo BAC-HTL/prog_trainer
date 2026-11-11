@@ -1,0 +1,90 @@
+{
+  "id": "pos-j3-python-threads_03_race_conditions",
+  "title": "Race Conditions und Locks",
+  "summary": "Wenn Threads gemeinsame Daten verändern, gehen Updates verloren – so erkennst du Race Conditions und behebst sie mit einem Lock.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Threads teilen sich den Speicher. Solange sie Daten nur lesen, ist das kein Problem. Verändern aber mehrere Threads dieselbe Variable, kann das Ergebnis davon abhängen, welcher Thread zuerst drankommt. Das nennt man Race Condition (Wettlaufsituation)."
+    },
+    {
+      "type": "text",
+      "content": "Beispiel: Fünf Threads zahlen je zehnmal 1 € auf ein Klassenkonto ein. Jede Einzahlung besteht aus drei Schritten: Stand lesen, um 1 erhöhen, zurückschreiben. Das time.sleep zwischen Lesen und Schreiben macht das Problem sichtbar – im echten Leben passiert dieselbe Unterbrechung nur seltener und zufällig."
+    },
+    {
+      "type": "code",
+      "content": "import threading, time\n\nstand = 0\n\ndef einzahlen():\n    global stand\n    for _ in range(10):\n        alt = stand          # lesen\n        time.sleep(0.001)    # Pause\n        stand = alt + 1      # schreiben\n\nts = [threading.Thread(target=einzahlen)\n      for _ in range(5)]\nfor t in ts:\n    t.start()\nfor t in ts:\n    t.join()\nprint(stand)   # erwartet: 50\n# Ausgabe z. B.: 10"
+    },
+    {
+      "type": "text",
+      "content": "Was passiert? Thread 1 liest 0 und schläft. In der Zwischenzeit lesen Thread 2 bis 5 ebenfalls 0. Alle schreiben danach 0 + 1 = 1. Fünf Einzahlungen, aber der Stand ist nur um 1 gestiegen – vier Updates sind verloren gegangen (Lost Update). Das wiederholt sich in jeder der zehn Runden – daher z. B. 10 statt 50."
+    },
+    {
+      "type": "code",
+      "content": "Zeit  Thread 1     Thread 2\n----  -----------  -----------\n 1    liest 0\n 2                 liest 0\n 3    schreibt 1\n 4                 schreibt 1\n=> 2 Einzahlungen, Stand nur 1"
+    },
+    {
+      "type": "text",
+      "content": "Die Lösung ist gegenseitiger Ausschluss: Der Abschnitt „lesen – erhöhen – schreiben“ (kritischer Abschnitt) darf immer nur von einem Thread gleichzeitig ausgeführt werden. Dafür gibt es threading.Lock. Mit with lock: betritt ein Thread den Abschnitt; andere Threads warten, bis er ihn wieder verlässt. Das with gibt das Lock auch bei einer Exception sicher frei."
+    },
+    {
+      "type": "code",
+      "content": "import threading, time\n\nstand = 0\nlock = threading.Lock()\n\ndef einzahlen():\n    global stand\n    for _ in range(10):\n        with lock:\n            alt = stand\n            time.sleep(0.001)\n            stand = alt + 1\n\nts = [threading.Thread(target=einzahlen)\n      for _ in range(5)]\nfor t in ts:\n    t.start()\nfor t in ts:\n    t.join()\nprint(stand)   # 50"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Jeder Thread erzeugt sein eigenes Lock (dann schützt es nichts – alle müssen dasselbe Lock-Objekt verwenden). Das Lock nur ums Schreiben legen, nicht ums Lesen. Oder ein zu großer kritischer Abschnitt, sodass die Threads nur noch nacheinander laufen. Gefährlich ist auch der Deadlock: Thread A hält Lock 1 und wartet auf Lock 2, Thread B hält Lock 2 und wartet auf Lock 1 – beide warten für immer."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Race Condition entsteht, wenn mehrere Threads gemeinsame Daten ohne Schutz verändern; das Ergebnis ist nicht vorhersagbar (z. B. Lost Updates). Den kritischen Abschnitt schützt du mit einem gemeinsamen threading.Lock und with lock:. Sperren immer so kurz wie möglich halten und Locks in fester Reihenfolge anfordern, um Deadlocks zu vermeiden."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was ist ein kritischer Abschnitt?",
+      "options": [
+        "Ein Codeteil, der besonders oft Exceptions wirft",
+        "Jeder Code, der time.sleep enthält",
+        "Der Code in der main-Funktion",
+        "Ein Codeteil, der auf gemeinsame Daten zugreift und nicht von mehreren Threads gleichzeitig ausgeführt werden darf"
+      ],
+      "correctIndex": 3,
+      "explanation": "Im kritischen Abschnitt werden gemeinsame Daten gelesen und verändert. Laufen dort mehrere Threads gleichzeitig, entsteht eine Race Condition."
+    },
+    {
+      "question": "Finde den Fehler: Warum entsteht hier trotz Lock eine Race Condition?",
+      "code": "def einzahlen():\n    global stand\n    lock = threading.Lock()\n    for _ in range(10):\n        with lock:\n            alt = stand\n            time.sleep(0.001)\n            stand = alt + 1",
+      "options": [
+        "with lock ist in Python nicht erlaubt",
+        "Jeder Aufruf erzeugt ein eigenes Lock – die Threads sperren sich gegenseitig nicht",
+        "time.sleep darf nicht im Lock stehen",
+        "global stand fehlt im Lock"
+      ],
+      "correctIndex": 1,
+      "explanation": "lock wird bei jedem Aufruf neu erzeugt. Jeder Thread hat sein eigenes Lock und muss nie warten. Das Lock muss einmal außerhalb der Funktion erzeugt und von allen Threads gemeinsam verwendet werden."
+    },
+    {
+      "question": "Zwei Threads lesen gleichzeitig den Stand 7, erhöhen jeweils um 1 und schreiben zurück. Welcher Stand ergibt sich?",
+      "options": [
+        "9",
+        "7",
+        "8",
+        "14"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beide rechnen 7 + 1 = 8 und schreiben 8. Ein Update geht verloren (Lost Update), richtig wäre 9."
+    },
+    {
+      "question": "Thread A sperrt lock1 und wartet dann auf lock2. Gleichzeitig sperrt Thread B lock2 und wartet auf lock1. Wie nennt man diese Situation?",
+      "options": [
+        "Race Condition",
+        "Daemon",
+        "Deadlock",
+        "Lost Update"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beide Threads warten aufeinander und kommen nie weiter – ein Deadlock. Vermeiden lässt er sich, indem alle Threads Locks in derselben Reihenfolge anfordern."
+    }
+  ]
+}

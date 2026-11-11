@@ -1,0 +1,94 @@
+{
+  "id": "pos-j3-python-compiler_01_aufbau_compiler",
+  "title": "Aufbau eines Compilers",
+  "summary": "Welche Phasen ein Compiler durchläuft – vom Quelltext über Tokens und Syntaxbaum bis zum Zielcode.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Compiler übersetzt ein Programm aus einer Quellsprache (z. B. C, C#, Python) in eine Zielsprache – Maschinencode, Bytecode oder eine Zwischensprache. Ein Interpreter führt das Programm dagegen direkt aus. In der Praxis wird oft beides kombiniert: Python übersetzt deinen Code zuerst in Bytecode (die .pyc-Dateien im Ordner __pycache__), den dann die Python-VM ausführt. C# wird in eine Zwischensprache (IL) übersetzt, die erst zur Laufzeit von einem JIT-Compiler in Maschinencode umgewandelt wird. Ein Compiler arbeitet in Phasen. Jede Phase bekommt das Ergebnis der vorigen. Die ersten Phasen (Analyse, „Front-End“) hängen nur von der Quellsprache ab, die letzten (Synthese, „Back-End“) von der Zielmaschine. Die Symboltabelle begleitet alle Phasen: Sie speichert jeden Bezeichner mit Typ, Gültigkeitsbereich usw."
+    },
+    {
+      "type": "code",
+      "content": "Quelltext  \"preis = 3 * 4\"\n   |\n1. Lexikalische Analyse (Lexer)\n   -> Tokens\n2. Syntaktische Analyse (Parser)\n   -> Syntaxbaum\n3. Semantische Analyse\n   -> geprüfter Baum (Typen, Namen)\n4. Zwischencode-Erzeugung\n5. Optimierung\n6. Codeerzeugung\n   -> Maschinen-/Bytecode"
+    },
+    {
+      "type": "text",
+      "content": "Phase 1, der Lexer (Scanner), zerlegt den Zeichenstrom in Tokens – die „Wörter“ der Sprache: Bezeichner, Zahlen, Operatoren, Schlüsselwörter. Leerzeichen und Kommentare fallen dabei weg. Python bringt seinen eigenen Lexer im Modul tokenize mit."
+    },
+    {
+      "type": "code",
+      "content": "import io, tokenize\n\nquelle = \"preis = 3 * 4\\n\"\nlese = io.StringIO(quelle).readline\nfor tok in tokenize.generate_tokens(lese):\n    art = tokenize.tok_name[tok.type]\n    print(art, repr(tok.string))\n# NAME 'preis'\n# OP '='\n# NUMBER '3'\n# OP '*'\n# NUMBER '4'\n# NEWLINE '\\n'\n# ENDMARKER ''"
+    },
+    {
+      "type": "text",
+      "content": "Phase 2, der Parser, prüft, ob die Tokens den Grammatikregeln der Sprache entsprechen, und baut daraus einen Syntaxbaum (abstrakter Syntaxbaum, AST). Im Baum steckt bereits die Struktur: Bei 2 + 3 * 4 hängt die Multiplikation tiefer als die Addition und wird darum zuerst berechnet. Mit dem Modul ast kannst du dir Pythons Syntaxbaum ansehen."
+    },
+    {
+      "type": "code",
+      "content": "import ast\n\nbaum = ast.parse(\"2 + 3 * 4\", mode=\"eval\")\nprint(ast.dump(baum, indent=2))\n# Expression(\n#   body=BinOp(\n#     left=Constant(value=2),\n#     op=Add(),\n#     right=BinOp(\n#       left=Constant(value=3),\n#       op=Mult(),\n#       right=Constant(value=4))))"
+    },
+    {
+      "type": "text",
+      "content": "Phase 3, die semantische Analyse, prüft die Bedeutung: Ist jede Variable deklariert? Passen die Typen zusammen? Ein C#-Compiler meldet string + int-Fehler oder unbekannte Namen schon beim Übersetzen. Python ist dynamisch typisiert und prüft vieles erst zur Laufzeit – der folgende Code lässt sich fehlerfrei kompilieren, stürzt aber beim Ausführen ab."
+    },
+    {
+      "type": "code",
+      "content": "q = \"y = 'a' + 1\"\ncode = compile(q, \"<t>\", \"exec\")\nprint(\"kompiliert!\")\ntry:\n    exec(code)\nexcept TypeError as e:\n    print(\"Laufzeitfehler:\", e)\n# kompiliert!\n# Laufzeitfehler: can only concatenate\n#   str (not \"int\") to str"
+    },
+    {
+      "type": "text",
+      "content": "Die Phasen 4 bis 6 erzeugen Zwischencode, optimieren ihn und erzeugen den Zielcode. Eine einfache Optimierung ist die Konstantenfaltung: Ausdrücke aus lauter Konstanten berechnet der Compiler schon beim Übersetzen. Bei Python siehst du das an den Konstanten des Bytecodes: compile(\"x = 2 * 3\", \"<t>\", \"exec\").co_consts liefert (6, None) – aus 2 * 3 wurde direkt 6. Je nach Phase gibt es unterschiedliche Fehler: lexikalisch (1x = 5 – „invalid decimal literal“), syntaktisch (fehlende Klammer) und semantisch (falscher Typ, unbekannter Name)."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Compiler arbeitet in Phasen – Lexer (Zeichen → Tokens), Parser (Tokens → Syntaxbaum), semantische Analyse (Typen, Namen), Zwischencode, Optimierung, Codeerzeugung. Die Symboltabelle wird von allen Phasen genutzt. In den nächsten Lektionen baust du selbst einen Lexer und Parser und lernst, wie Hashtabellen eine schnelle Symboltabelle ermöglichen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Phase eines Compilers erzeugt aus einer Folge von Tokens einen Syntaxbaum?",
+      "options": [
+        "Der Lexer",
+        "Die Codeerzeugung",
+        "Der Parser (syntaktische Analyse)",
+        "Die Optimierung"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Lexer liefert die Tokens, der Parser prüft sie gegen die Grammatik und baut daraus den Syntaxbaum."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "q = \"sek = 60 * 60 * 24\"\ncode = compile(q, \"<t>\", \"exec\")\nprint(code.co_consts)",
+      "options": [
+        "(60, 24, None)",
+        "(86400, None)",
+        "(60, 60, 24, None)",
+        "('60 * 60 * 24',)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Compiler faltet den konstanten Ausdruck schon beim Übersetzen: 60 * 60 * 24 = 86400 (Konstantenfaltung). None ist der Rückgabewert des Moduls."
+    },
+    {
+      "question": "Wie viele Tokens vom Typ NAME erzeugt Pythons Lexer für die Zeile „summe = a + b“?",
+      "options": [
+        "1",
+        "5",
+        "2",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "summe, a und b sind Bezeichner (NAME). = und + sind Tokens vom Typ OP, Leerzeichen werden verworfen."
+    },
+    {
+      "question": "Welcher Fehler gehört zur semantischen Analyse?",
+      "options": [
+        "Eine öffnende Klammer wird nie geschlossen",
+        "Eine Variable wird verwendet, aber nie deklariert",
+        "Im Quelltext steht ein Zeichen, das in der Sprache gar nicht vorkommt",
+        "Der Computer hat zu wenig Arbeitsspeicher"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ob ein Name deklariert ist oder Typen zusammenpassen, ist eine Frage der Bedeutung (Semantik). Fehlende Klammern sind Syntaxfehler, unbekannte Zeichen lexikalische Fehler."
+    }
+  ]
+}

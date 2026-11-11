@@ -1,0 +1,120 @@
+{
+  "id": "pos-j3-csharp-threads_pruefung",
+  "title": "Abschlussprüfung: Threads & Race Conditions",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Ausgabe ist bei diesem Programm NICHT möglich?",
+      "code": "var t1 = new Thread(() =>\n    Console.Write(\"A \"));\nvar t2 = new Thread(() =>\n    Console.Write(\"B \"));\nt1.Start(); t2.Start();\nt1.Join(); t2.Join();\nConsole.Write(\"Ende\");",
+      "options": [
+        "A B Ende",
+        "B A Ende",
+        "A Ende B",
+        "Alle drei sind möglich"
+      ],
+      "correctIndex": 2,
+      "explanation": "Durch die beiden Join-Aufrufe wartet Main, bis A und B ausgegeben wurden. „Ende“ kann also nie vor einer der beiden Ausgaben stehen. Die Reihenfolge von A und B ist dagegen offen."
+    },
+    {
+      "question": "Was ist der wesentliche Unterschied zwischen Prozess und Thread?",
+      "options": [
+        "Threads eines Prozesses teilen sich dessen Speicher, Prozesse haben getrennten Speicher",
+        "Ein Prozess kann nur einen Thread haben",
+        "Threads laufen immer auf getrennten Rechnern",
+        "Prozesse sind Teil eines Threads"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Prozess hat einen eigenen Adressraum und enthält einen oder mehrere Threads, die diesen Speicher gemeinsam nutzen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var t = new Thread(() =>\n    Thread.Sleep(500));\nt.Start();\nbool a = t.Join(100);\nbool b = t.Join(1000);\nConsole.WriteLine($\"{a}, {b}\");",
+      "options": [
+        "True, True",
+        "False, False",
+        "True, False",
+        "False, True"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nach 100 ms schläft der Thread noch (500 ms) – Join(100) liefert false. Join(1000) wartet, bis der Thread fertig ist, und liefert true."
+    },
+    {
+      "question": "In welcher Reihenfolge durchläuft ein Thread typischerweise seine Zustände, wenn er einmal schläft?",
+      "options": [
+        "Running → Unstarted → Stopped",
+        "Unstarted → Running → WaitSleepJoin → Running → Stopped",
+        "Unstarted → WaitSleepJoin → Stopped → Running",
+        "Running → Stopped → WaitSleepJoin"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nach new ist der Thread Unstarted, nach Start Running. Sleep blockiert ihn (WaitSleepJoin), danach läuft er weiter, bis die Methode endet (Stopped)."
+    },
+    {
+      "question": "Warum soll man Threads nicht mit Thread.Abort() beenden?",
+      "options": [
+        "Abort ist nur für Hintergrund-Threads gedacht",
+        "Abort beendet das ganze Programm",
+        "Es wird im modernen .NET nicht unterstützt und könnte Daten halbfertig zurücklassen – besser kooperativ mit CancellationToken",
+        "Abort funktioniert nur, wenn der Thread gerade schläft"
+      ],
+      "correctIndex": 2,
+      "explanation": "Im modernen .NET wirft Thread.Abort() eine PlatformNotSupportedException. Der empfohlene Weg ist kooperatives Beenden: Der Thread prüft regelmäßig, ob er aufhören soll."
+    },
+    {
+      "question": "Zwei Threads führen je 1000-mal konto.Stand = konto.Stand + 1; aus (ohne lock). Welche Endwerte sind möglich?",
+      "options": [
+        "Nur genau 2000",
+        "Nur genau 1000",
+        "Nur Werte über 2000",
+        "Werte bis höchstens 2000 – je nach Scheduling auch weniger"
+      ],
+      "correctIndex": 3,
+      "explanation": "Lesen und Schreiben sind getrennte Schritte. Überlappen sie, gehen Erhöhungen verloren. Mehr als 2000 ist unmöglich, weniger aber jederzeit."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int frei = 1, buchungen = 0;\nobject sperre = new();\nvoid Buchen()\n{\n    lock (sperre)\n    {\n        if (frei > 0)\n        {\n            Thread.Sleep(10);\n            frei--; buchungen++;\n        }\n    }\n}\nvar k1 = new Thread(Buchen);\nvar k2 = new Thread(Buchen);\nk1.Start(); k2.Start();\nk1.Join(); k2.Join();\nConsole.WriteLine(\n  $\"frei {frei}, Buchungen {buchungen}\");",
+      "options": [
+        "frei 0, Buchungen 1",
+        "frei -1, Buchungen 2",
+        "frei 1, Buchungen 0",
+        "Je nach Lauf frei 0 oder -1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Prüfen und Buchen stehen im selben lock. Der zweite Thread wartet, bis der erste fertig ist, und sieht dann frei == 0 – er bucht nicht."
+    },
+    {
+      "question": "Wann reicht Interlocked statt lock?",
+      "options": [
+        "Immer – Interlocked ersetzt lock vollständig",
+        "Bei einer einzelnen einfachen Operation wie Zähler erhöhen; für mehrere zusammenhängende Schritte braucht man lock",
+        "Nur bei string-Variablen",
+        "Nur wenn es genau einen Thread gibt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Interlocked macht einzelne Operationen (Increment, Add, Exchange …) atomar. „Prüfen und dann ändern“ besteht aus mehreren Schritten und braucht einen gemeinsamen kritischen Abschnitt."
+    },
+    {
+      "question": "Main startet einen Vordergrund-Thread, der noch 5 Sekunden rechnet, und endet sofort danach ohne Join. Was passiert?",
+      "options": [
+        "Das Programm endet sofort und bricht den Thread ab",
+        "Es gibt eine ThreadStateException",
+        "Der Thread wird in den Hintergrund verschoben",
+        "Der Prozess läuft weiter, bis der Vordergrund-Thread fertig ist"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein mit new Thread erzeugter Thread ist standardmäßig ein Vordergrund-Thread. Der Prozess endet erst, wenn alle Vordergrund-Threads beendet sind."
+    },
+    {
+      "question": "Welche Regel hilft, Deadlocks zu vermeiden?",
+      "options": [
+        "Mehrere Sperren immer in derselben Reihenfolge anfordern",
+        "Jede Variable mit einem eigenen lock schützen und beliebig verschachteln",
+        "Innerhalb eines locks lange Berechnungen und Sleep ausführen",
+        "Statt lock immer Thread.Sleep verwenden"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Deadlock braucht ein zyklisches Warten. Holen alle Threads Sperren in derselben Reihenfolge, kann dieser Zyklus nicht entstehen."
+    }
+  ]
+}

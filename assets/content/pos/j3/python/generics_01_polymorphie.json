@@ -1,0 +1,96 @@
+{
+  "id": "pos-j3-python-generics_01_polymorphie",
+  "title": "Polymorphie und Duck Typing",
+  "summary": "Ein Aufruf, viele Verhaltensweisen: Polymorphie über Vererbung, Duck Typing und abstrakte Basisklassen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Polymorphie heißt „Vielgestaltigkeit“: Derselbe Methodenaufruf führt je nach Objekt zu unterschiedlichem Verhalten. Du kennst das schon aus der Vererbung: Eine Unterklasse überschreibt eine Methode der Basisklasse. Der aufrufende Code muss nicht wissen, welche Unterklasse er gerade vor sich hat."
+    },
+    {
+      "type": "code",
+      "content": "class Form:\n    def flaeche(self):\n        return 0\n\nclass Kreis(Form):\n    def __init__(self, r):\n        self.r = r\n    def flaeche(self):\n        return round(3.14 * self.r ** 2, 2)\n\nclass Rechteck(Form):\n    def __init__(self, a, b):\n        self.a, self.b = a, b\n    def flaeche(self):\n        return self.a * self.b\n\nformen = [Kreis(1), Rechteck(2, 3)]\nfor f in formen:\n    print(f.flaeche())\n# 3.14\n# 6"
+    },
+    {
+      "type": "text",
+      "content": "Python geht noch einen Schritt weiter: Duck Typing. „Wenn es watschelt wie eine Ente und quakt wie eine Ente, dann ist es eine Ente.“ Python prüft beim Aufruf nicht den Typ eines Objekts, sondern nur, ob es die gewünschte Methode hat. Die Klassen müssen gar nicht verwandt sein."
+    },
+    {
+      "type": "code",
+      "content": "class Drucker:\n    def ausgeben(self, text):\n        print(\"Papier:\", text)\n\nclass Beamer:\n    def ausgeben(self, text):\n        print(\"Leinwand:\", text)\n\ndef praesentiere(geraet):\n    geraet.ausgeben(\"Projekt POS\")\n\npraesentiere(Drucker())\npraesentiere(Beamer())\n# Papier: Projekt POS\n# Leinwand: Projekt POS"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Duck Typing ist bequem, aber ein fehlender Methodenname fällt erst zur Laufzeit auf – genau in dem Moment, in dem die Methode aufgerufen wird. Ein Tippfehler im Methodennamen führt dann zu einem AttributeError."
+    },
+    {
+      "type": "code",
+      "content": "class Tafel:\n    def ausgebn(self, text):  # Tippfehler!\n        print(text)\n\ndef praesentiere(geraet):\n    geraet.ausgeben(\"Projekt POS\")\n\npraesentiere(Tafel())\n# AttributeError: 'Tafel' object has\n# no attribute 'ausgeben'"
+    },
+    {
+      "type": "text",
+      "content": "Willst du sicherstellen, dass jede Unterklasse bestimmte Methoden hat, verwendest du eine abstrakte Basisklasse aus dem Modul abc. Die Basisklasse erbt von ABC, die Pflichtmethoden bekommen den Dekorator @abstractmethod. Von so einer Klasse kannst du selbst kein Objekt erzeugen – sie ist nur eine Vorlage. Konkrete Methoden wie beschreibung() erben die Unterklassen ganz normal. Der große Vorteil gegenüber reinem Duck Typing: Vergisst eine Unterklasse eine abstrakte Methode, gibt es den Fehler schon beim Erzeugen des Objekts – nicht erst später beim Aufruf."
+    },
+    {
+      "type": "code",
+      "content": "from abc import ABC, abstractmethod\n\nclass Form(ABC):\n    @abstractmethod\n    def flaeche(self):\n        ...\n\n    def beschreibung(self):\n        return f\"Fläche: {self.flaeche()}\"\n\nclass Quadrat(Form):\n    def __init__(self, a):\n        self.a = a\n    def flaeche(self):\n        return self.a ** 2\n\nprint(Quadrat(3).beschreibung())\n# Fläche: 9\nf = Form()   # TypeError"
+    },
+    {
+      "type": "code",
+      "content": "from abc import ABC, abstractmethod\n\nclass Form(ABC):\n    @abstractmethod\n    def flaeche(self):\n        ...\n\nclass Dreieck(Form):\n    pass   # flaeche() vergessen\n\nd = Dreieck()\n# TypeError: Can't instantiate\n# abstract class Dreieck ..."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Polymorphie bedeutet ein Aufruf, unterschiedliches Verhalten. Duck Typing verlangt nur passende Methoden, prüft aber erst zur Laufzeit (AttributeError). Abstrakte Basisklassen (ABC + @abstractmethod) legen eine Schnittstelle fest: Basisklasse nicht instanzierbar, fehlende Methoden in Unterklassen führen zu einem TypeError beim Erzeugen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus? (Zeilen durch Beistrich getrennt)",
+      "code": "class Hund:\n    def laut(self):\n        return \"Wuff\"\n\nclass Roboter:\n    def laut(self):\n        return \"Piep\"\n\nfor x in [Hund(), Roboter()]:\n    print(x.laut())",
+      "options": [
+        "Hallo, Hallo",
+        "Wuff, Piep",
+        "Piep, Wuff",
+        "AttributeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beide Klassen haben eine Methode laut(). Python prüft nicht den Typ, sondern ruft einfach die Methode des jeweiligen Objekts auf (Duck Typing). Dass die Klassen nicht verwandt sind, spielt keine Rolle."
+    },
+    {
+      "question": "Finde den Fehler: Welche Meldung erzeugt dieser Code?",
+      "code": "class Katze:\n    def miau(self):\n        return \"Miau\"\n\nx = Katze()\nprint(x.laut())",
+      "options": [
+        "TypeError beim Erzeugen von Katze()",
+        "SyntaxError in Zeile 2",
+        "AttributeError: 'Katze' object has no attribute 'laut'",
+        "Es wird None ausgegeben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Duck Typing prüft erst beim Aufruf, ob die Methode existiert. Katze hat nur miau(), daher schlägt x.laut() mit einem AttributeError fehl. Das Erzeugen des Objekts selbst klappt problemlos."
+    },
+    {
+      "question": "Was passiert bei der letzten Zeile?",
+      "code": "from abc import ABC, abstractmethod\n\nclass Fahrzeug(ABC):\n    @abstractmethod\n    def fahren(self):\n        ...\n\nf = Fahrzeug()",
+      "options": [
+        "Es wird ein Objekt der Klasse Fahrzeug erzeugt",
+        "TypeError, weil Fahrzeug eine abstrakte Methode hat",
+        "AttributeError, weil fahren() fehlt",
+        "Es wird None ausgegeben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Fahrzeug erbt von ABC und hat eine mit @abstractmethod markierte Methode. Solche Klassen kann man nicht instanzieren – Python meldet einen TypeError."
+    },
+    {
+      "question": "Was brauchst du, damit Python eine Unterklasse ohne flaeche()-Methode schon beim Erzeugen ablehnt?",
+      "options": [
+        "Die Methode flaeche() in der Basisklasse einfach leer lassen",
+        "In jeder Unterklasse isinstance() aufrufen",
+        "Die Methode in der Basisklasse private machen (__flaeche)",
+        "Die Basisklasse muss von ABC erben und flaeche() mit @abstractmethod markieren"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur die Kombination aus ABC als Basisklasse und dem Dekorator @abstractmethod macht eine Methode verpflichtend. Eine leere Methode wird einfach vererbt und erzeugt keinen Fehler."
+    }
+  ]
+}

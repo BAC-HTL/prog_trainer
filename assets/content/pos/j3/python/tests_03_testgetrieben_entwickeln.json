@@ -1,0 +1,94 @@
+{
+  "id": "pos-j3-python-tests_03_testgetrieben_entwickeln",
+  "title": "Testgetriebene Entwicklung (TDD)",
+  "summary": "Erst der Test, dann der Code: der Zyklus Red – Green – Refactor am Beispiel Schaltjahr.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bei der testgetriebenen Entwicklung (Test-Driven Development, TDD) drehst du die Reihenfolge um: Zuerst schreibst du einen Test, der fehlschlägt, dann genau so viel Code, dass er besteht, und danach räumst du auf. Dieser Zyklus wiederholt sich in kleinen Schritten."
+    },
+    {
+      "type": "code",
+      "content": "  +--------> RED -------+\n  |  Test schreiben,    |\n  |  er schlägt fehl    v\nREFACTOR <--------- GREEN\nCode verbessern,  minimaler Code,\nTests bleiben     Test besteht\ngrün"
+    },
+    {
+      "type": "text",
+      "content": "Beispiel: Eine Funktion ist_schaltjahr(j) für einen Kalender. Regel: durch 4 teilbar ist ein Schaltjahr, außer es ist durch 100 teilbar – es sei denn, es ist auch durch 400 teilbar. Schritt 1 (Red): Test für 2024 schreiben. Noch gibt es keine Datei jahr.py, der Test schlägt also fehl. Schritt 2 (Green): die einfachste Lösung, die den Test besteht."
+    },
+    {
+      "type": "code",
+      "content": "# test_jahr.py\nfrom jahr import ist_schaltjahr\n\ndef test_durch_4():\n    assert ist_schaltjahr(2024)\n\n# jahr.py\ndef ist_schaltjahr(j):\n    return j % 4 == 0\n\n$ pytest -q\n1 passed"
+    },
+    {
+      "type": "text",
+      "content": "Nächste Runde: Neuer Test für 1900 (durch 100 teilbar, kein Schaltjahr). Er schlägt fehl – das ist gut, denn er beweist, dass der Test wirklich etwas prüft. Erst dann wird der Code erweitert. Dasselbe passiert mit 2000 (durch 400 teilbar, doch ein Schaltjahr)."
+    },
+    {
+      "type": "code",
+      "content": "def test_jahrhundert():\n    assert not ist_schaltjahr(1900)\n\n$ pytest -q\nFAILED test_jahr.py::test_jahrhundert\n  - assert not True\n1 failed, 1 passed\n\n# jahr.py erweitert:\ndef ist_schaltjahr(j):\n    return j % 4 == 0 and j % 100 != 0"
+    },
+    {
+      "type": "text",
+      "content": "Nach dem Test für 2000 und der passenden Erweiterung sind alle Tests grün. Jetzt folgt Refactor: Der Code wird lesbarer gemacht, ohne sein Verhalten zu ändern. Die Tests sind dabei dein Sicherheitsnetz – laufen sie nach dem Umbau noch, hast du nichts kaputt gemacht."
+    },
+    {
+      "type": "code",
+      "content": "def ist_schaltjahr(j):\n    return j % 4 == 0 and (\n        j % 100 != 0 or j % 400 == 0)\n\nfor j in [2024, 1900, 2000, 2023]:\n    print(j, ist_schaltjahr(j))\n# 2024 True\n# 1900 False\n# 2000 True\n# 2023 False"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler bei TDD: zu große Schritte (viele Tests auf einmal, dann lange Fehlersuche), den Red-Schritt überspringen (ein Test, der nie rot war, prüft vielleicht gar nichts) und das Refactoring vergessen. Vorteile: Jede Zeile Code ist durch einen Test abgedeckt, und du denkst zuerst über das gewünschte Verhalten nach."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: TDD = Red (fehlschlagenden Test schreiben) → Green (minimaler Code, bis der Test besteht) → Refactor (aufräumen, Tests bleiben grün). Kleine Schritte, jeder neue Test soll zuerst rot sein. Die gesammelten Tests sichern spätere Änderungen ab."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Reihenfolge läuft ein TDD-Zyklus ab?",
+      "options": [
+        "Code schreiben → Test schreiben → Refactor",
+        "Refactor → Red → Green",
+        "Green → Red → Refactor",
+        "Red → Green → Refactor"
+      ],
+      "correctIndex": 3,
+      "explanation": "Zuerst wird ein fehlschlagender Test geschrieben (Red), dann minimaler Code, bis er besteht (Green), danach wird aufgeräumt (Refactor)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def ist_schaltjahr(j):\n    return j % 4 == 0 and (\n        j % 100 != 0 or j % 400 == 0)\n\nprint(ist_schaltjahr(1800))",
+      "options": [
+        "True",
+        "False",
+        "None",
+        "ZeroDivisionError"
+      ],
+      "correctIndex": 1,
+      "explanation": "1800 ist durch 4 und durch 100 teilbar, aber nicht durch 400. j % 100 != 0 ist False, j % 400 == 0 auch False – die Klammer ergibt False, also kein Schaltjahr."
+    },
+    {
+      "question": "Warum soll ein neuer Test im TDD zuerst fehlschlagen?",
+      "options": [
+        "Damit pytest schneller läuft",
+        "Weil grüne Tests in pytest nicht angezeigt werden",
+        "Damit man sieht, dass der Test wirklich das neue Verhalten prüft",
+        "Das ist nur bei unittest nötig, bei pytest nicht"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Test, der sofort grün ist, prüft vielleicht gar nichts (z. B. falscher Name, falsche Bedingung). Das Rot zeigt, dass er die fehlende Funktion erkennt."
+    },
+    {
+      "question": "Was darf sich beim Refactoring NICHT ändern?",
+      "options": [
+        "Das von außen sichtbare Verhalten des Codes",
+        "Die Variablennamen",
+        "Die Struktur der Funktion",
+        "Die Anzahl der Codezeilen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Refactoring verbessert Lesbarkeit und Struktur, das Verhalten bleibt gleich. Darum müssen alle Tests danach weiterhin grün sein."
+    }
+  ]
+}

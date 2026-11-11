@@ -1,0 +1,89 @@
+{
+  "id": "pos-j3-python-tests_01_teststrategien",
+  "title": "Teststrategien und Testfälle",
+  "summary": "Welche Testarten es gibt, was die Testpyramide aussagt und wie du mit Äquivalenzklassen und Grenzwerten gute Testfälle findest.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Programm, das „bei mir funktioniert“, ist noch lange nicht korrekt. Testen heißt, ein Programm gezielt mit Eingaben auszuführen und das Ergebnis mit dem erwarteten Ergebnis zu vergleichen. Ein Testfall besteht daher immer aus Eingabe und erwartetem Ergebnis. Wichtig: Tests können Fehler finden, aber nie beweisen, dass es keine Fehler gibt."
+    },
+    {
+      "type": "text",
+      "content": "Man unterscheidet Testarten nach ihrem Umfang. Ein Unit-Test prüft eine einzelne Funktion oder Klasse isoliert. Ein Integrationstest prüft das Zusammenspiel mehrerer Teile, z. B. deinen Code mit der Datenbank. Ein Systemtest prüft das ganze Programm von außen. Beim Abnahmetest prüft die Auftraggeberin, ob das Programm ihre Anforderungen erfüllt – etwa am Ende eures Diplomprojekts."
+    },
+    {
+      "type": "code",
+      "content": "       /\\\n      /  \\      Systemtests\n     /    \\     (wenige, langsam)\n    /------\\\n   /        \\   Integrationstests\n  /----------\\\n /            \\ Unit-Tests\n/______________\\(viele, schnell)"
+    },
+    {
+      "type": "text",
+      "content": "Die Testpyramide zeigt das sinnvolle Verhältnis: viele kleine, schnelle Unit-Tests als Basis, weniger Integrationstests und nur wenige aufwendige Systemtests. Unit-Tests laufen in Millisekunden und zeigen genau, wo ein Fehler steckt. Ein fehlgeschlagener Systemtest sagt nur „irgendwo ist etwas kaputt“."
+    },
+    {
+      "type": "text",
+      "content": "Beim Black-Box-Test kennst du nur die Spezifikation, nicht den Code. Beispiel: Ein Museum verlangt für Kinder bis 5 Jahre nichts, für 6- bis 17-Jährige 4,50 € und für Erwachsene 9 €. Negative Alter sind ungültig. Alle Eingaben, die gleich behandelt werden, bilden eine Äquivalenzklasse – aus jeder Klasse reicht ein Vertreter."
+    },
+    {
+      "type": "code",
+      "content": "Klasse       Bereich   Vertreter\n-----------  --------  ---------\nungültig     < 0       -3\ngratis       0 – 5     2\nermäßigt     6 – 17    12\nvoll         >= 18     40"
+    },
+    {
+      "type": "text",
+      "content": "Die meisten Fehler passieren aber an den Rändern: ein < statt <=, eine 17 statt 18. Deshalb testest du zusätzlich die Grenzwerte, also die Werte direkt an jeder Klassengrenze – auf beiden Seiten. Beim White-Box-Test schaust du dir dagegen den Code an und sorgst dafür, dass jeder Zweig (jedes if) mindestens einmal durchlaufen wird."
+    },
+    {
+      "type": "code",
+      "content": "def preis(alter):\n    if alter < 0:\n        raise ValueError(\"Alter < 0\")\n    if alter <= 5:\n        return 0.0\n    if alter <= 17:\n        return 4.5\n    return 9.0\n\n# Grenzwerte: -1|0, 5|6, 17|18\n# (-1 → ValueError, nächste Lektion)\nassert preis(0) == 0.0\nassert preis(5) == 0.0\nassert preis(6) == 4.5\nassert preis(17) == 4.5\nassert preis(18) == 9.0\nprint(\"alle Grenzwerte ok\")"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Testfall = Eingabe + erwartetes Ergebnis. Testarten: Unit-, Integrations-, System-, Abnahmetest; laut Testpyramide sollten Unit-Tests die große Mehrheit sein. Äquivalenzklassen reduzieren die Zahl der Testfälle (ein Vertreter pro Klasse, auch für ungültige Eingaben), Grenzwerttests decken die typischen „Off-by-one“-Fehler auf."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Du prüfst, ob deine Funktion speichere_note() die Note wirklich korrekt in die SQLite-Datenbank schreibt. Welche Testart ist das?",
+      "options": [
+        "Unit-Test",
+        "Abnahmetest",
+        "Integrationstest",
+        "Grenzwerttest"
+      ],
+      "correctIndex": 2,
+      "explanation": "Hier wird das Zusammenspiel von deinem Code und einer anderen Komponente (der Datenbank) geprüft – das ist ein Integrationstest."
+    },
+    {
+      "question": "Welche Aussage passt zur Testpyramide?",
+      "options": [
+        "Es sollte gleich viele Unit-, Integrations- und Systemtests geben",
+        "Unit-Tests sollten die Mehrheit bilden, Systemtests die Minderheit",
+        "Systemtests sind am wichtigsten und sollten am häufigsten vorkommen",
+        "Unit-Tests braucht man nur, wenn keine Systemtests möglich sind"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Basis der Pyramide bilden viele schnelle Unit-Tests. Nach oben hin werden die Tests aufwendiger und seltener."
+    },
+    {
+      "question": "Eine Funktion akzeptiert Schulnoten von 1 bis 5 (ganze Zahlen). Wie viele Äquivalenzklassen gibt es mindestens?",
+      "options": [
+        "1",
+        "2",
+        "5",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Drei Klassen: zu klein (< 1, ungültig), gültig (1–5) und zu groß (> 5, ungültig). Ungültige Klassen nicht vergessen!"
+    },
+    {
+      "question": "Ein Rabatt gilt für Bestellungen von 10 bis 50 Stück. Welche Werte sind die Grenzwerte?",
+      "options": [
+        "9, 10, 50, 51",
+        "10, 30, 50",
+        "0, 10, 50, 100",
+        "10 und 50"
+      ],
+      "correctIndex": 0,
+      "explanation": "Grenzwerte liegen direkt an jeder Grenze, und zwar auf beiden Seiten: 9 (knapp ungültig), 10 (erster gültiger), 50 (letzter gültiger), 51 (knapp ungültig)."
+    }
+  ]
+}

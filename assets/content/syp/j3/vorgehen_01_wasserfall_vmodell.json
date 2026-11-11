@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-vorgehen_01_wasserfall_vmodell",
+  "title": "Wasserfall und V-Modell",
+  "summary": "Klassische, phasenorientierte Vorgehensmodelle und die Test-Ebenen des V-Modells.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Vorgehensmodell legt fest, welche Tätigkeiten in einem Softwareprojekt in welcher Reihenfolge passieren, wer welche Ergebnisse liefert und wann geprüft wird. Die Grundtätigkeiten sind immer ähnlich: Analyse, Entwurf, Implementierung, Test, Betrieb und Wartung. Die Modelle unterscheiden sich darin, wie oft und in welcher Reihenfolge diese Tätigkeiten durchlaufen werden. Stell dir eure Diplomarbeit vor: Ihr baut eine App für einen Sportverein. Ohne Vorgehensmodell programmiert jede:r drauflos – und im Mai merkt ihr, dass niemand getestet hat."
+    },
+    {
+      "type": "code",
+      "content": "Analyse\n   \\\n  Entwurf\n     \\\n   Implementierung\n        \\\n       Test\n          \\\n        Betrieb/Wartung"
+    },
+    {
+      "type": "text",
+      "content": "Im Wasserfallmodell werden die Phasen streng nacheinander durchlaufen. Jede Phase endet mit einem Ergebnis (z. B. Pflichtenheft, Entwurfsdokument) und einem Meilenstein. Erst wenn eine Phase abgeschlossen ist, beginnt die nächste. In der erweiterten Form sind Rücksprünge in die vorherige Phase erlaubt. Vorteile: gut planbar, klare Dokumente, leicht zu kontrollieren – passend, wenn die Anforderungen von Anfang an feststehen und sich kaum ändern."
+    },
+    {
+      "type": "text",
+      "content": "Der große Nachteil: Der Kunde sieht lauffähige Software erst sehr spät. Fehler oder Missverständnisse in den Anforderungen werden dadurch erst beim Test oder bei der Abnahme entdeckt – und dann ist die Korrektur besonders teuer, weil Entwurf und Code schon darauf aufbauen. Typisches Diplomarbeits-Problem: Im März zeigt ihr dem Verein die fertige App, und der Obmann sagt: „Eigentlich wollten wir das ganz anders.“"
+    },
+    {
+      "type": "text",
+      "content": "Das V-Modell erweitert den Wasserfall um eine klare Teststruktur. Der linke Ast beschreibt die Spezifikation von grob nach fein, unten steht die Implementierung, der rechte Ast integriert und testet von fein nach grob. Jede Entwurfsebene links hat genau eine Testebene rechts gegenüber: Was auf einer Ebene festgelegt wird, wird auf der gegenüberliegenden Ebene geprüft. Die Testfälle werden dabei schon gleichzeitig mit dem Entwurf geplant."
+    },
+    {
+      "type": "code",
+      "content": "Anforderungen <--> Abnahmetest\n Systementwurf <--> Systemtest\n  Architektur <--> Integrationstest\n   Modulentwurf <--> Komponententest\n       \\                /\n        Implementierung"
+    },
+    {
+      "type": "text",
+      "content": "Die Test-Ebenen: Der Komponententest (Unit-Test) prüft einzelne Funktionen oder Klassen isoliert, meist durch die Entwickler:innen selbst. Der Integrationstest prüft das Zusammenspiel von Komponenten, z. B. ob die App die Daten der REST-API richtig anzeigt. Der Systemtest prüft das gesamte System gegen die Spezifikation in einer möglichst realistischen Umgebung. Der Abnahmetest wird mit dem Kunden gegen die ursprünglichen Anforderungen durchgeführt und endet meist mit einem Abnahmeprotokoll."
+    },
+    {
+      "type": "text",
+      "content": "Zwei Begriffe gehören zum V-Modell: Verifikation fragt „Bauen wir das Produkt richtig?“ – also: Erfüllt das Ergebnis die Spezifikation? Validierung fragt „Bauen wir das richtige Produkt?“ – also: Bringt es dem Kunden wirklich den gewünschten Nutzen? Eine Weiterentwicklung ist das V-Modell XT, das für IT-Projekte der deutschen Bundesverwaltung entwickelt wurde und viele Rollen und Dokumente genau vorgibt."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Das V-Modell bedeutet nicht, dass man erst am Ende ans Testen denkt – die Tests werden links parallel zum Entwurf geplant und rechts ausgeführt. Und Wasserfall heißt nicht „schlecht“: Bei stabilen Anforderungen, Fixpreisverträgen oder Nachweispflichten (z. B. Medizintechnik) ist ein phasenorientiertes Vorgehen sinnvoll."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Das Wasserfallmodell durchläuft die Phasen nacheinander und ist gut planbar, reagiert aber schlecht auf Änderungen. Das V-Modell stellt jeder Entwurfsebene eine Testebene gegenüber: Anforderungen ↔ Abnahmetest, Systementwurf ↔ Systemtest, Architektur ↔ Integrationstest, Modulentwurf ↔ Komponententest."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Testebene steht im V-Modell der Anforderungsdefinition gegenüber?",
+      "options": [
+        "Komponententest",
+        "Integrationstest",
+        "Abnahmetest",
+        "Systemtest"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ganz oben links stehen die Anforderungen des Kunden, ganz oben rechts der Abnahmetest, bei dem der Kunde genau diese Anforderungen überprüft."
+    },
+    {
+      "question": "App und REST-API wurden einzeln getestet. Jetzt prüft ihr, ob die App die Termine der API richtig anzeigt. Welche Testebene ist das?",
+      "options": [
+        "Komponententest",
+        "Integrationstest",
+        "Abnahmetest",
+        "Code-Review"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Zusammenspiel mehrerer bereits einzeln getesteter Komponenten wird im Integrationstest geprüft."
+    },
+    {
+      "question": "Was ist der größte Nachteil des reinen Wasserfallmodells?",
+      "options": [
+        "Es gibt keine Dokumentation",
+        "Man kann keine Meilensteine festlegen",
+        "Es ist nur für sehr kleine Projekte geeignet",
+        "Fehler in den Anforderungen werden oft erst sehr spät entdeckt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Da lauffähige Software erst am Ende entsteht, fallen Missverständnisse in den Anforderungen oft erst beim Test oder bei der Abnahme auf – dann ist die Korrektur teuer. Dokumente und Meilensteine sind dagegen eine Stärke des Modells."
+    },
+    {
+      "question": "Welche Frage beschreibt die Validierung?",
+      "options": [
+        "Bauen wir das richtige Produkt?",
+        "Bauen wir das Produkt richtig?",
+        "Ist der Code fehlerfrei kompiliert?",
+        "Wurde jede Funktion mit einem Unit-Test geprüft?"
+      ],
+      "correctIndex": 0,
+      "explanation": "Validierung prüft, ob das Produkt den tatsächlichen Nutzen für den Kunden bringt. „Bauen wir das Produkt richtig?“ ist die Verifikation (Prüfung gegen die Spezifikation)."
+    }
+  ]
+}

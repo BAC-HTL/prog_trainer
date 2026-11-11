@@ -1,0 +1,91 @@
+{
+  "id": "pos-j3-python-threads_01_threads_grundlagen",
+  "title": "Threads – Grundlagen",
+  "summary": "Mehrere Aufgaben gleichzeitig: Threads mit threading.Thread starten, mit join warten und verstehen, was der GIL bedeutet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein laufendes Programm ist ein Prozess mit eigenem Speicher. Innerhalb eines Prozesses kann es mehrere Threads („Fäden“) geben: Ausführungsstränge, die nebenläufig arbeiten und sich denselben Speicher teilen. Beispiel: Eine App lädt im Hintergrund Daten herunter, während die Oberfläche weiter auf Klicks reagiert."
+    },
+    {
+      "type": "text",
+      "content": "In Python erzeugst du einen Thread mit threading.Thread. Bei target gibst du die Funktion an (ohne Klammern!), bei args die Argumente als Tupel. start() startet den Thread, join() wartet, bis er fertig ist. Das Hauptprogramm läuft selbst im sogenannten MainThread."
+    },
+    {
+      "type": "code",
+      "content": "import threading, time\n\ndef zaehle(name):\n    for i in range(3):\n        print(name, i)\n        time.sleep(0.1)\n\nt1 = threading.Thread(target=zaehle,\n                      args=(\"A\",))\nt2 = threading.Thread(target=zaehle,\n                      args=(\"B\",))\nt1.start()\nt2.start()\nt1.join()\nt2.join()\nprint(\"fertig\")"
+    },
+    {
+      "type": "code",
+      "content": "# Ausgabe z. B. (Reihenfolge kann\n# bei jedem Lauf anders sein):\nA 0\nB 0\nB 1\nA 1\nA 2\nB 2\nfertig"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: Welcher Thread wann drankommt, entscheidet das Betriebssystem. Die Reihenfolge von A und B ist daher nicht vorhersagbar (nichtdeterministisch). Sicher ist nur, dass „fertig“ zuletzt kommt – weil das Hauptprogramm mit join() auf beide Threads wartet."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: target=zaehle(\"A\") statt target=zaehle, args=(\"A\",). Mit Klammern wird die Funktion sofort im Hauptthread ausgeführt, und an den Thread wird nur ihr Rückgabewert (None) übergeben. Ebenso falsch ist args=(\"A\") ohne Beistrich – das ist kein Tupel, sondern nur ein String in Klammern."
+    },
+    {
+      "type": "code",
+      "content": "import threading, time\n\ndef lade(datei):\n    time.sleep(1)    # simuliert Download\n    print(datei, \"geladen\")\n\nstart = time.time()\nts = []\nfor d in [\"a.pdf\", \"b.pdf\", \"c.pdf\"]:\n    t = threading.Thread(target=lade,\n                         args=(d,))\n    t.start()\n    ts.append(t)\nfor t in ts:\n    t.join()\nprint(f\"{time.time() - start:.1f} s\")\n# z. B. 1.0 s statt 3 s nacheinander"
+    },
+    {
+      "type": "text",
+      "content": "Der GIL (Global Interpreter Lock) im Standard-Python (CPython) sorgt dafür, dass immer nur ein Thread gleichzeitig Python-Code ausführt. Threads lohnen sich daher vor allem, wenn viel gewartet wird – auf Netzwerk, Dateien oder wie oben auf sleep. Für reine Rechenarbeit auf mehreren CPU-Kernen nimmt man in Python eher mehrere Prozesse (Modul multiprocessing). Es gibt inzwischen auch Python-Builds ohne GIL, Standard ist er aber weiterhin."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Threads sind nebenläufige Ausführungsstränge in einem Prozess mit gemeinsamem Speicher. Thread(target=funktion, args=(…,)) erzeugen, start() starten, join() warten. Die Reihenfolge der Ausgaben ist nicht vorhersagbar. Wegen des GIL bringen Threads in Python vor allem bei Wartezeiten (I/O) einen Geschwindigkeitsvorteil."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was ist hier falsch?",
+      "code": "def gruesse(name):\n    print(\"Hallo\", name)\n\nt = threading.Thread(\n    target=gruesse(\"Ana\"))\nt.start()",
+      "options": [
+        "start() muss vor Thread() stehen",
+        "Bei target muss die Funktion ohne Klammern und Argument stehen; so läuft sie sofort im Hauptthread",
+        "Threads dürfen nicht print verwenden",
+        "Es fehlt ein Lock"
+      ],
+      "correctIndex": 1,
+      "explanation": "gruesse(\"Ana\") wird sofort ausgeführt – im Hauptthread. Der Thread bekommt als target nur den Rückgabewert None. Richtig: Thread(target=gruesse, args=(\"Ana\",))."
+    },
+    {
+      "question": "Welche Aussage über die Ausgabe dieses Programms stimmt sicher?",
+      "code": "def f(z):\n    print(z)\n\na = threading.Thread(target=f, args=(\"X\",))\nb = threading.Thread(target=f, args=(\"Y\",))\na.start(); b.start()\na.join(); b.join()\nprint(\"Ende\")",
+      "options": [
+        "X erscheint immer vor Y",
+        "Y erscheint immer vor X",
+        "Ende erscheint immer zuletzt",
+        "Ende erscheint immer zuerst"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ob X oder Y zuerst kommt, ist nicht vorhersagbar. Da das Hauptprogramm aber mit join() auf beide Threads wartet, kommt „Ende“ sicher zuletzt."
+    },
+    {
+      "question": "Drei Threads warten je 2 Sekunden mit time.sleep(2), werden alle gestartet und dann mit join() abgewartet. Wie lange dauert das ungefähr?",
+      "options": [
+        "ca. 6 Sekunden",
+        "ca. 2 Sekunden",
+        "ca. 0 Sekunden",
+        "ca. 4 Sekunden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die drei Wartezeiten laufen gleichzeitig ab. Beim Warten (sleep, I/O) blockiert der GIL nicht, daher dauert es insgesamt nur etwa 2 Sekunden."
+    },
+    {
+      "question": "Warum beschleunigen Threads in Standard-Python eine reine Rechenaufgabe (z. B. Primzahlen suchen) meist nicht?",
+      "options": [
+        "Weil der GIL nur einen Thread gleichzeitig Python-Code ausführen lässt",
+        "Weil Threads immer nacheinander gestartet werden müssen",
+        "Weil Python nur einen CPU-Kern erkennt",
+        "Weil join() die Threads anhält"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Global Interpreter Lock erlaubt immer nur einem Thread, Python-Bytecode auszuführen. Für Rechenarbeit auf mehreren Kernen verwendet man daher mehrere Prozesse (multiprocessing)."
+    }
+  ]
+}

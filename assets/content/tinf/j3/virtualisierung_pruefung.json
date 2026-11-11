@@ -1,0 +1,117 @@
+{
+  "id": "tinf-j3-virtualisierung_pruefung",
+  "title": "Abschlussprüfung: Virtualisierung & Administration",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Server im Rechenzentrum soll möglichst effizient 20 VMs betreiben. Welcher Hypervisor-Typ ist üblich?",
+      "options": [
+        "Typ 2, weil er einfacher zu installieren ist",
+        "Typ 1, weil er direkt auf der Hardware läuft",
+        "Gar keiner, VMs brauchen keinen Hypervisor",
+        "Ein Container statt eines Hypervisors"
+      ],
+      "correctIndex": 1,
+      "explanation": "Typ-1-Hypervisoren (z. B. ESXi, Hyper-V, KVM) laufen ohne Host-BS dazwischen und sind daher typisch für Server."
+    },
+    {
+      "question": "Du willst in VirtualBox eine VM starten, bekommst aber eine Meldung, dass Hardware-Virtualisierung nicht verfügbar ist. Wo siehst du zuerst nach?",
+      "options": [
+        "In /etc/passwd",
+        "In der Ereignisanzeige unter Sicherheit",
+        "Im UEFI, ob Intel VT-x bzw. AMD-V aktiviert ist",
+        "Bei den NTFS-Rechten des VM-Ordners"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Virtualisierungserweiterungen der CPU sind manchmal im UEFI abgeschaltet und müssen dort aktiviert werden."
+    },
+    {
+      "question": "Welche Aussage über Container stimmt?",
+      "options": [
+        "Jeder Container bringt seinen eigenen Kernel mit",
+        "Container sind immer größer als VMs",
+        "Container können beliebige Betriebssysteme ausführen, auch mit fremdem Kernel",
+        "Container teilen den Kernel des Hosts und werden über Namespaces und cgroups isoliert"
+      ],
+      "correctIndex": 3,
+      "explanation": "Darum sind Container klein und schnell, bieten aber weniger Isolation als VMs und brauchen einen passenden Kernel."
+    },
+    {
+      "question": "Welches Recht braucht man auf ein Verzeichnis, um eine darin liegende Datei zu öffnen, deren Namen man kennt – auch wenn man den Inhalt des Verzeichnisses nicht auflisten darf?",
+      "options": [
+        "x",
+        "r",
+        "w",
+        "Keines, nur das Recht auf die Datei zählt"
+      ],
+      "correctIndex": 0,
+      "explanation": "x auf ein Verzeichnis erlaubt den Zugriff auf Einträge darin. Mit 711 kann ben die Datei lesen (wenn ihre Rechte es erlauben), ls auf den Ordner schlägt aber fehl. Ohne x geht cat nicht, selbst wenn r gesetzt ist."
+    },
+    {
+      "question": "Eine Datei hat die Rechte 644. Welche Rechte hat sie nach chmod u+x?",
+      "options": [
+        "755",
+        "744",
+        "645",
+        "654"
+      ],
+      "correctIndex": 1,
+      "explanation": "u+x fügt nur dem Besitzer das x hinzu: 6 (rw-) wird 7 (rwx). Gruppe und Andere bleiben bei 4: 744."
+    },
+    {
+      "question": "Welche Oktalzahl entspricht den Rechten rw-rw-r--?",
+      "options": [
+        "661",
+        "466",
+        "664",
+        "764"
+      ],
+      "correctIndex": 2,
+      "explanation": "rw- = 4 + 2 = 6, rw- = 6, r-- = 4. Ergebnis 664."
+    },
+    {
+      "question": "Anna soll zusätzlich in die Gruppe webdev, ohne ihre anderen Gruppen zu verlieren. Welcher Befehl ist richtig?",
+      "options": [
+        "sudo usermod -aG webdev anna",
+        "sudo usermod -G webdev anna",
+        "sudo chown webdev anna",
+        "sudo chmod g+webdev anna"
+      ],
+      "correctIndex": 0,
+      "explanation": "-a (append) hängt die Gruppe an. Ohne -a ersetzt -G die bisherigen Zusatzgruppen – ein klassischer Fehler, der Benutzer:innen plötzlich aus Gruppen wirft."
+    },
+    {
+      "question": "Über eine Netzwerkfreigabe hat die Gruppe „Schüler“ Freigaberecht Vollzugriff, auf NTFS-Ebene aber nur Lesen. Was dürfen Schüler:innen über das Netzwerk?",
+      "options": [
+        "Vollzugriff, weil die Freigabe Vorrang hat",
+        "Gar nichts, weil sich die Rechte widersprechen",
+        "Ändern, als Mittelwert",
+        "Nur lesen, weil die restriktivere Berechtigung wirkt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei Zugriff über eine Freigabe werden Freigabe- und NTFS-Rechte kombiniert; wirksam ist jeweils die strengere Einschränkung."
+    },
+    {
+      "question": "Welche Befehlsfolge installiert unter Ubuntu die neueste verfügbare Version von git?",
+      "options": [
+        "sudo apt upgrade git, dann sudo apt update",
+        "sudo apt update, dann sudo apt install git",
+        "sudo systemctl enable git",
+        "sudo dpkg -s git"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zuerst die Paketlisten aktualisieren, dann installieren. dpkg -s zeigt nur den Status an, systemctl ist für Dienste."
+    },
+    {
+      "question": "Ein Prozess reagiert nicht mehr. Wie gehst du sinnvoll vor?",
+      "options": [
+        "Sofort den Rechner ausschalten",
+        "Zuerst kill -9 PID, weil es sicher wirkt",
+        "Zuerst kill PID (SIGTERM) versuchen, erst wenn das nicht hilft kill -9 PID",
+        "sudo apt remove für das Programm ausführen"
+      ],
+      "correctIndex": 2,
+      "explanation": "SIGTERM gibt dem Programm die Chance, Daten zu speichern und sauber zu beenden. SIGKILL (-9) beendet sofort ohne Aufräumen – nur als letzter Ausweg."
+    }
+  ]
+}

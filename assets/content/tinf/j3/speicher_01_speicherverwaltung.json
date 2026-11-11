@@ -1,0 +1,89 @@
+{
+  "id": "tinf-j3-speicher_01_speicherverwaltung",
+  "title": "Speicherhierarchie und Paging",
+  "summary": "Warum es mehrere Speicherebenen gibt und wie das Betriebssystem den Arbeitsspeicher in Seiten aufteilt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Computer hat nicht „den“ Speicher, sondern eine Speicherhierarchie. Je näher an der CPU, desto schneller, aber auch kleiner und teurer pro Byte. Weiter unten wird der Speicher größer, billiger und langsamer – dafür bleibt der Inhalt dort auch ohne Strom erhalten (nicht flüchtig)."
+    },
+    {
+      "type": "code",
+      "content": "          /\\      Register\n         /  \\     Cache (L1–L3)\n        /    \\    Arbeitsspeicher\n       /      \\   (RAM, flüchtig)\n      /        \\  SSD / HDD\n     /__________\\ Archiv: Band,\n                  Cloud-Backup\n\noben:  schnell, klein, teuer\nunten: langsam, groß, billig"
+    },
+    {
+      "type": "text",
+      "content": "Dass die Hierarchie funktioniert, liegt am Lokalitätsprinzip:\n• Zeitliche Lokalität: Was gerade benutzt wurde, wird bald wieder benutzt (z. B. eine Schleifenvariable).\n• Räumliche Lokalität: Daten in der Nähe werden bald benutzt (z. B. das nächste Listenelement).\nDarum lohnt es sich, gerade benutzte Daten in einer schnelleren Ebene bereitzuhalten – genau das macht ein Cache."
+    },
+    {
+      "type": "text",
+      "content": "Die Speicherverwaltung des Betriebssystems teilt RAM an Prozesse zu, gibt ihn wieder frei und sorgt dafür, dass kein Prozess im Speicher eines anderen herumschreibt. Bekäme jeder Prozess einen zusammenhängenden Block, entstünden mit der Zeit viele kleine Lücken: Es ist insgesamt genug frei, aber kein einzelnes Stück ist groß genug. Das heißt externe Fragmentierung."
+    },
+    {
+      "type": "code",
+      "content": "RAM (je Zeichen = 1 MB):\n|AAAA|..|BBBBBB|...|CCC|..|\n\nfrei: 2 + 3 + 2 = 7 MB\nProzess D braucht 4 MB\n-> kein Stück ist groß genug!"
+    },
+    {
+      "type": "text",
+      "content": "Die Lösung heißt Paging: Der (logische) Adressraum eines Prozesses wird in Seiten (Pages) fester Größe geteilt, der physische RAM in gleich große Seitenrahmen (Frames). Jede Seite kann in einem beliebigen freien Rahmen liegen. Welche Seite wo liegt, steht in der Seitentabelle des Prozesses. Dadurch gibt es keine externe Fragmentierung mehr – höchstens ein Rest in der letzten Seite bleibt ungenutzt (interne Fragmentierung). Eine übliche Seitengröße ist 4 KiB; unter Linux liefert getconf PAGESIZE z. B. 4096."
+    },
+    {
+      "type": "text",
+      "content": "Die Umrechnung macht die MMU (Memory Management Unit) der CPU bei jedem Zugriff in Hardware:\n• Seitennummer = Adresse // Seitengröße\n• Offset = Adresse % Seitengröße\n• physische Adresse = Rahmen · Seitengröße + Offset\nDer Offset bleibt gleich, nur die Seitennummer wird gegen die Rahmennummer getauscht."
+    },
+    {
+      "type": "code",
+      "content": "SEITE = 4096\ntabelle = {0: 5, 1: 2, 2: 9, 3: 7}\n\nadresse = 13000\nseite, offset = divmod(adresse,\n                       SEITE)\nrahmen = tabelle[seite]\nprint(seite, offset)     # 3 712\nprint(rahmen * SEITE + offset)\n# 29384"
+    },
+    {
+      "type": "text",
+      "content": "Trick mit Hexadezimal: 4096 = 0x1000. Bei 4-KiB-Seiten sind die letzten drei Hex-Ziffern der Offset, der Rest die Seitennummer: 0x3A7F → Seite 0x3, Offset 0xA7F. Typischer Fehler: Seiten- und Rahmennummer verwechseln oder vergessen, den Offset wieder dazuzuzählen.\nZusammenfassung: Speicherhierarchie von Register bis Archiv, Caches wirken dank Lokalität. Paging teilt Speicher in gleich große Seiten und Rahmen, die Seitentabelle ordnet sie zu, die MMU rechnet um."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Seitengröße 4 KiB (4096 Byte). In welcher Seite und mit welchem Offset liegt die logische Adresse 20000?",
+      "options": [
+        "Seite 5, Offset 0",
+        "Seite 4, Offset 3616",
+        "Seite 4, Offset 4000",
+        "Seite 3, Offset 7712"
+      ],
+      "correctIndex": 1,
+      "explanation": "20000 // 4096 = 4 und 20000 % 4096 = 20000 − 16384 = 3616."
+    },
+    {
+      "question": "Seitengröße 0x1000. Laut Seitentabelle liegt Seite 2 in Rahmen 5. Welche physische Adresse gehört zur logischen Adresse 0x2ABC?",
+      "options": [
+        "0x2ABC",
+        "0xABC5",
+        "0x5ABC",
+        "0x7ABC"
+      ],
+      "correctIndex": 2,
+      "explanation": "Seite = 0x2, Offset = 0xABC. Die Seite wird durch Rahmen 5 ersetzt, der Offset bleibt: 0x5ABC."
+    },
+    {
+      "question": "Welche Reihenfolge ist von schnell nach langsam richtig?",
+      "options": [
+        "RAM – Cache – Register – SSD",
+        "Cache – Register – SSD – RAM",
+        "Register – RAM – Cache – SSD",
+        "Register – Cache – RAM – SSD"
+      ],
+      "correctIndex": 3,
+      "explanation": "Register sitzen direkt in der CPU, dann folgen die Caches, danach der RAM und schließlich die SSD als Massenspeicher."
+    },
+    {
+      "question": "Welches Problem löst Paging?",
+      "options": [
+        "Externe Fragmentierung, weil Seiten in beliebigen freien Rahmen liegen können",
+        "Interne Fragmentierung, weil jede Seite immer genau voll ist",
+        "Stromausfälle, weil Seiten nicht flüchtig sind",
+        "Langsame SSDs, weil Seiten im Cache liegen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Prozess braucht keinen zusammenhängenden Block mehr. Interne Fragmentierung bleibt dagegen möglich: Die letzte Seite ist meist nicht ganz voll."
+    }
+  ]
+}

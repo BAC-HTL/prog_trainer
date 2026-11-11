@@ -1,0 +1,90 @@
+{
+  "id": "tinf-j3-virtualisierung_03_administration",
+  "title": "Systemadministration: Pakete, Dienste, Logs",
+  "summary": "Software über Paketmanager verwalten, Dienste steuern und Logdateien auswerten – unter Linux und Windows.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Zur Arbeit von Administrator:innen gehört: Software installieren und aktuell halten, Dienste starten und überwachen, Logs auswerten, Prozesse im Blick behalten, Benutzer verwalten und Backups prüfen. Grundregel: Mit möglichst wenig Rechten arbeiten und Root- bzw. Administratorrechte nur für die Befehle verwenden, die sie brauchen – unter Linux mit sudo."
+    },
+    {
+      "type": "text",
+      "content": "Unter Linux installierst du Software über einen Paketmanager. Er holt Pakete aus vertrauenswürdigen Paketquellen (Repositories), prüft deren Signaturen, installiert benötigte Abhängigkeiten automatisch mit und kann das ganze System mit einem Befehl aktualisieren. Debian und Ubuntu nutzen apt, Fedora und Red Hat dnf.\nTypischer Fehler: update und upgrade verwechseln. apt update lädt nur die aktuellen Paketlisten, installiert aber nichts. Erst apt upgrade spielt die neuen Versionen ein."
+    },
+    {
+      "type": "code",
+      "content": "$ sudo apt update     # Listen\n$ sudo apt upgrade    # aktualis.\n$ sudo apt install tree\n…\nSetting up tree (…) ...\n$ dpkg -s tree | grep Status\nStatus: install ok installed\n$ tree -L 1\n.\n|-- notizen.txt\n|-- projekt\n`-- skript.sh\n$ sudo apt remove tree"
+    },
+    {
+      "type": "text",
+      "content": "Unter Windows gibt es mit winget ebenfalls einen Paketmanager auf der Kommandozeile, z. B. winget search, winget install --id Git.Git -e und winget upgrade --all. Das ist viel sauberer, als Installer aus zufälligen Downloadseiten zu holen."
+    },
+    {
+      "type": "text",
+      "content": "Dienste (unter Linux auch Daemons genannt) sind Programme, die im Hintergrund laufen, ohne dass jemand angemeldet ist: Webserver, SSH-Server, Datenbank. Auf den meisten Linux-Distributionen verwaltet sie systemd mit dem Befehl systemctl.\n• start/stop/restart: jetzt starten, anhalten, neu starten\n• enable/disable: beim Systemstart automatisch starten – oder nicht\n• status: läuft er? Mit den letzten Logzeilen\nTypischer Fehler: Nur start, aber kein enable – nach dem nächsten Neustart läuft der Dienst nicht mehr."
+    },
+    {
+      "type": "code",
+      "content": "$ sudo systemctl start ssh\n$ sudo systemctl enable ssh\n# beides auf einmal:\n$ sudo systemctl enable --now ssh\n$ systemctl status ssh\n$ systemctl is-active ssh\nactive\n\n# Windows (PowerShell):\nGet-Service\nStart-Service -Name Spooler\n# GUI: services.msc"
+    },
+    {
+      "type": "text",
+      "content": "Läuft etwas schief, sind Logs die erste Anlaufstelle. Unter Linux mit systemd sammelt das Journal die Meldungen, abrufbar mit journalctl. Viele Programme schreiben zusätzlich Textdateien nach /var/log, z. B. dpkg.log mit allen Paketinstallationen. Unter Windows zeigt die Ereignisanzeige (eventvwr.msc) die Protokolle Anwendung, Sicherheit (z. B. fehlgeschlagene Anmeldungen) und System, eingeteilt in Ebenen wie Information, Warnung, Fehler und Kritisch."
+    },
+    {
+      "type": "code",
+      "content": "$ journalctl -u ssh   # ein Dienst\n$ journalctl -p err -b\n# Fehler (und schlimmer)\n# seit dem letzten Start\n$ journalctl -f       # live\n\n$ grep \" install \" \\\n    /var/log/dpkg.log | tail -1\n2026-11-11 08:52:56 install\ntree:amd64 <none> 2.1.1-…"
+    },
+    {
+      "type": "text",
+      "content": "Auch Prozesse gehören zur Überwachung: ps und top (bzw. das komfortablere htop) zeigen, was läuft und wie viel CPU und RAM es braucht. Hängt ein Programm, beendest du es mit kill PID – das sendet das Signal SIGTERM, das Programm kann noch sauber aufräumen. kill -9 PID (SIGKILL) beendet sofort ohne Aufräumen und ist nur der letzte Ausweg. Unter Windows erledigt das der Task-Manager.\nZusammenfassung: Software über Paketmanager (apt, dnf, winget), update ≠ upgrade. Dienste mit systemctl start/enable bzw. Get-Service steuern. Logs mit journalctl, in /var/log und in der Ereignisanzeige auswerten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was macht sudo apt update?",
+      "options": [
+        "Es installiert alle verfügbaren Updates",
+        "Es lädt die aktuellen Paketlisten aus den Paketquellen, installiert aber nichts",
+        "Es aktualisiert nur den Kernel",
+        "Es startet den Rechner nach den Updates neu"
+      ],
+      "correctIndex": 1,
+      "explanation": "update aktualisiert nur die Listen. Installiert werden neue Versionen erst mit apt upgrade."
+    },
+    {
+      "question": "Du hast den Webserver mit sudo systemctl start nginx gestartet. Nach einem Neustart läuft er nicht mehr. Was fehlt?",
+      "options": [
+        "sudo systemctl enable nginx",
+        "sudo systemctl restart nginx",
+        "sudo apt update",
+        "journalctl -f"
+      ],
+      "correctIndex": 0,
+      "explanation": "start startet den Dienst nur jetzt. Damit er beim Systemstart automatisch hochfährt, muss er mit enable aktiviert werden (oder gleich enable --now)."
+    },
+    {
+      "question": "Wo findest du unter Windows fehlgeschlagene Anmeldeversuche?",
+      "options": [
+        "Im Task-Manager unter Leistung",
+        "In services.msc",
+        "In /var/log/auth.log",
+        "In der Ereignisanzeige im Protokoll Sicherheit"
+      ],
+      "correctIndex": 3,
+      "explanation": "An- und Abmeldungen werden im Sicherheitsprotokoll der Ereignisanzeige erfasst. /var/log gibt es nur unter Linux."
+    },
+    {
+      "question": "Was zeigt dieser Befehl an?",
+      "code": "$ journalctl -p err -b",
+      "options": [
+        "Alle Meldungen des Dienstes err",
+        "Nur Meldungen der letzten Stunde",
+        "Meldungen mit Priorität Fehler oder schlimmer seit dem letzten Systemstart",
+        "Die Fehler beim Booten des vorletzten Starts"
+      ],
+      "correctIndex": 2,
+      "explanation": "-p err filtert nach Priorität err und allen schwerwiegenderen (crit, alert, emerg). -b beschränkt auf den aktuellen Bootvorgang."
+    }
+  ]
+}

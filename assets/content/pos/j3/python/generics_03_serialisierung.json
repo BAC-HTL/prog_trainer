@@ -1,0 +1,96 @@
+{
+  "id": "pos-j3-python-generics_03_serialisierung",
+  "title": "Serialisierung mit json und pickle",
+  "summary": "Objekte als Text oder Bytes speichern und wieder einlesen – und warum pickle gefährlich sein kann.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Objekte leben nur im Arbeitsspeicher. Willst du sie in einer Datei speichern oder übers Netz schicken, musst du sie in eine Folge von Zeichen oder Bytes umwandeln. Das nennt man Serialisierung, den umgekehrten Weg Deserialisierung. In Python sind json (Text) und pickle (Binär) die wichtigsten Module dafür."
+    },
+    {
+      "type": "code",
+      "content": "import json\n\ndaten = {\"name\": \"Jänner-Test\",\n         \"punkte\": [17, 23], \"ok\": True}\ntext = json.dumps(daten, ensure_ascii=False)\nprint(text)\n# {\"name\": \"Jänner-Test\",\n#  \"punkte\": [17, 23], \"ok\": true}\nzurueck = json.loads(text)\nprint(zurueck[\"punkte\"][1])   # 23"
+    },
+    {
+      "type": "text",
+      "content": "JSON kennt nur wenige Typen: Objekt, Array, String, Zahl, true/false und null. Python wandelt dict in ein Objekt, list und tuple in ein Array, None in null. Achtung: Beim Zurücklesen wird aus einem Tupel eine Liste, und Dictionary-Schlüssel werden immer zu Strings!"
+    },
+    {
+      "type": "code",
+      "content": "import json\n\nd = {1: (2, 3), \"x\": None}\ns = json.dumps(d)\nprint(s)   # {\"1\": [2, 3], \"x\": null}\nprint(json.loads(s))\n# {'1': [2, 3], 'x': None}"
+    },
+    {
+      "type": "text",
+      "content": "Eigene Objekte kann json nicht direkt umwandeln – json.dumps(schueler) liefert einen TypeError („Object of type Schueler is not JSON serializable“). Üblich ist eine Methode to_dict() zum Speichern und eine Klassenmethode from_dict() zum Wiederherstellen. Zum Schreiben in eine Datei nimmst du json.dump bzw. json.load (ohne „s“)."
+    },
+    {
+      "type": "code",
+      "content": "import json\n\nclass Schueler:\n    def __init__(self, name, klasse):\n        self.name = name\n        self.klasse = klasse\n\n    def to_dict(self):\n        return {\"name\": self.name,\n                \"klasse\": self.klasse}\n\n    @classmethod\n    def from_dict(cls, d):\n        return cls(d[\"name\"], d[\"klasse\"])\n\ns = Schueler(\"Lea\", \"3AHIF\")\nwith open(\"lea.json\", \"w\",\n          encoding=\"utf-8\") as f:\n    json.dump(s.to_dict(), f)\n\nwith open(\"lea.json\",\n          encoding=\"utf-8\") as f:\n    s2 = Schueler.from_dict(json.load(f))\nprint(s2.name, s2.klasse)  # Lea 3AHIF"
+    },
+    {
+      "type": "text",
+      "content": "pickle speichert fast beliebige Python-Objekte – auch eigene Klassen – ohne Umwandlungsmethoden. Das Ergebnis sind Bytes, daher öffnest du Dateien mit \"wb\" bzw. \"rb\". Nachteil: Das Format ist nicht lesbar und nur für Python gedacht. Ein Java- oder C#-Programm kann damit nichts anfangen, mit JSON schon."
+    },
+    {
+      "type": "code",
+      "content": "import pickle\n\nclass Punkt:\n    def __init__(self, x, y):\n        self.x, self.y = x, y\n\nwith open(\"p.pkl\", \"wb\") as f:\n    pickle.dump(Punkt(2, 5), f)\n\nwith open(\"p.pkl\", \"rb\") as f:\n    p = pickle.load(f)\nprint(p.x, p.y)   # 2 5"
+    },
+    {
+      "type": "text",
+      "content": "Sicherheitswarnung: Beim Laden mit pickle.load kann beliebiger Code ausgeführt werden, den sich der Ersteller der Datei ausgedacht hat. Eine präparierte .pkl-Datei aus dem Internet oder aus einem Upload-Formular kann so z. B. Dateien löschen. Lade pickle-Daten daher nur aus Quellen, denen du voll vertraust (z. B. selbst erzeugte Dateien). Für Datenaustausch ist JSON die sichere Wahl."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: json.dumps/loads arbeiten mit Strings, json.dump/load mit Dateien. JSON ist lesbar und sprachunabhängig, kennt aber nur einfache Typen (Tupel → Liste, Schlüssel → Strings); eigene Objekte über to_dict/from_dict. pickle speichert fast alles binär, ist aber Python-only und beim Laden nicht vertrauenswürdiger Daten gefährlich."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import json\nd = {\"a\": (1, 2)}\nprint(json.loads(json.dumps(d)))",
+      "options": [
+        "{'a': (1, 2)}",
+        "{'a': [1, 2]}",
+        "TypeError",
+        "{\"a\": [1, 2]}"
+      ],
+      "correctIndex": 1,
+      "explanation": "json.dumps macht aus dem Tupel ein JSON-Array. Beim Zurücklesen mit loads wird daraus eine Python-Liste. print zeigt ein Dictionary, daher einfache Anführungszeichen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import json\nprint(json.dumps([True, None]))",
+      "options": [
+        "[True, None]",
+        "[\"True\", \"None\"]",
+        "[true, null]",
+        "TypeError"
+      ],
+      "correctIndex": 2,
+      "explanation": "In JSON heißen die Werte true und null (kleingeschrieben). json.dumps liefert einen String, den print unverändert ausgibt."
+    },
+    {
+      "question": "Finde den Fehler: Was passiert hier?",
+      "code": "import json\n\nclass P:\n    def __init__(self):\n        self.x = 1\n\nprint(json.dumps(P()))",
+      "options": [
+        "Es wird {\"x\": 1} ausgegeben",
+        "TypeError: Object of type P is not JSON serializable",
+        "AttributeError, weil P keine Methode dumps hat",
+        "Es wird ein leeres Objekt {} ausgegeben"
+      ],
+      "correctIndex": 1,
+      "explanation": "json kann nur dict, list, str, Zahlen, bool und None umwandeln. Für eigene Klassen musst du zuerst ein Dictionary erzeugen, z. B. mit einer Methode to_dict()."
+    },
+    {
+      "question": "Ein Schulserver lässt Benutzer:innen Spielstände als .pkl-Datei hochladen und lädt sie mit pickle.load. Warum ist das gefährlich?",
+      "options": [
+        "pickle-Dateien sind meistens zu groß für den Server",
+        "pickle kann nur Zahlen speichern",
+        "Beim Laden einer präparierten pickle-Datei kann beliebiger Code ausgeführt werden",
+        "pickle-Dateien sind lesbarer Text und verraten Passwörter"
+      ],
+      "correctIndex": 2,
+      "explanation": "pickle.load kann beim Laden Code ausführen. Wer die Datei manipuliert, kann so Befehle am Server ausführen lassen. Fremde Daten daher nie mit pickle laden – JSON ist hier die sichere Alternative."
+    }
+  ]
+}

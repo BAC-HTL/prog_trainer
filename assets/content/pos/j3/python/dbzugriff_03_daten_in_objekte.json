@@ -1,0 +1,92 @@
+{
+  "id": "pos-j3-python-dbzugriff_03_daten_in_objekte",
+  "title": "Datenbankzeilen in Objekte umwandeln",
+  "summary": "Tupel aus der Datenbank in dataclass-Objekte verwandeln, mit sqlite3.Row über Spaltennamen zugreifen und Zugriffsfunktionen kapseln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit Tupeln wie (1, 'Lea', '3AHIF') zu arbeiten ist fehleranfällig: Was war noch mal row[2]? In einem objektorientierten Programm wandelt man jede Zeile daher in ein Objekt um. Für solche reinen Datenklassen gibt es den Dekorator @dataclass: Er erzeugt __init__, eine lesbare Ausgabe (__repr__) und den Vergleich (__eq__) automatisch aus den Attributen."
+    },
+    {
+      "type": "code",
+      "content": "import sqlite3\nfrom dataclasses import dataclass\n\n@dataclass\nclass Schueler:\n    id: int\n    name: str\n    klasse: str\n\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE schueler(\"\n  \"id INTEGER PRIMARY KEY, name, klasse)\")\ncon.execute(\"INSERT INTO schueler(name,\"\n  \"klasse) VALUES ('Lea', '3AHIF')\")\n\nrow = con.execute(\"SELECT id, name, \"\n  \"klasse FROM schueler\").fetchone()\ns = Schueler(*row)   # Tupel entpacken\nprint(s)\n# Schueler(id=1, name='Lea',\n#          klasse='3AHIF')\nprint(s.name)        # Lea"
+    },
+    {
+      "type": "text",
+      "content": "Schueler(*row) übergibt die Werte des Tupels der Reihe nach an den Konstruktor. Das klappt nur, wenn die Spalten in derselben Reihenfolge wie die Attribute kommen. Bequemer ist con.row_factory = sqlite3.Row (hier mit der schule.db aus Lektion 1): Dann kannst du Spalten über ihren Namen ansprechen – row[\"name\"] – und mit dict(row) ein Dictionary erzeugen."
+    },
+    {
+      "type": "code",
+      "content": "import sqlite3\nfrom dataclasses import dataclass\n\n@dataclass\nclass Schueler:\n    id: int\n    name: str\n    klasse: str\n\ncon = sqlite3.connect(\"schule.db\")\ncon.row_factory = sqlite3.Row\nrow = con.execute(\n    \"SELECT * FROM schueler \"\n    \"WHERE name = 'Tim'\").fetchone()\nprint(row[\"klasse\"])   # 3AHIF\nprint(dict(row))\n# {'id': 2, 'name': 'Tim',\n#  'klasse': '3AHIF'}\ns = Schueler(**dict(row))\nprint(s.id, s.name)    # 2 Tim"
+    },
+    {
+      "type": "text",
+      "content": "Damit SQL nicht quer durchs ganze Programm verstreut ist, kapselt man den Datenzugriff in eigenen Funktionen (oder einer Klasse, oft „Repository“ genannt). Der Rest des Programms arbeitet nur noch mit Schueler-Objekten. lastrowid liefert nach einem INSERT die automatisch vergebene id."
+    },
+    {
+      "type": "code",
+      "content": "def alle(con) -> list[Schueler]:\n    rows = con.execute(\n        \"SELECT id, name, klasse \"\n        \"FROM schueler ORDER BY id\")\n    return [Schueler(*r) for r in rows]\n\ndef finde(con, sid) -> Schueler | None:\n    r = con.execute(\n        \"SELECT id, name, klasse FROM \"\n        \"schueler WHERE id = ?\",\n        (sid,)).fetchone()\n    return Schueler(*r) if r else None\n\ndef speichere(con, name, klasse):\n    with con:\n        cur = con.execute(\n            \"INSERT INTO schueler(name, \"\n            \"klasse) VALUES (?, ?)\",\n            (name, klasse))\n    return Schueler(cur.lastrowid,\n                    name, klasse)\n\nneu = speichere(con, \"Max\", \"3BHIF\")\nprint(neu.id)               # 4\nprint(len(alle(con)))       # 4\nprint(finde(con, 99))       # None"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: SELECT * zusammen mit Schueler(*row) – wird die Tabelle später um eine Spalte erweitert oder anders angelegt, passt die Reihenfolge nicht mehr. Nenne die Spalten daher ausdrücklich. Und: fetchone() liefert None, wenn nichts gefunden wurde. Schueler(*None) führt dann zu einem TypeError – vorher prüfen!"
+    },
+    {
+      "type": "code",
+      "content": "r = con.execute(\n    \"SELECT id, name, klasse FROM \"\n    \"schueler WHERE id = 99\").fetchone()\nprint(r)            # None\ns = Schueler(*r)\n# TypeError: ... argument after *\n# must be an iterable, not NoneType"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Datenbankzeilen werden in Objekte umgewandelt, z. B. mit @dataclass und Schueler(*row). sqlite3.Row erlaubt Zugriff über Spaltennamen und dict(row) bzw. Schueler(**dict(row)). Den Datenzugriff in Funktionen wie alle(), finde(), speichere() kapseln, Spalten explizit auflisten, Parameter mit ? übergeben und None-Ergebnisse abfangen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from dataclasses import dataclass\n\n@dataclass\nclass P:\n    a: int\n    b: str\n\nprint(P(*(1, \"x\")))",
+      "options": [
+        "P(a=1, b='x')",
+        "(1, 'x')",
+        "TypeError",
+        "P(1, 'x')"
+      ],
+      "correctIndex": 0,
+      "explanation": "@dataclass erzeugt automatisch eine __repr__-Methode, die den Klassennamen und alle Attribute mit Namen ausgibt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "con.row_factory = sqlite3.Row\nrow = con.execute(\n    \"SELECT id, name, klasse FROM \"\n    \"schueler WHERE id = 3\").fetchone()\nprint(row[\"name\"])",
+      "options": [
+        "3BHIF",
+        "Ida",
+        "KeyError",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Durch row_factory = sqlite3.Row kann man über den Spaltennamen zugreifen. row[\"name\"] liefert den Namen der Schülerin mit id 3."
+    },
+    {
+      "question": "Die Tabelle hat die Spalten (id, klasse, name). Der Code ruft Schueler(*row) mit SELECT * auf, die Dataclass hat die Reihenfolge id, name, klasse. Was passiert?",
+      "options": [
+        "Es gibt einen TypeError",
+        "Python ordnet die Spalten automatisch über die Namen zu",
+        "Name und Klasse werden vertauscht, ohne Fehlermeldung",
+        "Die Abfrage liefert None"
+      ],
+      "correctIndex": 2,
+      "explanation": "*row übergibt die Werte nur nach Position. Da beide Attribute Strings sind, merkt Python nichts: name enthält die Klasse und umgekehrt. Deshalb Spalten im SELECT immer explizit angeben."
+    },
+    {
+      "question": "Warum gibt finde() hier None zurück, statt abzustürzen?",
+      "code": "def finde(con, sid):\n    r = con.execute(\n        \"SELECT id, name, klasse FROM \"\n        \"schueler WHERE id = ?\",\n        (sid,)).fetchone()\n    return Schueler(*r) if r else None",
+      "options": [
+        "Weil dataclasses bei None automatisch None liefern",
+        "Weil fetchone() eine Exception fängt",
+        "Weil der bedingte Ausdruck nur dann ein Objekt erzeugt, wenn r nicht None ist",
+        "Weil execute bei keinem Treffer None liefert"
+      ],
+      "correctIndex": 2,
+      "explanation": "fetchone() liefert None, wenn nichts gefunden wurde. Der Ausdruck Schueler(*r) if r else None verhindert, dass Schueler(*None) aufgerufen wird."
+    }
+  ]
+}

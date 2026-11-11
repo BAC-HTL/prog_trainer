@@ -1,0 +1,93 @@
+{
+  "id": "pos-j3-theorie-git_03_zusammenarbeit_remote",
+  "title": "Zusammenarbeit mit Remote-Repositorys",
+  "summary": "Mit clone, push, pull, Pull Requests und Forks im Team an einem Projekt arbeiten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher lag dein Repository nur auf deinem Rechner. Im Team braucht ihr ein gemeinsames Remote-Repository auf einem Server, etwa auf GitHub, GitLab oder dem Git-Server der Schule. Jede:r hat eine vollständige lokale Kopie und tauscht Commits mit dem Remote aus. Der Standardname für das Remote ist origin."
+    },
+    {
+      "type": "code",
+      "content": "$ git clone \\\n  https://github.com/anna/rechner.git\nCloning into 'rechner'...\n\n$ cd rechner\n$ git remote -v\norigin  https://github.com/anna/\nrechner.git (fetch)\norigin  https://github.com/anna/\nrechner.git (push)"
+    },
+    {
+      "type": "text",
+      "content": "git push schickt deine Commits ans Remote. Beim ersten Push eines Branches verknüpfst du ihn mit -u, danach reicht git push. git fetch holt neue Commits vom Remote, ohne deine Dateien zu ändern. git pull ist fetch plus merge – damit holst du die Arbeit der anderen in deinen Branch."
+    },
+    {
+      "type": "code",
+      "content": "$ git push -u origin main\nTo https://github.com/anna/\nrechner.git\n * [new branch]   main -> main\nbranch 'main' set up to track\n'origin/main'."
+    },
+    {
+      "type": "text",
+      "content": "Hat inzwischen jemand anderer gepusht, lehnt Git deinen Push ab: Das Remote enthält Commits, die du lokal nicht hast. Die Lösung ist fast immer: zuerst git pull, eventuelle Konflikte lösen, dann noch einmal pushen. Auf keinen Fall git push --force auf einem gemeinsamen Branch – damit überschreibst du die Commits deiner Kolleg:innen."
+    },
+    {
+      "type": "code",
+      "content": "$ git push\n ! [rejected]  main -> main\n               (fetch first)\nerror: failed to push some refs\n\n$ git pull\nMerge made by the 'ort' strategy.\n b.txt | 1 +\n\n$ git push\n   d77e72d..67cda89  main -> main"
+    },
+    {
+      "type": "text",
+      "content": "In größeren Projekten pusht niemand direkt auf main. Stattdessen pushst du einen Feature-Branch und öffnest auf der Plattform einen Pull Request (bei GitLab: Merge Request). Das ist die Bitte, deinen Branch in main zu übernehmen. Andere sehen die Änderungen, kommentieren im Code Review, automatische Tests laufen – erst danach wird gemergt. Bei Schulprojekten und der Diplomarbeit ist das ein guter Weg, Fehler früh zu finden."
+    },
+    {
+      "type": "code",
+      "content": "$ git switch -c feature/export\n# ... commits ...\n$ git push -u origin feature/export\n\n→ auf GitHub: „Compare & pull\n  request“, Beschreibung schreiben,\n  Reviewer:in auswählen\n→ nach dem Review: Merge in main\n$ git switch main\n$ git pull"
+    },
+    {
+      "type": "text",
+      "content": "Darfst du in ein fremdes Repository nicht pushen, etwa bei einem Open-Source-Projekt, erstellst du einen Fork: eine Kopie des Repositorys unter deinem eigenen Account auf der Plattform. Du klonst deinen Fork, arbeitest darin und öffnest einen Pull Request vom Fork ins Original. Das Original trägst du oft als zweites Remote namens upstream ein, um neue Commits von dort zu holen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: clone holt ein Repository, push sendet, fetch holt, pull holt und mergt. Pull Requests sind kein Git-Befehl, sondern eine Funktion der Plattform für Review und Diskussion. Ein Fork ist eine Kopie auf der Plattform, ein Clone eine Kopie auf deinem Rechner. Typische Fehler: vor dem Arbeiten nicht pullen, riesige Pull Requests mit vielen Themen und Zugangsdaten im Repository."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was macht git pull?",
+      "options": [
+        "Es sendet lokale Commits ans Remote",
+        "Es holt neue Commits vom Remote und mergt sie in den aktuellen Branch",
+        "Es holt neue Commits, ändert aber nichts an deinen Dateien",
+        "Es erstellt einen Pull Request"
+      ],
+      "correctIndex": 1,
+      "explanation": "git pull = git fetch + git merge. Nur fetch (Antwort 3) ändert deine Dateien nicht. Pull Requests werden auf der Plattform erstellt."
+    },
+    {
+      "question": "Dein git push wird mit „[rejected] … (fetch first)“ abgelehnt. Was solltest du tun?",
+      "options": [
+        "git push --force",
+        "Das lokale Repository löschen und neu klonen",
+        "git pull, eventuelle Konflikte lösen und erneut pushen",
+        "Einen neuen Branch namens main2 anlegen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Remote hat Commits, die du lokal nicht hast. Mit git pull holst du sie und führst sie zusammen. --force würde die fremden Commits überschreiben."
+    },
+    {
+      "question": "Was ist der Unterschied zwischen einem Fork und einem Clone?",
+      "options": [
+        "Ein Fork ist eine Kopie auf der Plattform unter deinem Account, ein Clone eine lokale Kopie",
+        "Es gibt keinen Unterschied",
+        "Ein Clone enthält keine Geschichte, ein Fork schon",
+        "Ein Fork ist ein Git-Befehl, ein Clone eine Funktion von GitHub"
+      ],
+      "correctIndex": 0,
+      "explanation": "Forks gibt es auf Plattformen wie GitHub oder GitLab. git clone ist ein Git-Befehl und lädt ein Repository samt kompletter Geschichte auf deinen Rechner."
+    },
+    {
+      "question": "Wozu dient ein Pull Request?",
+      "options": [
+        "Um Commits vom Remote herunterzuladen",
+        "Um ein Passwort zurückzusetzen",
+        "Um einen Branch lokal zu löschen",
+        "Um zu beantragen, dass ein Branch nach einem Review in einen anderen übernommen wird"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Pull Request bittet darum, die Änderungen eines Branches (oder Forks) zu übernehmen. Dabei können andere den Code prüfen und kommentieren."
+    }
+  ]
+}

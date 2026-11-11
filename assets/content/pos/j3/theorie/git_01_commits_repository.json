@@ -1,0 +1,93 @@
+{
+  "id": "pos-j3-theorie-git_01_commits_repository",
+  "title": "Repository und Commits",
+  "summary": "Mit git init, add und commit die Geschichte deines Projekts Schritt für Schritt speichern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Kennst du Ordner voller Dateien wie „projekt_final_v3_wirklich_final.py“? Eine Versionsverwaltung löst das sauber: Sie speichert jeden Stand deines Projekts, zeigt, wer was wann geändert hat, und lässt dich jederzeit zurückspringen. Git ist das Standardwerkzeug dafür – in der Firma, im Open-Source-Bereich und spätestens bei der Diplomarbeit. Git ist verteilt: Jede Kopie eines Repositorys enthält die komplette Geschichte."
+    },
+    {
+      "type": "code",
+      "content": "$ git config --global user.name \"Anna Huber\"\n$ git config --global user.email \\\n    \"anna@schule.at\"\n\n$ mkdir rechner && cd rechner\n$ git init\nInitialized empty Git repository\nin /home/anna/rechner/.git/"
+    },
+    {
+      "type": "text",
+      "content": "Name und E-Mail stellst du einmal pro Rechner ein – sie stehen in jedem Commit. git init legt im Projektordner den versteckten Ordner .git an. Er ist das eigentliche Repository mit der gesamten Geschichte. Ab jetzt unterscheidet Git drei Bereiche (siehe unten). Ein Commit ist ein Schnappschuss aller vorgemerkten Dateien mit Autor:in, Zeitpunkt, Nachricht und einer eindeutigen Prüfsumme (Hash). git status zeigt dir jederzeit, in welchem Bereich welche Änderung liegt. Die Hashes sehen bei dir natürlich anders aus."
+    },
+    {
+      "type": "code",
+      "content": "Arbeitsverzeichnis   deine Dateien\n      │  git add\n      ▼\nStaging Area         „das kommt in\n(Index)               den nächsten\n      │               Commit“\n      │  git commit\n      ▼\nRepository           gespeicherte\n(.git)               Commits"
+    },
+    {
+      "type": "code",
+      "content": "$ git status --short\n?? main.py          # unbekannt\n$ git add main.py\n$ git commit -m \"Erste Version anlegen\"\n[main (root-commit) b1f0697] Erste\nVersion anlegen\n 1 file changed, 1 insertion(+)\n\n$ echo 'print(\"Servus\")' >> main.py\n$ git status --short\n M main.py          # geändert"
+    },
+    {
+      "type": "text",
+      "content": "git diff zeigt Änderungen, die noch nicht vorgemerkt sind (+ neue Zeile, - entfernte Zeile), git diff --staged die vorgemerkten. git log --oneline listet die Commits, der neueste steht oben. Willst du eine Änderung verwerfen, holst du mit git restore datei den letzten Stand zurück; git restore --staged datei nimmt sie nur aus der Staging Area."
+    },
+    {
+      "type": "code",
+      "content": "$ git diff\n@@ -1 +1,2 @@\n print(\"Hallo\")\n+print(\"Servus\")\n\n$ git commit -am \"Gruß ergänzen\"\n$ git log --oneline\na24ff9c Gruß ergänzen\nb1f0697 Erste Version anlegen"
+    },
+    {
+      "type": "text",
+      "content": "Nicht alles gehört ins Repository: Kompilate, Logdateien, IDE-Einstellungen und vor allem Passwörter und Schlüssel. Diese Muster trägst du in die Datei .gitignore ein – Git zeigt passende Dateien dann gar nicht mehr an. Die .gitignore selbst wird mitcommittet. Achtung: Bereits committete Dateien ignoriert sie nicht nachträglich, und ein einmal gepushtes Passwort gilt als verraten."
+    },
+    {
+      "type": "code",
+      "content": "# .gitignore\n__pycache__/\nbin/\nobj/\n*.log\n.env\n\n# gute Commit-Messages\n✔ Login-Prüfung für leere Felder\n  ergänzen\n✔ Fehler bei negativer Menge beheben\n✘ update\n✘ asdf\n✘ Änderungen von Freitag"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: init, add, commit, status, diff, log – das ist der tägliche Ablauf. Gute Commits sind klein und haben eine Nachricht, die in einer kurzen ersten Zeile (rund 50 Zeichen) sagt, WAS der Commit bewirkt, oft im Imperativ („ergänzen“, „beheben“). Bei Bedarf folgt nach einer Leerzeile eine Erklärung, WARUM. Typischer Fehler: git add vergessen – dann landet die Änderung nicht im Commit."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Du hast main.py geändert, aber noch nichts weiter getan. Was zeigt git status --short?",
+      "options": [
+        "?? main.py",
+        " M main.py",
+        "A  main.py",
+        "Nichts, weil die Datei bekannt ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Datei ist Git schon bekannt und wurde geändert, aber noch nicht vorgemerkt – das zeigt Git als „ M“. ?? steht für unbekannte (untracked) Dateien."
+    },
+    {
+      "question": "Was macht git add main.py?",
+      "options": [
+        "Es speichert sofort einen Commit",
+        "Es lädt die Datei auf GitHub hoch",
+        "Es merkt die aktuelle Version von main.py für den nächsten Commit vor",
+        "Es erstellt ein neues Repository"
+      ],
+      "correctIndex": 2,
+      "explanation": "git add verschiebt den aktuellen Stand der Datei in die Staging Area. Gespeichert wird erst mit git commit, hochgeladen erst mit git push."
+    },
+    {
+      "question": "Welche Commit-Message ist am besten?",
+      "options": [
+        "Division durch null im Rechner abfangen",
+        "update",
+        "habe heute viel gemacht, siehe Code",
+        "Fix"
+      ],
+      "correctIndex": 0,
+      "explanation": "Sie ist kurz, sagt konkret, was der Commit bewirkt, und steht im Imperativ. Die anderen sagen nichts über den Inhalt."
+    },
+    {
+      "question": "Du hast .env mit einem Passwort schon committet und danach .env in die .gitignore eingetragen. Was stimmt?",
+      "options": [
+        "Git löscht .env automatisch aus allen alten Commits",
+        "Die Datei bleibt in der Geschichte; .gitignore wirkt nur auf noch nicht verfolgte Dateien",
+        ".gitignore löscht die Datei aus dem Arbeitsverzeichnis",
+        "Git verschlüsselt die Datei ab jetzt"
+      ],
+      "correctIndex": 1,
+      "explanation": ".gitignore verhindert nur, dass unverfolgte Dateien hinzugefügt werden. Das Passwort steht weiter in alten Commits – es sollte geändert werden."
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-python-tests_02_unit_tests_schreiben",
+  "title": "Unit-Tests mit unittest und pytest",
+  "summary": "Testfälle als Code schreiben und automatisch ausführen – mit dem Standardmodul unittest und mit pytest.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Tests per Hand auszuprobieren ist mühsam und wird bei jeder Änderung vergessen. Darum schreibt man Unit-Tests als eigenen Code, der jederzeit mit einem Befehl alle Testfälle ausführt. Python bringt dafür das Modul unittest mit. Getestet wird die Funktion preis() aus der letzten Lektion, gespeichert in eintritt.py."
+    },
+    {
+      "type": "code",
+      "content": "# test_eintritt_ut.py\nimport unittest\nfrom eintritt import preis\n\nclass TestPreis(unittest.TestCase):\n    def test_kind_gratis(self):\n        self.assertEqual(preis(5), 0.0)\n\n    def test_jugendlich(self):\n        self.assertEqual(preis(6), 4.5)\n\n    def test_negativ(self):\n        with self.assertRaises(ValueError):\n            preis(-1)"
+    },
+    {
+      "type": "text",
+      "content": "Regeln bei unittest: Die Testklasse erbt von unittest.TestCase, jede Testmethode beginnt mit test_. Statt assert verwendest du Methoden wie assertEqual, assertTrue oder assertRaises (prüft, dass eine Exception geworfen wird). Gestartet wird im Terminal; ein Punkt steht für einen bestandenen Test."
+    },
+    {
+      "type": "code",
+      "content": "$ python -m unittest test_eintritt_ut\n...\n---------------------------------------\nRan 3 tests in 0.000s\n\nOK"
+    },
+    {
+      "type": "text",
+      "content": "Viele Projekte verwenden pytest. Es muss zuerst installiert werden (pip install pytest). Tests sind dort einfache Funktionen mit normalem assert – keine Klasse nötig. Mit @pytest.mark.parametrize führst du denselben Test mit mehreren Datensätzen aus – ideal für Grenzwerte. pytest.raises prüft Exceptions."
+    },
+    {
+      "type": "code",
+      "content": "# test_eintritt.py\nimport pytest\nfrom eintritt import preis\n\n@pytest.mark.parametrize(\"alter, erwartet\", [\n    (0, 0.0), (5, 0.0),\n    (6, 4.5), (17, 4.5),\n    (18, 9.0),\n])\ndef test_preis(alter, erwartet):\n    assert preis(alter) == erwartet\n\ndef test_negativ():\n    with pytest.raises(ValueError):\n        preis(-1)"
+    },
+    {
+      "type": "text",
+      "content": "pytest findet automatisch alle Dateien test_*.py und darin alle Funktionen test_*. Jeder parametrisierte Datensatz zählt als eigener Test, daher sind es hier 6. Angenommen, jemand ändert in preis() alter <= 17 zu alter < 17: Dann schlägt genau der Grenzwert-Test für 17 fehl, und pytest zeigt erwarteten und tatsächlichen Wert."
+    },
+    {
+      "type": "code",
+      "content": "$ pytest -q\n......                        [100%]\n6 passed in 0.01s\n\n# nach der Änderung zu alter < 17:\n$ pytest -q\n...F..                        [100%]\n...\nFAILED test_eintritt.py::\n  test_preis[17-4.5]\n  - assert 9.0 == 4.5\n1 failed, 5 passed in 0.01s\n# (Zeitangaben z. B., variieren)"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Die Testfunktion heißt pruefe_preis statt test_preis – dann wird sie gar nicht ausgeführt und man glaubt, alles sei grün. Außerdem sollte jeder Test unabhängig von den anderen sein, denn die Reihenfolge ist nicht garantiert. Und Kommazahlen nie mit == auf Rechenergebnisse prüfen: 0.1 + 0.2 == 0.3 ist False, besser pytest.approx bzw. assertAlmostEqual."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: unittest (eingebaut) – Klasse erbt von TestCase, Methoden test_…, assertEqual/assertRaises, Start mit python -m unittest. pytest (pip install pytest) – einfache Funktionen test_… mit assert, pytest.raises, parametrize für viele Datensätze, Start mit pytest. Bei einem Fehler zeigen beide genau, welcher Testfall mit welchem Wert fehlgeschlagen ist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Tests meldet pytest für diese Datei?",
+      "code": "import pytest\n\ndef quadrat(x):\n    return x * x\n\n@pytest.mark.parametrize(\"x, e\", [\n    (2, 4), (3, 9), (-1, 1)])\ndef test_quadrat(x, e):\n    assert quadrat(x) == e\n\ndef test_null():\n    assert quadrat(0) == 0\n\ndef hilfe():\n    assert quadrat(1) == 2",
+      "options": [
+        "1",
+        "3",
+        "4",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "test_quadrat wird mit drei Datensätzen ausgeführt (3 Tests), dazu kommt test_null. Die Funktion hilfe beginnt nicht mit test_ und wird nicht als Test gesammelt. Insgesamt also 4."
+    },
+    {
+      "question": "Mit welcher unittest-Methode prüfst du, dass int(\"abc\") einen ValueError auslöst?",
+      "options": [
+        "with self.assertRaises(ValueError): int(\"abc\")",
+        "self.assertFalse(int(\"abc\"))",
+        "self.assertEqual(int(\"abc\"), ValueError)",
+        "self.assertIsNone(int(\"abc\"))"
+      ],
+      "correctIndex": 0,
+      "explanation": "assertRaises als with-Block fängt die erwartete Exception ab. Bei den anderen Varianten würde der ValueError schon beim Auswerten des Arguments den Test als Fehler abbrechen."
+    },
+    {
+      "question": "Was meldet pytest bei diesem Test?",
+      "code": "def test_summe():\n    summe = 0.1 + 0.2\n    assert summe == 0.3",
+      "options": [
+        "1 passed",
+        "1 failed, weil 0.1 + 0.2 nicht exakt 0.3 ergibt",
+        "SyntaxError",
+        "0 Tests gefunden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Kommazahlen werden binär gespeichert, 0.1 + 0.2 ergibt 0.30000000000000004. Der Vergleich mit == schlägt fehl. Richtig wäre assert summe == pytest.approx(0.3)."
+    },
+    {
+      "question": "Ein Mitschüler beschwert sich: „pytest sagt ‚no tests ran‘, obwohl ich einen Test geschrieben habe.“ Seine Datei heißt test_note.py. Was ist der wahrscheinlichste Grund?",
+      "options": [
+        "pytest kann nur Klassen testen",
+        "Die Testfunktion heißt z. B. pruefe_note statt test_note",
+        "Die Datei muss note_test.java heißen",
+        "assert ist in Python nicht erlaubt"
+      ],
+      "correctIndex": 1,
+      "explanation": "pytest sammelt nur Funktionen, deren Name mit test_ beginnt. Eine Funktion pruefe_note wird ignoriert, daher werden keine Tests ausgeführt."
+    }
+  ]
+}

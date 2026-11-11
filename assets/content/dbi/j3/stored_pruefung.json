@@ -1,0 +1,119 @@
+{
+  "id": "dbi-j3-stored_pruefung",
+  "title": "Abschlussprüfung: Stored Procedures & Trigger",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Aussage über das INFORMATION_SCHEMA stimmt?",
+      "options": [
+        "Es ist im SQL-Standard definiert und wird z. B. von PostgreSQL und MariaDB unterstützt.",
+        "Es gibt es nur in SQLite.",
+        "Man befüllt es mit INSERT, wenn man eine Tabelle anlegt.",
+        "Es enthält die Daten der Tabellen, aber nicht ihre Struktur."
+      ],
+      "correctIndex": 0,
+      "explanation": "INFORMATION_SCHEMA ist der standardisierte, lesbare Katalog. SQLite hat stattdessen sqlite_master."
+    },
+    {
+      "question": "Was liefert diese SQLite-Abfrage?",
+      "code": "SELECT sql\nFROM sqlite_master\nWHERE name = 'klasse';",
+      "options": [
+        "nur den Namen 'klasse'",
+        "die Anzahl der Zeilen der Tabelle klasse",
+        "den originalen CREATE-TABLE-Befehl der Tabelle klasse",
+        "alle Daten der Tabelle klasse"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Spalte sql in sqlite_master speichert den Befehl, mit dem das Objekt angelegt wurde – so, wie er geschrieben wurde (inklusive Zeilenumbrüchen)."
+    },
+    {
+      "question": "Welchen Vorteil haben Stored Procedures?",
+      "options": [
+        "Sie funktionieren in jedem DBMS mit identischer Syntax.",
+        "Mehrere Anwendungen nutzen dieselbe Logik, die zentral bei den Daten liegt.",
+        "Sie machen Constraints überflüssig.",
+        "Sie lassen sich leichter testen als normaler Anwendungscode."
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Logik liegt einmal in der Datenbank. Die Syntax ist aber dialektabhängig, und das Testen ist eher schwieriger."
+    },
+    {
+      "question": "Was ist in PostgreSQL der Unterschied zwischen einer Funktion und einer Prozedur?",
+      "options": [
+        "Es gibt keinen Unterschied.",
+        "Prozeduren liefern Tabellen, Funktionen nie.",
+        "Funktionen dürfen keine Parameter haben.",
+        "Eine Funktion liefert einen Wert und kann in SELECT stehen, eine Prozedur wird mit CALL aufgerufen."
+      ],
+      "correctIndex": 3,
+      "explanation": "Funktionen (RETURNS …) werden in Ausdrücken verwendet, Prozeduren führen eine Aufgabe aus und werden mit CALL gestartet."
+    },
+    {
+      "question": "Ein Schüler hat die Noten 2 und 2. Was liefert beurteilung(…) aus der Lektion (≤ 1.5 ausgezeichnet, ≤ 2.0 guter Erfolg, sonst bestanden)?",
+      "options": [
+        "ausgezeichnet",
+        "guter Erfolg",
+        "bestanden",
+        "keine Noten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Schnitt ist 2.0. Die erste Bedingung (≤ 1.5) ist falsch, die zweite (≤ 2.0) wahr – also 'guter Erfolg'."
+    },
+    {
+      "question": "Welcher Befehl ist der passende Gegenpart zu RAISE EXCEPTION aus PostgreSQL in MySQL/MariaDB?",
+      "options": [
+        "SIGNAL SQLSTATE '45000'",
+        "THROW 'Fehler'",
+        "PRINT 'Fehler'",
+        "RETURN NULL"
+      ],
+      "correctIndex": 0,
+      "explanation": "In MySQL/MariaDB löst SIGNAL einen benutzerdefinierten Fehler aus; SQLSTATE '45000' steht für einen allgemeinen, selbst definierten Fehler."
+    },
+    {
+      "question": "Ein Trigger soll verhindern, dass eine ungültige Zeile gespeichert wird. Welcher Zeitpunkt ist am sinnvollsten?",
+      "options": [
+        "AFTER DELETE",
+        "AFTER INSERT ohne Fehler",
+        "BEFORE INSERT",
+        "Trigger können das grundsätzlich nicht"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein BEFORE-Trigger läuft, bevor die Zeile geschrieben wird, und kann den Befehl abbrechen (in SQLite mit RAISE(ABORT, …))."
+    },
+    {
+      "question": "Was steht in einem UPDATE-Trigger in NEW.note und OLD.note, wenn die Note von 4 auf 3 geändert wird?",
+      "options": [
+        "NEW.note = 4, OLD.note = 3",
+        "beide 3",
+        "NEW.note = 3, OLD.note = 4",
+        "beide 4"
+      ],
+      "correctIndex": 2,
+      "explanation": "OLD enthält die Zeile vor der Änderung (4), NEW die Zeile danach (3)."
+    },
+    {
+      "question": "Anna hat 3 offene Ausleihen. Was passiert mit trg_max3 (BEFORE INSERT, höchstens 3 offene Ausleihen)?",
+      "code": "INSERT INTO ausleihe\n  VALUES (1, '978-9',\n          '2026-03-06', NULL);",
+      "options": [
+        "Die Zeile wird eingefügt, der Trigger warnt nur.",
+        "Die älteste Ausleihe wird automatisch gelöscht.",
+        "Alle Ausleihen von Anna werden gelöscht.",
+        "Das INSERT wird mit „Maximal 3 offene Ausleihen“ abgebrochen."
+      ],
+      "correctIndex": 3,
+      "explanation": "Die WHEN-Bedingung zählt 3 offene Ausleihen (≥ 3), daher wird RAISE(ABORT, …) ausgeführt und das INSERT abgebrochen."
+    },
+    {
+      "question": "Welche Reihenfolge der Mittel zur Datenintegrität ist empfehlenswert?",
+      "options": [
+        "zuerst Trigger, Constraints nur im Notfall",
+        "zuerst Constraints (PK, FK, NOT NULL, CHECK), Trigger nur für Regeln, die damit nicht gehen",
+        "nur Prüfungen in der Anwendung, nie in der Datenbank",
+        "für jede Spalte einen eigenen Trigger"
+      ],
+      "correctIndex": 1,
+      "explanation": "Constraints sind deklarativ, für alle sichtbar und vom DBMS optimiert. Trigger sind „versteckte“ Logik und sollten nur ergänzen."
+    }
+  ]
+}

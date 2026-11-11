@@ -1,0 +1,123 @@
+{
+  "id": "pos-j3-python-dbzugriff_pruefung",
+  "title": "Abschlussprüfung: Datenbankzugriff aus Programmen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "In welcher Reihenfolge läuft ein typischer Datenbankzugriff ab?",
+      "options": [
+        "execute → connect → commit → close",
+        "commit → connect → execute → close",
+        "cursor → connect → fetch → commit",
+        "connect → execute → commit → close"
+      ],
+      "correctIndex": 3,
+      "explanation": "Zuerst die Verbindung öffnen, dann SQL ausführen, Änderungen mit commit bestätigen und am Ende die Verbindung schließen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import sqlite3\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE t(x)\")\ncon.execute(\"INSERT INTO t VALUES (5), (7)\")\nprint(con.execute(\n    \"SELECT COUNT(*) FROM t\").fetchone()[0])",
+      "options": [
+        "(2,)",
+        "2",
+        "[(2,)]",
+        "None"
+      ],
+      "correctIndex": 1,
+      "explanation": "COUNT(*) liefert eine Zeile mit einer Spalte. fetchone() gibt das Tupel (2,) zurück, [0] holt den Wert 2 heraus."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import sqlite3\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE k(stand INT)\")\ncon.execute(\"INSERT INTO k VALUES (50)\")\ncon.commit()\ntry:\n    with con:\n        con.execute(\n            \"UPDATE k SET stand = stand + 30\")\n        1 / 0\nexcept ZeroDivisionError:\n    pass\nprint(con.execute(\n    \"SELECT stand FROM k\").fetchone())",
+      "options": [
+        "(80,)",
+        "(50,)",
+        "(30,)",
+        "None"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die UPDATE-Anweisung läuft in der Transaktion von with con:. Da danach eine Exception auftritt, wird zurückgerollt – der Stand bleibt 50."
+    },
+    {
+      "question": "Welche Eingabe für name umgeht bei dieser unsicheren Abfrage die Passwortprüfung?",
+      "code": "sql = (\"SELECT * FROM benutzer \"\n       f\"WHERE name = '{name}' \"\n       f\"AND pw = '{pw}'\")",
+      "options": [
+        "admin",
+        "-- admin",
+        "admin' --",
+        "\"admin\""
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Hochkomma schließt den String, -- macht den Rest der Zeile (die Passwortprüfung) zum Kommentar. Die Abfrage prüft dann nur noch name = 'admin'."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "n = \"admin' --\"\nprint(con.execute(\n    \"SELECT name FROM benutzer \"\n    \"WHERE name = ? AND pw = ?\",\n    (n, \"x\")).fetchone())",
+      "options": [
+        "None",
+        "('admin',)",
+        "OperationalError",
+        "[('admin',)]"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit Platzhaltern wird der ganze Text admin' -- als Name gesucht. Einen solchen Benutzer gibt es nicht, daher liefert fetchone() None."
+    },
+    {
+      "question": "Wofür kannst du in sqlite3 KEINEN Platzhalter ? verwenden?",
+      "options": [
+        "Für einen Wert in WHERE",
+        "Für Werte in INSERT ... VALUES",
+        "Für den Tabellennamen in FROM",
+        "Für einen Wert in UPDATE ... SET"
+      ],
+      "correctIndex": 2,
+      "explanation": "Platzhalter stehen nur für Werte. Tabellen- und Spaltennamen müssen im SQL-Text stehen und deshalb gegen eine Whitelist geprüft werden."
+    },
+    {
+      "question": "Eine Benutzer:in gibt als Schüler-ID „7 OR 1=1“ ein. Was ist die beste Reaktion deines Programms?",
+      "options": [
+        "Die Eingabe per f-String einbauen, SQLite erkennt das schon",
+        "Alle Leerzeichen entfernen und einbauen",
+        "int(eingabe) versuchen und bei ValueError eine Fehlermeldung anzeigen; die Zahl dann mit ? übergeben",
+        "Die Abfrage ohne WHERE ausführen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eingaben werden zuerst validiert: int(\"7 OR 1=1\") schlägt mit ValueError fehl. Gültige Zahlen werden zusätzlich per Platzhalter übergeben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import sqlite3\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE s(id INTEGER \"\n            \"PRIMARY KEY, name)\")\ncon.executemany(\"INSERT INTO s(name) \"\n                \"VALUES (?)\", [(\"A\",), (\"B\",)])\ncur = con.execute(\"INSERT INTO s(name) \"\n                  \"VALUES (?)\", (\"C\",))\nprint(cur.lastrowid)",
+      "options": [
+        "3",
+        "1",
+        "[3]",
+        "None"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Tabelle enthält zwei Zeilen mit id 1 und 2. Beim INSERT vergibt SQLite für die INTEGER PRIMARY KEY-Spalte automatisch die nächste id, 3. lastrowid liefert genau diese id."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import sqlite3\nfrom dataclasses import dataclass\n\n@dataclass\nclass S:\n    name: str\n    klasse: str\n\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE s(name, klasse)\")\ncon.execute(\"INSERT INTO s VALUES \"\n            \"('Lea','3A'), ('Ida','3B')\")\nrows = con.execute(\"SELECT name, klasse \"\n                   \"FROM s ORDER BY name\")\nprint([S(*r).name for r in rows])",
+      "options": [
+        "[('Ida', '3B'), ('Lea', '3A')]",
+        "['Ida', 'Lea']",
+        "['Lea', 'Ida']",
+        "[S(name='Lea', klasse='3A'), S(name='Ida', klasse='3B')]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jede Zeile wird mit S(*r) in ein Objekt umgewandelt, danach wird nur das Attribut name genommen. Durch ORDER BY name kommt Ida vor Lea."
+    },
+    {
+      "question": "Welcher Vorteil ergibt sich, wenn der gesamte Datenbankzugriff in Funktionen wie alle(), finde() und speichere() gekapselt ist?",
+      "options": [
+        "Die Datenbank wird dadurch schneller",
+        "SQL-Injection ist dann automatisch unmöglich",
+        "Der restliche Code arbeitet nur mit Objekten und SQL-Änderungen betreffen nur eine Stelle",
+        "Man braucht kein commit mehr"
+      ],
+      "correctIndex": 2,
+      "explanation": "Kapselung trennt die Datenbanklogik vom Rest. Ändert sich die Tabelle, muss nur der Datenzugriffscode angepasst werden. Vor Injection schützen weiterhin nur Platzhalter und Validierung."
+    }
+  ]
+}

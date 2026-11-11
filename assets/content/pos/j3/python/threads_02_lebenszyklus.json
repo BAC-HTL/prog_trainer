@@ -1,0 +1,96 @@
+{
+  "id": "pos-j3-python-threads_02_lebenszyklus",
+  "title": "Lebenszyklus eines Threads",
+  "summary": "Von „neu“ bis „beendet“: die Zustände eines Threads, is_alive, join mit Timeout, eigene Thread-Klassen und Daemon-Threads.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Thread durchläuft mehrere Zustände. Neu: Das Thread-Objekt ist erzeugt, aber noch nicht gestartet. Lauffähig/laufend: Nach start() teilt das Betriebssystem ihm Rechenzeit zu. Blockiert/wartend: Er wartet z. B. bei sleep, auf eine Datei, auf join oder auf ein Lock. Beendet: Seine Funktion ist fertig."
+    },
+    {
+      "type": "code",
+      "content": "       start()\nNEU ----------> LAUFFÄHIG <---+\n                 |     ^      |\n        Funktion |     | fertig\n        fertig   |     | gewartet\n                 v     |      |\n            BEENDET  WARTEND -+\n             (sleep, join, Lock)"
+    },
+    {
+      "type": "text",
+      "content": "Mit is_alive() fragst du ab, ob ein Thread gerade läuft (gestartet und noch nicht beendet). Ein Thread kann nur ein einziges Mal gestartet werden – ein zweites start() löst einen RuntimeError aus, auch wenn er schon fertig ist. Für einen neuen Durchlauf brauchst du ein neues Thread-Objekt."
+    },
+    {
+      "type": "code",
+      "content": "import threading, time\n\ndef arbeit():\n    time.sleep(0.5)\n\nt = threading.Thread(target=arbeit)\nprint(t.is_alive())   # False (neu)\nt.start()\nprint(t.is_alive())   # True\nt.join()\nprint(t.is_alive())   # False\nt.start()\n# RuntimeError: threads can only\n# be started once"
+    },
+    {
+      "type": "text",
+      "content": "join() wartet ohne Zeitlimit. Mit join(timeout=1) wartet das Hauptprogramm höchstens eine Sekunde. Danach musst du mit is_alive() prüfen, ob der Thread wirklich fertig ist – join selbst meldet das nicht. Achtung: Das Programm endet trotzdem erst, wenn alle normalen Threads fertig sind; hier also nach etwa 5 Sekunden."
+    },
+    {
+      "type": "code",
+      "content": "import threading, time\n\ndef lang():\n    time.sleep(5)\n\nt = threading.Thread(target=lang)\nt.start()\nt.join(timeout=1)\nprint(t.is_alive())   # True"
+    },
+    {
+      "type": "text",
+      "content": "Statt einer Funktion kannst du auch eine eigene Klasse von Thread ableiten und die Methode run() überschreiben. Gestartet wird trotzdem mit start()! Rufst du run() direkt auf, läuft der Code ganz normal im aktuellen Thread – ein häufiger Fehler. Mit name kannst du Threads benennen, threading.current_thread() liefert den aktuellen Thread."
+    },
+    {
+      "type": "code",
+      "content": "import threading\n\nclass Zaehler(threading.Thread):\n    def __init__(self, n):\n        super().__init__(name=f\"Z{n}\")\n        self.n = n\n\n    def run(self):\n        akt = threading.current_thread()\n        print(akt.name, \"zählt bis\", self.n)\n\nz = Zaehler(3)\nz.start()     # Z3 zählt bis 3\nz.join()\nz2 = Zaehler(5)\nz2.run()      # MainThread zählt bis 5"
+    },
+    {
+      "type": "text",
+      "content": "Daemon-Threads sind Hintergrund-Threads (z. B. automatisches Speichern). Mit daemon=True wartet das Programm beim Beenden nicht auf sie – sie werden einfach abgebrochen. Deshalb sollten Daemon-Threads nichts Wichtiges halb fertig zurücklassen, etwa eine Datei, die gerade geschrieben wird."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Zustände neu → lauffähig/laufend ⇄ wartend/blockiert → beendet. is_alive() zeigt, ob ein Thread läuft; start() geht nur einmal (sonst RuntimeError). join(timeout) begrenzt das Warten. Eigene Threads: von Thread erben, run() überschreiben, mit start() starten. daemon=True: Das Programm wartet beim Beenden nicht auf diesen Thread."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus? (Zeilen durch Beistrich getrennt)",
+      "code": "import threading, time\n\nt = threading.Thread(\n    target=lambda: time.sleep(1))\nprint(t.is_alive())\nt.start()\nprint(t.is_alive())",
+      "options": [
+        "True, True",
+        "False, True",
+        "False, False",
+        "True, False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Vor start() ist der Thread im Zustand „neu“ und nicht aktiv: False. Direkt nach start() schläft er noch 1 Sekunde: True."
+    },
+    {
+      "question": "Was passiert in der letzten Zeile?",
+      "code": "t = threading.Thread(target=print,\n                     args=(\"Hi\",))\nt.start()\nt.join()\nt.start()",
+      "options": [
+        "Der Thread läuft ein zweites Mal",
+        "Nichts, der Aufruf wird ignoriert",
+        "RuntimeError, weil ein Thread nur einmal gestartet werden kann",
+        "Der Thread wird neu erzeugt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jedes Thread-Objekt kann nur einmal gestartet werden. Für einen weiteren Durchlauf braucht man ein neues Objekt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import threading\n\nclass W(threading.Thread):\n    def run(self):\n        print(threading.current_thread().name)\n\nW(name=\"Worker\").run()",
+      "options": [
+        "MainThread",
+        "Worker",
+        "Thread-1",
+        "Nichts"
+      ],
+      "correctIndex": 0,
+      "explanation": "run() wird direkt aufgerufen, nicht über start(). Damit wird kein neuer Thread gestartet – der Code läuft im Hauptthread, also MainThread."
+    },
+    {
+      "question": "Ein Thread speichert alle 10 Sekunden automatisch ein Dokument und läuft in einer Endlosschleife. Was passiert beim Schließen des Programms, wenn er mit daemon=True erzeugt wurde?",
+      "options": [
+        "Das Programm wartet, bis die Endlosschleife fertig ist",
+        "Der Thread wird beim Programmende einfach abgebrochen",
+        "Es gibt einen RuntimeError",
+        "Der Thread läuft nach Programmende weiter"
+      ],
+      "correctIndex": 1,
+      "explanation": "Auf Daemon-Threads wartet Python beim Beenden nicht – sie werden abgebrochen. Ohne daemon=True würde das Programm wegen der Endlosschleife nie enden."
+    }
+  ]
+}

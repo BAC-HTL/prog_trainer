@@ -1,0 +1,120 @@
+{
+  "id": "pos-j3-csharp-graphen_pruefung",
+  "title": "Abschlussprüfung: Graphen & Graphalgorithmen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Woran erkennst du an einer Adjazenzmatrix, dass der Graph ungerichtet ist?",
+      "options": [
+        "Auf der Diagonale stehen nur Einsen",
+        "Die Matrix ist symmetrisch: m[i, j] == m[j, i] für alle i, j",
+        "Jede Zeile enthält genau eine Eins",
+        "Die Matrix enthält nur Nullen und Einsen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine ungerichtete Kante gilt in beide Richtungen und steht daher an beiden Stellen. Nur 0/1-Einträge bedeuten lediglich „ungewichtet“."
+    },
+    {
+      "question": "Ein ungerichteter Graph hat 6 Knoten und 7 Kanten. Wie groß ist die Summe aller Knotengrade?",
+      "options": [
+        "7",
+        "6",
+        "14",
+        "13"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jede Kante trägt zu zwei Knotengraden bei. Summe der Grade = 2 · Kanten = 14."
+    },
+    {
+      "question": "Wann ist eine Adjazenzmatrix besser geeignet als eine Adjazenzliste?",
+      "options": [
+        "Bei einem kleinen, dichten Graphen, in dem oft geprüft wird, ob eine bestimmte Kante existiert",
+        "Bei einem Öffi-Netz mit Tausenden Stationen und wenigen Verbindungen pro Station",
+        "Wenn man häufig alle Nachbarn eines Knotens durchlaufen will",
+        "Wenn die Knoten Namen statt Nummern haben"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Matrix beantwortet „Gibt es Kante i–j?“ mit einem Zugriff, braucht aber n² Platz. Das lohnt sich bei kleinen oder dichten Graphen. Für große, dünne Graphen und das Durchlaufen von Nachbarn ist die Liste besser."
+    },
+    {
+      "question": "In welcher Reihenfolge besucht eine BFS ab Knoten \"1\" diesen Graphen? (Nachbarn in Listenreihenfolge)",
+      "code": "[\"1\"] = { \"2\", \"3\" }\n[\"2\"] = { \"1\", \"4\" }\n[\"3\"] = { \"1\", \"4\", \"5\" }\n[\"4\"] = { \"2\", \"3\", \"6\" }\n[\"5\"] = { \"3\", \"6\" }\n[\"6\"] = { \"4\", \"5\" }",
+      "options": [
+        "1 2 4 3 5 6",
+        "1 3 2 4 5 6",
+        "1 2 3 5 4 6",
+        "1 2 3 4 5 6"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ebene 1: 2 und 3. Von 2 aus kommt 4 dazu, von 3 aus 5 (4 ist schon markiert). Zuletzt 6. Ergebnis: 1 2 3 4 5 6."
+    },
+    {
+      "question": "Gleicher Graph wie in der vorigen Frage. Welche Reihenfolge liefert die rekursive DFS ab \"1\"?",
+      "options": [
+        "1 2 4 3 5 6",
+        "1 2 3 4 5 6",
+        "1 3 5 6 4 2",
+        "1 2 4 6 5 3"
+      ],
+      "correctIndex": 0,
+      "explanation": "1 → 2 → 4. Von 4 aus ist 3 der erste unbesuchte Nachbar, von 3 aus geht es zu 5, von 5 zu 6. Ergebnis: 1 2 4 3 5 6."
+    },
+    {
+      "question": "Kanten (ungerichtet): A–B 1, A–C 4, B–C 2, B–D 7, C–D 3, D–E 1, C–E 6. Welche Aussage stimmt für den Weg von A nach E?",
+      "options": [
+        "BFS und Dijkstra finden denselben Weg",
+        "BFS findet A → C → E (2 Kanten, Länge 10), Dijkstra findet A → B → C → D → E (Länge 7)",
+        "Dijkstra findet A → C → E, weil das die wenigsten Kanten sind",
+        "Der kürzeste Weg hat die Länge 6"
+      ],
+      "correctIndex": 1,
+      "explanation": "BFS minimiert die Anzahl der Kanten: A → C → E. Dijkstra minimiert die Summe der Gewichte: 1 + 2 + 3 + 1 = 7 über B, C und D. Der Weg A → C → E kostet 4 + 6 = 10."
+    },
+    {
+      "question": "Gleicher Graph wie in der vorigen Frage. Welche endgültige Distanz berechnet Dijkstra für D (Start A)?",
+      "options": [
+        "7",
+        "8",
+        "5",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "A → B (1) → C (1 + 2 = 3) → D (3 + 3 = 6). Die direkte Kante B–D würde 1 + 7 = 8 kosten, A–C–D 4 + 3 = 7."
+    },
+    {
+      "question": "Dijkstra hat diese Vorgänger berechnet. Welcher Weg führt zu E?",
+      "code": "var vorg = new Dictionary<string, string>\n{\n    [\"B\"] = \"A\", [\"C\"] = \"B\",\n    [\"D\"] = \"A\", [\"E\"] = \"C\"\n};",
+      "options": [
+        "A -> C -> E",
+        "E -> C -> B -> A",
+        "A -> B -> C -> E",
+        "A -> D -> E"
+      ],
+      "correctIndex": 2,
+      "explanation": "Rückwärts: E kommt von C, C von B, B von A. Umgedreht ergibt das A -> B -> C -> E."
+    },
+    {
+      "question": "Wozu dient diese Zeile in der Dijkstra-Implementierung mit PriorityQueue?",
+      "code": "if (d > dist[u]) continue;",
+      "options": [
+        "Sie bricht ab, sobald das Ziel erreicht ist",
+        "Sie verhindert negative Gewichte",
+        "Sie überspringt veraltete Einträge – für u wurde inzwischen schon ein kürzerer Weg gefunden und verarbeitet",
+        "Sie sortiert die PriorityQueue neu"
+      ],
+      "correctIndex": 2,
+      "explanation": "PriorityQueue kann Prioritäten nicht ändern. Bei einer Verbesserung kommt ein neuer Eintrag dazu, der alte bleibt liegen. Ist d größer als die gespeicherte Distanz, ist der Eintrag veraltet und wird ignoriert."
+    },
+    {
+      "question": "Welche Datenstruktur gehört zu welchem Algorithmus?",
+      "options": [
+        "BFS: Stack, DFS: Queue, Dijkstra: PriorityQueue",
+        "BFS: PriorityQueue, DFS: Queue, Dijkstra: Stack",
+        "Alle drei kommen mit einer List<string> aus",
+        "BFS: Queue, DFS: Stack bzw. Rekursion, Dijkstra: PriorityQueue"
+      ],
+      "correctIndex": 3,
+      "explanation": "BFS arbeitet Ebene für Ebene (FIFO → Queue). DFS geht in die Tiefe (LIFO → Stack oder Aufrufstack der Rekursion). Dijkstra braucht immer den Knoten mit der kleinsten Distanz (PriorityQueue)."
+    }
+  ]
+}

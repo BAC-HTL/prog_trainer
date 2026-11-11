@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j3-verzeichnis_03_authentifizierung_radius",
+  "title": "Authentifizierung: Kerberos, RADIUS und 802.1X",
+  "summary": "Wie Kerberos mit Tickets Single Sign-On ermöglicht und wie RADIUS und 802.1X den Zugang zu LAN und WLAN an persönliche Konten binden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Zugangskontrolle wird oft mit AAA beschrieben: Authentication (Wer bist du?), Authorization (Was darfst du?) und Accounting (Was hast du getan? – Protokollierung). Für die Authentifizierung gibt es drei Faktoren: Wissen (Passwort, PIN), Besitz (Handy, Smartcard, Hardware-Token) und Biometrie (Fingerabdruck). Multi-Faktor-Authentifizierung (MFA) kombiniert mindestens zwei VERSCHIEDENE Faktoren – zwei Passwörter sind kein MFA."
+    },
+    {
+      "type": "text",
+      "content": "Kerberos ist das Anmeldeprotokoll in Active Directory (Port 88). Grundidee: Das Passwort wird nie über das Netz geschickt. Stattdessen stellt eine vertrauenswürdige dritte Stelle, das Key Distribution Center (KDC), zeitlich begrenzte Tickets aus. In AD läuft das KDC auf jedem Domain Controller und besteht aus dem Authentication Service (AS) und dem Ticket Granting Service (TGS)."
+    },
+    {
+      "type": "code",
+      "content": "Client        KDC (DC)       Server\n  │ 1 AS-REQ    │              │\n  │────────────>│              │\n  │ 2 TGT       │              │\n  │<────────────│              │\n  │ 3 TGS-REQ   │              │\n  │  (mit TGT)  │              │\n  │────────────>│              │\n  │ 4 Service-  │              │\n  │   Ticket    │              │\n  │<────────────│              │\n  │ 5 Service-Ticket           │\n  │───────────────────────────>│\n  │ 6 Zugriff erlaubt          │\n  │<───────────────────────────│"
+    },
+    {
+      "type": "text",
+      "content": "1–2) Bei der Anmeldung beweist der Client, dass er das Passwort kennt (er verschlüsselt einen Zeitstempel mit einem daraus abgeleiteten Schlüssel) und bekommt ein Ticket Granting Ticket (TGT). Das TGT ist mit dem Schlüssel des KDC verschlüsselt – der Client kann es weder lesen noch fälschen. 3–4) Will er auf den Dateiserver zugreifen, zeigt er das TGT vor und erhält ein Service-Ticket für genau diesen Dienst. 5–6) Der Server prüft das Ticket selbst, ohne den DC zu fragen. Ergebnis: Single Sign-On – einmal anmelden, viele Dienste nutzen.\n\nWeil Tickets Zeitstempel enthalten, müssen die Uhren synchron sein; in AD sind standardmäßig höchstens 5 Minuten Abweichung erlaubt. Typischer Fehler: falsche Uhrzeit am Client → Anmeldung scheitert. Mit „klist“ siehst du unter Windows deine aktuellen Tickets."
+    },
+    {
+      "type": "text",
+      "content": "RADIUS (Remote Authentication Dial-In User Service) bringt AAA zu Netzwerkgeräten. Switches, Access Points und VPN-Gateways sind RADIUS-Clients (auch NAS genannt): Sie prüfen Anmeldungen nicht selbst, sondern fragen einen zentralen RADIUS-Server, z. B. Windows NPS oder FreeRADIUS, der wiederum gegen AD oder LDAP prüft. RADIUS nutzt UDP-Port 1812 (Authentifizierung) und 1813 (Accounting). Client und Server teilen ein gemeinsames Geheimnis (Shared Secret). Die Antwort ist Access-Accept, Access-Reject oder Access-Challenge (Rückfrage). Ein Accept kann Attribute mitliefern – etwa das VLAN, in das eine Lehrkraft gehört. Für Admin-Logins auf Netzwerkgeräten wird oft auch TACACS+ verwendet (TCP 49), das die gesamte Nachricht verschlüsselt."
+    },
+    {
+      "type": "text",
+      "content": "IEEE 802.1X ist portbasierte Zugangskontrolle: Ein Switch-Port oder WLAN lässt erst dann normalen Verkehr durch, wenn sich das Gerät erfolgreich angemeldet hat. Drei Rollen sind beteiligt: der Supplicant (Software am Client), der Authenticator (Switch oder AP) und der Authentication Server (RADIUS). Zwischen Client und Switch läuft EAP über EAPOL (EAP over LAN), der Switch verpackt die EAP-Nachrichten in RADIUS und reicht sie weiter. WPA2/WPA3-Enterprise im WLAN beruht genau darauf."
+    },
+    {
+      "type": "code",
+      "content": "Supplicant  Authenticator  Auth-Server\n(Laptop)    (Switch/AP)    (RADIUS)\n   │   EAPOL    │   RADIUS    │\n   │<──────────>│<───────────>│──> AD\n   │            │             │\n\nvor Accept: Port lässt nur EAP durch\nnach Accept: Port offen, ggf.\n             VLAN 20 zugewiesen"
+    },
+    {
+      "type": "text",
+      "content": "Welche Anmeldedaten verwendet werden, bestimmt die EAP-Methode. Bei PEAP (meist mit MSCHAPv2) werden Benutzername und Passwort in einem TLS-Tunnel übertragen; nur der Server braucht ein Zertifikat. Bei EAP-TLS haben Server und Client je ein Zertifikat – kein Passwort, am sichersten, aber man braucht eine eigene Zertifizierungsstelle (PKI). Ganz wichtig: Der Client muss das Zertifikat des RADIUS-Servers prüfen. Sonst könnte ein fremder AP mit gleicher SSID Anmeldedaten abgreifen. Ein bekanntes Beispiel ist eduroam: Studierende melden sich an vielen Hochschulen weltweit mit dem Konto ihrer Heimathochschule an – per 802.1X und RADIUS."
+    },
+    {
+      "type": "code",
+      "content": "! Cisco IOS - 802.1X am Switch\n! (Syntax je nach IOS-Version)\naaa new-model\nradius server NPS1\n address ipv4 10.10.40.5\n     auth-port 1812 acct-port 1813\n key <Shared-Secret>\naaa authentication dot1x default\n     group radius\naaa authorization network default\n     group radius\ndot1x system-auth-control\ninterface fa0/5\n switchport mode access\n authentication port-control auto\n dot1x pae authenticator"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Shared Secret auf Switch und Server verschieden (alle Anmeldungen scheitern), eine Firewall blockiert UDP 1812, der Switch ist am RADIUS-Server nicht als Client eingetragen, oder die Zertifikatsprüfung am Client ist abgeschaltet. Zusammenfassung: Kerberos liefert per TGT und Service-Tickets Single Sign-On ohne Passwortübertragung und braucht synchrone Uhren; RADIUS zentralisiert AAA für Netzwerkgeräte; 802.1X öffnet Ports erst nach erfolgreicher Anmeldung, mit Supplicant, Authenticator und Authentication Server."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was legt ein Client beim Kerberos-Verfahren dem Dateiserver vor, um Zugriff zu bekommen?",
+      "options": [
+        "Sein Passwort",
+        "Das TGT",
+        "Ein Service-Ticket für den Dateiserver",
+        "Sein Zertifikat vom RADIUS-Server"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das TGT wird nur dem KDC (TGS) vorgelegt. Der Dateiserver bekommt ein Service-Ticket, das er selbst prüfen kann."
+    },
+    {
+      "question": "Die Uhr eines Laptops geht 20 Minuten nach. Die Domänenanmeldung scheitert, obwohl das Passwort stimmt. Warum?",
+      "options": [
+        "Kerberos-Tickets enthalten Zeitstempel; zu große Zeitabweichung wird abgelehnt.",
+        "DNS-Einträge sind nur 5 Minuten gültig.",
+        "Der DHCP-Lease ist abgelaufen.",
+        "GPOs werden nur zur vollen Stunde angewendet."
+      ],
+      "correctIndex": 0,
+      "explanation": "Kerberos schützt sich mit Zeitstempeln gegen das Wiedereinspielen alter Nachrichten. In AD sind standardmäßig nur 5 Minuten Abweichung erlaubt – darum ist NTP so wichtig."
+    },
+    {
+      "question": "Welche Rolle übernimmt ein Switch bei 802.1X?",
+      "options": [
+        "Supplicant",
+        "Authentication Server",
+        "Key Distribution Center",
+        "Authenticator"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Switch (bzw. AP) ist der Authenticator: Er sperrt den Port, reicht die EAP-Nachrichten per RADIUS an den Server weiter und öffnet den Port nach Access-Accept."
+    },
+    {
+      "question": "Welche Ports verwendet RADIUS standardmäßig für Authentifizierung und Accounting?",
+      "options": [
+        "TCP 88 und 389",
+        "UDP 1812 und 1813",
+        "TCP 49 und 636",
+        "UDP 161 und 162"
+      ],
+      "correctIndex": 1,
+      "explanation": "RADIUS: UDP 1812 (Authentifizierung) und 1813 (Accounting). 88 ist Kerberos, 389/636 LDAP/LDAPS, 49 TACACS+, 161/162 SNMP."
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "id": "dbi-j3-semistrukturiert_pruefung",
+  "title": "Abschlussprüfung: Semistrukturierte Daten: XML & JSON",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was unterscheidet semistrukturierte Daten von Tabellen einer relationalen Datenbank?",
+      "options": [
+        "Sie haben überhaupt keine Struktur.",
+        "Die Struktur steckt in den Daten selbst und ist flexibel, z. B. kann ein Element fehlen oder mehrfach vorkommen.",
+        "Sie können nur Zahlen speichern.",
+        "Sie brauchen immer ein festes Schema mit gleichen Spalten pro Zeile."
+      ],
+      "correctIndex": 1,
+      "explanation": "XML und JSON sind selbstbeschreibend (Tags bzw. Schlüssel) und erlauben unterschiedlich aufgebaute Datensätze."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import xml.etree.ElementTree as ET\ntry:\n    ET.fromstring(\"<a><b>x</a></b>\")\nexcept ET.ParseError as e:\n    print(\"Fehler:\", e)",
+      "options": [
+        "Fehler: mismatched tag ...",
+        "x",
+        "None",
+        "Fehler: junk after document element ..."
+      ],
+      "correctIndex": 0,
+      "explanation": "<b> wird nach </a> geschlossen – die Elemente sind falsch verschachtelt. Der Parser meldet „mismatched tag“."
+    },
+    {
+      "question": "Wie schreibst du den Text „3 < 5“ korrekt in ein XML-Element?",
+      "options": [
+        "<t>3 < 5</t>",
+        "<t>3 \\< 5</t>",
+        "<t>3 &lt; 5</t>",
+        "<t>\"3 < 5\"</t>"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Zeichen < leitet ein Tag ein und muss im Text als &lt; maskiert werden (oder in einem CDATA-Abschnitt stehen)."
+    },
+    {
+      "question": "Wozu dienen XML-Namespaces?",
+      "options": [
+        "Sie laden das Schema automatisch aus dem Internet.",
+        "Sie komprimieren das Dokument.",
+        "Sie legen die Zeichenkodierung fest.",
+        "Sie vermeiden Namenskonflikte, wenn Elemente aus verschiedenen Vokabularen kombiniert werden."
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Namespace macht Namen über eine URI eindeutig (z. B. adr:ort). Die URI ist nur ein Bezeichner und wird nicht geladen."
+    },
+    {
+      "question": "Welcher JSON-Datentyp hat der Wert von \"noten\"?",
+      "code": "{\"noten\": {\"DBI\": 1, \"POS\": 2}}",
+      "options": [
+        "array",
+        "object",
+        "string",
+        "number"
+      ],
+      "correctIndex": 1,
+      "explanation": "Geschweifte Klammern mit Schlüssel-Wert-Paaren sind ein object. In Python wird daraus ein dict."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import json\ntry:\n    print(json.loads('[1, 2,]'))\nexcept json.JSONDecodeError:\n    print(\"JSONDecodeError\")",
+      "options": [
+        "2",
+        "1",
+        "{'a': 2}",
+        "JSONDecodeError"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nach dem letzten Element darf in JSON kein Beistrich stehen. json.loads wirft einen JSONDecodeError."
+    },
+    {
+      "question": "In einer DTD steht <!ELEMENT klasse (schueler+)>. Was bedeutet das?",
+      "options": [
+        "klasse enthält mindestens einen schueler.",
+        "klasse enthält höchstens einen schueler.",
+        "klasse enthält beliebig viele schueler, auch keinen.",
+        "schueler ist ein Attribut von klasse."
+      ],
+      "correctIndex": 0,
+      "explanation": "+ bedeutet 1 bis n. * wäre 0 bis n, ? wäre 0 oder 1."
+    },
+    {
+      "question": "Was liefert der XPath-Ausdruck auf der Klassenliste (Anna: DBI 1, POS 2; Ben: DBI 3, POS 4)?",
+      "code": "//schueler[note > 2]/vorname/text()",
+      "options": [
+        "Anna",
+        "Anna, Ben",
+        "1, 3",
+        "Ben"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Bedingung [note > 2] ist wahr, wenn mindestens eine Note größer als 2 ist. Das trifft nur auf Ben (3 und 4) zu."
+    },
+    {
+      "question": "Ein JSON Schema hat properties für vorname und note, required [\"vorname\", \"note\"], aber kein additionalProperties. Ist {\"vorname\": \"Anna\", \"note\": 2, \"klasse\": \"3AHIF\"} gültig?",
+      "options": [
+        "Nein, klasse ist nicht in properties beschrieben.",
+        "Nein, required verbietet weitere Eigenschaften.",
+        "Ja, zusätzliche Eigenschaften sind standardmäßig erlaubt.",
+        "Das lässt sich ohne XML Schema nicht prüfen."
+      ],
+      "correctIndex": 2,
+      "explanation": "Ohne \"additionalProperties\": false dürfen weitere Eigenschaften vorkommen. Pflichtfelder und Typen passen."
+    },
+    {
+      "question": "Wann ist JSON gegenüber XML meist die bessere Wahl?",
+      "options": [
+        "für Daten einer Web-API, die direkt in Objekte und Listen eines Programms eingelesen werden",
+        "wenn Elemente aus mehreren Vokabularen mit Namespaces kombiniert werden müssen",
+        "wenn Dokumente mit Text und Auszeichnungen (wie SVG oder Office-Dateien) beschrieben werden",
+        "wenn Kommentare in den Daten nötig sind"
+      ],
+      "correctIndex": 0,
+      "explanation": "JSON ist kompakt und lässt sich direkt auf dict/list abbilden – daher Standard bei Web-APIs. Namespaces und Kommentare gibt es nur in XML."
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "id": "pos-j3-csharp-threads_02_lebenszyklus",
+  "title": "Lebenszyklus eines Threads",
+  "summary": "Von Unstarted bis Stopped: die Zustände eines Threads, Vorder- und Hintergrund-Threads und sauberes Beenden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Thread durchläuft während seines Lebens mehrere Zustände. In C# liest du sie über die Property ThreadState (Enum aus System.Threading) aus. Die wichtigsten Zustände:\n• Unstarted – erzeugt, aber Start() wurde noch nicht aufgerufen\n• Running – läuft bzw. ist bereit zu laufen\n• WaitSleepJoin – blockiert, z. B. durch Sleep, Join oder beim Warten auf ein lock\n• Stopped – die Methode ist fertig"
+    },
+    {
+      "type": "code",
+      "content": " new Thread(...)\n        │\n        ▼\n  ┌───────────┐  Start()\n  │ Unstarted │────────┐\n  └───────────┘        ▼\n               ┌─────────────┐\n       ┌──────►│   Running   │\n       │       └──┬───────┬──┘\n  fertig gewartet │ Sleep │ Methode\n       │       Join, lock │ endet\n  ┌────┴──────────▼┐      ▼\n  │ WaitSleepJoin  │ ┌─────────┐\n  └────────────────┘ │ Stopped │\n                     └─────────┘"
+    },
+    {
+      "type": "code",
+      "content": "var t = new Thread(() =>\n    Thread.Sleep(200));\nConsole.WriteLine(t.ThreadState);\n// Unstarted\nt.Start();\nThread.Sleep(50);\nConsole.WriteLine(t.ThreadState);\n// WaitSleepJoin (schläft gerade)\nt.Join();\nConsole.WriteLine(t.ThreadState);\n// Stopped\nConsole.WriteLine(t.IsAlive);\n// False"
+    },
+    {
+      "type": "text",
+      "content": "Ein Thread kann nur einmal gestartet werden. Rufst du Start() bei einem beendeten (oder bereits laufenden) Thread nochmals auf, gibt es eine ThreadStateException – du musst einen neuen Thread erzeugen. IsAlive ist true, solange der Thread gestartet und noch nicht beendet ist. Join(millisekunden) wartet höchstens so lange und liefert true, wenn der Thread inzwischen fertig ist, sonst false."
+    },
+    {
+      "type": "code",
+      "content": "var t = new Thread(() =>\n    Thread.Sleep(500));\nt.Start();\nConsole.WriteLine(t.Join(100));\n// False (noch nicht fertig)\nConsole.WriteLine(t.Join(1000));\n// True\n\nt.Start(); // ThreadStateException"
+    },
+    {
+      "type": "text",
+      "content": "Vordergrund oder Hintergrund? Ein mit new Thread erzeugter Thread ist standardmäßig ein Vordergrund-Thread: Das Programm endet erst, wenn alle Vordergrund-Threads fertig sind. Setzt du IsBackground = true, wird der Thread beim Programmende einfach abgebrochen. Threads aus dem ThreadPool (also auch Task.Run) sind Hintergrund-Threads. ThreadState ist ein Flags-Enum, deshalb kann es auch „Background, WaitSleepJoin“ heißen."
+    },
+    {
+      "type": "text",
+      "content": "Wie beendet man einen Thread vorzeitig? Nicht gewaltsam: Thread.Abort() wird im modernen .NET gar nicht mehr unterstützt (PlatformNotSupportedException), weil ein abgebrochener Thread Daten in halbfertigem Zustand hinterlassen könnte. Stattdessen bittet man ihn kooperativ um das Ende – z. B. mit einem CancellationToken, den der Thread regelmäßig prüft."
+    },
+    {
+      "type": "code",
+      "content": "var cts =\n    new CancellationTokenSource();\nvar token = cts.Token;\nvar t = new Thread(() =>\n{\n    while (!token\n        .IsCancellationRequested)\n    {\n        // Arbeit erledigen ...\n        Thread.Sleep(100);\n    }\n    Console.WriteLine(\"Sauber beendet\");\n});\nt.Start();\nThread.Sleep(350);\ncts.Cancel();  // um Ende bitten\nt.Join();\nConsole.WriteLine(t.ThreadState);\n// Stopped"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Unstarted → (Start) → Running ⇄ WaitSleepJoin → Stopped. Ein Thread lässt sich nur einmal starten. Join(timeout) wartet begrenzt, IsAlive zeigt, ob er noch lebt. Vordergrund-Threads halten das Programm am Leben, Hintergrund-Threads nicht. Beenden immer kooperativ, z. B. mit CancellationToken."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var t = new Thread(() =>\n    Console.WriteLine(\"Hi\"));\nConsole.WriteLine(t.ThreadState);",
+      "options": [
+        "Running",
+        "Stopped",
+        "WaitSleepJoin",
+        "Unstarted"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Thread wurde erzeugt, aber noch nicht mit Start() gestartet – sein Zustand ist Unstarted."
+    },
+    {
+      "question": "Was passiert in der letzten Zeile?",
+      "code": "var t = new Thread(() => { });\nt.Start();\nt.Join();\nt.Start();",
+      "options": [
+        "Der Thread läuft ein zweites Mal",
+        "Nichts – der Aufruf wird ignoriert",
+        "Eine ThreadStateException wird geworfen",
+        "Der Compiler meldet einen Fehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Thread kann nur einmal gestartet werden. Ein beendeter Thread (Stopped) lässt sich nicht neu starten – das führt zur Laufzeit zu einer ThreadStateException."
+    },
+    {
+      "question": "Ein Thread mit IsBackground = true läuft in einer Endlosschleife. Main ist fertig. Was passiert?",
+      "options": [
+        "Das Programm endet; der Hintergrund-Thread wird abgebrochen",
+        "Das Programm läuft ewig weiter",
+        "Es gibt eine Exception beim Beenden",
+        "Main wartet automatisch mit Join"
+      ],
+      "correctIndex": 0,
+      "explanation": "Hintergrund-Threads halten den Prozess nicht am Leben. Sobald alle Vordergrund-Threads (hier Main) fertig sind, endet das Programm."
+    },
+    {
+      "question": "In welchem Zustand ist ein Thread, während er in Thread.Sleep(1000) wartet?",
+      "options": [
+        "Stopped",
+        "WaitSleepJoin",
+        "Unstarted",
+        "Suspended"
+      ],
+      "correctIndex": 1,
+      "explanation": "Sleep, Join und das Warten auf ein lock blockieren den Thread – sein Zustand ist dann WaitSleepJoin. Danach geht es wieder mit Running weiter."
+    }
+  ]
+}

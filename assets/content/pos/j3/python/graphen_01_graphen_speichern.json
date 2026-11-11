@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-python-graphen_01_graphen_speichern",
+  "title": "Graphen und ihre Speicherung",
+  "summary": "Knoten, Kanten und wie du einen Graphen als Adjazenzmatrix oder Adjazenzliste in Python speicherst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Graph besteht aus Knoten (engl. vertices) und Kanten (edges), die jeweils zwei Knoten verbinden. Graphen stecken überall: Haltestellen und Linien im Öffi-Netz, Orte und Straßen auf einer Landkarte, Personen und Freundschaften in sozialen Netzwerken, Rechner und Kabel in einem Netzwerk. Bäume aus dem 2. Jahrgang sind übrigens ein Spezialfall: zusammenhängende Graphen ohne Zyklen."
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Begriffe: Ein Graph ist ungerichtet, wenn Kanten in beide Richtungen gelten (Straße mit Gegenverkehr), und gerichtet, wenn eine Kante nur von u nach v führt (Einbahn, „folgt“ auf Instagram). Ein gewichteter Graph speichert pro Kante eine Zahl, z. B. Kilometer oder Fahrminuten. Der Grad eines Knotens ist die Anzahl seiner Kanten. Ein Pfad ist eine Folge von Knoten, die durch Kanten verbunden sind; ein Zyklus ist ein Pfad, der zu seinem Start zurückkehrt. Zusammenhängend heißt ein ungerichteter Graph, wenn jeder Knoten von jedem anderen erreichbar ist."
+    },
+    {
+      "type": "code",
+      "content": "  A --- B\n   \\   |\n    \\  |\n      C --- D\n\nKnoten: A, B, C, D\nKanten: A-B, A-C, B-C, C-D\nGrad:   A=2, B=2, C=3, D=1\nZyklus: A-B-C-A"
+    },
+    {
+      "type": "text",
+      "content": "Speicherform 1 – Adjazenzmatrix: Bei n Knoten eine n×n-Tabelle. Steht in Zeile i, Spalte j eine 1, gibt es eine Kante von Knoten i zu Knoten j. Bei ungerichteten Graphen ist die Matrix symmetrisch zur Hauptdiagonale. Weil Matrix-Indizes Zahlen sind, brauchst du ein Dictionary, das jedem Knotennamen seinen Index zuordnet."
+    },
+    {
+      "type": "code",
+      "content": "knoten = [\"A\", \"B\", \"C\", \"D\"]\nkanten = [(\"A\", \"B\"), (\"A\", \"C\"),\n          (\"B\", \"C\"), (\"C\", \"D\")]\nidx = {k: i for i, k in enumerate(knoten)}\nn = len(knoten)\nmatrix = [[0] * n for _ in range(n)]\nfor u, v in kanten:\n    # ungerichtet: beide Richtungen\n    matrix[idx[u]][idx[v]] = 1\n    matrix[idx[v]][idx[u]] = 1\nfor zeile in matrix:\n    print(zeile)\n# [0, 1, 1, 0]\n# [1, 0, 1, 0]\n# [1, 1, 0, 1]\n# [0, 0, 1, 0]"
+    },
+    {
+      "type": "text",
+      "content": "Speicherform 2 – Adjazenzliste: Für jeden Knoten speicherst du nur seine Nachbarn. In Python passt dafür ein dict, dessen Werte Listen sind. Der Grad eines Knotens ist dann einfach die Länge seiner Liste. Typischer Fehler bei ungerichteten Graphen: die Kante nur in eine Richtung eintragen – dann ist B zwar Nachbar von A, aber A nicht von B."
+    },
+    {
+      "type": "code",
+      "content": "kanten = [(\"A\", \"B\"), (\"A\", \"C\"),\n          (\"B\", \"C\"), (\"C\", \"D\")]\ngraph = {k: [] for k in \"ABCD\"}\nfor u, v in kanten:\n    graph[u].append(v)\n    graph[v].append(u)\nprint(graph[\"C\"])       # ['A', 'B', 'D']\nprint(len(graph[\"C\"]))  # 3 (Grad von C)"
+    },
+    {
+      "type": "text",
+      "content": "Gewichtete Graphen speicherst du als dict von dicts: Der äußere Schlüssel ist der Startknoten, der innere der Nachbar, der Wert das Gewicht. Gerichtete Kanten trägst du einfach nur einmal ein."
+    },
+    {
+      "type": "code",
+      "content": "strassen = {\n    \"Linz\":  {\"Wels\": 30, \"Steyr\": 40},\n    \"Wels\":  {\"Linz\": 30},\n    \"Steyr\": {\"Linz\": 40},\n}\nprint(strassen[\"Linz\"][\"Steyr\"])  # 40\n\nfolgt = {\"Mia\": [\"Tom\"], \"Tom\": []}\nprint(\"Tom\" in folgt[\"Mia\"])  # True\nprint(\"Mia\" in folgt[\"Tom\"])  # False"
+    },
+    {
+      "type": "text",
+      "content": "Matrix oder Liste? Die Matrix braucht immer n² Speicherplätze, beantwortet „Gibt es eine Kante u–v?“ aber sofort. Die Adjazenzliste braucht nur Platz für n Knoten plus m Kanten und liefert alle Nachbarn eines Knotens direkt – ideal für die meisten Algorithmen. Reale Netze (Straßen, Öffis) sind dünn besetzt: Jede Kreuzung hat nur wenige Nachbarn. Darum ist dort die Adjazenzliste fast immer die bessere Wahl. Zusammenfassung: Graph = Knoten + Kanten; gerichtet/ungerichtet, gewichtet/ungewichtet; Matrix für dichte Graphen und schnelle Kantentests, Liste (dict) für dünne Graphen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welchen Grad hat Knoten 1 in dieser Adjazenzmatrix (Knoten 0 bis 3)?",
+      "code": "m = [[0, 1, 1, 0],\n     [1, 0, 0, 1],\n     [1, 0, 0, 1],\n     [0, 1, 1, 0]]",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zeile 1 ist [1, 0, 0, 1] – sie enthält zwei Einsen, also hat Knoten 1 zwei Nachbarn (0 und 3)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "g = {\"A\": [], \"B\": [], \"C\": []}\nfor u, v in [(\"A\", \"B\"), (\"B\", \"C\")]:\n    g[u].append(v)\n    g[v].append(u)\nprint(g[\"B\"])",
+      "options": [
+        "['B']",
+        "['A']",
+        "['A', 'C']",
+        "KeyError"
+      ],
+      "correctIndex": 2,
+      "explanation": "B bekommt zuerst A (aus der Kante A-B), dann C (aus der Kante B-C) als Nachbarn – die Kanten werden in beide Richtungen eingetragen."
+    },
+    {
+      "question": "Du modellierst das Straßennetz von Österreich mit rund 100 000 Kreuzungen. Jede Kreuzung hat nur wenige Nachbarn. Welche Speicherform ist sinnvoll?",
+      "options": [
+        "Adjazenzmatrix, weil sie Kantentests am schnellsten erledigt",
+        "Eine einfache Liste aller Knoten ohne Kanten",
+        "Adjazenzmatrix, weil sie bei vielen Knoten weniger Speicher braucht",
+        "Adjazenzliste, weil der Graph dünn besetzt ist und die Matrix n² Plätze bräuchte"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine Matrix bräuchte 100 000² = 10 Milliarden Einträge, fast alle 0. Die Adjazenzliste speichert nur die tatsächlich vorhandenen Kanten."
+    },
+    {
+      "question": "Woran erkennst du an der Adjazenzmatrix, dass ein Graph ungerichtet ist?",
+      "options": [
+        "Die Matrix ist symmetrisch: matrix[i][j] == matrix[j][i]",
+        "Auf der Hauptdiagonale stehen nur Einsen",
+        "Jede Zeile enthält genau eine 1",
+        "Die Matrix enthält nur Nullen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eine ungerichtete Kante gilt in beide Richtungen, darum wird sie bei (i, j) und (j, i) eingetragen – die Matrix ist spiegelsymmetrisch zur Hauptdiagonale."
+    }
+  ]
+}

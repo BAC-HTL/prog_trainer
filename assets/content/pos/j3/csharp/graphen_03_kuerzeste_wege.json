@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-graphen_03_kuerzeste_wege",
+  "title": "Kürzeste Wege mit Dijkstra",
+  "summary": "Mit dem Dijkstra-Algorithmus und PriorityQueue den Weg mit dem kleinsten Gesamtgewicht finden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "BFS findet den Weg mit den wenigsten Kanten. Auf Straßen zählt aber nicht die Anzahl der Abschnitte, sondern die Fahrzeit oder die Strecke. Ein Umweg über drei kurze Straßen kann schneller sein als eine lange direkte Verbindung. Für gewichtete Graphen mit nicht-negativen Gewichten löst das der Algorithmus von Edsger W. Dijkstra."
+    },
+    {
+      "type": "code",
+      "content": "// Gehzeiten in Minuten\n// Schule  – Bahnhof   4\n// Schule  – Park      2\n// Park    – Bahnhof   1\n// Bahnhof – Kino      5\n// Park    – Kino      8\n// Kino    – Freibad   3\nvar netz = new Dictionary<string,\n    List<(string Ziel, int Min)>>();\n\nvoid Weg(string a, string b, int min)\n{\n    if (!netz.ContainsKey(a)) netz[a] = new();\n    if (!netz.ContainsKey(b)) netz[b] = new();\n    netz[a].Add((b, min));\n    netz[b].Add((a, min));\n}\nWeg(\"Schule\", \"Bahnhof\", 4);\nWeg(\"Schule\", \"Park\", 2);\n// ... restliche Wege genauso"
+    },
+    {
+      "type": "text",
+      "content": "Die Idee:\n• Jeder Knoten bekommt eine vorläufige Distanz: der Start 0, alle anderen „unendlich“ (int.MaxValue).\n• Nimm immer den Knoten mit der kleinsten vorläufigen Distanz. Seine Distanz ist jetzt endgültig – kürzer geht es nicht mehr, weil alle anderen Wege schon länger sind.\n• Prüfe seine Nachbarn: Ist dist[u] + Gewicht kleiner als dist[v], hast du einen besseren Weg gefunden. Aktualisiere dist[v] und merk dir u als Vorgänger. Das nennt man Relaxieren einer Kante."
+    },
+    {
+      "type": "text",
+      "content": "Für „nimm den kleinsten“ gibt es seit .NET 6 die Klasse PriorityQueue<TElement, TPriority>. Mit Enqueue(element, priorität) fügst du ein, Dequeue liefert das Element mit der kleinsten Priorität. TryDequeue(out e, out p) liefert zusätzlich die Priorität und gibt false zurück, wenn die Queue leer ist.\n\nPriorityQueue kann eine Priorität nachträglich nicht ändern. Darum fügst du bei einer Verbesserung einfach einen neuen Eintrag hinzu. Veraltete Einträge überspringst du später."
+    },
+    {
+      "type": "code",
+      "content": "var pq = new PriorityQueue<string, int>();\npq.Enqueue(\"Kino\", 9);\npq.Enqueue(\"Park\", 2);\npq.Enqueue(\"Bahnhof\", 4);\n\nConsole.WriteLine(pq.Peek());   // Park\nwhile (pq.Count > 0)\n    Console.Write(pq.Dequeue() + \" \");\n// Park Bahnhof Kino"
+    },
+    {
+      "type": "code",
+      "content": "var dist = new Dictionary<string, int>();\nvar vorg = new Dictionary<string, string>();\nforeach (var k in netz.Keys)\n    dist[k] = int.MaxValue;\ndist[\"Schule\"] = 0;\n\nvar pq = new PriorityQueue<string, int>();\npq.Enqueue(\"Schule\", 0);\n\nwhile (pq.TryDequeue(out string u, out int d))\n{\n    if (d > dist[u]) continue; // veraltet\n    foreach (var (v, w) in netz[u])\n    {\n        int neu = d + w;\n        if (neu < dist[v])\n        {\n            dist[v] = neu;\n            vorg[v] = u;\n            pq.Enqueue(v, neu);\n        }\n    }\n}\n// Schule: 0   Bahnhof: 3   Park: 2\n// Kino: 8     Freibad: 11"
+    },
+    {
+      "type": "code",
+      "content": "fertig Schule (0)\n  Bahnhof = 4, Park = 2\nfertig Park (2)\n  Bahnhof = 3, Kino = 10\nfertig Bahnhof (3)\n  Kino = 8\nskip Bahnhof (4)    <- veraltet\nfertig Kino (8)\n  Freibad = 11\nskip Kino (10)      <- veraltet\nfertig Freibad (11)"
+    },
+    {
+      "type": "text",
+      "content": "So liest du den Ablauf: Der Bahnhof bekommt zuerst 4 (direkt von der Schule). Über den Park geht es aber in 2 + 1 = 3 Minuten – besser! Der alte Eintrag (Bahnhof, 4) bleibt in der PriorityQueue liegen und wird später mit continue übersprungen. Ebenso wird Kino von 10 auf 8 verbessert. Den Weg setzt du wie bei BFS rückwärts über die Vorgänger zusammen."
+    },
+    {
+      "type": "code",
+      "content": "var weg = new List<string>();\nfor (string k = \"Freibad\"; k != null;\n     k = vorg.GetValueOrDefault(k))\n    weg.Add(k);\nweg.Reverse();\nConsole.WriteLine(string.Join(\" -> \", weg));\n// Schule -> Park -> Bahnhof -> Kino\n//   -> Freibad"
+    },
+    {
+      "type": "text",
+      "content": "Grenzen und typische Fehler:\n• Negative Gewichte: Dijkstra hält eine Distanz für endgültig, bevor alle Wege geprüft sind. Eine spätere negative Kante kann sie noch verkürzen – das Ergebnis ist dann falsch. Für negative Gewichte gibt es andere Verfahren, z. B. Bellman-Ford.\n• Überlauf: int.MaxValue + 5 ergibt in C# eine negative Zahl. Wer zu einer „unendlichen“ Distanz etwas addiert, rechnet falsch. Darum verarbeitet der Code oben nur Knoten, die schon aus der Queue kommen, also erreichbar sind.\n• Nicht erreichbare Knoten behalten int.MaxValue – das solltest du bei der Ausgabe abfragen.\n\nZusammenfassung: Dijkstra = PriorityQueue + Relaxieren + Vorgänger merken, nur für Gewichte ≥ 0."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ungerichteter Graph mit den Kanten A–B 6, A–C 2, C–B 3, B–D 1, C–D 7. Wie groß ist die kürzeste Distanz von A nach D?",
+      "options": [
+        "7",
+        "9",
+        "6",
+        "8"
+      ],
+      "correctIndex": 2,
+      "explanation": "A → C kostet 2, C → B 3 (zusammen 5), B → D 1: insgesamt 6. A → B → D wäre 7, A → C → D wäre 9."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var pq = new PriorityQueue<string, int>();\npq.Enqueue(\"Kino\", 9);\npq.Enqueue(\"Park\", 2);\npq.Enqueue(\"Bahnhof\", 4);\nwhile (pq.Count > 0)\n    Console.Write(pq.Dequeue() + \" \");",
+      "options": [
+        "Kino Park Bahnhof",
+        "Park Bahnhof Kino",
+        "Kino Bahnhof Park",
+        "Bahnhof Kino Park"
+      ],
+      "correctIndex": 1,
+      "explanation": "Dequeue liefert immer das Element mit der kleinsten Priorität: zuerst Park (2), dann Bahnhof (4), dann Kino (9). Die Reihenfolge beim Einfügen spielt keine Rolle."
+    },
+    {
+      "question": "Ein gerichteter Graph hat die Kanten A→B 2, A→C 5, C→B −4, B→D 2. Warum liefert Dijkstra hier ein falsches Ergebnis?",
+      "options": [
+        "Dijkstra funktioniert nur bei ungerichteten Graphen",
+        "PriorityQueue kann keine negativen Zahlen speichern",
+        "Weil es einen Kreis gibt",
+        "B gilt mit Distanz 2 schon als endgültig, obwohl A → C → B nur 1 kostet"
+      ],
+      "correctIndex": 3,
+      "explanation": "Dijkstra nimmt B mit Distanz 2 vor C (Distanz 5) heraus und hält 2 für endgültig. Erst danach zeigt sich der Weg über die negative Kante: 5 − 4 = 1. Darum ist Dijkstra nur für Gewichte ≥ 0 geeignet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int x = int.MaxValue;\nConsole.WriteLine(x + 5);",
+      "options": [
+        "-2147483644",
+        "2147483652",
+        "Es wird eine OverflowException ausgelöst",
+        "2147483647"
+      ],
+      "correctIndex": 0,
+      "explanation": "int rechnet standardmäßig ohne Überlaufprüfung (unchecked). Über int.MaxValue hinaus „läuft“ der Wert in den negativen Bereich. Genau das passiert, wenn man zu einer „unendlichen“ Distanz ein Gewicht addiert."
+    }
+  ]
+}

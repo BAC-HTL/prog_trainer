@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-vorgehen_03_kanban_rollen",
+  "title": "Kanban, Rollen und Modellauswahl",
+  "summary": "Arbeit mit Kanban und WIP-Limits steuern, Rollen im Softwareprozess kennen und das passende Vorgehensmodell wählen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Kanban kommt ursprünglich aus der Produktion bei Toyota („Kanban“ ist Japanisch und bedeutet etwa Karte oder Signal). In der Softwareentwicklung ist Kanban eine Methode, um den Arbeitsfluss zu steuern. Anders als Scrum gibt es keine Sprints und keine vorgeschriebenen Rollen: Man startet beim bestehenden Prozess und verbessert ihn schrittweise."
+    },
+    {
+      "type": "code",
+      "content": "To Do  |In Arbeit|Review |Fertig\n       |  (3)    | (2)   |\n-------+---------+-------+------\n#12 Log|#8 API   |#5 UI  |#1 DB\n#13 PDF|#9 Login |#6 Doku|#2 Git\n#14 FAQ|#10 Push |       |"
+    },
+    {
+      "type": "text",
+      "content": "Die Kernpraktiken: Arbeit sichtbar machen (Board mit Spalten für jeden Arbeitsschritt), die Menge gleichzeitig laufender Arbeit begrenzen (WIP-Limits, WIP = Work in Progress), den Fluss beobachten und steuern, Regeln explizit machen (z. B. „Fertig heißt: reviewt und gemergt“) und sich laufend verbessern. Gearbeitet wird nach dem Pull-Prinzip: Eine neue Karte wird erst gezogen, wenn in der Spalte Platz ist."
+    },
+    {
+      "type": "text",
+      "content": "Die Zahl in Klammern ist das WIP-Limit. Im Board oben ist „In Arbeit“ mit 3 Karten und „Review“ mit 2 Karten voll. Wer mit #9 fertig ist, darf die Karte nicht ins Review schieben und auch keine neue Aufgabe beginnen. Stattdessen hilft man, eine Karte im Review abzuschließen. So vermeidet man halbfertige Arbeit und Multitasking, und Engpässe werden sofort sichtbar. Das Motto: „Stop starting, start finishing.“"
+    },
+    {
+      "type": "text",
+      "content": "Zwei wichtige Kennzahlen: Die Durchlaufzeit (Lead Time) misst die Zeit vom Eingang einer Anfrage bis „Fertig“. Die Zykluszeit (Cycle Time) misst die Zeit vom tatsächlichen Arbeitsbeginn bis „Fertig“. Weniger gleichzeitige Arbeit führt in der Regel zu kürzeren Durchlaufzeiten – darum sind WIP-Limits so wirksam."
+    },
+    {
+      "type": "code",
+      "content": "          Scrum         Kanban\nTakt      Sprints       laufend\nRollen    PO, SM, Dev   keine vorg.\nGrenze    pro Sprint    WIP je Spalte\nPlanung   Sprint Plan.  bei Bedarf\nÄndern    Sprint-Ziel   jederzeit,\n          bleibt fix    wenn Platz"
+    },
+    {
+      "type": "text",
+      "content": "Unabhängig vom Modell gibt es im Softwareprozess typische Rollen: Auftraggeber:in bzw. Kunde, Benutzer:innen, Projektleiter:in, Requirements Engineer (erhebt und beschreibt Anforderungen), Softwarearchitekt:in, Entwickler:innen, Tester:innen bzw. Qualitätssicherung, UX-Designer:in und der Betrieb (Administration, DevOps). Rollen sind keine Personen: In einem Diplomarbeitsteam mit drei oder vier Leuten übernimmt jede:r mehrere Rollen – wichtig ist nur, dass jede Aufgabe jemandem zugeordnet ist."
+    },
+    {
+      "type": "text",
+      "content": "Welches Modell passt? Wichtige Kriterien sind: Wie stabil sind die Anforderungen? Ist der Kunde regelmäßig für Feedback verfügbar? Gibt es Nachweis- oder Dokumentationspflichten (z. B. sicherheitskritische Software)? Welcher Vertrag liegt vor (Fixpreis mit festem Umfang)? Ist die Arbeit ein Projekt mit Ziel oder ein laufender Strom von Anfragen wie im Support?"
+    },
+    {
+      "type": "code",
+      "content": "Stabile Anforderungen, Nachweis-\npflicht (z. B. Medizintechnik)\n  -> V-Modell / Wasserfall\n\nNeues Produkt, Kunde gibt\nlaufend Feedback (Vereins-App)\n  -> Scrum\n\nLaufende Tickets, Support,\nschwankende Last (Schul-IT)\n  -> Kanban"
+    },
+    {
+      "type": "text",
+      "content": "In der Praxis sind Mischformen (hybride Modelle) normal: Bei der Diplomarbeit sind die Meilensteine der Schule fix wie im Wasserfall, innerhalb davon arbeitet ihr in Sprints und verwaltet Aufgaben auf einem Board. Zusammenfassung: Kanban steuert den Fluss mit Board, Pull-Prinzip und WIP-Limits. Rollen beschreiben Aufgaben, nicht Personen. Das Modell wählt man nach Anforderungsstabilität, Kundennähe, Nachweispflichten und Art der Arbeit."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "„In Arbeit“ hat WIP-Limit 3 und enthält 3 Karten, „Review“ hat WIP-Limit 2 und enthält 2 Karten. Du bist mit deiner Karte fertig programmiert. Was tust du nach Kanban?",
+      "options": [
+        "Die Karte trotzdem ins Review schieben",
+        "Helfen, eine Karte im Review abzuschließen",
+        "Eine neue Aufgabe aus „To Do“ beginnen",
+        "Das WIP-Limit von „Review“ auf 3 erhöhen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Review ist voll. Nach dem Pull-Prinzip schiebt man keine Arbeit in eine volle Spalte und beginnt nichts Neues, sondern hilft beim Engpass, damit Arbeit fertig wird."
+    },
+    {
+      "question": "Ein Ticket wird am Montag erstellt, am Mittwoch beginnt jemand damit, am Freitag derselben Woche ist es fertig. Wie lang ist die Durchlaufzeit (Lead Time)?",
+      "options": [
+        "2 Tage",
+        "4 Tage",
+        "5 Tage",
+        "3 Tage"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Durchlaufzeit zählt vom Eingang (Montag) bis „Fertig“ (Freitag): 4 Tage. Die Zykluszeit vom Arbeitsbeginn (Mittwoch) bis Freitag wäre 2 Tage."
+    },
+    {
+      "question": "Welches Vorgehen passt am besten für den IT-Helpdesk einer Schule mit laufend neuen, unterschiedlich dringenden Anfragen?",
+      "options": [
+        "Wasserfall",
+        "V-Modell",
+        "Scrum mit 4-Wochen-Sprints",
+        "Kanban"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein kontinuierlicher Strom von Tickets ohne festes Projektziel passt gut zu Kanban: Dringendes kann jederzeit gezogen werden, sobald Platz ist."
+    },
+    {
+      "question": "Welche Aussage über Rollen im Softwareprozess stimmt?",
+      "options": [
+        "In kleinen Teams übernimmt eine Person oft mehrere Rollen",
+        "Jede Rolle muss von einer eigenen Person besetzt sein",
+        "Tester:innen dürfen nie Entwickler:innen sein",
+        "Rollen gibt es nur in Scrum"
+      ],
+      "correctIndex": 0,
+      "explanation": "Rollen beschreiben Aufgaben und Verantwortung. Gerade in kleinen Teams wie bei der Diplomarbeit hat eine Person mehrere Rollen."
+    }
+  ]
+}

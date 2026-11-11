@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-gui_03_usability_validierung",
+  "title": "Usability & Eingaben validieren",
+  "summary": "Eingaben mit int.TryParse prüfen, Fehler mit MessageBox melden und Oberflächen benutzerfreundlich gestalten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Benutzer tippen alles Mögliche ein: „17 Jahre“, gar nichts oder „-3“. int.Parse wirft bei ungültigem Text eine FormatException. Wird sie nicht abgefangen, beendet sich die ganze Anwendung – für die Benutzerin sieht das aus wie ein Absturz. Besser ist int.TryParse: Es liefert true oder false und schreibt die Zahl in einen out-Parameter. Bei false ist dieser 0."
+    },
+    {
+      "type": "code",
+      "content": "int.TryParse(\"17\", out int a);\n// true,  a = 17\nint.TryParse(\" 17 \", out int b);\n// true,  b = 17 (Leerzeichen am Rand ok)\nint.TryParse(\"17,5\", out int c);\n// false, c = 0\nint.TryParse(\"abc\", out int d);\n// false, d = 0\nint.TryParse(\"\", out int e);\n// false, e = 0\nint.TryParse(\"-3\", out int f);\n// true,  f = -3"
+    },
+    {
+      "type": "text",
+      "content": "Gute Validierung prüft in drei Stufen:\n1. Ist überhaupt etwas eingegeben?\n2. Hat die Eingabe das richtige Format (z. B. ganze Zahl)?\n3. Ist der Wert fachlich sinnvoll (z. B. Alter 0 bis 120)?\n\nSchreib die Prüfung als reine Methode, die keine Controls kennt. Sie liefert null, wenn alles passt, sonst eine verständliche Fehlermeldung. So lässt sie sich ohne Fenster testen."
+    },
+    {
+      "type": "code",
+      "content": "static string PruefeAlter(string eingabe)\n{\n    if (string.IsNullOrWhiteSpace(eingabe))\n        return \"Bitte gib dein Alter ein.\";\n    if (!int.TryParse(eingabe, out int alter))\n        return \"Das Alter muss eine \"\n             + \"ganze Zahl sein.\";\n    if (alter < 0 || alter > 120)\n        return \"Das Alter muss zwischen \"\n             + \"0 und 120 liegen.\";\n    return null;\n}\n\n// PruefeAlter(\"17\")  -> null\n// PruefeAlter(\"abc\") -> \"Das Alter muss\n//                        eine ganze Zahl sein.\"\n// PruefeAlter(\"150\") -> \"Das Alter muss\n//                  zwischen 0 und 120 liegen.\""
+    },
+    {
+      "type": "text",
+      "content": "Mit MessageBox.Show (Namensraum System.Windows) zeigst du ein kleines Dialogfenster. Die häufigste Form hat vier Argumente: Text, Titel, Buttons (MessageBoxButton) und Symbol (MessageBoxImage). Die MessageBox ist modal: Das Hauptfenster ist gesperrt, bis sie geschlossen wird. Show liefert ein MessageBoxResult zurück – damit erkennst du bei Ja/Nein-Fragen, was gewählt wurde."
+    },
+    {
+      "type": "code",
+      "content": "private void BtnSpeichern_Click(\n    object sender, RoutedEventArgs e)\n{\n    string fehler = PruefeAlter(txtAlter.Text);\n    if (fehler != null)\n    {\n        MessageBox.Show(fehler, \"Eingabefehler\",\n            MessageBoxButton.OK,\n            MessageBoxImage.Warning);\n        txtAlter.Focus();\n        return;\n    }\n    // ... speichern\n}\n\n// Rückfrage vor dem Löschen\nvar antwort = MessageBox.Show(\n    \"Eintrag wirklich löschen?\", \"Löschen\",\n    MessageBoxButton.YesNo,\n    MessageBoxImage.Question);\nif (antwort == MessageBoxResult.Yes)\n    lstEintraege.Items.Remove(\n        lstEintraege.SelectedItem);"
+    },
+    {
+      "type": "text",
+      "content": "Usability heißt: Die Oberfläche lässt sich leicht, schnell und ohne Frust bedienen. Die Norm ISO 9241-110 beschreibt dafür Grundsätze, z. B. Aufgabenangemessenheit, Selbstbeschreibungsfähigkeit, Erwartungskonformität und Steuerbarkeit. Praktische Regeln:\n• Klare Beschriftungen bei jedem Eingabefeld.\n• Konsistenz: gleiche Begriffe, gleiche Anordnung (z. B. OK immer links von Abbrechen).\n• Rückmeldung: Zeig an, dass gespeichert wurde.\n• Fehler vermeiden statt melden: ComboBox statt freier Eingabe, Button erst aktivieren, wenn die Eingabe passt.\n• Konkrete Fehlermeldungen: „Das Alter muss zwischen 0 und 120 liegen“ statt „Fehler!“.\n• Alles auch mit der Tastatur bedienbar."
+    },
+    {
+      "type": "code",
+      "content": "<!-- Alt+A springt in die TextBox -->\n<Label Content=\"_Alter:\"\n  Target=\"{Binding ElementName=txtAlter}\" />\n<TextBox x:Name=\"txtAlter\"\n  TextChanged=\"TxtAlter_TextChanged\" />\n\n<!-- Enter löst Speichern aus -->\n<Button x:Name=\"btnSpeichern\"\n  Content=\"Speichern\" IsDefault=\"True\"\n  IsEnabled=\"False\"\n  Click=\"BtnSpeichern_Click\" />\n\n<!-- Esc löst Abbrechen aus -->\n<Button Content=\"Abbrechen\"\n  IsCancel=\"True\" />"
+    },
+    {
+      "type": "code",
+      "content": "// Button nur aktiv, wenn Eingabe gültig\nprivate void TxtAlter_TextChanged(\n    object sender, TextChangedEventArgs e)\n{\n    btnSpeichern.IsEnabled =\n        PruefeAlter(txtAlter.Text) == null;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Verwende für Benutzereingaben int.TryParse statt int.Parse und prüf Vorhandensein, Format und Wertebereich in einer eigenen Methode. Fehler meldest du mit MessageBox.Show (oder direkt neben dem Feld) und setzt den Fokus zurück ins Feld. Zur Tastaturbedienung gehören Zugriffstasten (_ im Label), IsDefault (Enter), IsCancel (Esc) und eine sinnvolle Tab-Reihenfolge, die standardmäßig der Reihenfolge im XAML folgt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "bool ok = int.TryParse(\"12a\", out int z);\nConsole.WriteLine($\"{ok} {z}\");",
+      "options": [
+        "True 12",
+        "False 0",
+        "False 12",
+        "Es wird eine FormatException ausgelöst"
+      ],
+      "correctIndex": 1,
+      "explanation": "\"12a\" ist keine gültige ganze Zahl. TryParse wirft keine Exception, sondern liefert false und setzt z auf 0."
+    },
+    {
+      "question": "Was liefert PruefeAlter(\"150\") aus der Lektion?",
+      "options": [
+        "null",
+        "\"Bitte gib dein Alter ein.\"",
+        "\"Das Alter muss eine ganze Zahl sein.\"",
+        "\"Das Alter muss zwischen 0 und 120 liegen.\""
+      ],
+      "correctIndex": 3,
+      "explanation": "\"150\" ist nicht leer und eine gültige ganze Zahl. Die ersten beiden Prüfungen bestehen also. Erst die Bereichsprüfung schlägt an, weil 150 > 120."
+    },
+    {
+      "question": "Welche Eigenschaft sorgt dafür, dass ein Button ausgelöst wird, wenn die Benutzerin Esc drückt?",
+      "options": [
+        "IsDefault=\"True\"",
+        "TabIndex=\"0\"",
+        "IsCancel=\"True\"",
+        "IsEnabled=\"False\""
+      ],
+      "correctIndex": 2,
+      "explanation": "IsCancel reagiert auf Esc, IsDefault auf Enter. TabIndex legt die Tab-Reihenfolge fest, IsEnabled sperrt oder aktiviert den Button."
+    },
+    {
+      "question": "Finde den Fehler: Die Benutzerin tippt „17 Jahre“ ein und klickt auf Speichern. Was passiert?",
+      "code": "private void BtnSpeichern_Click(\n    object sender, RoutedEventArgs e)\n{\n    int alter = int.Parse(txtAlter.Text);\n    lblInfo.Text = $\"Alter: {alter}\";\n}",
+      "options": [
+        "int.Parse wirft eine FormatException, die nicht abgefangen wird – die Anwendung stürzt ab",
+        "alter wird 17, der Rest wird ignoriert",
+        "alter wird 0",
+        "Der Compiler meldet schon beim Build einen Fehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "int.Parse akzeptiert nur eine gültige Zahl. Bei „17 Jahre“ fliegt eine FormatException. Ohne try/catch beendet sie das Programm. Richtig: int.TryParse verwenden und bei false eine Meldung anzeigen."
+    }
+  ]
+}

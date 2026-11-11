@@ -1,0 +1,89 @@
+{
+  "id": "dbi-j3-dbms_02_drei_ebenen_architektur",
+  "title": "Drei-Ebenen-Architektur und Datenunabhängigkeit",
+  "summary": "Externe, konzeptionelle und interne Ebene nach ANSI/SPARC und wie sie Programme von Änderungen entkoppeln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein DBMS soll Programme vom Speicherformat unabhängig machen. Dazu wurde in den 1970er-Jahren vom ANSI-Normungsgremium (Arbeitsgruppe SPARC) die Drei-Ebenen-Architektur vorgeschlagen. Sie trennt, WIE die Daten gespeichert sind, WAS gespeichert ist und WELCHEN Ausschnitt eine Benutzergruppe sieht. Bis heute ist sie das Denkmodell hinter relationalen DBMS."
+    },
+    {
+      "type": "code",
+      "content": "  Externe Ebene (Sichten)\n [Sekretariat] [Lehrer] [App]\n        |        |       |\n        v        v       v\n  Konzeptionelle Ebene\n [Tabellen, Beziehungen,\n  Datentypen, Constraints]\n             |\n             v\n  Interne Ebene\n [Dateien, Seiten, Indizes]"
+    },
+    {
+      "type": "text",
+      "content": "Externe Ebene: Jede Benutzergruppe bekommt ihre eigene Sicht auf die Daten. Das Sekretariat sieht Adressen, aber keine Noten; die Schüler-App zeigt nur die eigenen Noten. In SQL setzt du das mit Views und Zugriffsrechten um. Eine Sicht kann Spalten weglassen, umbenennen, Tabellen verbinden oder Werte berechnen."
+    },
+    {
+      "type": "text",
+      "content": "Konzeptionelle (logische) Ebene: Hier steht die vollständige, logische Struktur der gesamten Datenbank – alle Tabellen, Spalten, Datentypen, Schlüssel und Constraints, unabhängig davon, wie sie abgespeichert werden. Diese Ebene beschreibst du mit der DDL (CREATE TABLE …). Das DBMS speichert diese Beschreibung selbst im Datenkatalog (Data Dictionary): in SQLite in der Tabelle sqlite_master, in MySQL und PostgreSQL im information_schema."
+    },
+    {
+      "type": "text",
+      "content": "Interne (physische) Ebene: Wie liegen die Daten wirklich auf dem Datenträger? Dateien, Speicherseiten, Sortierung, Komprimierung und Indizes. Ein Index ist wie das Stichwortverzeichnis eines Buches: Statt jede Zeile zu durchsuchen (SCAN), springt das DBMS direkt zur passenden Stelle (SEARCH). Ob es einen Index gibt, entscheidet die Administration – die Abfrage bleibt gleich. In SQLite zeigt EXPLAIN QUERY PLAN, wie eine Abfrage intern ausgeführt wird:"
+    },
+    {
+      "type": "code",
+      "content": "EXPLAIN QUERY PLAN\nSELECT * FROM schueler\nWHERE nachname = 'Wolf';\n-- SCAN schueler\n\nCREATE INDEX idx_nachname\n  ON schueler(nachname);\n\nEXPLAIN QUERY PLAN\nSELECT * FROM schueler\nWHERE nachname = 'Wolf';\n-- SEARCH schueler USING INDEX\n--   idx_nachname (nachname=?)\n\n-- Abfrage und Ergebnis (David)\n-- bleiben gleich, nur der\n-- interne Weg ist schneller."
+    },
+    {
+      "type": "text",
+      "content": "Das ist das Ziel der Architektur – Datenunabhängigkeit:\n• Physische Datenunabhängigkeit: Änderungen auf der internen Ebene (neuer Index, andere Festplatte, andere Dateiorganisation) erfordern keine Änderung am konzeptionellen Schema und an den Programmen.\n• Logische Datenunabhängigkeit: Änderungen am konzeptionellen Schema (neue Spalte, Tabelle aufgeteilt) erfordern keine Änderung an den externen Sichten und Programmen – solange sich die Sichten anpassen lassen.\n\nLogische Unabhängigkeit ist schwerer zu erreichen: Wird eine Spalte gelöscht, die eine Sicht braucht, hilft keine View mehr."
+    },
+    {
+      "type": "code",
+      "content": "-- Version 1: eine flache Tabelle\nCREATE VIEW v_klassenliste AS\nSELECT vorname, klasse\nFROM schueler_flach;\n\n-- Programm der Schul-App:\nSELECT vorname FROM v_klassenliste\nWHERE klasse = '3BHIT';\n-- Clara\n-- David\n-- Filip\n\n-- Version 2: Schema normalisiert\n-- (schueler + klassen)\nDROP VIEW v_klassenliste;\nDROP TABLE schueler_flach;\nCREATE VIEW v_klassenliste AS\nSELECT s.vorname,\n       k.bezeichnung AS klasse\nFROM schueler s\nJOIN klassen k\n  ON k.klasse_id = s.klasse_id;\n\n-- Programm unverändert:\nSELECT vorname FROM v_klassenliste\nWHERE klasse = '3BHIT';\n-- Clara\n-- David\n-- Filip"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Die Drei-Ebenen-Architektur (ANSI/SPARC) trennt externe Ebene (Sichten für Benutzergruppen), konzeptionelle Ebene (logisches Gesamtschema) und interne Ebene (physische Speicherung). Physische Datenunabhängigkeit schützt das Schema vor Speicheränderungen (z. B. Indizes), logische Datenunabhängigkeit schützt Programme vor Schemaänderungen (z. B. mit Views). Typischer Fehler: Programme greifen direkt auf alle Tabellen zu statt auf Sichten – dann muss bei jeder Schemaänderung der Code angepasst werden."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Auf welcher Ebene der Drei-Ebenen-Architektur ist festgelegt, dass die Spalte note nur Werte von 1 bis 5 annehmen darf?",
+      "options": [
+        "Externe Ebene",
+        "Konzeptionelle Ebene",
+        "Interne Ebene",
+        "Auf keiner Ebene"
+      ],
+      "correctIndex": 1,
+      "explanation": "Tabellen, Datentypen und Constraints gehören zum logischen Gesamtschema – der konzeptionellen Ebene."
+    },
+    {
+      "question": "Die Administration legt einen Index auf schueler(nachname) an. Was muss an den Programmen geändert werden?",
+      "options": [
+        "Alle Abfragen müssen den Index namentlich nennen",
+        "Die Programme müssen neu kompiliert werden",
+        "Nichts – das ist physische Datenunabhängigkeit",
+        "Die Views müssen neu angelegt werden"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Index ist eine Änderung auf der internen Ebene. Abfragen und Schema bleiben gleich, nur die Ausführung wird schneller."
+    },
+    {
+      "question": "Was zeigt EXPLAIN QUERY PLAN in SQLite für eine Suche über eine Spalte ohne Index?",
+      "options": [
+        "SEARCH … USING INDEX",
+        "SCAN …",
+        "Das Ergebnis der Abfrage",
+        "Einen Fehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne passenden Index muss SQLite die ganze Tabelle durchgehen (SCAN). Mit Index steht dort SEARCH … USING INDEX."
+    },
+    {
+      "question": "Eine Tabelle wird in zwei Tabellen aufgeteilt. Eine View liefert danach dieselben Spalten wie vorher, die App läuft unverändert weiter. Welche Eigenschaft ist das?",
+      "options": [
+        "Physische Datenunabhängigkeit",
+        "Logische Datenunabhängigkeit",
+        "Redundanz",
+        "Atomarität"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das konzeptionelle Schema hat sich geändert, die externe Sicht nicht – das ist logische Datenunabhängigkeit."
+    }
+  ]
+}

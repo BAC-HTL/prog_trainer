@@ -1,0 +1,91 @@
+{
+  "id": "dbi-j3-semistrukturiert_01_xml_aufbau",
+  "title": "XML: Aufbau und Wohlgeformtheit",
+  "summary": "Du lernst, wie ein XML-Dokument aufgebaut ist, wann es wohlgeformt ist und wofür Namespaces da sind.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Tabellen sind streng strukturiert: Jede Zeile hat dieselben Spalten. Semistrukturierte Daten tragen ihre Struktur selbst mit sich (selbstbeschreibend) und sind flexibler: Ein Schüler kann drei Noten haben, ein anderer keine. Die zwei wichtigsten Formate sind XML und JSON. XML (eXtensible Markup Language) ist ein W3C-Standard für den Datenaustausch. Du begegnest ihm z. B. in .csproj-Dateien von C#, in SVG-Grafiken und – gezippt – in .docx-Dateien."
+    },
+    {
+      "type": "code",
+      "content": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<klasse bez=\"3AHIF\" raum=\"E07\">\n  <!-- Klassenliste -->\n  <schueler id=\"1\">\n    <vorname>Anna</vorname>\n    <note fach=\"DBI\">1</note>\n    <note fach=\"POS\">2</note>\n    <foto/>\n  </schueler>\n  <schueler id=\"2\">\n    <vorname>Ben</vorname>\n    <note fach=\"DBI\">3</note>\n  </schueler>\n</klasse>"
+    },
+    {
+      "type": "text",
+      "content": "Bestandteile:\n• XML-Deklaration (Prolog) in der ersten Zeile: Version und Zeichenkodierung\n• genau ein Wurzelelement, hier <klasse>\n• Elemente mit Start- und End-Tag: <vorname>Anna</vorname>\n• Attribute im Start-Tag, Wert immer in Anführungszeichen: fach=\"DBI\"\n• leere Elemente mit Kurzschreibweise: <foto/>\n• Kommentare: <!-- … -->\nDie Elemente bilden einen Baum: <klasse> ist Elternelement der beiden <schueler>, die zueinander Geschwister sind."
+    },
+    {
+      "type": "text",
+      "content": "Element oder Attribut? Faustregel: Attribute für kurze, einfache Zusatzinfos wie IDs oder Kennzeichen (id, fach). Elemente für den eigentlichen Inhalt und alles, was mehrfach vorkommen oder selbst Struktur haben kann. Ein Attribut darf pro Element nur einmal vorkommen – mehrere Noten als Attribute wären also unmöglich, mehrere <note>-Elemente sind kein Problem."
+    },
+    {
+      "type": "text",
+      "content": "Ein Dokument ist wohlgeformt (well-formed), wenn es die Syntaxregeln einhält:\n• genau ein Wurzelelement\n• jedes Start-Tag hat ein End-Tag (oder ist leer: <foto/>)\n• Elemente sind korrekt verschachtelt: <a><b></b></a>\n• Groß-/Kleinschreibung zählt: <Note> ≠ <note>\n• Attributwerte stehen in Anführungszeichen, kein Attribut doppelt\n• < und & im Text werden maskiert: &lt; &gt; &amp; &quot; &apos;\nAnders als ein Browser bei HTML bricht ein XML-Parser bei jedem Fehler ab."
+    },
+    {
+      "type": "code",
+      "content": "import xml.etree.ElementTree as ET\n\ntests = [\n  \"<a><b>x</a></b>\",\n  \"<a>1</a><b>2</b>\",\n  \"<a x=1/>\",\n  \"<a>3 < 5</a>\",\n  \"<a>Tom &amp; Jerry</a>\",\n]\nfor t in tests:\n    try:\n        print(ET.fromstring(t).text)\n    except ET.ParseError as e:\n        print(\"Fehler:\", e)\n\n# Fehler: mismatched tag: ...\n# Fehler: junk after document\n#         element: ...\n# Fehler: not well-formed\n#         (invalid token): ...\n# Fehler: not well-formed\n#         (invalid token): ...\n# Tom & Jerry"
+    },
+    {
+      "type": "text",
+      "content": "Wohlgeformt heißt noch nicht gültig (valid): Ein gültiges Dokument ist wohlgeformt UND hält sich an eine vereinbarte Grammatik (DTD oder XML Schema) – darum geht es in Lektion 3. Ein weiteres Problem: Wenn du XML-Vokabulare kombinierst, können Namen kollidieren. <name> kann der Name der Schule oder einer Person sein. Dafür gibt es Namespaces."
+    },
+    {
+      "type": "code",
+      "content": "<schule\n  xmlns=\"http://example.org/schule\"\n  xmlns:adr=\"http://example.org/adr\">\n  <name>HTL Musterstadt</name>\n  <adr:ort>Wien</adr:ort>\n</schule>\n\n# Python sieht die vollen Namen:\n# {http://example.org/schule}name\n# {http://example.org/adr}ort"
+    },
+    {
+      "type": "text",
+      "content": "Mit xmlns=\"…\" legst du den Standard-Namespace fest, mit xmlns:adr=\"…\" einen Präfix. Die URI ist nur ein eindeutiger Name, sie wird nicht aus dem Internet geladen. Zusammenfassung: XML besteht aus verschachtelten Elementen mit Attributen und genau einer Wurzel. Wohlgeformt = Syntax stimmt, gültig = zusätzlich passend zur Grammatik. Sonderzeichen werden mit &lt; und &amp; maskiert, Namenskonflikte mit Namespaces gelöst."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Dokument ist wohlgeformt?",
+      "options": [
+        "<schueler><name>Anna</schueler></name>",
+        "<schueler id=1><name>Anna</name></schueler>",
+        "<schueler id=\"1\"><name>Anna</name></schueler>",
+        "<schueler><name>Anna</name></Schueler>"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur hier ist alles korrekt verschachtelt, der Attributwert steht in Anführungszeichen und Start- und End-Tag stimmen auch in der Groß-/Kleinschreibung überein."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import xml.etree.ElementTree as ET\nt = \"<a>Tom &amp; Jerry</a>\"\nprint(ET.fromstring(t).text)",
+      "options": [
+        "Tom &amp; Jerry",
+        "Tom & Jerry",
+        "Tom",
+        "ParseError"
+      ],
+      "correctIndex": 1,
+      "explanation": "&amp; ist die Maskierung für das Zeichen &. Der Parser ersetzt sie beim Einlesen, im Text steht dann ein normales &."
+    },
+    {
+      "question": "Warum ist dieses Dokument nicht wohlgeformt?",
+      "code": "<note>1</note>\n<note>2</note>",
+      "options": [
+        "Es hat zwei Wurzelelemente.",
+        "Die XML-Deklaration fehlt.",
+        "Elemente dürfen nicht leer sein.",
+        "Zahlen sind in XML nicht erlaubt."
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein XML-Dokument hat genau ein Wurzelelement. Python meldet hier „junk after document element“. Die XML-Deklaration ist empfohlen, aber nicht Pflicht."
+    },
+    {
+      "question": "Welche Aussage zu Wohlgeformtheit und Gültigkeit stimmt?",
+      "options": [
+        "Jedes wohlgeformte Dokument ist gültig.",
+        "Gültige Dokumente müssen nicht wohlgeformt sein.",
+        "Wohlgeformt und gültig bedeuten dasselbe.",
+        "Ein gültiges Dokument ist wohlgeformt und entspricht zusätzlich einer Grammatik."
+      ],
+      "correctIndex": 3,
+      "explanation": "Gültigkeit setzt Wohlgeformtheit voraus und prüft zusätzlich, ob Elemente, Reihenfolge und Attribute einer DTD oder einem XML Schema entsprechen."
+    }
+  ]
+}

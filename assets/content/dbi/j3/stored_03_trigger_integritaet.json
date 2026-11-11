@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j3-stored_03_trigger_integritaet",
+  "title": "Trigger und Datenintegrität",
+  "summary": "Trigger reagieren automatisch auf INSERT, UPDATE und DELETE – damit protokollierst du Änderungen und setzt Regeln durch, die Constraints nicht abdecken.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Datenintegrität heißt: Die Daten sind korrekt und widerspruchsfrei. Man unterscheidet:\n• Entitätsintegrität: jede Zeile hat einen eindeutigen Primärschlüssel\n• Domänenintegrität: Werte passen zum Wertebereich (Datentyp, NOT NULL, CHECK)\n• referentielle Integrität: Fremdschlüssel zeigen auf existierende Zeilen\n• benutzerdefinierte Integrität: Geschäftsregeln der Schule, z. B. „höchstens 3 Bücher gleichzeitig“"
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE noten (\n  sch_id INTEGER,\n  fach   TEXT,\n  note   INTEGER NOT NULL\n         CHECK (note BETWEEN 1 AND 5),\n  PRIMARY KEY (sch_id, fach)\n);\n\nINSERT INTO noten\n  VALUES (1, 'POS', 6);\n-- CHECK constraint failed:\n--   note BETWEEN 1 AND 5"
+    },
+    {
+      "type": "text",
+      "content": "Constraints decken viel ab, aber nicht alles: Ein CHECK sieht nur die aktuelle Zeile. „Höchstens 3 offene Ausleihen pro Person“ hängt von anderen Zeilen ab, und „jede Notenänderung protokollieren“ ist gar keine Bedingung. Dafür gibt es Trigger: gespeicherte Befehle, die das DBMS automatisch ausführt, wenn auf einer Tabelle ein INSERT, UPDATE oder DELETE passiert – BEFORE (davor) oder AFTER (danach), mit FOR EACH ROW einmal pro betroffener Zeile."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE noten_log (\n  sch_id INTEGER, fach TEXT,\n  alt INTEGER, neu INTEGER,\n  zeit TEXT\n);\n\nCREATE TRIGGER trg_noten_log\nAFTER UPDATE OF note ON noten\nFOR EACH ROW\nBEGIN\n  INSERT INTO noten_log\n  VALUES (OLD.sch_id, OLD.fach,\n          OLD.note, NEW.note,\n          datetime('now'));\nEND;"
+    },
+    {
+      "type": "text",
+      "content": "Im Trigger greifst du mit OLD auf die Zeile vor der Änderung und mit NEW auf die Zeile danach zu. Bei INSERT gibt es nur NEW, bei DELETE nur OLD. Der Trigger oben ist ein Audit-Trigger: Wer die Note ändert, kann das nicht verbergen, egal ob über die App oder direkt per SQL. Achtung: UPDATE OF note feuert auch, wenn der neue Wert gleich dem alten ist."
+    },
+    {
+      "type": "code",
+      "content": "INSERT INTO noten\n  VALUES (1, 'DBI', 3);\nUPDATE noten SET note = 2\n  WHERE sch_id = 1;\nUPDATE noten SET note = 2\n  WHERE sch_id = 1;\n\nSELECT sch_id, fach, alt, neu\nFROM noten_log;\n\n1 | DBI | 3 | 2\n1 | DBI | 2 | 2"
+    },
+    {
+      "type": "code",
+      "content": "CREATE TRIGGER trg_max3\nBEFORE INSERT ON ausleihe\nFOR EACH ROW\nWHEN (SELECT COUNT(*)\n      FROM ausleihe\n      WHERE sch_id = NEW.sch_id\n        AND zurueck IS NULL) >= 3\nBEGIN\n  SELECT RAISE(ABORT,\n    'Maximal 3 offene Ausleihen');\nEND;\n\n-- 4. offene Ausleihe:\n-- Maximal 3 offene Ausleihen"
+    },
+    {
+      "type": "text",
+      "content": "Dieser BEFORE-Trigger setzt eine Geschäftsregel durch: Die WHEN-Bedingung zählt die offenen Ausleihen der Person; sind es schon 3, bricht RAISE(ABORT, …) das INSERT mit Fehlermeldung ab. Nach einer Rückgabe (zurueck gesetzt) ist wieder Platz. RAISE ist SQLite-Syntax. In PostgreSQL schreibst du zuerst eine Funktion mit RETURNS TRIGGER und hängst sie dann mit CREATE TRIGGER … EXECUTE FUNCTION an die Tabelle."
+    },
+    {
+      "type": "code",
+      "content": "-- PostgreSQL:\nCREATE FUNCTION f_noten_log()\nRETURNS TRIGGER\nLANGUAGE plpgsql\nAS $$\nBEGIN\n  INSERT INTO noten_log\n  VALUES (OLD.sch_id, OLD.fach,\n          OLD.note, NEW.note, now());\n  RETURN NEW;\nEND;\n$$;\n\nCREATE TRIGGER trg_noten_log\nAFTER UPDATE OF note ON noten\nFOR EACH ROW\nEXECUTE FUNCTION f_noten_log();"
+    },
+    {
+      "type": "text",
+      "content": "Vorsicht: Trigger sind „unsichtbare“ Logik. Wer nur die Anwendung kennt, wundert sich über plötzliche Fehler oder zusätzliche Zeilen; Trigger, die andere Trigger auslösen, sind schwer zu durchschauen. Verwende daher zuerst Constraints (PRIMARY KEY, FOREIGN KEY, NOT NULL, CHECK) und Trigger nur dort, wo diese nicht reichen. Zusammenfassung: Trigger reagieren auf INSERT/UPDATE/DELETE, laufen BEFORE oder AFTER, sehen OLD und NEW und eignen sich für Protokolle und Geschäftsregeln."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Integritätsart verletzt ein INSERT mit der Note 6, wenn note CHECK (note BETWEEN 1 AND 5) hat?",
+      "options": [
+        "Entitätsintegrität",
+        "referentielle Integrität",
+        "Domänenintegrität",
+        "keine – 6 wird gespeichert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der erlaubte Wertebereich (die Domäne) einer Spalte wird durch Datentyp, NOT NULL und CHECK festgelegt."
+    },
+    {
+      "question": "Wie viele Zeilen stehen danach in noten_log (Trigger trg_noten_log aus der Lektion)?",
+      "code": "INSERT INTO noten\n  VALUES (1, 'DBI', 3);\nUPDATE noten SET note = 2\n  WHERE sch_id = 1;\nUPDATE noten SET note = 2\n  WHERE sch_id = 1;",
+      "options": [
+        "0",
+        "1",
+        "3",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Trigger feuert bei jedem UPDATE der Spalte note, auch wenn der Wert gleich bleibt. Zwei UPDATEs ergeben zwei Log-Zeilen (3→2 und 2→2)."
+    },
+    {
+      "question": "Welche Werte stehen in einem DELETE-Trigger zur Verfügung?",
+      "options": [
+        "nur OLD",
+        "nur NEW",
+        "OLD und NEW",
+        "weder OLD noch NEW"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei DELETE gibt es nur die alte Zeile (OLD). NEW gibt es bei INSERT und UPDATE."
+    },
+    {
+      "question": "Warum lässt sich „höchstens 3 offene Ausleihen pro Person“ nicht mit einem CHECK-Constraint umsetzen?",
+      "options": [
+        "CHECK funktioniert nur mit Zahlen.",
+        "CHECK sieht nur die Werte der aktuellen Zeile, nicht die anderen Zeilen der Tabelle.",
+        "CHECK ist in SQLite nicht erlaubt.",
+        "CHECK wird nur bei DELETE geprüft."
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Regel muss andere Zeilen zählen. Ein CHECK-Constraint prüft nur die einzelne Zeile – deshalb braucht man hier einen Trigger."
+    }
+  ]
+}

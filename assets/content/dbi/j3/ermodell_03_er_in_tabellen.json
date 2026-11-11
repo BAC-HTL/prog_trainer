@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j3-ermodell_03_er_in_tabellen",
+  "title": "Vom ER-Modell zu Tabellen",
+  "summary": "Mit festen Regeln überführst du ein ER-Diagramm in Tabellen und vermeidest dabei Redundanz.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Das ER-Diagramm ist fertig – jetzt wird daraus ein relationales Schema, also Tabellen mit Primär- und Fremdschlüsseln. Dafür gibt es feste Regeln. Wir setzen das Bibliotheksbeispiel der letzten Lektionen vollständig um und testen es mit SQLite."
+    },
+    {
+      "type": "code",
+      "content": "ER-Element      → Tabelle\n-----------------------------\nEntitätstyp     → eigene Tabelle\nSchlüssel       → PRIMARY KEY\nzusammengesetzt → Einzelspalten\nmehrwertig      → eigene Tabelle\nabgeleitet      → nicht speichern\n1:n             → FK auf n-Seite\nm:n             → Zwischentabelle\n1:1             → FK + UNIQUE\nschwach         → PK = FK + Teil-\n                  schlüssel"
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE lehrer (\n  kuerzel  TEXT PRIMARY KEY,\n  vorname  TEXT NOT NULL,\n  nachname TEXT NOT NULL\n);\n\nCREATE TABLE klasse (\n  bez  TEXT PRIMARY KEY,\n  raum TEXT,\n  kv   TEXT NOT NULL UNIQUE\n       REFERENCES lehrer(kuerzel)\n);\n\nCREATE TABLE schueler (\n  sch_id  INTEGER PRIMARY KEY,\n  vorname TEXT NOT NULL,\n  strasse TEXT,\n  plz     TEXT,\n  ort     TEXT,\n  klasse  TEXT NOT NULL\n          REFERENCES klasse(bez)\n);"
+    },
+    {
+      "type": "text",
+      "content": "1:n (Klasse – Schüler): Der Fremdschlüssel klasse steht auf der n-Seite in schueler; NOT NULL, weil jeder Schüler einer Klasse angehören muss. 1:1 (Lehrer – Klasse): Der Fremdschlüssel kv bekommt UNIQUE, damit keine Lehrkraft zwei Klassen führt. Er steht in klasse, weil dort die Teilnahme Pflicht ist – stünde er in lehrer, hätten alle Nicht-KVs NULL. Die zusammengesetzte Adresse wird zu den Spalten strasse, plz und ort; das abgeleitete Alter wird nicht gespeichert."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE telefon (\n  sch_id INTEGER\n         REFERENCES schueler(sch_id),\n  nummer TEXT,\n  PRIMARY KEY (sch_id, nummer)\n);\n\nCREATE TABLE buch (\n  isbn  TEXT PRIMARY KEY,\n  titel TEXT NOT NULL\n);\n\nCREATE TABLE exemplar (\n  isbn    TEXT REFERENCES buch(isbn)\n          ON DELETE CASCADE,\n  nr      INTEGER,\n  zustand TEXT,\n  PRIMARY KEY (isbn, nr)\n);"
+    },
+    {
+      "type": "text",
+      "content": "Das mehrwertige Attribut Telefon wird zur Tabelle telefon: pro Nummer eine Zeile, Primärschlüssel (sch_id, nummer). Die schwache Entität EXEMPLAR bekommt als Primärschlüssel den Fremdschlüssel zum Eigentümer plus ihren partiellen Schlüssel: (isbn, nr). ON DELETE CASCADE drückt die Existenzabhängigkeit aus: Wird ein Buch gelöscht, verschwinden seine Exemplare mit."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE ausleihe (\n  sch_id INTEGER\n         REFERENCES schueler(sch_id),\n  isbn   TEXT,\n  nr     INTEGER,\n  datum  TEXT,\n  PRIMARY KEY\n    (sch_id, isbn, nr, datum),\n  FOREIGN KEY (isbn, nr)\n    REFERENCES exemplar(isbn, nr)\n);"
+    },
+    {
+      "type": "text",
+      "content": "Die m:n-Beziehung „leiht“ wird zur Zwischentabelle ausleihe mit den Fremdschlüsseln beider Seiten und dem Beziehungsattribut datum. Weil der Schlüssel von EXEMPLAR zusammengesetzt ist, ist auch der Fremdschlüssel zusammengesetzt. Das Datum gehört in den Primärschlüssel, damit dieselbe Person dasselbe Exemplar später noch einmal ausleihen darf. Test in SQLite – Achtung, dort musst du Fremdschlüssel erst einschalten:"
+    },
+    {
+      "type": "code",
+      "content": "PRAGMA foreign_keys = ON;\n-- HUB ist schon KV der 3AHIF:\nINSERT INTO klasse\n  VALUES ('3BHIF', 'E08', 'HUB');\n-- UNIQUE constraint failed:\n--   klasse.kv\n\n-- Buch 978-9 gibt es nicht:\nINSERT INTO exemplar\n  VALUES ('978-9', 1, 'neu');\n-- FOREIGN KEY constraint failed"
+    },
+    {
+      "type": "text",
+      "content": "Warum der ganze Aufwand? Jede Information steht genau einmal: Der Raum einer Klasse steht nur in klasse, der Buchtitel nur in buch. Würdest du den Titel in jede Ausleihe kopieren, entstünde Redundanz – eine Änderung müsste an vielen Stellen passieren (Änderungsanomalie). Zusammenfassung: Entitätstyp → Tabelle, 1:n → FK auf n-Seite, m:n → Zwischentabelle, 1:1 → FK + UNIQUE, mehrwertig → eigene Tabelle, schwach → zusammengesetzter PK. Mehr dazu bei den Normalformen im 4. Jahrgang."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Du überführst die m:n-Beziehung SCHÜLER – FREIFACH. Wie viele Tabellen entstehen insgesamt?",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "1"
+      ],
+      "correctIndex": 1,
+      "explanation": "schueler, freifach und die Zwischentabelle (z. B. teilnahme) mit zwei Fremdschlüsseln – also 3 Tabellen."
+    },
+    {
+      "question": "In welche Tabelle kommt der Fremdschlüssel bei der 1:n-Beziehung KLASSE (1) – SCHÜLER (n)?",
+      "options": [
+        "in klasse",
+        "in beide Tabellen",
+        "in eine Zwischentabelle",
+        "in schueler"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Fremdschlüssel steht immer auf der n-Seite. Jeder Schüler verweist auf seine eine Klasse; eine Klasse könnte in einem Feld nicht viele Schüler speichern."
+    },
+    {
+      "question": "Was passiert in SQLite (mit PRAGMA foreign_keys = ON), wenn Lehrkraft HUB schon KV der 3AHIF ist?",
+      "code": "INSERT INTO klasse\n  VALUES ('3BHIF', 'E08', 'HUB');",
+      "options": [
+        "Die Zeile wird eingefügt, HUB ist jetzt KV von zwei Klassen.",
+        "Fehler: UNIQUE constraint failed: klasse.kv",
+        "Fehler: FOREIGN KEY constraint failed",
+        "Die alte Klasse 3AHIF wird automatisch gelöscht."
+      ],
+      "correctIndex": 1,
+      "explanation": "kv ist UNIQUE, damit die 1:1-Beziehung eingehalten wird. Der Fremdschlüssel selbst ist gültig (HUB existiert), deshalb scheitert das INSERT an der UNIQUE-Bedingung."
+    },
+    {
+      "question": "Wie setzt du das mehrwertige Attribut „Telefonnummer“ von SCHÜLER richtig um?",
+      "options": [
+        "Spalten telefon1, telefon2, telefon3 in schueler",
+        "alle Nummern mit Beistrich getrennt in einer Textspalte",
+        "eigene Tabelle telefon(sch_id, nummer) mit PK (sch_id, nummer)",
+        "gar nicht – mehrwertige Attribute werden weggelassen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein mehrwertiges Attribut wird zu einer eigenen Tabelle mit Fremdschlüssel. So sind beliebig viele Nummern möglich und man kann gezielt nach einer Nummer suchen."
+    }
+  ]
+}

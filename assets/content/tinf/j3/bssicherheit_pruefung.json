@@ -1,0 +1,118 @@
+{
+  "id": "tinf-j3-bssicherheit_pruefung",
+  "title": "Abschlussprüfung: Betriebssystem-Sicherheit & Monitoring",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Ransomware-Angriff verschlüsselt alle Daten einer Schule; der Unterricht kann tagelang nicht stattfinden. Welches Schutzziel ist vor allem verletzt?",
+      "options": [
+        "Vertraulichkeit",
+        "Integrität",
+        "Verfügbarkeit",
+        "Authentizität"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Daten sind zwar noch da, aber nicht nutzbar – das betrifft die Verfügbarkeit. Werden die Daten zusätzlich abgezogen, wäre auch die Vertraulichkeit verletzt."
+    },
+    {
+      "question": "Um welchen Faktor wächst der Suchraum, wenn ein Passwort aus Kleinbuchstaben (26 Zeichen) um 2 Zeichen verlängert wird?",
+      "options": [
+        "676",
+        "52",
+        "2",
+        "26"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jedes Zeichen multipliziert mit 26, zwei Zeichen also mit 26 · 26 = 676."
+    },
+    {
+      "question": "Ein Datenbankserver ist vom gesamten Schulnetz erreichbar, wird aber nur von der Webanwendung auf demselben Rechner genutzt. Welche Maßnahme ist am sinnvollsten?",
+      "options": [
+        "Die Datenbank als root laufen lassen",
+        "Ein längeres Admin-Passwort für die Datenbank",
+        "Den Server öfter neu starten",
+        "Datenbank nur an localhost binden bzw. den Port in der Firewall sperren"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Angriffsfläche wird kleiner, wenn der Dienst gar nicht von außen erreichbar ist. Ein starkes Passwort ist zusätzlich gut, ersetzt das aber nicht."
+    },
+    {
+      "question": "Welche Rechte hat die Datei?",
+      "code": "chmod 750 skript.sh",
+      "options": [
+        "Besitzer rw-, Gruppe r--, Andere ---",
+        "Besitzer rwx, Gruppe r-x, Andere ---",
+        "Besitzer rwx, Gruppe rw-, Andere r--",
+        "Besitzer r-x, Gruppe r-x, Andere ---"
+      ],
+      "correctIndex": 1,
+      "explanation": "7 = rwx, 5 = r-x, 0 = ---."
+    },
+    {
+      "question": "Welche Maßnahme setzt das Prinzip „Least Privilege“ um?",
+      "options": [
+        "Alle Lehrkräfte bekommen Domänen-Administratorrechte, damit sie selbst Software installieren können",
+        "Der Webserver-Dienst läuft unter einem eigenen Konto, das nur sein Webverzeichnis lesen darf",
+        "Alle Dateien bekommen chmod 777, damit niemand ausgesperrt wird",
+        "Ein gemeinsames Admin-Konto für das ganze IT-Team"
+      ],
+      "correctIndex": 1,
+      "explanation": "Least Privilege: so viele Rechte wie nötig, so wenige wie möglich. Ein eigenes, eingeschränktes Dienstkonto begrenzt den Schaden bei einem Einbruch."
+    },
+    {
+      "question": "Ein Sicherheitskonzept sieht vor: Firewall, Virenschutz, tägliche Backups auf eine dauerhaft eingebundene Netzwerkfreigabe – eine Wiederherstellung wurde nie getestet. Was ist die größte Schwäche?",
+      "options": [
+        "Es fehlt eine zweite Firewall",
+        "Tägliche Backups sind zu häufig",
+        "Die Backups sind ungetestet und für Ransomware über die Freigabe erreichbar",
+        "Virenschutz und Firewall schließen sich gegenseitig aus"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Backup, das ständig erreichbar ist, kann mitverschlüsselt werden, und ein nie getestetes Backup ist unsicher. Backups gehören (zumindest eine Kopie) getrennt bzw. offline und müssen regelmäßig wiederhergestellt werden."
+    },
+    {
+      "question": "Warum ist SSH dem Protokoll Telnet für die Fernwartung vorzuziehen?",
+      "options": [
+        "SSH ist schneller",
+        "SSH braucht keine Anmeldung",
+        "Telnet funktioniert nur unter Windows",
+        "SSH überträgt Daten und Passwörter verschlüsselt, Telnet im Klartext"
+      ],
+      "correctIndex": 3,
+      "explanation": "Telnet sendet alles – auch das Passwort – unverschlüsselt und kann mitgelesen werden."
+    },
+    {
+      "question": "Ein Linux-Server reagiert zäh. top zeigt: %Cpu: 5 us, 3 sy, 2 id, 90 wa. Wo liegt der Engpass vermutlich?",
+      "options": [
+        "Datenträger-I/O",
+        "CPU-Rechenleistung",
+        "Netzwerk",
+        "Es gibt keinen Engpass"
+      ],
+      "correctIndex": 0,
+      "explanation": "90 % wa bedeutet: Die CPU wartet fast nur auf Ein-/Ausgabe. Eine schnellere CPU würde nichts bringen – Datenträger (oder Swapping) untersuchen."
+    },
+    {
+      "question": "Welche Aussage über Monitoring-Werkzeuge stimmt?",
+      "options": [
+        "ps zeigt eine Momentaufnahme, top aktualisiert laufend",
+        "df zeigt die Arbeitsspeicherbelegung",
+        "free zeigt den freien Platz auf der Festplatte",
+        "journalctl ist das Windows-Gegenstück zur Ereignisanzeige"
+      ],
+      "correctIndex": 0,
+      "explanation": "df = Dateisystem-Platz, free = RAM, journalctl = Linux-Logs (systemd). ps liefert einmalig den aktuellen Stand, top läuft live."
+    },
+    {
+      "question": "Ein PC ist seit Wochen langsam. Was ist der beste erste Schritt beim Tuning?",
+      "options": [
+        "Sofort mehr RAM einbauen",
+        "Mit Task-Manager bzw. Leistungsüberwachung messen, welche Ressource ausgelastet ist",
+        "Alle Dienste deaktivieren",
+        "Das Betriebssystem neu installieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Erst messen, dann gezielt eine Änderung vornehmen und erneut messen. Ohne Messung optimiert man womöglich die falsche Ressource."
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j3-ermodell_02_beziehungen_kardinalitaeten",
+  "title": "Beziehungen und Kardinalitäten",
+  "summary": "Du verbindest Entitätstypen durch Beziehungen und gibst mit Kardinalitäten an, wie viele Partner erlaubt sind – in Chen- und Krähenfuß-Notation.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Beziehung (Relationship) verbindet Entitätstypen, z. B. „Schüler gehört zu Klasse“. In der Chen-Notation zeichnest du sie als Raute und benennst sie mit einem Verb. Meist verbindet eine Beziehung zwei Entitätstypen (binär). Eine rekursive Beziehung verbindet einen Typ mit sich selbst, z. B. „Schüler ist Tutor von Schüler“."
+    },
+    {
+      "type": "text",
+      "content": "Die Kardinalität gibt an, mit wie vielen Partnern eine Entität höchstens in Beziehung stehen kann: 1:1, 1:n oder m:n. So findest du sie: Stell die Frage von beiden Seiten. „Wie viele Klassen hat ein Schüler höchstens?“ – eine. „Wie viele Schüler hat eine Klasse höchstens?“ – viele. Ergebnis: 1:n."
+    },
+    {
+      "type": "code",
+      "content": "Chen-Notation mit Kardinalitäten:\n\n[LEHRER] 1──<ist KV>──1 [KLASSE]\n\n[KLASSE] 1──<hat>──N [SCHÜLER]\n\n[SCHÜLER] M──<leiht>──N [EXEMPLAR]\n                 |\n              (Datum)"
+    },
+    {
+      "type": "text",
+      "content": "Lies das so: Eine Lehrkraft ist höchstens von einer Klasse KV, jede Klasse hat einen KV (1:1). Eine Klasse hat viele Schüler (1:n). Ein Schüler leiht viele Exemplare aus, ein Exemplar wird im Lauf der Zeit von vielen Schülern geliehen (m:n). Das Datum gehört weder zum Schüler noch zum Exemplar, sondern zur Ausleihe – es ist ein Beziehungsattribut."
+    },
+    {
+      "type": "text",
+      "content": "In der Praxis (und in vielen Tools) wird die Krähenfuß-Notation (Crow's Foot) verwendet. Beziehungen sind dort einfache Linien, die Symbole an den Linienenden zeigen Minimum und Maximum. Das Symbol direkt am Rechteck ist das Maximum, das weiter innen das Minimum. Wichtig: Das Symbol bei einem Entitätstyp sagt, wie viele Entitäten DIESES Typs zu einer Entität der anderen Seite gehören."
+    },
+    {
+      "type": "code",
+      "content": "Krähenfuß (ASCII), Ende rechts:\n\n──||   genau eins       (1..1)\n──o|   null oder eins   (0..1)\n──|<   eins oder viele  (1..*)\n──o<   null oder viele  (0..*)\n\nKLASSE ||──────o< SCHÜLER\n\nEine Klasse hat 0 bis viele\nSchüler, ein Schüler gehört zu\ngenau einer Klasse."
+    },
+    {
+      "type": "text",
+      "content": "Die Minimum-Angabe zeigt, ob die Teilnahme optional (0) oder verpflichtend (1) ist. Eine Lehrkraft muss nicht KV sein (o|), eine Klasse muss aber einen KV haben (||). Diese Unterscheidung hilft dir später: Pflicht wird zu NOT NULL. Typischer Fehler: Die Symbole am falschen Ende lesen – lies immer „eine A hat … B“ und schau dabei auf das Symbol bei B."
+    },
+    {
+      "type": "text",
+      "content": "Eine schwache Entität hat keinen eigenen vollständigen Schlüssel und existiert nur zusammen mit einer anderen Entität (dem Eigentümer). Beispiel: Exemplare eines Buchs werden pro Buch durchnummeriert (Nr. 1, 2, 3). „Exemplar 2“ ist erst mit der ISBN eindeutig. Die Nummer ist nur ein partieller Schlüssel; die Beziehung zum Eigentümer heißt identifizierende Beziehung. Ähnlich: Raum 12 in Gebäude B."
+    },
+    {
+      "type": "code",
+      "content": "Schwache Entität (Chen):\n\n[BUCH] 1──<<hat>>──N [[EXEMPLAR]]\n   |                     |\n(_ISBN_)              (.Nr.)\n\n[[ ]]   schwacher Entitätstyp\n<< >>   identifizierende Beziehung\n(. .)   partieller Schlüssel\n\nSchlüssel Exemplar = ISBN + Nr"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Beziehungen verbinden Entitätstypen, Kardinalitäten (1:1, 1:n, m:n) begrenzen die Anzahl der Partner. Chen zeigt Beziehungen als Rauten mit 1/N/M, Krähenfuß zeigt Minimum und Maximum an den Linienenden. Attribute einer Beziehung (Ausleihdatum) gehören an die Beziehung. Schwache Entitäten werden erst über ihren Eigentümer eindeutig."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Schüler kann mehrere Freifächer besuchen, ein Freifach hat viele Teilnehmer:innen. Welche Kardinalität hat die Beziehung?",
+      "options": [
+        "1:1",
+        "1:n",
+        "n:1",
+        "m:n"
+      ],
+      "correctIndex": 3,
+      "explanation": "Von beiden Seiten aus gibt es „viele“ Partner – das ist eine m:n-Beziehung."
+    },
+    {
+      "question": "Was bedeutet diese Krähenfuß-Darstellung?",
+      "code": "ABTEILUNG ||──────o< LEHRER",
+      "options": [
+        "Eine Abteilung hat 0 bis viele Lehrkräfte, eine Lehrkraft gehört zu genau einer Abteilung.",
+        "Eine Abteilung hat genau eine Lehrkraft.",
+        "Eine Lehrkraft gehört zu 0 bis vielen Abteilungen.",
+        "Eine Abteilung hat mindestens eine Lehrkraft, eine Lehrkraft gehört zu höchstens einer Abteilung."
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Symbol o< bei LEHRER heißt: zu einer Abteilung gehören 0 bis viele Lehrkräfte. Das Symbol || bei ABTEILUNG heißt: eine Lehrkraft gehört zu genau einer Abteilung."
+    },
+    {
+      "question": "Wie wird eine schwache Entität (z. B. EXEMPLAR) eindeutig identifiziert?",
+      "options": [
+        "nur durch ihren partiellen Schlüssel",
+        "durch den Schlüssel des Eigentümers plus ihren partiellen Schlüssel",
+        "durch eine automatisch vergebene Zeilennummer",
+        "gar nicht – schwache Entitäten brauchen keinen Schlüssel"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Exemplarnummer allein ist nicht eindeutig (jedes Buch hat ein Exemplar 1). Erst ISBN + Nr identifiziert ein Exemplar."
+    },
+    {
+      "question": "Wo modellierst du das Ausleihdatum, wenn SCHÜLER und EXEMPLAR über „leiht“ (m:n) verbunden sind?",
+      "options": [
+        "als Attribut von SCHÜLER",
+        "als Attribut von EXEMPLAR",
+        "als Attribut der Beziehung „leiht“",
+        "als eigenen Entitätstyp DATUM"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Datum beschreibt eine bestimmte Ausleihe, also die Verbindung zwischen einem Schüler und einem Exemplar. Bei Schüler oder Exemplar könnte es nur einmal stehen."
+    }
+  ]
+}

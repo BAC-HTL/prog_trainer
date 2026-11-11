@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j3-verzeichnis_01_verzeichnisdienste_ldap",
+  "title": "Verzeichnisdienste und LDAP",
+  "summary": "Wozu ein Verzeichnisdienst da ist, wie der LDAP-Verzeichnisbaum mit Distinguished Names aufgebaut ist und wie man ihn mit Suchfiltern abfragt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "An einer HTL gibt es über tausend Schüler:innen, rund hundert Lehrkräfte und hunderte PCs. Auf jedem PC lokale Konten anzulegen, wäre unmöglich. Die Lösung ist ein Verzeichnisdienst: eine zentrale, hierarchisch aufgebaute Datenbank, in der Objekte wie Benutzer, Gruppen, Computer und Drucker mit ihren Eigenschaften (Attributen) gespeichert sind. Ein Verzeichnis wird sehr oft gelesen (Anmeldung, Adressbuch) und selten geändert – darauf ist es optimiert.\n\nLDAP (Lightweight Directory Access Protocol) ist das Standardprotokoll, um auf solche Verzeichnisse zuzugreifen. Es läuft über TCP-Port 389, verschlüsselt als LDAPS auf Port 636 oder über StartTLS auf Port 389. Bekannte Verzeichnisdienste sind Microsoft Active Directory und OpenLDAP."
+    },
+    {
+      "type": "code",
+      "content": "dc=local\n└─ dc=htl\n   ├─ ou=Lehrer\n   │  └─ cn=Maria Gruber\n   └─ ou=Schueler\n      ├─ ou=3AHIF\n      │  ├─ cn=Anna Huber\n      │  └─ cn=Ben Novak\n      └─ ou=3BHIF"
+    },
+    {
+      "type": "text",
+      "content": "Die Einträge bilden einen Baum, den Directory Information Tree (DIT). Oben stehen meist Domänenbestandteile (dc = domain component), darunter Organisationseinheiten (ou = organizational unit) und ganz unten die eigentlichen Objekte, oft mit cn (common name) benannt. Jeder Eintrag gehört zu einer oder mehreren Objektklassen (objectClass). Das Schema legt fest, welche Attribute eine Objektklasse haben muss und welche sie haben darf – z. B. verlangt „person“ die Attribute cn und sn (Nachname)."
+    },
+    {
+      "type": "code",
+      "content": "# LDIF-Darstellung eines Eintrags\n# (dn in einer Zeile, hier umgebrochen)\ndn: cn=Anna Huber,ou=3AHIF,\n ou=Schueler,dc=htl,dc=local\nobjectClass: inetOrgPerson\ncn: Anna Huber\nsn: Huber\ngivenName: Anna\nuid: ahuber\nmail: anna.huber@htl.example"
+    },
+    {
+      "type": "text",
+      "content": "Jeder Eintrag hat einen eindeutigen Namen, den Distinguished Name (DN). Er ist wie ein vollständiger Dateipfad – nur von rechts nach links zu lesen: ganz rechts die Wurzel, ganz links der Eintrag selbst. Der linke Teil (hier „cn=Anna Huber“) heißt RDN (Relative Distinguished Name) und muss nur innerhalb seines Elternknotens eindeutig sein. Typischer Fehler: den DN in der falschen Richtung aufbauen („dc=local,dc=htl,…“). Kommt im Namen selbst ein Komma vor, muss es mit „\\,“ maskiert werden."
+    },
+    {
+      "type": "code",
+      "content": "dn = (\"cn=Anna Huber,ou=3AHIF,\"\n      \"ou=Schueler,dc=htl,dc=local\")\nrdns = dn.split(\",\")  # vereinfacht!\nprint(\"RDN:   \", rdns[0])\nprint(\"Parent:\", \",\".join(rdns[1:]))\n\ndef im_teilbaum(dn, base):\n    return dn.lower().endswith(\n        \",\" + base.lower())\n\nbase = \"ou=Schueler,dc=htl,dc=local\"\nprint(im_teilbaum(dn, base))\nprint(im_teilbaum(dn, \"ou=Lehrer,\"\n                  \"dc=htl,dc=local\"))\n\n# Ausgabe:\n# RDN:    cn=Anna Huber\n# Parent: ou=3AHIF,ou=Schueler,dc=htl,\n#         dc=local   (eine Zeile)\n# True\n# False"
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigsten LDAP-Operationen: Bind (anmelden – anonym oder mit DN und Passwort), Search (suchen), Compare, Add, Modify und Delete. Eine Suche hat vier Teile:\n• Base DN: wo im Baum gesucht wird\n• Scope: base (nur der Base-Eintrag selbst), one (nur die direkten Kinder), sub (der ganze Teilbaum inklusive Base)\n• Filter: welche Einträge passen\n• Attribute: welche Felder zurückkommen\nAchtung: Beim „Simple Bind“ wird das Passwort im Klartext übertragen. Deshalb immer LDAPS oder StartTLS verwenden."
+    },
+    {
+      "type": "code",
+      "content": "# ldapsearch (Paket ldap-utils)\nldapsearch -x -W \\\n  -H ldaps://ldap.htl.local \\\n  -D \"uid=admin,dc=htl,dc=local\" \\\n  -b \"ou=Schueler,dc=htl,dc=local\" \\\n  -s sub \\\n  \"(&(objectClass=person)(sn=Hu*))\" \\\n  cn mail\n\n# -x Simple Bind, -W Passwort abfragen\n# -D Bind-DN, -b Base DN, -s Scope"
+    },
+    {
+      "type": "code",
+      "content": "LDAP-Filter (Präfix-Schreibweise)\n-------------------------------------\n(sn=Huber)        Nachname = Huber\n(sn=Hu*)          beginnt mit \"Hu\"\n(mail=*)          Attribut vorhanden\n(!(ou=Lehrer))    NICHT\n(&(A)(B))         A UND B\n(|(A)(B))         A ODER B\n\n(&(objectClass=person)\n  (|(ou=3AHIF)(ou=3BHIF)))"
+    },
+    {
+      "type": "text",
+      "content": "Bei Filtern steht der Operator VOR den Bedingungen, und jede Bedingung braucht eigene Klammern – fehlende Klammern sind der häufigste Fehler. Zusammenfassung: Ein Verzeichnisdienst speichert Objekte zentral in einem Baum; der DN beschreibt den Weg vom Eintrag zur Wurzel; Suchen bestehen aus Base DN, Scope, Filter und Attributen; Passwörter beim Bind nur über TLS übertragen. Im nächsten Schritt siehst du, wie Active Directory diese Ideen umsetzt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie lautet der RDN des Eintrags „cn=Ben Novak,ou=3AHIF,ou=Schueler,dc=htl,dc=local“?",
+      "options": [
+        "dc=local",
+        "ou=3AHIF",
+        "cn=Ben Novak",
+        "ou=Schueler,dc=htl,dc=local"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der RDN ist der linke Teil des DN – der Name des Eintrags innerhalb seines Elternknotens."
+    },
+    {
+      "question": "Welche Einträge findet dieser Filter?",
+      "code": "(|(ou=3AHIF)(ou=3BHIF))",
+      "options": [
+        "Alle Einträge mit ou=3AHIF ODER ou=3BHIF",
+        "Nur Einträge, die in beiden OUs gleichzeitig liegen",
+        "Alle Einträge außer 3AHIF und 3BHIF",
+        "Der Filter ist ungültig, weil | nicht erlaubt ist"
+      ],
+      "correctIndex": 0,
+      "explanation": "| ist das logische ODER. Der Operator steht in LDAP-Filtern vor den Bedingungen."
+    },
+    {
+      "question": "Base DN ist „ou=Schueler,dc=htl,dc=local“ (Baum wie in der Lektion), Scope ist „one“. Was liefert die Suche mit dem Filter (objectClass=*)?",
+      "options": [
+        "Anna Huber und Ben Novak",
+        "Nur den Eintrag ou=Schueler selbst",
+        "Alle Einträge unter dc=htl",
+        "ou=3AHIF und ou=3BHIF"
+      ],
+      "correctIndex": 3,
+      "explanation": "Scope „one“ liefert nur die direkten Kinder des Base-Eintrags. Das sind die Klassen-OUs, nicht die Schüler:innen darin – dafür bräuchte man „sub“."
+    },
+    {
+      "question": "Warum sollte ein LDAP-Simple-Bind nur über LDAPS oder StartTLS erfolgen?",
+      "options": [
+        "Weil LDAP ohne TLS keine Filter unterstützt",
+        "Weil beim Simple Bind das Passwort im Klartext übertragen wird",
+        "Weil Port 389 im Internet gesperrt ist",
+        "Weil sonst der DN nicht eindeutig ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "Simple Bind schickt DN und Passwort unverschlüsselt. Ohne TLS kann sie jeder mitlesen, der den Verkehr sieht."
+    }
+  ]
+}

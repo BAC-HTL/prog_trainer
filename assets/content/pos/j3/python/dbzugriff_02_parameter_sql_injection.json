@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-python-dbzugriff_02_parameter_sql_injection",
+  "title": "Parameter und SQL-Injection",
+  "summary": "Benutzereingaben sicher in SQL einbauen: warum f-Strings gefährlich sind und wie Platzhalter und Validierung schützen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Fast immer hängt eine Abfrage von einer Eingabe ab: Benutzername beim Login, Klasse bei der Suche. Naheliegend wäre, die Eingabe mit einem f-String in den SQL-Text einzubauen. Genau das ist eine der gefährlichsten Sicherheitslücken überhaupt: SQL-Injection."
+    },
+    {
+      "type": "code",
+      "content": "def login(name, pw):   # UNSICHER!\n    sql = (f\"SELECT name FROM benutzer \"\n           f\"WHERE name = '{name}' \"\n           f\"AND pw = '{pw}'\")\n    return con.execute(sql).fetchone()\n\nprint(login(\"lea\", \"falsch\"))  # None\nprint(login(\"admin' --\", \"egal\"))\n# ('admin',)  -> ohne Passwort drin!"
+    },
+    {
+      "type": "text",
+      "content": "Was ist passiert? Die Eingabe wird Teil des SQL-Befehls. Das Hochkomma beendet den String, und -- leitet in SQL einen Kommentar ein. Die Passwortprüfung wird so einfach „weggeschnitten“. Mit Eingaben wie ' OR '1'='1 lassen sich auf dieselbe Art alle Datensätze abfragen."
+    },
+    {
+      "type": "code",
+      "content": "SELECT name FROM benutzer\nWHERE name = 'admin' --' AND pw = 'egal'\n--             ^^^^^^^^^^^^^^^^^^^^^^^^\n--             ab hier nur Kommentar"
+    },
+    {
+      "type": "text",
+      "content": "Die Lösung sind Platzhalter (Parameter). Im SQL steht ein ?, die Werte übergibst du getrennt als Tupel. Die Datenbank behandelt sie immer als Wert, nie als SQL-Code – Hochkommas oder -- in der Eingabe richten keinen Schaden an. Alternativ gibt es benannte Platzhalter wie :name mit einem Dictionary."
+    },
+    {
+      "type": "code",
+      "content": "def login(name, pw):   # sicher\n    sql = (\"SELECT name FROM benutzer \"\n           \"WHERE name = ? AND pw = ?\")\n    return con.execute(\n        sql, (name, pw)).fetchone()\n\nprint(login(\"admin' --\", \"egal\"))  # None\nprint(login(\"lea\", \"1234\"))  # ('lea',)\n\nr = con.execute(\n    \"SELECT pw FROM benutzer \"\n    \"WHERE name = :n\", {\"n\": \"lea\"})\nprint(r.fetchone())          # ('1234',)"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Bei nur einem Parameter fehlt der Beistrich – (name) ist kein Tupel, sondern nur ein String in Klammern. Richtig ist (name,). Außerdem gehen Platzhalter nur für Werte, nicht für Tabellen- oder Spaltennamen. Muss z. B. die Sortierspalte variabel sein, prüfst du sie gegen eine Liste erlaubter Namen (Whitelist)."
+    },
+    {
+      "type": "code",
+      "content": "ERLAUBT = {\"name\", \"klasse\"}\n\ndef sortiert(spalte):\n    if spalte not in ERLAUBT:\n        raise ValueError(\"ungültige Spalte\")\n    sql = (\"SELECT name FROM schueler \"\n           f\"ORDER BY {spalte}\")\n    return con.execute(sql).fetchall()\n\ndef finde(id_text):\n    sid = int(id_text)  # ValueError bei \"x\"\n    if sid <= 0:\n        raise ValueError(\"id muss > 0 sein\")\n    return con.execute(\n        \"SELECT name FROM schueler \"\n        \"WHERE id = ?\", (sid,)).fetchone()\n\nprint(finde(\"2\"))     # ('Tim',)\nprint(sortiert(\"name; DROP TABLE x\"))\n# ValueError: ungültige Spalte"
+    },
+    {
+      "type": "text",
+      "content": "Für viele Datensätze auf einmal gibt es executemany(sql, liste): Der Befehl wird für jedes Tupel der Liste ausgeführt – ebenfalls sicher mit Platzhaltern. Faustregel: Benutzereingaben gehören nie direkt in einen SQL-String. Zuerst validieren (Typ, Bereich, Whitelist), dann mit ? übergeben."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: SQL-Injection entsteht, wenn Eingaben per f-String oder + in SQL eingebaut werden. Schutz: Platzhalter ? (oder :name) und Werte getrennt als Tupel bzw. Dictionary übergeben, bei einem Wert (x,) nicht vergessen. Bezeichner wie Spaltennamen per Whitelist prüfen, Zahlen mit int() umwandeln und Bereiche kontrollieren."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Zeile ist sicher gegen SQL-Injection?",
+      "options": [
+        "con.execute(f\"SELECT * FROM s WHERE name = '{n}'\")",
+        "con.execute(\"SELECT * FROM s WHERE name = '\" + n + \"'\")",
+        "con.execute(\"SELECT * FROM s WHERE name = ?\", (n,))",
+        "con.execute(\"SELECT * FROM s WHERE name = '%s'\" % n)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur mit Platzhalter wird der Wert getrennt übergeben und nie als SQL-Code interpretiert. f-String, + und % bauen die Eingabe direkt in den SQL-Text ein."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import sqlite3\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE s(name, klasse)\")\ncon.execute(\"INSERT INTO s VALUES \"\n            \"('Lea','3A'), ('Tim','3B')\")\nk = \"' OR '1'='1\"\nsql = f\"SELECT * FROM s WHERE klasse = '{k}'\"\nprint(len(con.execute(sql).fetchall()))",
+      "options": [
+        "2",
+        "1",
+        "0",
+        "OperationalError"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das SQL lautet: ... WHERE klasse = '' OR '1'='1'. Die Bedingung '1'='1' ist immer wahr, daher werden beide Zeilen geliefert."
+    },
+    {
+      "question": "Finde den Fehler: Dieser Aufruf löst eine Exception aus. Warum?",
+      "code": "name = \"Ida\"\ncon.execute(\"SELECT * FROM s \"\n            \"WHERE name = ?\", (name))",
+      "options": [
+        "Das Fragezeichen muss in Hochkommas stehen: '?'",
+        "(name) ist kein Tupel, sondern ein String – der String hat 3 Zeichen, erwartet wird 1 Wert",
+        "fetchall darf nicht direkt nach execute stehen",
+        "Platzhalter funktionieren nur bei INSERT"
+      ],
+      "correctIndex": 1,
+      "explanation": "(\"Ida\") ist nur ein String in Klammern. sqlite3 behandelt ihn als Folge von 3 Zeichen und meldet einen ProgrammingError (falsche Anzahl an Parametern). Richtig: (name,)."
+    },
+    {
+      "question": "Die Sortierspalte einer Schülerliste soll vom Benutzer wählbar sein. Wie machst du das sicher?",
+      "options": [
+        "ORDER BY ? mit der Spalte als Parameter",
+        "Die Eingabe in Großbuchstaben umwandeln",
+        "Hochkommas aus der Eingabe entfernen und per f-String einbauen",
+        "Den Spaltennamen gegen eine Whitelist erlaubter Spalten prüfen und erst dann einbauen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Platzhalter gelten nur für Werte. ORDER BY ? würde nach einem konstanten String sortieren, nicht nach der Spalte. Bezeichner prüft man daher gegen eine Liste erlaubter Namen."
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "id": "pos-j3-python-graphen_pruefung",
+  "title": "Abschlussprüfung: Graphen & Graphalgorithmen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein ungerichteter Graph hat 5 Knoten und 6 Kanten. Wie groß ist die Summe aller Knotengrade?",
+      "options": [
+        "6",
+        "5",
+        "12",
+        "30"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jede Kante trägt zu genau zwei Knoten je 1 zum Grad bei. Die Gradsumme ist daher immer 2 · Kantenanzahl = 12."
+    },
+    {
+      "question": "Wie viele Einträge hat die Adjazenzmatrix eines Graphen mit 20 Knoten?",
+      "options": [
+        "40",
+        "400",
+        "20",
+        "190"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Matrix hat n × n = 20 × 20 = 400 Einträge – unabhängig davon, wie viele Kanten es gibt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "g = {\"A\": [\"B\", \"C\"],\n     \"B\": [\"A\"],\n     \"C\": [\"A\", \"D\"],\n     \"D\": [\"C\"]}\nn = sum(len(v) for v in g.values())\nprint(n // 2)",
+      "options": [
+        "3",
+        "4",
+        "2",
+        "6"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jede ungerichtete Kante steht zweimal in der Adjazenzliste (bei beiden Endknoten). 6 Einträge / 2 = 3 Kanten."
+    },
+    {
+      "question": "Wie speicherst du die gerichtete, gewichtete Kante „von Graz nach Wien, 200 km“ in einem dict von dicts?",
+      "options": [
+        "g[\"Wien\"][\"Graz\"] = 200",
+        "g[200] = (\"Graz\", \"Wien\")",
+        "g[\"Graz\"] = 200",
+        "g[\"Graz\"][\"Wien\"] = 200"
+      ],
+      "correctIndex": 3,
+      "explanation": "Äußerer Schlüssel = Startknoten, innerer Schlüssel = Zielknoten, Wert = Gewicht. Da die Kante gerichtet ist, wird sie nur in dieser Richtung eingetragen."
+    },
+    {
+      "question": "In welcher Reihenfolge besucht die BFS ab S die Knoten?",
+      "code": "q = {\"S\": [\"X\", \"Y\"],\n     \"X\": [\"S\", \"Z\"],\n     \"Y\": [\"S\", \"Z\"],\n     \"Z\": [\"X\", \"Y\"]}",
+      "options": [
+        "['S', 'X', 'Z', 'Y']",
+        "['S', 'Y', 'X', 'Z']",
+        "['S', 'X', 'Y', 'Z']",
+        "['S', 'Z', 'X', 'Y']"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst S, dann seine Nachbarn X und Y in Listenreihenfolge, zuletzt Z (zwei Kanten entfernt). Die DFS hätte dagegen S, X, Z, Y geliefert."
+    },
+    {
+      "question": "Du willst wissen, in wie viele voneinander getrennte Teile ein Netzwerk zerfällt. Welches Vorgehen ist richtig?",
+      "options": [
+        "Für jeden noch unbesuchten Knoten eine BFS/DFS starten und die Starts zählen",
+        "Die Anzahl der Kanten durch die Anzahl der Knoten teilen",
+        "Einmal Dijkstra vom ersten Knoten ausführen und die Knoten mit Distanz 0 zählen",
+        "Die Zeilen der Adjazenzmatrix zählen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jede Suche markiert genau eine Zusammenhangskomponente als besucht. Wie oft du eine neue Suche starten musst, ist die Anzahl der Komponenten."
+    },
+    {
+      "question": "Warum liefert die BFS in einem ungewichteten Graphen einen Weg mit möglichst wenigen Kanten?",
+      "options": [
+        "Weil sie die Nachbarn alphabetisch sortiert",
+        "Weil sie Knoten in der Reihenfolge ihres Abstands zum Start entdeckt",
+        "Weil sie rekursiv arbeitet",
+        "Weil sie jeden Knoten mehrmals besucht"
+      ],
+      "correctIndex": 1,
+      "explanation": "Durch die Queue werden zuerst alle Knoten mit Abstand 1, dann alle mit Abstand 2 usw. bearbeitet. Ein Knoten wird also zum ersten Mal über einen kürzesten Weg erreicht."
+    },
+    {
+      "question": "Wie viele Minuten dauert laut Dijkstra die schnellste Fahrt von A nach D?",
+      "code": "g = {\"A\": {\"B\": 7, \"C\": 2},\n     \"B\": {\"D\": 1},\n     \"C\": {\"B\": 3, \"D\": 8},\n     \"D\": {}}",
+      "options": [
+        "8",
+        "7",
+        "10",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "A→C kostet 2, C→B 3 – B ist also über C mit 5 schneller als direkt mit 7. Dann B→D 1, insgesamt 6. Der direkte Weg C→D wäre 2 + 8 = 10."
+    },
+    {
+      "question": "Finde den Fehler: Ein Schüler legt in seiner Dijkstra-Implementierung Tupel (knoten, distanz) in den Heap. Was ist die Folge?",
+      "options": [
+        "Python verbietet Tupel in heapq",
+        "Es ändert sich nichts, heapq sortiert automatisch nach Zahlen",
+        "Der Heap entnimmt Knoten nach ihrem Namen statt nach der kleinsten Distanz, die Ergebnisse können falsch sein",
+        "Es wird sofort ein KeyError ausgelöst"
+      ],
+      "correctIndex": 2,
+      "explanation": "Tupel werden elementweise verglichen, beginnend mit dem ersten Element. Steht dort der Name, wird alphabetisch entnommen – die Grundannahme von Dijkstra (kleinste Distanz zuerst) ist verletzt."
+    },
+    {
+      "question": "Welche Aussage über Dijkstra und Breitensuche stimmt?",
+      "options": [
+        "Dijkstra funktioniert nur in ungerichteten Graphen",
+        "Bei lauter Kantengewichten 1 liefert Dijkstra dieselben Distanzen wie die BFS (Anzahl der Kanten)",
+        "Die BFS berücksichtigt Kantengewichte, Dijkstra nicht",
+        "Dijkstra benötigt eine Adjazenzmatrix"
+      ],
+      "correctIndex": 1,
+      "explanation": "Sind alle Gewichte 1, ist die Weglänge gleich der Kantenanzahl – genau das, was die BFS minimiert. Dijkstra ist also eine Verallgemeinerung der BFS für gewichtete Graphen."
+    }
+  ]
+}

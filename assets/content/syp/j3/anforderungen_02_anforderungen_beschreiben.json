@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-anforderungen_02_anforderungen_beschreiben",
+  "title": "Anforderungen beschreiben",
+  "summary": "Funktionale und nicht-funktionale Anforderungen, User Stories mit Akzeptanzkriterien, Lasten- und Pflichtenheft sowie Use-Case-Diagramme.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Funktionale Anforderungen beschreiben, was das System tun soll: Funktionen, Daten und Verhalten, z. B. „Die Trainerin kann ein Training absagen.“ Nicht-funktionale Anforderungen beschreiben, wie gut oder unter welchen Bedingungen es das tun soll: Antwortzeiten, Sicherheit, Benutzbarkeit, Plattformen oder rechtliche Vorgaben wie die DSGVO."
+    },
+    {
+      "type": "code",
+      "content": "F1  Spieler:innen können sich\n    für ein Training anmelden.\nF2  Trainer:innen sehen die\n    Teilnehmerliste.\nNF1 Die Liste lädt bei mobiler\n    Verbindung in unter 2 s.\nNF2 Die App läuft auf Android\n    und iOS.\nNF3 Personendaten werden\n    DSGVO-konform gespeichert."
+    },
+    {
+      "type": "text",
+      "content": "Gute Anforderungen sind eindeutig, vollständig, prüfbar, realisierbar und notwendig. „Die App soll schnell sein“ ist nicht prüfbar – „Die Liste lädt in unter 2 Sekunden“ schon. Hilfreich ist eine Satzschablone mit Verbindlichkeit: „Das System muss …“ (verpflichtend), „soll …“ (wünschenswert), „kann …“ (optional). Typischer Fehler: Lösungen statt Anforderungen hinschreiben („Wir verwenden Firebase“) – das gehört in den Entwurf."
+    },
+    {
+      "type": "text",
+      "content": "In agilen Projekten formuliert man Anforderungen oft als User Story: „Als <Rolle> möchte ich <Ziel>, damit <Nutzen>.“ Eine Story ist kurz, aus Sicht der Benutzer:innen geschrieben und eher eine Einladung zum Gespräch als eine vollständige Spezifikation. Gute Stories erfüllen INVEST: Independent (unabhängig), Negotiable (verhandelbar), Valuable (wertvoll), Estimable (schätzbar), Small (klein), Testable (testbar)."
+    },
+    {
+      "type": "code",
+      "content": "Als Trainerin möchte ich ein\nTraining absagen, damit niemand\numsonst zum Platz kommt.\n\nAkzeptanzkriterien:\nGegeben 12 Kinder sind angemeldet\nWenn    ich das Training absage\nDann    erhalten alle 12 eine\n        Push-Nachricht\nUnd     das Training wird als\n        „abgesagt“ angezeigt"
+    },
+    {
+      "type": "text",
+      "content": "Akzeptanzkriterien legen fest, wann eine Story fachlich erfüllt ist. Die Form „Gegeben – Wenn – Dann“ (Given – When – Then) macht sie direkt in Testfälle übersetzbar. Akzeptanzkriterien gelten nur für diese eine Story; die Definition of Done gilt dagegen für alle Einträge. Typische Fehler: Der Nutzen fehlt („damit …“), oder die Story ist aus Entwicklersicht geschrieben („Als Entwickler möchte ich eine Tabelle anlegen …“)."
+    },
+    {
+      "type": "text",
+      "content": "Lastenheft und Pflichtenheft: Das Lastenheft wird vom Auftraggeber erstellt und beschreibt, was gebraucht wird und wofür – die Anforderungen aus Kundensicht. Das Pflichtenheft erstellt der Auftragnehmer auf Basis des Lastenhefts; es beschreibt, wie und womit die Anforderungen umgesetzt werden, und ist oft Vertragsgrundlage. Merksatz: Lastenheft = Was und Wofür, Pflichtenheft = Wie und Womit. Bei der Diplomarbeit liefert der Verein (oft mit eurer Hilfe) das Lastenheft, euer Team schreibt das Pflichtenheft."
+    },
+    {
+      "type": "text",
+      "content": "Ein Use-Case-Diagramm (UML) zeigt auf einen Blick, wer was mit dem System machen kann. Akteure (Strichmännchen) stehen außerhalb der Systemgrenze (Rechteck), Anwendungsfälle (Ellipsen) innerhalb. Mit <<include>> wird ein Anwendungsfall eingebunden, der immer mit ausgeführt wird. Mit <<extend>> wird ein Anwendungsfall beschrieben, der einen anderen nur unter bestimmten Bedingungen erweitert."
+    },
+    {
+      "type": "code",
+      "content": "     +------ Vereins-App -------+\n O   |                          |\n/|\\--|--(Training anmelden)     |\n/ \\  |                          |\nSpieler                         |\n     |                          |\n O   |                          |\n/|\\--|--(Training absagen)      |\n/ \\  |        :                 |\nTrainer       : <<include>>     |\n     |        v                 |\n     |  (Teilnehmer             |\n     |   benachrichtigen)       |\n     +--------------------------+"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Funktionale Anforderungen sagen, was das System tut, nicht-funktionale, wie gut. Anforderungen müssen prüfbar sein. User Stories folgen „Als … möchte ich …, damit …“ und bekommen Akzeptanzkriterien. Das Lastenheft schreibt der Auftraggeber (Was/Wofür), das Pflichtenheft der Auftragnehmer (Wie/Womit). Use-Case-Diagramme zeigen Akteure und Anwendungsfälle."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Anforderung ist nicht-funktional?",
+      "options": [
+        "Spieler:innen können ihr Profilbild ändern",
+        "Die App startet auf einem Mittelklasse-Handy in unter 3 Sekunden",
+        "Trainer:innen können Trainings anlegen",
+        "Die App zeigt alle Spiele der Saison an"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Startzeit beschreibt eine Qualitätseigenschaft (Leistung), keine Funktion. Die anderen drei beschreiben, was das System tut."
+    },
+    {
+      "question": "Welche User Story ist vollständig nach dem Muster formuliert?",
+      "options": [
+        "Login-Seite mit E-Mail und Passwort bauen",
+        "Als Entwickler möchte ich eine Datenbanktabelle anlegen",
+        "Die App soll benutzerfreundlich sein",
+        "Als Elternteil möchte ich Abwesenheiten melden, damit der Trainer planen kann"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur diese Story enthält Rolle (Elternteil), Ziel (Abwesenheit melden) und Nutzen (Trainer kann planen) aus Sicht der Benutzer:innen."
+    },
+    {
+      "question": "Wer erstellt üblicherweise das Pflichtenheft?",
+      "options": [
+        "Der Auftragnehmer",
+        "Der Auftraggeber",
+        "Die Endbenutzer:innen",
+        "Die Schulleitung"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Pflichtenheft (Wie und Womit) schreibt der Auftragnehmer auf Basis des Lastenhefts, das vom Auftraggeber kommt."
+    },
+    {
+      "question": "Was bedeutet <<include>> zwischen „Training absagen“ und „Teilnehmer benachrichtigen“?",
+      "options": [
+        "Benachrichtigen passiert nur manchmal, unter einer Bedingung",
+        "Benachrichtigen ist ein eigener Akteur",
+        "Benachrichtigen wird bei jedem Absagen mit ausgeführt",
+        "Absagen ist eine Spezialisierung von Benachrichtigen"
+      ],
+      "correctIndex": 2,
+      "explanation": "<<include>> bindet einen Anwendungsfall ein, der immer Teil des Basis-Anwendungsfalls ist. Für „nur unter Bedingung“ verwendet man <<extend>>."
+    }
+  ]
+}

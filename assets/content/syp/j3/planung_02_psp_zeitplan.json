@@ -1,0 +1,94 @@
+{
+  "id": "syp-j3-planung_02_psp_zeitplan",
+  "title": "Projektstrukturplan, Termine und Netzplan",
+  "summary": "Vom Projektstrukturplan über Arbeitspakete und Gantt-Diagramm zum Netzplan mit kritischem Pfad.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Der Projektstrukturplan (PSP) zerlegt das ganze Projekt hierarchisch in Teilaufgaben, bis zu den Arbeitspaketen auf der untersten Ebene. Er enthält alles, was zu tun ist – aber noch keine Reihenfolge und keine Termine. Was nicht im PSP steht, wird auch nicht gemacht. Gliedern kann man nach Phasen, nach Objekten (Teilen des Produkts) oder nach Funktionen."
+    },
+    {
+      "type": "code",
+      "content": "1 Bestell-App\n├─ 1.1 Analyse\n│  ├─ 1.1.1 Anforderungen (A)\n│  └─ 1.1.2 UI-Design (B)\n├─ 1.2 Umsetzung\n│  ├─ 1.2.1 DB-Entwurf (C)\n│  ├─ 1.2.2 Backend (D)\n│  └─ 1.2.3 Frontend (E)\n└─ 1.3 Abschluss\n   ├─ 1.3.1 Testen (F)\n   └─ 1.3.2 Übergabe (G)"
+    },
+    {
+      "type": "text",
+      "content": "Ein Arbeitspaket ist eine abgeschlossene Aufgabe mit genau einer verantwortlichen Person, einem klaren Ergebnis, einem geschätzten Aufwand und Terminen. Unterscheide Aufwand und Dauer: Ein Paket mit 4 Personentagen Aufwand dauert bei zwei Personen etwa 2 Tage. Typischer Fehler: Pakete wie „Programmieren“ – viel zu groß und nicht überprüfbar."
+    },
+    {
+      "type": "text",
+      "content": "Jetzt kommt die Reihenfolge ins Spiel. In einer Vorgangsliste legst du für jedes Arbeitspaket Dauer und Vorgänger fest. Daraus entsteht der Balkenplan (Gantt-Diagramm): Jede Zeile ist ein Vorgang, die Länge des Balkens zeigt die Dauer. Meilensteine markierst du als Punkte, z. B. „App übergeben“ am Ende von Tag 17."
+    },
+    {
+      "type": "code",
+      "content": "Vorg. Dauer Vorgänger\nA     3     –\nB     4     A\nC     2     A\nD     5     C\nE     6     B\nF     3     D, E\nG     1     F\n\nTag  0    5    10   15\n     |    |    |    |\nA    ###..............\nB    ...####..........\nC    ...##............\nD    .....#####.......\nE    .......######....\nF    .............###.\nG    ................#"
+    },
+    {
+      "type": "text",
+      "content": "Der Netzplan zeigt die Abhängigkeiten genauer. Für jeden Vorgang berechnest du vier Zeitpunkte. Vorwärtsrechnung: frühester Anfang FAZ = größter FEZ aller Vorgänger (Start bei 0), frühestes Ende FEZ = FAZ + Dauer. Rückwärtsrechnung vom Projektende: spätestes Ende SEZ = kleinster SAZ aller Nachfolger, spätester Anfang SAZ = SEZ − Dauer."
+    },
+    {
+      "type": "code",
+      "content": "# Vorgänge: Dauer (Tage), Vorgänger\nv = {\n    \"A\": (3, []),\n    \"B\": (4, [\"A\"]),\n    \"C\": (2, [\"A\"]),\n    \"D\": (5, [\"C\"]),\n    \"E\": (6, [\"B\"]),\n    \"F\": (3, [\"D\", \"E\"]),\n    \"G\": (1, [\"F\"]),\n}\n\n# Vorwärtsrechnung\nfaz, fez = {}, {}\nfor k, (d, vor) in v.items():\n    faz[k] = max((fez[x] for x in vor),\n                 default=0)\n    fez[k] = faz[k] + d\n\nende = max(fez.values())\n\n# Rückwärtsrechnung\nsaz, sez = {}, {}\nfor k in reversed(list(v)):\n    d = v[k][0]\n    nf = [n for n in v if k in v[n][1]]\n    sez[k] = min((saz[n] for n in nf),\n                 default=ende)\n    saz[k] = sez[k] - d\n\nfor k in v:\n    gp = saz[k] - faz[k]\n    print(k, faz[k], fez[k],\n          saz[k], sez[k], gp)\nprint(\"Projektdauer:\", ende)"
+    },
+    {
+      "type": "code",
+      "content": "Ausgabe (FAZ FEZ SAZ SEZ GP):\nA 0 3 0 3 0\nB 3 7 3 7 0\nC 3 5 6 8 3\nD 5 10 8 13 3\nE 7 13 7 13 0\nF 13 16 13 16 0\nG 16 17 16 17 0\nProjektdauer: 17"
+    },
+    {
+      "type": "text",
+      "content": "Der Gesamtpuffer GP = SAZ − FAZ sagt, wie weit sich ein Vorgang verschieben darf, ohne das Projektende zu gefährden. Vorgänge mit GP = 0 bilden den kritischen Pfad, hier A–B–E–F–G. Verzögert sich einer davon um einen Tag, verschiebt sich das ganze Projekt. Der freie Puffer FP = kleinster FAZ der Nachfolger − eigener FEZ sagt, wie weit sich ein Vorgang verschieben darf, ohne den Nachfolger zu verschieben. C hat GP 3, aber FP 0 (FAZ von D = 5 = FEZ von C): Verschiebt sich C, verschiebt sich D mit – das Projektende noch nicht."
+    },
+    {
+      "type": "text",
+      "content": "Zum Schluss prüfst du die Ressourcen: Wer arbeitet wann woran? Wenn Emre gleichzeitig Backend (D) und Frontend (E) machen soll, ist er überlastet. Mit dem Puffer von D kannst du das Backend verschieben, ohne das Ende zu gefährden. Zusammenfassung: PSP = was, Vorgangsliste und Gantt = wann, Netzplan = Abhängigkeiten, kritischer Pfad und Puffer."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie lange dauert dieses Projekt, und welcher Vorgang liegt NICHT auf dem kritischen Pfad?",
+      "code": "Vorg. Dauer Vorgänger\nA     4     –\nB     2     A\nC     3     A\nD     2     B, C",
+      "options": [
+        "9 Tage, B liegt nicht auf dem kritischen Pfad",
+        "11 Tage, C liegt nicht auf dem kritischen Pfad",
+        "9 Tage, C liegt nicht auf dem kritischen Pfad",
+        "7 Tage, D liegt nicht auf dem kritischen Pfad"
+      ],
+      "correctIndex": 0,
+      "explanation": "A endet bei 4. B endet bei 6, C bei 7. D beginnt beim größeren Wert 7 und endet bei 9. Kritischer Pfad: A–C–D. B hat einen Gesamtpuffer von 1 Tag."
+    },
+    {
+      "question": "Wie groß ist der Gesamtpuffer eines Vorgangs mit FAZ = 4, FEZ = 6, SAZ = 5, SEZ = 7?",
+      "options": [
+        "0",
+        "2",
+        "1",
+        "3"
+      ],
+      "correctIndex": 2,
+      "explanation": "GP = SAZ − FAZ = 5 − 4 = 1. Der Vorgang darf um einen Tag später beginnen, ohne das Projektende zu verschieben."
+    },
+    {
+      "question": "Was enthält der Projektstrukturplan NICHT?",
+      "options": [
+        "Arbeitspakete",
+        "Die Reihenfolge und die Termine der Vorgänge",
+        "Teilaufgaben",
+        "Eine hierarchische Gliederung"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der PSP zeigt nur, WAS zu tun ist. Reihenfolge und Termine kommen erst mit Vorgangsliste, Gantt-Diagramm und Netzplan dazu."
+    },
+    {
+      "question": "Ein Arbeitspaket hat 6 Personentage Aufwand. Drei Personen arbeiten gleichzeitig voll daran. Wie lange dauert es ungefähr?",
+      "options": [
+        "6 Tage",
+        "18 Tage",
+        "3 Tage",
+        "2 Tage"
+      ],
+      "correctIndex": 3,
+      "explanation": "Dauer ≈ Aufwand ÷ Anzahl Personen = 6 ÷ 3 = 2 Tage. In der Praxis kommt etwas Abstimmungsaufwand dazu."
+    }
+  ]
+}

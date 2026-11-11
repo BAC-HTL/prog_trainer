@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-graphen_01_graphen_speichern",
+  "title": "Graphen speichern",
+  "summary": "Grundbegriffe von Graphen und wie du sie als Adjazenzmatrix oder Adjazenzliste in C# speicherst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Graph besteht aus Knoten (Ecken) und Kanten, die Knoten verbinden. Graphen stecken überall: Im Öffi-Netz sind die Stationen Knoten und die direkten Verbindungen Kanten. Bei einer Straßenkarte sind es Orte und Straßen, im Schulnetzwerk Router und Leitungen. Die Bäume aus dem 2. Jahrgang sind übrigens spezielle Graphen: zusammenhängend und ohne Kreise."
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Begriffe:\n• Ungerichtet: Eine Kante gilt in beide Richtungen (Straße mit Gegenverkehr).\n• Gerichtet: Eine Kante hat eine Richtung (Einbahn, „folgt“ auf Social Media).\n• Gewichtet: Jede Kante hat einen Wert, z. B. km oder Minuten.\n• Nachbarn: Knoten, die direkt durch eine Kante verbunden sind.\n• Grad: Anzahl der Kanten an einem Knoten. Bei gerichteten Graphen unterscheidet man Eingangs- und Ausgangsgrad.\n• Weg: Folge von Knoten, die jeweils durch Kanten verbunden sind. Ein Kreis (Zyklus) ist ein Weg, der wieder am Start endet.\n• Zusammenhängend: Von jedem Knoten kommt man zu jedem anderen."
+    },
+    {
+      "type": "text",
+      "content": "Die erste Speicherform ist die Adjazenzmatrix: ein n×n-Array für n Knoten. m[i, j] ist 1, wenn es eine Kante von Knoten i zu Knoten j gibt, sonst 0. Bei einem gewichteten Graphen steht statt der 1 das Gewicht. In einem ungerichteten Graphen ist die Matrix symmetrisch: m[i, j] == m[j, i].\n\nVorteil: Ob eine Kante existiert, siehst du mit einem einzigen Zugriff. Nachteil: Die Matrix braucht n² Einträge, auch wenn es kaum Kanten gibt."
+    },
+    {
+      "type": "code",
+      "content": "//  A --- B\n//   \\   /\n//    \\ /\n//     C --- D\nstring[] namen = { \"A\", \"B\", \"C\", \"D\" };\nint[,] m = new int[4, 4];\n\nvoid Verbinde(int i, int j)\n{\n    m[i, j] = 1;\n    m[j, i] = 1;   // ungerichtet!\n}\nVerbinde(0, 1); Verbinde(0, 2);\nVerbinde(1, 2); Verbinde(2, 3);\n\n//    A B C D\n// A: 0 1 1 0\n// B: 1 0 1 0\n// C: 1 1 0 1\n// D: 0 0 1 0\n\nint grad = 0;\nfor (int j = 0; j < 4; j++)\n    grad += m[2, j];\nConsole.WriteLine($\"Grad C: {grad}\");\n// Grad C: 3"
+    },
+    {
+      "type": "text",
+      "content": "Die zweite Speicherform ist die Adjazenzliste: Zu jedem Knoten merkst du dir die Liste seiner Nachbarn. In C# passt dafür ein Dictionary<string, List<string>> – so kannst du Knoten direkt mit Namen ansprechen statt mit Indizes. Der Speicher wächst mit Knoten + Kanten. Das ist ideal für „dünne“ Graphen wie ein Öffi-Netz, in dem jede Station nur wenige direkte Nachbarn hat."
+    },
+    {
+      "type": "code",
+      "content": "var netz =\n    new Dictionary<string, List<string>>();\n\nvoid Kante(string a, string b)\n{\n    if (!netz.ContainsKey(a))\n        netz[a] = new List<string>();\n    if (!netz.ContainsKey(b))\n        netz[b] = new List<string>();\n    netz[a].Add(b);\n    netz[b].Add(a);\n}\n\nKante(\"Bahnhof\", \"Hauptplatz\");\nKante(\"Bahnhof\", \"Schule\");\nKante(\"Hauptplatz\", \"Schule\");\nKante(\"Hauptplatz\", \"Spital\");\nKante(\"Schule\", \"Freibad\");\n\nforeach (var (st, nb) in netz)\n    Console.WriteLine(\n        $\"{st}: {string.Join(\", \", nb)}\");\n// Bahnhof: Hauptplatz, Schule\n// Hauptplatz: Bahnhof, Schule, Spital\n// Schule: Bahnhof, Hauptplatz, Freibad\n// Spital: Hauptplatz\n// Freibad: Schule"
+    },
+    {
+      "type": "text",
+      "content": "Eine nützliche Kontrolle: In einem ungerichteten Graphen ist die Summe aller Grade doppelt so groß wie die Anzahl der Kanten, weil jede Kante zwei Enden hat. Im Öffi-Beispiel: 5 Kanten, Summe der Listenlängen 2 + 3 + 3 + 1 + 1 = 10.\n\nTypische Fehler:\n• Eine ungerichtete Kante nur in eine Richtung eintragen – dann kennt B zwar A nicht, A aber B.\n• Einen Knoten nicht anlegen und dann mit netz[\"X\"] zugreifen – das führt zu einer KeyNotFoundException."
+    },
+    {
+      "type": "text",
+      "content": "Bei gewichteten Graphen speicherst du in der Liste nicht nur den Nachbarn, sondern auch das Gewicht. Ein Tupel (string Ziel, int Km) ist dafür praktisch. Bei gerichteten Graphen trägst du die Kante nur beim Startknoten ein."
+    },
+    {
+      "type": "code",
+      "content": "var strassen = new Dictionary<string,\n    List<(string Ziel, int Km)>>\n{\n    [\"A\"] = new() { (\"B\", 7), (\"C\", 3) },\n};\n\nforeach (var (ziel, km) in strassen[\"A\"])\n    Console.WriteLine($\"A -> {ziel}: {km} km\");\n// A -> B: 7 km\n// A -> C: 3 km"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Graph hat Knoten und Kanten, die gerichtet und/oder gewichtet sein können. Die Adjazenzmatrix (int[,]) ist gut für kleine oder sehr dichte Graphen und schnelle Kantenabfragen, braucht aber n² Platz. Die Adjazenzliste (Dictionary<string, List<…>>) spart Platz und liefert schnell alle Nachbarn eines Knotens – genau das brauchen Breiten- und Tiefensuche in der nächsten Lektion."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein ungerichteter Graph mit 4 Knoten hat 4 Kanten und wird als Adjazenzmatrix (0/1) gespeichert. Wie viele Einsen stehen in der Matrix?",
+      "options": [
+        "8",
+        "4",
+        "16",
+        "6"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jede ungerichtete Kante wird zweimal eingetragen: m[i, j] und m[j, i]. 4 Kanten ergeben also 8 Einsen."
+    },
+    {
+      "question": "Was gibt dieser Code aus? (Der Graph ist gerichtet: „folgt“.)",
+      "code": "var follows =\n    new Dictionary<string, List<string>>\n{\n    [\"Anna\"] = new() { \"Ben\", \"Cem\" },\n    [\"Ben\"] = new() { \"Cem\" },\n    [\"Cem\"] = new() { \"Anna\" },\n};\nConsole.WriteLine(follows.Values\n    .Count(l => l.Contains(\"Cem\")));",
+      "options": [
+        "0",
+        "1",
+        "3",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Gezählt wird, in wie vielen Listen \"Cem\" vorkommt – das ist der Eingangsgrad. Anna und Ben folgen Cem, also 2. Der Ausgangsgrad von Cem (follows[\"Cem\"].Count) wäre 1."
+    },
+    {
+      "question": "Finde den Fehler: Der Graph soll ungerichtet sein. Nach Kante(\"A\", \"B\") ist netz[\"B\"] aber leer. Warum?",
+      "code": "void Kante(string a, string b)\n{\n    if (!netz.ContainsKey(a))\n        netz[a] = new List<string>();\n    if (!netz.ContainsKey(b))\n        netz[b] = new List<string>();\n    netz[a].Add(b);\n}",
+      "options": [
+        "Dictionary kann keine Listen speichern",
+        "Die Liste für b wird zweimal angelegt",
+        "Die Kante wird nur bei a eingetragen – netz[b].Add(a) fehlt",
+        "ContainsKey prüft den falschen Knoten"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei einem ungerichteten Graphen muss jede Kante bei beiden Knoten eingetragen werden. Hier fehlt die Gegenrichtung netz[b].Add(a)."
+    },
+    {
+      "question": "Ein Öffi-Netz hat 1000 Stationen. Wie viele Einträge hat seine Adjazenzmatrix?",
+      "options": [
+        "3 000",
+        "1 000 000",
+        "1 000",
+        "2 000"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine Adjazenzmatrix hat n × n Einträge: 1000 · 1000 = 1 000 000 – egal, wie viele Kanten es gibt. Bei durchschnittlich 3 Nachbarn pro Station hätte die Adjazenzliste nur rund 3000 Listeneinträge."
+    }
+  ]
+}

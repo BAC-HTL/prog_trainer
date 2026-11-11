@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-pm_01_projektbegriff",
+  "title": "Was ist ein Projekt?",
+  "summary": "Projektmerkmale, magisches Dreieck, Projektarten und der Unterschied zwischen Projekt, Programm und Portfolio.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ab dem 3. Jahrgang kommt das Fach SYP (Systemplanung und Projektentwicklung) dazu. Spätestens bei der Diplomarbeit arbeitest du ein Jahr lang im Team an einem Projekt. Damit das klappt, brauchst du Projektmanagement (PM): Methoden, um ein Vorhaben zu planen, zu steuern und sauber abzuschließen."
+    },
+    {
+      "type": "text",
+      "content": "Nicht jede Aufgabe ist ein Projekt. Ein Projekt ist ein Vorhaben, das einmalig ist und ein klares Ziel hat. Die DIN 69901 beschreibt es als Vorhaben, das „im Wesentlichen durch Einmaligkeit der Bedingungen in ihrer Gesamtheit gekennzeichnet ist“. Typische Merkmale siehst du unten."
+    },
+    {
+      "type": "code",
+      "content": "Merkmale eines Projekts\n------------------------\n- einmalig, neuartig\n- zeitlich befristet\n  (fixer Start und fixes Ende)\n- klares Ziel / Ergebnis\n- begrenzte Ressourcen\n  (Geld, Personal, Zeit)\n- komplex, mehrere Beteiligte\n- Risiko: Erfolg nicht sicher\n- eigene Projektorganisation"
+    },
+    {
+      "type": "text",
+      "content": "Gegenstück zum Projekt ist die Routinetätigkeit (Linientätigkeit): Sie wiederholt sich laufend und ist gut eingespielt. Die wöchentliche Supplierplanung an der Schule ist Routine. Die Organisation des Maturaballs dagegen ist ein Projekt: einmalig für deinen Jahrgang, mit festem Termin, Budget und vielen Beteiligten. Typischer Fehler: jede kleine Aufgabe „Projekt“ zu nennen – „Hausübung machen“ ist kein Projekt."
+    },
+    {
+      "type": "text",
+      "content": "Jedes Projekt bewegt sich im magischen Dreieck aus Leistung (Umfang und Qualität), Zeit (Termine) und Kosten (Ressourcen). Die drei Größen hängen zusammen: Willst du mehr Leistung, brauchst du mehr Zeit oder mehr Geld. Wird der Termin vorverlegt, musst du Umfang streichen oder mehr Leute einsetzen. „Magisch“ heißt es, weil man nie alle drei gleichzeitig optimieren kann."
+    },
+    {
+      "type": "code",
+      "content": "        Leistung\n     (Umfang/Qualität)\n           /\\\n          /  \\\n         /    \\\n        / Ziel \\\n       /        \\\n      /__________\\\n   Zeit          Kosten\n (Termine)    (Ressourcen)"
+    },
+    {
+      "type": "text",
+      "content": "Projekte lassen sich nach verschiedenen Kriterien einteilen. Nach dem Inhalt: Software- bzw. IT-Projekte (App für einen Kunden), Organisationsprojekte (neues Anmeldesystem für Schularbeiten), Veranstaltungsprojekte (Maturaball, Tag der offenen Tür), Investitionsprojekte (neuer EDV-Saal) oder Forschungs- und Entwicklungsprojekte. Nach dem Auftraggeber: interne Projekte (für die eigene Organisation) und externe Projekte (für einen Kunden). Nach der Größe: Klein-, Mittel- und Großprojekte."
+    },
+    {
+      "type": "text",
+      "content": "Eine verbreitete Einteilung (nach Boos und Heitger) schaut auf zwei Fragen: Ist die Aufgabe klar (geschlossen) oder offen? Ist die soziale Komplexität – also wie viele Gruppen betroffen sind und wie sehr sie mitziehen müssen – gering oder hoch? Daraus ergeben sich vier Projektarten."
+    },
+    {
+      "type": "code",
+      "content": "            soziale Komplexität\n             gering    | hoch\n          -------------+------------\ngeschlos- | Standard-  | Akzeptanz-\nsene Auf- | projekt    | projekt\ngabe      |            |\n----------+------------+------------\noffene    | Potenzial- | Pionier-\nAufgabe   | projekt    | projekt"
+    },
+    {
+      "type": "text",
+      "content": "Mehrere Projekte können zusammengehören. Ein Programm ist eine befristete Gruppe von Projekten mit einem gemeinsamen übergeordneten Ziel – etwa „Digitale Schule“ mit den Projekten WLAN-Ausbau, Lernplattform und Tablet-Klassen. Das Portfolio ist die Gesamtheit aller Projekte und Programme einer Organisation. Es ist dauerhaft und dient dazu, Projekte zu priorisieren und Ressourcen zu verteilen. Zusammenfassung: Projekt = einmalig, befristet, zielorientiert; magisches Dreieck = Leistung, Zeit, Kosten; Programm = zusammengehörige Projekte; Portfolio = alle Projekte einer Organisation."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Vorhaben ist am ehesten ein Projekt?",
+      "options": [
+        "Die wöchentliche Supplierplanung der Schule",
+        "Die tägliche Datensicherung des Schulservers",
+        "Die Entwicklung einer Bestell-App für eine Bäckerei bis Ende März",
+        "Das monatliche Ausdrucken der Fehlstundenliste"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die App ist einmalig, hat ein klares Ziel, einen festen Endtermin und begrenzte Ressourcen. Die anderen Tätigkeiten wiederholen sich regelmäßig – das ist Routine."
+    },
+    {
+      "question": "Beim Maturaball wird der Termin um zwei Wochen vorverlegt. Was folgt laut magischem Dreieck?",
+      "options": [
+        "Nichts – Termine beeinflussen Leistung und Kosten nicht",
+        "Entweder mehr Ressourcen (Kosten) einsetzen oder den Umfang (Leistung) reduzieren",
+        "Das Budget sinkt automatisch",
+        "Die Qualität steigt, weil weniger Zeit bleibt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zeit, Kosten und Leistung hängen zusammen. Weniger Zeit muss durch mehr Ressourcen oder weniger Umfang ausgeglichen werden."
+    },
+    {
+      "question": "Die Schule startet „Digitale Schule“ mit den Projekten WLAN-Ausbau, Lernplattform und Tablet-Klassen. Was ist „Digitale Schule“?",
+      "options": [
+        "Ein Portfolio",
+        "Ein Arbeitspaket",
+        "Eine Routinetätigkeit",
+        "Ein Programm"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Programm fasst mehrere zusammengehörige Projekte mit einem gemeinsamen übergeordneten Ziel zusammen und ist befristet. Das Portfolio wären alle Projekte und Programme der Schule."
+    },
+    {
+      "question": "Ein Projekt hat eine klar definierte Aufgabe, betrifft aber viele Gruppen, die überzeugt werden müssen (z. B. neue Handyregeln für die ganze Schule). Welche Projektart nach Boos/Heitger ist das?",
+      "options": [
+        "Akzeptanzprojekt",
+        "Standardprojekt",
+        "Potenzialprojekt",
+        "Pionierprojekt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Geschlossene (klare) Aufgabe plus hohe soziale Komplexität ergibt ein Akzeptanzprojekt – die Hauptarbeit liegt darin, die Betroffenen mitzunehmen."
+    }
+  ]
+}
