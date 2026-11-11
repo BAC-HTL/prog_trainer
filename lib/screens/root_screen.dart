@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../app_services.dart';
-import '../runner/webview_runner.dart';
+import '../runner/platform_runners.dart';
 import 'achievements_screen.dart';
 import 'challenges_screen.dart';
 import 'game_screen.dart';
@@ -26,7 +26,7 @@ class _RootScreenState extends State<RootScreen> {
     final services = AppServices.of(context);
     final runners = [
       for (final r in ['python', 'csharp']) services.runnerFor(r),
-    ].whereType<WebViewRunner>();
+    ];
     return Scaffold(
       appBar: AppBar(
         title: Text(_titles[_tab]),
@@ -53,8 +53,7 @@ class _RootScreenState extends State<RootScreen> {
               ],
             ),
           ),
-          for (final r in runners)
-            Positioned(left: 0, top: 0, child: RuntimeHost(runner: r)),
+          ...runtimeHosts(runners),
         ],
       ),
       bottomNavigationBar: NavigationBar(

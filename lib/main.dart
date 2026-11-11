@@ -4,17 +4,14 @@ import 'app_services.dart';
 import 'data/content_repository.dart';
 import 'data/progress_store.dart';
 import 'runner/code_runner.dart';
-import 'runner/webview_runner.dart';
+import 'runner/platform_runners.dart';
 import 'screens/root_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final progress = await ProgressStore.load();
-  // Beide Sprachen laufen direkt am Handy – ohne Server, ohne Anmeldung.
-  final runners = <String, CodeRunner>{
-    'python': WebViewRunner.python(),
-    'csharp': WebViewRunner.csharp(),
-  };
+  // Beide Sprachen laufen direkt am Gerät – ohne Server, ohne Anmeldung.
+  final runners = createRunners();
 
   runApp(ProgTrainerApp(
     repository: ContentRepository(),

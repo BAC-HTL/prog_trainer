@@ -197,12 +197,7 @@ class ProgressStore extends ChangeNotifier {
   }
 
   Future<void> resetProgress() async {
-    _completedLessons.clear();
-    _exams.clear();
-    _solved.clear();
-    _points.clear();
-    _achievements.clear();
-    _missions.clear();
+    _clear();
     await _prefs.remove(_progressKey);
     notifyListeners();
   }
@@ -221,7 +216,11 @@ class ProgressStore extends ChangeNotifier {
 
   Future<void> _save() async {
     _checkAchievements();
-    final data = {
+    await _prefs.setString(_progressKey, jsonEncode(_data()));
+    notifyListeners();
+  }
+
+  Map<String, dynamic> _data() => {
       'lessons': _completedLessons.toList(),
       'exams': _exams.map((k, v) => MapEntry(k, v.toJson())),
       'solved': _solved.map((k, v) => MapEntry(k, v.toList())),
@@ -230,33 +229,101 @@ class ProgressStore extends ChangeNotifier {
           _achievements.map((k, v) => MapEntry(k, v.toIso8601String())),
       'missions': _missions,
     };
-    await _prefs.setString(_progressKey, jsonEncode(data));
-    notifyListeners();
-  }
 
   void _read() {
     final raw = _prefs.getString(_progressKey);
     if (raw == null) return;
     try {
-      final data = jsonDecode(raw) as Map<String, dynamic>;
-      _completedLessons.addAll(List<String>.from(data['lessons'] as List));
-      (data['exams'] as Map<String, dynamic>).forEach((k, v) {
-        _exams[k] = ExamResult.fromJson(v as Map<String, dynamic>);
-      });
-      (data['solved'] as Map<String, dynamic>).forEach((k, v) {
-        _solved[k] = Set<String>.from(v as List);
-      });
-      (data['points'] as Map<String, dynamic>).forEach((k, v) {
-        _points[k] = v as int;
-      });
-      (data['achievements'] as Map<String, dynamic>).forEach((k, v) {
-        _achievements[k] = DateTime.parse(v as String);
-      });
-      (data['missions'] as Map<String, dynamic>? ?? {}).forEach((k, v) {
-        _missions[k] = Map<String, int>.from(v as Map);
-      });
+      _apply(jsonDecode(raw) as Map<String, dynamic>);
     } catch (e) {
       debugPrint('Fortschritt konnte nicht gelesen werden: $e');
     }
+  }
+
+  void _clear() {
+    _completedLessons.clear();
+    _exams.clear();
+    _solved.clear();
+    _points.clear();
+    _achievements.clear();
+    _missions.clear();
+  }
+
+  // ---------- Sichern & Übertragen ----------
+
+  static const _transferPrefix = 'PT1:';
+
+  /// Gesamter Fortschritt (inkl. Name und Sprache) als JSON-Text – für die
+  /// Sicherungsdatei.
+  String exportJson() => const JsonEncoder.withIndent(' ').convert({
+        'app': 'prog_trainer',
+        'version': 1,
+        'exportedAt': DateTime.now().toIso8601String(),
+        'name': userName,
+        'language': language,
+        'progress': _data(),
+      });
+
+  /// Kompakter Übertragungscode zum Kopieren und Einfügen auf einem anderen
+  /// Gerät.
+  String exportCode() => _transferPrefix +
+      base64Url.encode(utf8.encode(jsonEncode({
+        'name': userName,
+        'language': language,
+        'progress': _data(),
+      })));
+
+  /// Liest eine Sicherungsdatei oder einen Übertragungscode ein und ersetzt
+  /// den aktuellen Fortschritt. Wirft [FormatException] bei ungültigen Daten.
+  Future<void> importBackup(String input) async {
+    final text = input.trim();
+    final Map<String, dynamic> json;
+    try {
+      json = text.startsWith(_transferPrefix)
+          ? jsonDecode(utf8.decode(base64Url
+              .decode(base64Url.normalize(text.substring(_transferPrefix.length)))))
+              as Map<String, dynamic>
+          : jsonDecode(text) as Map<String, dynamic>;
+    } catch (_) {
+      throw const FormatException('Das ist keine gültige Sicherung.');
+    }
+    final progress = json['progress'];
+    if (progress is! Map<String, dynamic> || progress['lessons'] is! List) {
+      throw const FormatException('Das ist keine gültige Sicherung.');
+    }
+    final backup = _data();
+    _clear();
+    try {
+      _apply(progress);
+    } catch (_) {
+      _clear();
+      _apply(backup);
+      throw const FormatException('Die Sicherung ist beschädigt.');
+    }
+    final name = json['name'];
+    if (name is String && name.isNotEmpty) await _prefs.setString(_nameKey, name);
+    final lang = json['language'];
+    if (lang is String) await _prefs.setString(_languageKey, lang);
+    await _prefs.setString(_progressKey, jsonEncode(_data()));
+    notifyListeners();
+  }
+
+  void _apply(Map<String, dynamic> data) {
+    _completedLessons.addAll(List<String>.from(data['lessons'] as List));
+    (data['exams'] as Map<String, dynamic>).forEach((k, v) {
+      _exams[k] = ExamResult.fromJson(v as Map<String, dynamic>);
+    });
+    (data['solved'] as Map<String, dynamic>).forEach((k, v) {
+      _solved[k] = Set<String>.from(v as List);
+    });
+    (data['points'] as Map<String, dynamic>).forEach((k, v) {
+      _points[k] = v as int;
+    });
+    (data['achievements'] as Map<String, dynamic>).forEach((k, v) {
+      _achievements[k] = DateTime.parse(v as String);
+    });
+    (data['missions'] as Map<String, dynamic>? ?? {}).forEach((k, v) {
+      _missions[k] = Map<String, int>.from(v as Map);
+    });
   }
 }

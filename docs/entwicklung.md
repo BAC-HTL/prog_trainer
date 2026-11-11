@@ -45,6 +45,8 @@ lib/
 
 **Python** läuft über [Pyodide](https://pyodide.org) in einer unsichtbaren WebView. Der Code wird in einem Web Worker ausgeführt, damit Endlosschleifen nach 10 Sekunden abgebrochen werden können. Beim ersten Start wird Pyodide aus dem Internet geladen.
 
+**Web-Version.** Mit `flutter build web` entsteht eine Browser-Version. Sie wird unter `/app/` auf GitHub Pages veröffentlicht. Dort ersetzt `web/runners.js` die WebView: Python läuft in einem Web Worker mit Pyodide, C# lädt die Laufzeit von `/csharp/`. Welche Variante verwendet wird, entscheidet `lib/runner/platform_runners.dart` per Conditional Import.
+
 **Spielmodus.** Die Robotersimulation gibt es zweimal mit identischem Verhalten: `assets/game/robot_sim.py` und `assets/game/RobotSim.cs`. Die App hängt die passende Simulation an den Code der Lernenden und übergibt die Karte über die Standardeingabe. Jede Aktion wird als Zeile `@@EREIGNIS …` ausgegeben. Daraus animiert die App den Ablauf und prüft die Ziele. `tool/verify_missions.py` stellt sicher, dass beide Simulationen exakt dieselben Ereignisse liefern.
 
 **C#** läuft ebenfalls am Gerät: `csharp_runtime/` ist eine kleine .NET-WebAssembly-App mit dem echten C#-Compiler (Roslyn). Sie wird von GitHub Actions gebaut und mit der Doku unter `/csharp/` veröffentlicht. Die App lädt diese Seite in eine unsichtbare WebView. Kompiliert und ausgeführt wird in einem Web Worker, damit Endlosschleifen abgebrochen werden können. Unterstützt wird aktuelles C# mit Top-Level-Statements und den üblichen impliziten usings. Damit der Download kleiner ist, werden die gzip-Dateien (ca. 14 MB statt 43 MB) im Browser entpackt.
