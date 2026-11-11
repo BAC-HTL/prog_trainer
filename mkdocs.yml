@@ -1,5 +1,6 @@
 site_name: Prog Trainer
 site_description: Handy-App zum Programmierenlernen – Python, C# und mehr.
+copyright: Copyright &copy; 2026 BAC-HTL – MIT-Lizenz
 repo_url: https://github.com/BAC-HTL/prog_trainer
 docs_dir: docs
 theme:

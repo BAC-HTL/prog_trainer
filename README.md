@@ -60,3 +60,7 @@ Für Inhalte muss kein Dart-Code angefasst werden:
 3. **Neuer Ordner** (z. B. neue Sprache)? Dann den Ordner zusätzlich in
    `pubspec.yaml` unter `flutter: assets:` eintragen.
 4. `flutter test` prüft, ob alles gültig ist.
+
+## Lizenz
+
+Veröffentlicht unter der [MIT-Lizenz](LICENSE).

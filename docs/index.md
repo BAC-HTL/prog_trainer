@@ -36,3 +36,7 @@ Wie man sie installiert, steht unter [Installation](installation.md).
 | Junior, Senior, Expert | Module angelegt, Inhalte folgen |
 | Herausforderungen | 24 pro Sprache |
 | Spielmissionen | 16 pro Sprache |
+
+## Lizenz
+
+Der Quellcode und die Lerninhalte stehen unter der [MIT-Lizenz](https://github.com/BAC-HTL/prog_trainer/blob/main/LICENSE).
