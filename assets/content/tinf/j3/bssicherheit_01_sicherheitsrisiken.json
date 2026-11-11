@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j3-bssicherheit_01_sicherheitsrisiken",
+  "title": "Typische Sicherheitsrisiken",
+  "summary": "Woran Betriebssysteme in der Praxis am häufigsten scheitern: veraltete Software, schwache Passwörter, zu viele Rechte und offene Dienste.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Betriebssystem verwaltet Benutzer, Dateien, Prozesse und Netzwerkzugriffe – es ist damit die zentrale Stelle für Sicherheit. Gemessen wird Sicherheit an den drei Schutzzielen:\n• Vertraulichkeit – nur Berechtigte sehen die Daten\n• Integrität – Daten werden nicht unbemerkt verändert\n• Verfügbarkeit – System und Daten sind nutzbar, wenn man sie braucht"
+    },
+    {
+      "type": "text",
+      "content": "Risiko 1: veraltete Software. Sicherheitslücken in Betriebssystem, Treibern und Programmen werden laufend entdeckt und öffentlich dokumentiert (z. B. als CVE-Nummer). Sobald eine Lücke bekannt ist, gibt es oft rasch fertige Angriffswerkzeuge (Exploits). Wer Updates aufschiebt, lässt eine bekannte Tür offen. Besonders gefährlich sind Systeme, deren Support beendet ist (End of Life): Sie bekommen gar keine Sicherheitsupdates mehr."
+    },
+    {
+      "type": "text",
+      "content": "Risiko 2: schwache Passwörter. Angreifer probieren systematisch:\n• Brute Force – alle Kombinationen durchprobieren\n• Wörterbuchangriff – häufige Passwörter und Varianten („Sommer2024!“)\n• Credential Stuffing – Zugangsdaten aus fremden Datenlecks werden bei anderen Diensten ausprobiert\nDazu kommen Standardpasswörter von Geräten (z. B. „admin/admin“), die nie geändert wurden."
+    },
+    {
+      "type": "code",
+      "content": "Suchraum beim Brute Force\n(Annahme: 10^10 Versuche/s)\n\n8 Kleinbuchstaben:\n26^8  ≈ 2,1 · 10^11\n      → ca. 21 Sekunden\n\n12 Zeichen a–z, A–Z, 0–9:\n62^12 ≈ 3,2 · 10^21\n      → ca. 10 000 Jahre"
+    },
+    {
+      "type": "text",
+      "content": "Die Länge zählt am meisten: Jedes zusätzliche Zeichen vervielfacht den Suchraum. Eine lange Passphrase aus mehreren zufälligen Wörtern ist leichter zu merken und trotzdem stark. Gegen Credential Stuffing hilft nur: für jeden Dienst ein eigenes Passwort (Passwort-Manager) und zusätzlich Mehr-Faktor-Authentifizierung (MFA)."
+    },
+    {
+      "type": "text",
+      "content": "Risiko 3: zu viele Rechte. Wer im Alltag mit einem Administrator- oder root-Konto arbeitet, gibt jedem gestarteten Programm diese Rechte mit. Öffnet man dann einen verseuchten Mailanhang, darf die Schadsoftware das ganze System verändern. Genauso riskant: Dateien, die jeder lesen und schreiben darf, oder Dienste, die unnötig als root laufen."
+    },
+    {
+      "type": "code",
+      "content": "$ ls -l config.txt\n-rwxrwxrwx 1 anna anna 42 config.txt\n\n# rwx für Besitzer, Gruppe UND alle\n# anderen → jeder darf die\n# Konfiguration ändern!"
+    },
+    {
+      "type": "text",
+      "content": "Risiko 4: offene Dienste. Jeder Dienst, der auf einem Netzwerk-Port auf Verbindungen wartet (Webserver, Datenbank, Fernwartung, Dateifreigabe), vergrößert die Angriffsfläche. Typisch im HTL-Alltag: ein vergessener Test-Webserver oder eine Datenbank, die vom ganzen Netz statt nur von localhost erreichbar ist. Dienste, die niemand braucht, können trotzdem Lücken haben."
+    },
+    {
+      "type": "text",
+      "content": "Weitere Risiken: der Mensch (Phishing-Mails, gefälschte Anmeldeseiten), unverschlüsselte Datenträger (Laptop gestohlen → Daten lesbar), fremde USB-Sticks und fehlende Backups (Ransomware verschlüsselt alles)."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Die meisten erfolgreichen Angriffe nutzen keine geniale neue Technik, sondern bekannte Schwächen – fehlende Updates, schwache oder wiederverwendete Passwörter, zu viele Rechte und unnötig offene Dienste. In der nächsten Lektion lernst du, wie man ein System dagegen härtet."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Angreifer verwendet E-Mail/Passwort-Paare aus dem Datenleck eines Online-Shops, um sich bei einem Mailanbieter anzumelden. Wie heißt dieser Angriff?",
+      "options": [
+        "Brute Force",
+        "Credential Stuffing",
+        "Phishing",
+        "Denial of Service"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim Credential Stuffing werden gestohlene Zugangsdaten bei anderen Diensten ausprobiert. Er funktioniert nur, weil viele Menschen dasselbe Passwort mehrfach verwenden."
+    },
+    {
+      "question": "Wie viele Kombinationen hat ein Passwort aus genau 4 Ziffern (0–9)?",
+      "options": [
+        "40",
+        "9 999",
+        "10 000",
+        "4^10"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jede der 4 Stellen hat 10 Möglichkeiten: 10^4 = 10 000 (0000 bis 9999)."
+    },
+    {
+      "question": "Warum ist es riskant, im Alltag mit einem Administratorkonto zu arbeiten?",
+      "options": [
+        "Das System wird dadurch langsamer",
+        "Updates können dann nicht installiert werden",
+        "Administratorkonten haben kein Passwort",
+        "Jedes gestartete Programm – auch Schadsoftware – läuft mit Administratorrechten"
+      ],
+      "correctIndex": 3,
+      "explanation": "Programme erben die Rechte des Benutzers. Mit Adminrechten kann Schadsoftware das ganze System verändern."
+    },
+    {
+      "question": "Welche Aussage über ein Betriebssystem nach dem Support-Ende (End of Life) stimmt?",
+      "options": [
+        "Es erhält keine Sicherheitsupdates mehr, neue Lücken bleiben offen",
+        "Es ist sicherer, weil sich niemand mehr dafür interessiert",
+        "Es startet nach dem Support-Ende nicht mehr",
+        "Es wird automatisch auf die neue Version aktualisiert"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nach dem Support-Ende werden entdeckte Lücken nicht mehr geschlossen – das System bleibt dauerhaft angreifbar."
+    }
+  ]
+}

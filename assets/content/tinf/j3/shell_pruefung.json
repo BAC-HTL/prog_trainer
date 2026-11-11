@@ -1,0 +1,123 @@
+{
+  "id": "tinf-j3-shell_pruefung",
+  "title": "Abschlussprüfung: Shell-Programmierung & System Calls",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Befehl für noten.csv aus der Lektion aus?",
+      "code": "grep -v 3BHIF noten.csv \\\n  | tail -n +2 | wc -l",
+      "options": [
+        "5",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "grep -v liefert alle Zeilen ohne 3BHIF: die Kopfzeile und die drei 3AHIF-Zeilen = 4. Davon entfernt tail -n +2 die erste Zeile → 3."
+    },
+    {
+      "question": "Was gibt diese Pipeline aus, wenn die Datei die Zeilen a, b, a (in dieser Reihenfolge) enthält?",
+      "code": "uniq -c datei.txt",
+      "options": [
+        "2 a / 1 b",
+        "1 a / 1 b / 1 a",
+        "1 a / 1 b",
+        "3"
+      ],
+      "correctIndex": 1,
+      "explanation": "uniq fasst nur benachbarte gleiche Zeilen zusammen. Ohne sort bleiben die beiden a getrennt."
+    },
+    {
+      "question": "Du willst die normale Ausgabe UND die Fehlermeldungen eines Befehls in alles.txt speichern. Welche Variante stimmt?",
+      "options": [
+        "befehl | alles.txt",
+        "befehl 2> alles.txt",
+        "befehl < alles.txt",
+        "befehl > alles.txt 2>&1"
+      ],
+      "correctIndex": 3,
+      "explanation": "Zuerst wird stdout in die Datei umgeleitet, dann stderr (2) auf dasselbe Ziel wie stdout (&1)."
+    },
+    {
+      "question": "Was gibt das Skript aus?",
+      "code": "a=10\nb=3\necho $((a / b))",
+      "options": [
+        "3",
+        "10",
+        "3.3333",
+        "Fehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "$(( )) rechnet in der bash nur ganzzahlig: 10 / 3 = 3 (der Rest fällt weg)."
+    },
+    {
+      "question": "Welche Zeile enthält einen Fehler?",
+      "options": [
+        "datei=\"x.txt\"",
+        "anzahl = 5",
+        "echo \"$datei\"",
+        "[ -f \"$datei\" ]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei der Zuweisung dürfen keine Leerzeichen um = stehen. bash versucht sonst, einen Befehl namens anzahl auszuführen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "grep -q Zoe noten.csv \\\n  && echo ok || echo fehler",
+      "options": [
+        "ok",
+        "ok fehler",
+        "fehler",
+        "nichts"
+      ],
+      "correctIndex": 2,
+      "explanation": "grep -q gibt nichts aus, liefert aber Exit-Code 1, weil Zoe nicht vorkommt. Daher wird && übersprungen und || ausgeführt."
+    },
+    {
+      "question": "Was gibt das Skript bei „./z.sh x y“ aus?",
+      "code": "#!/bin/bash\nerg=\"\"\nfor p in \"$@\"; do\n  erg=\"$p $erg\"\ndone\necho $erg",
+      "options": [
+        "x y",
+        "1 2",
+        "2",
+        "y x"
+      ],
+      "correctIndex": 3,
+      "explanation": "for p in \"$@\" durchläuft alle Parameter. Jeder wird vorne angefügt: zuerst „x“, dann „y x“."
+    },
+    {
+      "question": "Worin unterscheidet sich die PowerShell-Pipeline grundsätzlich von der bash-Pipeline?",
+      "options": [
+        "In PowerShell werden Objekte mit Eigenschaften weitergereicht, in bash Text",
+        "PowerShell kennt keine Pipelines",
+        "bash-Pipelines laufen nur unter Windows",
+        "PowerShell reicht nur Zahlen weiter"
+      ],
+      "correctIndex": 0,
+      "explanation": "Deshalb kann man in PowerShell z. B. mit Sort-Object CPU direkt nach einer Eigenschaft sortieren, statt Spalten aus Text auszuschneiden."
+    },
+    {
+      "question": "Die bash führt den Befehl ls aus. Welche Folge von System Calls passiert dabei grundsätzlich?",
+      "options": [
+        "exec → fork → wait",
+        "open → read → close",
+        "fork → exec (im Kind) → wait (im Elternprozess)",
+        "wait → fork → exec"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die bash erzeugt mit fork eine Kopie, das Kind ersetzt sich mit exec durch ls, und die bash wartet mit wait auf den Exit-Code."
+    },
+    {
+      "question": "Was bedeutet diese strace-Ausgabe?",
+      "code": "read(3, \"\", 131072) = 0",
+      "options": [
+        "3 Bytes wurden gelesen",
+        "Das Dateiende ist erreicht",
+        "Ein Lesefehler ist aufgetreten",
+        "Der Dateideskriptor 3 wurde geschlossen"
+      ],
+      "correctIndex": 1,
+      "explanation": "read liefert die Anzahl gelesener Bytes. 0 bedeutet: nichts mehr da – Dateiende. Ein Fehler wäre -1."
+    }
+  ]
+}

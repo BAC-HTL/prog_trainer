@@ -1,0 +1,95 @@
+{
+  "id": "tinf-j3-bs_03_scheduling_synchronisation",
+  "title": "Scheduling und Synchronisation",
+  "summary": "Wie der Scheduler die CPU verteilt und wie Mutex und Semaphor gemeinsame Daten schützen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mehrere Prozesse sind bereit, aber nur ein Kern ist frei – wer darf? Das entscheidet der Scheduler. Ziele sind kurze Wartezeiten, Fairness und schnelle Reaktion. Beispiel: Vier Prozesse kommen gleichzeitig (t = 0) an, Rechenzeiten A = 6, B = 3, C = 1, D = 4.\n• FCFS (First Come First Served): in Ankunftsreihenfolge. Einfach, aber kurze Jobs warten hinter langen (Konvoi-Effekt).\n• SJF (Shortest Job First): kürzester Job zuerst. Liefert die kleinste mittlere Wartezeit, aber die Laufzeit muss vorher bekannt oder geschätzt sein, und lange Jobs können verhungern."
+    },
+    {
+      "type": "code",
+      "content": "FCFS: A, B, C, D\n|  A   | B |C| D  |\n0      6   9 10   14\nWarten: A=0 B=6 C=9 D=10\nSchnitt: 25 / 4 = 6,25\n\nSJF: C, B, D, A\n|C| B | D  |  A   |\n0 1   4    8      14\nWarten: C=0 B=1 D=4 A=8\nSchnitt: 13 / 4 = 3,25"
+    },
+    {
+      "type": "text",
+      "content": "FCFS und SJF sind hier nicht-präemptiv: Wer läuft, läuft bis zum Ende. Präemptive Verfahren können einem Prozess die CPU entziehen.\n• Round Robin (RR): Jeder bekommt eine Zeitscheibe (Quantum q). Ist sie um, stellt er sich hinten an. Fair und gut für interaktive Systeme. Ist q zu klein, gibt es viele teure Kontextwechsel; ist q sehr groß, verhält sich RR wie FCFS.\n• Prioritäten: Der bereite Prozess mit der höchsten Priorität läuft. Gefahr: Niedrige Prioritäten verhungern. Abhilfe: Aging – wer lange wartet, bekommt schrittweise höhere Priorität."
+    },
+    {
+      "type": "code",
+      "content": "from collections import deque\n\ndef round_robin(jobs, q):\n    rest = dict(jobs)\n    warte = deque(n for n, _ in jobs)\n    t, ende = 0, {}\n    while warte:\n        n = warte.popleft()\n        lauf = min(q, rest[n])\n        t += lauf\n        rest[n] -= lauf\n        if rest[n] > 0:\n            warte.append(n)\n        else:\n            ende[n] = t\n    return ende\n\njobs = [(\"A\", 6), (\"B\", 3),\n        (\"C\", 1), (\"D\", 4)]\nprint(round_robin(jobs, 2))\n# {'C': 5, 'B': 10, 'D': 12, 'A': 14}"
+    },
+    {
+      "type": "text",
+      "content": "Mit q = 2 entsteht der Ablauf A B C D A B D A (Zeiten 0–2–4–5–7–9–10–12–14). C ist schon bei 5 fertig statt wie bei FCFS erst bei 10 – kurze Jobs profitieren. Wartezeit = Ende − Rechenzeit: A = 8, B = 7, C = 4, D = 8, im Schnitt 6,75.\nNun zur Synchronisation: Teilen sich Threads Daten, entsteht leicht eine Race Condition – das Ergebnis hängt davon ab, wer wann drankommt. Der Codeteil, der auf gemeinsame Daten zugreift, heißt kritischer Abschnitt. Darin darf immer nur einer gleichzeitig sein."
+    },
+    {
+      "type": "code",
+      "content": "import threading, time\n\nkontostand = 0\n\ndef einzahlen():\n    global kontostand\n    for _ in range(100):\n        alt = kontostand\n        time.sleep(0)  # Wechsel!\n        kontostand = alt + 1\n\nts = [threading.Thread(\n      target=einzahlen)\n      for _ in range(2)]\nfor t in ts: t.start()\nfor t in ts: t.join()\nprint(kontostand)\n# z. B. 100 oder 126 – statt 200"
+    },
+    {
+      "type": "text",
+      "content": "Beide Threads lesen denselben alten Wert und schreiben dann alt + 1 zurück – eine Einzahlung geht verloren (Lost Update). Abhilfe:\n• Mutex (Lock): Nur wer das Lock hält, darf in den kritischen Abschnitt; alle anderen warten (blockiert). In Python: threading.Lock mit with.\n• Semaphor: ein Zähler für n gleichzeitige Zugriffe, z. B. 2 Drucker für 5 Druckaufträge. acquire zählt herunter (bei 0 wird gewartet), release zählt hinauf. Ein Mutex verhält sich wie ein Semaphor mit Startwert 1."
+    },
+    {
+      "type": "code",
+      "content": "lock = threading.Lock()\n\ndef einzahlen():\n    global kontostand\n    for _ in range(100):\n        with lock:  # krit. Abschnitt\n            alt = kontostand\n            time.sleep(0)\n            kontostand = alt + 1\n\n# Ausgabe jetzt immer: 200\n\n# Semaphor für 2 Drucker:\ndrucker = threading.Semaphore(2)"
+    },
+    {
+      "type": "text",
+      "content": "Locks bringen eine neue Gefahr: den Deadlock. Thread 1 hält Lock A und wartet auf B, Thread 2 hält B und wartet auf A – beide warten ewig. Ein Deadlock kann nur entstehen, wenn alle vier Bedingungen (nach Coffman) gleichzeitig erfüllt sind:\n1. Wechselseitiger Ausschluss: Ein Betriebsmittel kann nur einer nutzen.\n2. Halten und Warten: Wer etwas hält, wartet auf mehr.\n3. Keine Unterbrechbarkeit: Niemand kann einem anderen ein Betriebsmittel wegnehmen.\n4. Zyklisches Warten: Es gibt einen Kreis von Wartenden.\nBrichst du eine Bedingung, ist ein Deadlock unmöglich – etwa indem alle Threads Locks immer in derselben Reihenfolge anfordern (kein Kreis)."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: FCFS ist einfach, SJF minimiert die mittlere Wartezeit, Round Robin ist fair mit Zeitscheiben, Prioritäten brauchen Aging gegen Verhungern. Kritische Abschnitte schützt du mit Mutex oder Semaphor. Deadlocks brauchen alle vier Coffman-Bedingungen – brich eine davon."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Round Robin mit q = 2, alle Prozesse kommen bei t = 0 in der Reihenfolge X, Y, Z an. Wann ist X fertig?",
+      "code": "X: 3 Zeiteinheiten\nY: 5 Zeiteinheiten\nZ: 2 Zeiteinheiten",
+      "options": [
+        "3",
+        "7",
+        "9",
+        "10"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ablauf: X 0–2, Y 2–4, Z 4–6 (Z fertig), X 6–7 (X fertig), Y 7–10. X ist also bei t = 7 fertig."
+    },
+    {
+      "question": "Drei Prozesse kommen gleichzeitig an: P1 = 8, P2 = 4, P3 = 2 Zeiteinheiten. Wie groß ist die mittlere Wartezeit bei SJF?",
+      "options": [
+        "6,67",
+        "4,67",
+        "2,67",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "SJF-Reihenfolge P3, P2, P1. Wartezeiten: P3 = 0, P2 = 2, P1 = 6. Summe 8, geteilt durch 3 ergibt rund 2,67. (6,67 wäre FCFS.)"
+    },
+    {
+      "question": "5 Threads wollen gleichzeitig drucken. Wie viele drucken höchstens gleichzeitig?",
+      "code": "drucker = threading.Semaphore(2)\n\ndef drucken():\n    with drucker:\n        time.sleep(0.1)  # druckt",
+      "options": [
+        "1",
+        "5",
+        "3",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Semaphor startet mit 2. Der dritte Thread muss bei acquire warten, bis einer der beiden anderen release aufruft."
+    },
+    {
+      "question": "Thread 1 sperrt Lock A, dann B. Thread 2 sperrt Lock B, dann A. Welche Änderung verhindert sicher den Deadlock?",
+      "options": [
+        "Beide Threads sperren immer zuerst A, dann B",
+        "Die Threads bekommen unterschiedliche Prioritäten",
+        "Ein größeres Zeitquantum für den Scheduler",
+        "Statt zwei Threads werden vier gestartet"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit einer festen Reihenfolge kann kein Kreis von Wartenden entstehen – die Bedingung „zyklisches Warten“ ist gebrochen. Prioritäten oder Zeitscheiben ändern nichts an der Wartesituation."
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j3-sql_01_ddl_constraints",
+  "title": "DDL: Tabellen und Constraints",
+  "summary": "Tabellen mit allen Constraints und referenziellen Aktionen anlegen, ändern und löschen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im 2. Jahrgang hast du Tabellen mit Primär- und Fremdschlüssel angelegt. Jetzt geht es um die vollständige DDL (Data Definition Language): CREATE, ALTER und DROP. Das Herzstück sind Constraints – Regeln, die das DBMS selbst überwacht. Egal ob eine App, ein Python-Skript oder ein Mensch in der Konsole schreibt: Ungültige Daten kommen gar nicht erst in die Datenbank.\n\nUnser durchgehendes Beispiel ist eine kleine Schulverwaltung mit den Tabellen lehrer, klassen, schueler und noten."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE lehrer (\n  lehrer_id INTEGER PRIMARY KEY,\n  kuerzel   VARCHAR(5)  NOT NULL UNIQUE,\n  nachname  VARCHAR(50) NOT NULL,\n  chef_id   INTEGER\n    REFERENCES lehrer(lehrer_id)\n);\n\nCREATE TABLE klassen (\n  klasse_id   INTEGER PRIMARY KEY,\n  bezeichnung VARCHAR(6) NOT NULL UNIQUE,\n  jahrgang    INTEGER NOT NULL\n    CHECK (jahrgang BETWEEN 1 AND 5),\n  kv_id       INTEGER\n    REFERENCES lehrer(lehrer_id)\n    ON DELETE SET NULL\n);"
+    },
+    {
+      "type": "text",
+      "content": "Die Constraints im Überblick:\n• NOT NULL – das Feld muss einen Wert haben.\n• UNIQUE – kein Wert darf doppelt vorkommen (z. B. das Lehrerkürzel). Mehrere NULL-Werte sind in SQLite, MySQL und PostgreSQL trotzdem erlaubt, weil NULL „unbekannt“ bedeutet; SQL Server erlaubt standardmäßig nur ein NULL.\n• PRIMARY KEY – eindeutig und nie NULL; pro Tabelle genau einer.\n• CHECK – eine beliebige Bedingung, hier: Jahrgang 1 bis 5.\n• REFERENCES – Fremdschlüssel. chef_id zeigt sogar auf die eigene Tabelle: Jede Lehrkraft kann eine vorgesetzte Lehrkraft haben (z. B. den Abteilungsvorstand).\n\nTipp: Gib Constraints Namen, z. B. CONSTRAINT ck_note CHECK (note BETWEEN 1 AND 5). So kannst du die Regel später gezielt entfernen. Typischer Fehler: CHECK (note > 0 AND note < 5) – dann wäre ein Nicht genügend nicht speicherbar. Teste Grenzwerte!"
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE schueler (\n  schueler_id INTEGER PRIMARY KEY,\n  vorname     VARCHAR(50) NOT NULL,\n  nachname    VARCHAR(50) NOT NULL,\n  email       VARCHAR(100) UNIQUE,\n  status      VARCHAR(10) NOT NULL\n    DEFAULT 'aktiv',\n  klasse_id   INTEGER NOT NULL\n    REFERENCES klassen(klasse_id)\n    ON DELETE RESTRICT\n    ON UPDATE CASCADE\n);\n\nCREATE TABLE noten (\n  schueler_id INTEGER\n    REFERENCES schueler(schueler_id)\n    ON DELETE CASCADE,\n  fach VARCHAR(5) NOT NULL,\n  note INTEGER NOT NULL\n    CHECK (note BETWEEN 1 AND 5),\n  PRIMARY KEY (schueler_id, fach)\n);"
+    },
+    {
+      "type": "text",
+      "content": "DEFAULT setzt einen Standardwert, wenn beim INSERT nichts angegeben wird. Der Primärschlüssel von noten besteht aus zwei Spalten – so eine Regel über mehrere Spalten schreibst du als Tabellen-Constraint ans Ende.\n\nSpannend sind die referenziellen Aktionen: Was passiert, wenn der Datensatz gelöscht (ON DELETE) oder sein Schlüssel geändert (ON UPDATE) wird, auf den ein Fremdschlüssel zeigt?\n• RESTRICT / NO ACTION (Standard) – verbieten.\n• CASCADE – mitlöschen bzw. mitändern: Wird ein Schüler gelöscht, verschwinden seine Noten.\n• SET NULL – Fremdschlüssel auf NULL setzen: Geht der Klassenvorstand, bleibt die Klasse ohne KV.\n• SET DEFAULT – auf den DEFAULT-Wert setzen.\n\nAchtung SQLite: Fremdschlüssel werden nur geprüft, wenn du pro Verbindung PRAGMA foreign_keys = ON; ausführst!"
+    },
+    {
+      "type": "code",
+      "content": "-- Note 6 gibt es nicht\nINSERT INTO noten\nVALUES (6, 'DBI', 6);\n-- Fehler:\n-- CHECK constraint failed: note BETWEEN 1 AND 5\n\n-- Klasse 9 existiert nicht\nINSERT INTO schueler\n  (vorname, nachname, klasse_id)\nVALUES ('Lena', 'Kurz', 9);\n-- Fehler:\n-- FOREIGN KEY constraint failed\n\n-- 3AHIT hat noch Schüler:innen\nDELETE FROM klassen\nWHERE klasse_id = 1;\n-- Fehler:\n-- FOREIGN KEY constraint failed\n\n-- Gruber ist KV der 3BHIT\nDELETE FROM lehrer\nWHERE lehrer_id = 3;\n-- OK (1 Zeile)\nSELECT bezeichnung, kv_id\nFROM klassen WHERE klasse_id = 2;\n-- 3BHIT | NULL"
+    },
+    {
+      "type": "code",
+      "content": "-- Autowert-IDs: nicht genormt!\n-- MySQL / MariaDB\nid INT AUTO_INCREMENT PRIMARY KEY\n\n-- PostgreSQL (alt / SQL-Standard)\nid SERIAL PRIMARY KEY\nid INTEGER GENERATED ALWAYS\n   AS IDENTITY PRIMARY KEY\n\n-- SQL Server\nid INT IDENTITY(1,1) PRIMARY KEY\n\n-- SQLite: INTEGER PRIMARY KEY\n-- zählt schon automatisch;\n-- AUTOINCREMENT verhindert nur,\n-- dass gelöschte IDs wieder\n-- vergeben werden\nid INTEGER PRIMARY KEY AUTOINCREMENT"
+    },
+    {
+      "type": "text",
+      "content": "Mit ALTER TABLE änderst du eine bestehende Tabelle, ohne die Daten zu verlieren: Spalten hinzufügen, umbenennen oder löschen. DROP TABLE löscht die Tabelle samt Inhalt. Eine Tabelle, auf die noch Fremdschlüssel zeigen, lässt sich nicht einfach löschen – lösche zuerst die abhängigen Tabellen (noten vor schueler vor klassen). SQLite kann bei ALTER TABLE nur wenig (kein nachträgliches ADD CONSTRAINT); MySQL und PostgreSQL können z. B. ALTER TABLE noten ADD CONSTRAINT … oder DROP CONSTRAINT."
+    },
+    {
+      "type": "code",
+      "content": "ALTER TABLE schueler\n  ADD COLUMN telefon VARCHAR(20);\nALTER TABLE schueler\n  RENAME COLUMN telefon TO handy;\nALTER TABLE schueler\n  DROP COLUMN handy;\n\nDROP TABLE klassen;\n-- Fehler:\n-- FOREIGN KEY constraint failed\n\nDROP TABLE IF EXISTS noten;\nDROP TABLE IF EXISTS schueler;\nDROP TABLE IF EXISTS klassen;\n-- OK"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Constraints (NOT NULL, UNIQUE, PRIMARY KEY, FOREIGN KEY, CHECK, DEFAULT) sichern die Datenqualität direkt im DBMS. ON DELETE/ON UPDATE legen fest, ob abhängige Datensätze geschützt (RESTRICT), mitgelöscht (CASCADE) oder entkoppelt (SET NULL) werden. ALTER ändert, DROP löscht Strukturen. Autowerte heißen je nach DBMS AUTO_INCREMENT, SERIAL/IDENTITY oder AUTOINCREMENT."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Zeilen hat die Tabelle noten danach? (vorher 12; Schüler 2 hat 2 Noten)",
+      "code": "PRAGMA foreign_keys = ON;\nDELETE FROM schueler\nWHERE schueler_id = 2;\nSELECT COUNT(*) FROM noten;",
+      "options": [
+        "12",
+        "10",
+        "Fehler: FOREIGN KEY constraint failed",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "noten.schueler_id hat ON DELETE CASCADE: Die zwei Noten von Schüler 2 werden automatisch mitgelöscht, 12 − 2 = 10."
+    },
+    {
+      "question": "David (schueler_id 4) hat keine E-Mail-Adresse (NULL). Was passiert bei diesem INSERT?",
+      "code": "INSERT INTO schueler\n  (vorname, nachname, email,\n   klasse_id)\nVALUES ('Lena', 'Kurz', NULL, 3);",
+      "options": [
+        "Fehler: UNIQUE constraint failed",
+        "Fehler: NOT NULL constraint failed",
+        "Der Datensatz wird gespeichert – mehrere NULL-Werte verletzen UNIQUE nicht",
+        "Die E-Mail wird automatisch auf '' gesetzt"
+      ],
+      "correctIndex": 2,
+      "explanation": "NULL bedeutet „unbekannt“ und gilt nicht als gleicher Wert. In SQLite, MySQL und PostgreSQL darf eine UNIQUE-Spalte daher mehrere NULL enthalten."
+    },
+    {
+      "question": "Die Klasse 3BHIT bekommt die neue klasse_id 10. Was bewirkt ON UPDATE CASCADE bei schueler.klasse_id?",
+      "options": [
+        "Die Änderung wird verboten",
+        "Die Schüler:innen der 3BHIT bekommen klasse_id NULL",
+        "Die Schüler:innen der 3BHIT werden gelöscht",
+        "Die klasse_id der Schüler:innen wird automatisch auf 10 geändert"
+      ],
+      "correctIndex": 3,
+      "explanation": "CASCADE gibt die Änderung des Primärschlüssels an alle Fremdschlüssel weiter – die Zuordnung bleibt erhalten."
+    },
+    {
+      "question": "Welche Zeile legt in MySQL/MariaDB einen automatisch hochzählenden Primärschlüssel an?",
+      "options": [
+        "id SERIAL PRIMARY KEY",
+        "id INT AUTO_INCREMENT PRIMARY KEY",
+        "id INTEGER PRIMARY KEY AUTOINCREMENT",
+        "id INT IDENTITY(1,1) PRIMARY KEY"
+      ],
+      "correctIndex": 1,
+      "explanation": "AUTO_INCREMENT ist MySQL/MariaDB. SERIAL ist PostgreSQL, AUTOINCREMENT ist SQLite, IDENTITY(1,1) ist SQL Server."
+    }
+  ]
+}

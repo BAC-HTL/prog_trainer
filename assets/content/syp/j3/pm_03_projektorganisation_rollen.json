@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-pm_03_projektorganisation_rollen",
+  "title": "Projektorganisation und Rollen",
+  "summary": "Linien-, Einfluss-, Matrix- und reine Projektorganisation sowie die Rollen und Kompetenzen im Projekt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Jede Firma (und jede Schule) hat eine dauerhafte Organisation, die Stammorganisation oder Linie: Abteilungen mit Vorgesetzten. Ein Projekt quer durch mehrere Abteilungen passt da schlecht hinein. Deshalb braucht es eine Projektorganisation, die festlegt, wer im Projekt was entscheiden darf."
+    },
+    {
+      "type": "text",
+      "content": "Bei kleinen Projekten bleibt das Projekt oft in der Linie: Es wird innerhalb einer Abteilung erledigt, der Abteilungsleiter steuert es nebenbei. Das ist einfach, funktioniert aber nur, wenn kaum andere Abteilungen beteiligt sind."
+    },
+    {
+      "type": "text",
+      "content": "Bei der Einfluss-Projektorganisation (auch Stabs-Projektorganisation) koordiniert die Projektleitung als Stabsstelle, hat aber keine Weisungsbefugnis. Die Mitarbeiter bleiben ganz in ihren Abteilungen. Das ist wenig Aufwand, aber die Projektleitung kann nur bitten und überzeugen – bei Konflikten setzt sich meist die Linie durch."
+    },
+    {
+      "type": "text",
+      "content": "Bei der Matrix-Projektorganisation bleiben die Mitarbeiter in ihrer Abteilung, arbeiten aber teilweise im Projekt. Die Projektleitung entscheidet projektbezogen (was ist bis wann zu tun?), der Linienvorgesetzte disziplinarisch und fachlich (wer macht es, wie?). Vorteil: Ressourcen werden flexibel genutzt. Nachteil: Mitarbeiter haben zwei Chefs – Konflikte um Zeit und Prioritäten sind häufig."
+    },
+    {
+      "type": "text",
+      "content": "Bei der reinen (autonomen) Projektorganisation bildet das Projekt eine eigene Einheit. Das Team arbeitet zu 100 % im Projekt, die Projektleitung hat volle Weisungsbefugnis. Das lohnt sich für große, wichtige Projekte. Nachteil: hoher Aufwand, und nach dem Projektende ist oft unklar, wohin die Mitarbeiter zurückkehren."
+    },
+    {
+      "type": "code",
+      "content": "Form       PL-Befugnis  Team im\n                        Projekt\n---------  -----------  ---------\nEinfluss   keine        nebenbei\nMatrix     geteilt      teilweise\nrein       voll         100 %"
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Rollen: Der Projektauftraggeber beauftragt das Projekt, stellt Budget und Ressourcen bereit, trifft Grundsatzentscheidungen und nimmt das Ergebnis ab. Die Projektleitung plant und steuert das Projekt, führt das Team und ist für das Erreichen der Projektziele verantwortlich. Die Projektteammitglieder bearbeiten die Arbeitspakete. Bei großen Projekten gibt es zusätzlich einen Lenkungsausschuss für strategische Entscheidungen."
+    },
+    {
+      "type": "code",
+      "content": "Maturaball – Projektorganigramm\n\n   Auftraggeber: Jahrgang\n   (vertreten durch Klassen-\n    sprecher:innen)\n          |\n   Projektleitung: Lisa\n          |\n  +-------+-------+--------+\n  |       |       |        |\nLocation Musik  Finanzen  Werbung\n Tom     Ali    Mia       Ben"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Auftraggeber und Projektleitung sind dieselbe Person. Dann kontrolliert niemand von außen, ob die Ziele erreicht werden. Bei einer Diplomarbeit mit Firmenpartner ist die Firma der Auftraggeber, das Diplomarbeitsteam setzt um, und die betreuende Lehrkraft begleitet und beurteilt – sie gehört nicht zum Team."
+    },
+    {
+      "type": "text",
+      "content": "Was muss eine gute Projektleitung können? Die IPMA (in Österreich vertreten durch die pma) beschreibt drei Kompetenzbereiche: Kontext (Umfeld, Strategie, Organisation verstehen), Persönliche und soziale Kompetenzen (Führung, Kommunikation, Konfliktlösung, Teamarbeit) und Methodenkompetenz („Practice“, z. B. Planung, Kosten, Risiko). Zusammenfassung: Die Organisationsform regelt die Befugnisse, die Rollen regeln die Verantwortung."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Mitarbeiter bekommt von der Projektleitung Termine vorgegeben, sein Abteilungsleiter entscheidet über Urlaub und Gehalt. Welche Projektorganisation liegt vor?",
+      "options": [
+        "Reine Projektorganisation",
+        "Matrix-Projektorganisation",
+        "Einfluss-Projektorganisation",
+        "Linienorganisation ohne Projekt"
+      ],
+      "correctIndex": 1,
+      "explanation": "In der Matrix teilen sich Projektleitung (projektbezogen: was bis wann) und Linie (disziplinarisch) die Weisungsbefugnis. Der Mitarbeiter hat zwei Vorgesetzte."
+    },
+    {
+      "question": "Welche Organisationsform eignet sich am besten für ein sehr großes, strategisch wichtiges Projekt über zwei Jahre?",
+      "options": [
+        "Einfluss-Projektorganisation",
+        "Projekt nebenbei in einer Abteilung",
+        "Reine Projektorganisation",
+        "Gar keine Projektorganisation"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei großen, wichtigen Projekten lohnt sich ein eigenes Team mit 100 % Kapazität und eine Projektleitung mit voller Weisungsbefugnis."
+    },
+    {
+      "question": "Wer nimmt am Ende das Projektergebnis ab?",
+      "options": [
+        "Der Projektauftraggeber",
+        "Die Projektleitung",
+        "Das Projektteam",
+        "Der Lenkungsausschuss eines anderen Projekts"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Auftraggeber hat das Projekt beauftragt und prüft am Ende, ob das Ergebnis den vereinbarten Zielen entspricht."
+    },
+    {
+      "question": "Was ist der größte Nachteil der Einfluss-Projektorganisation?",
+      "options": [
+        "Die Mitarbeiter haben zwei Vorgesetzte",
+        "Die Mitarbeiter wissen nach dem Projekt nicht, wohin sie zurückkehren",
+        "Sie ist sehr teuer",
+        "Die Projektleitung hat keine Weisungsbefugnis"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Projektleitung ist nur koordinierende Stabsstelle. Sie kann nichts anordnen – bei Konflikten entscheidet die Linie."
+    }
+  ]
+}

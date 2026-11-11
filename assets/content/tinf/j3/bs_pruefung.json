@@ -1,0 +1,119 @@
+{
+  "id": "tinf-j3-bs_pruefung",
+  "title": "Abschlussprüfung: Betriebssysteme: Architektur & Prozesse",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Router mit wenig Speicher, ohne Bildschirm und mit einer festen Aufgabe – welche Art von Betriebssystem läuft darauf typischerweise?",
+      "options": [
+        "Ein Desktop-Betriebssystem",
+        "Ein eingebettetes Betriebssystem",
+        "Ein mobiles Betriebssystem",
+        "Ein Mikrokernel ohne Treiber"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eingebettete Systeme sind auf eine feste Aufgabe und knappe Ressourcen zugeschnitten. „Mikrokernel“ beschreibt den Aufbau eines Kernels, nicht die Art des Einsatzes."
+    },
+    {
+      "question": "Ein Videostream ruckelt kurz, weil ein Frame zu spät kommt. Welche Einordnung passt?",
+      "options": [
+        "Harte Echtzeit – das System ist ausgefallen",
+        "Kein Echtzeitproblem, weil kein Fehler im Ergebnis auftritt",
+        "Weiche Echtzeit – eine verpasste Frist ist ärgerlich, aber tolerierbar",
+        "Ein Deadlock"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei weicher Echtzeit verschlechtert eine verpasste Frist nur die Qualität. Bei harter Echtzeit wäre sie ein Versagen des Systems."
+    },
+    {
+      "question": "Warum führt ein Fehler in einem Grafiktreiber eher zum Absturz des ganzen Systems als ein Fehler in einer App?",
+      "options": [
+        "Treiber laufen meist im Kernel Mode mit vollem Zugriff auf Hardware und Speicher",
+        "Treiber haben immer eine niedrigere Priorität",
+        "Treiber laufen in einem eigenen Thread jeder App",
+        "Apps verwenden keine Systemaufrufe"
+      ],
+      "correctIndex": 0,
+      "explanation": "Im Kernel Mode gibt es keine Schutzschicht darunter – ein Fehler dort trifft den Kernel selbst. Apps im User Mode kann das BS einfach beenden."
+    },
+    {
+      "question": "Welche Ausgabe macht strace sichtbar?",
+      "options": [
+        "Die Maschinenbefehle der CPU",
+        "Die Systemaufrufe, die ein Programm an den Kernel richtet",
+        "Den Inhalt des Prozesskontrollblocks",
+        "Alle Threads aller Prozesse"
+      ],
+      "correctIndex": 1,
+      "explanation": "strace protokolliert Systemaufrufe wie openat, read und write samt Argumenten und Rückgabewerten."
+    },
+    {
+      "question": "Was speichert das BS beim Kontextwechsel im Prozesskontrollblock des unterbrochenen Prozesses?",
+      "options": [
+        "Den Programmcode von der SSD",
+        "Die Ausgabe des Programms",
+        "Den gesamten Arbeitsspeicher aller Prozesse",
+        "Befehlszähler und Registerinhalte"
+      ],
+      "correctIndex": 3,
+      "explanation": "Damit der Prozess später genau dort weitermachen kann, müssen Befehlszähler und Register gesichert werden. Der Programmcode bleibt im Speicher."
+    },
+    {
+      "question": "Was gibt das Programm aus?",
+      "code": "import multiprocessing as mp\nzahl = 0\n\ndef plus():\n    global zahl\n    zahl += 1\n\nif __name__ == \"__main__\":\n    p = mp.Process(target=plus)\n    p.start(); p.join()\n    plus()\n    print(zahl)",
+      "options": [
+        "1",
+        "0",
+        "2",
+        "Fehlermeldung"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Kindprozess arbeitet mit einer eigenen Kopie des Speichers. Seine Änderung ist im Elternprozess nicht sichtbar – zahl bleibt dort 0, und der Elternprozess erhöht sie selbst auf 1."
+    },
+    {
+      "question": "Prioritäten-Scheduling, nicht-präemptiv, alle kommen bei t = 0 an (1 = höchste Priorität). Wie groß ist die mittlere Wartezeit?",
+      "code": "Prozess  Zeit  Priorität\nK        2     2\nL        5     1\nM        3     3",
+      "options": [
+        "5,0",
+        "3,33",
+        "4,0",
+        "2,33"
+      ],
+      "correctIndex": 2,
+      "explanation": "Reihenfolge nach Priorität: L, K, M. Wartezeiten: L = 0, K = 5, M = 7. Summe 12, geteilt durch 3 ergibt 4,0."
+    },
+    {
+      "question": "Was passiert, wenn bei Round Robin das Zeitquantum extrem klein gewählt wird?",
+      "options": [
+        "Round Robin wird zu FCFS",
+        "Der Anteil der Kontextwechsel steigt stark, die CPU macht weniger nützliche Arbeit",
+        "Lange Prozesse verhungern",
+        "Es entstehen automatisch Deadlocks"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder Kontextwechsel kostet Zeit. Bei winzigen Zeitscheiben überwiegt dieser Verwaltungsaufwand. Ein sehr großes Quantum würde RR dagegen zu FCFS machen."
+    },
+    {
+      "question": "Zwei Threads führen gleichzeitig zaehler += 1 auf einer gemeinsamen Variable aus, ohne Lock. Wie heißt das Problem?",
+      "options": [
+        "Deadlock",
+        "Verhungern",
+        "Race Condition",
+        "Seitenfehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Ergebnis hängt von der zufälligen Reihenfolge der Zugriffe ab – Updates können verloren gehen. Die Lösung ist ein Mutex um den kritischen Abschnitt."
+    },
+    {
+      "question": "Welche der folgenden Bedingungen gehört NICHT zu den vier Coffman-Bedingungen für einen Deadlock?",
+      "options": [
+        "Wechselseitiger Ausschluss",
+        "Halten und Warten",
+        "Zyklisches Warten",
+        "Präemptives Scheduling"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die vier Bedingungen sind wechselseitiger Ausschluss, Halten und Warten, keine Unterbrechbarkeit (kein Entzug von Betriebsmitteln) und zyklisches Warten. Wie der Scheduler die CPU verteilt, gehört nicht dazu."
+    }
+  ]
+}

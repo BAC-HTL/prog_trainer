@@ -1,0 +1,94 @@
+{
+  "id": "tinf-j3-shell_03_system_calls",
+  "title": "System Calls",
+  "summary": "Wie Programme über Systemaufrufe wie open, read, write, fork und exec Dienste des Kernels nutzen – und wie du sie mit strace beobachtest.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Programme laufen im Benutzermodus (User Mode) und dürfen nicht direkt auf Hardware, fremden Speicher oder Dateisysteme zugreifen. Das darf nur der Kernel im Kernelmodus. Braucht ein Programm so etwas – eine Datei lesen, einen Prozess starten, Speicher anfordern –, bittet es den Kernel mit einem System Call (Systemaufruf). Dabei wechselt die CPU kontrolliert in den Kernelmodus, der Kernel prüft die Rechte, erledigt die Arbeit und kehrt mit einem Ergebnis zurück."
+    },
+    {
+      "type": "text",
+      "content": "Wichtige System Calls unter Linux:\n• Dateien: open/openat, read, write, close\n• Prozesse: fork, execve, wait/waitpid, exit\n• Information: getpid\n• Kommunikation: pipe\n• Speicher: brk, mmap\nMeist rufst du sie nicht direkt auf, sondern über Bibliotheken (C-Standardbibliothek, Pythons os-Modul). Windows hat eigene Systemaufrufe; Programme nutzen dort die Win32-API, z. B. CreateFile, ReadFile oder CreateProcess."
+    },
+    {
+      "type": "text",
+      "content": "Dateideskriptoren: open liefert eine kleine Zahl zurück, über die das Programm die Datei anspricht. 0, 1 und 2 sind bereits belegt – stdin, stdout und stderr. Deshalb bedeutet 2> in der bash „Kanal 2 umleiten“. Die erste neu geöffnete Datei bekommt meist den Deskriptor 3."
+    },
+    {
+      "type": "code",
+      "content": "import os\n\nfd = os.open(\"demo.txt\",\n  os.O_WRONLY | os.O_CREAT\n  | os.O_TRUNC, 0o644)\nn = os.write(fd, b\"Hallo\\n\")\nos.close(fd)\nprint(\"geschrieben:\", n)\n\nfd = os.open(\"demo.txt\",\n             os.O_RDONLY)\nprint(os.read(fd, 100))\nos.close(fd)\n\n# Ausgabe:\ngeschrieben: 6\nb'Hallo\\n'"
+    },
+    {
+      "type": "text",
+      "content": "Neue Prozesse entstehen unter Linux in zwei Schritten:\n1. fork() erzeugt eine Kopie des laufenden Prozesses. Im Kind liefert fork 0, im Elternprozess die PID des Kindes.\n2. exec (execve) ersetzt im Kind das Programm durch ein anderes.\nDer Elternprozess wartet mit wait auf das Ende und bekommt den Exit-Code. Genau so startet die bash jeden Befehl – deshalb kann sie dir danach mit $? den Exit-Code zeigen."
+    },
+    {
+      "type": "code",
+      "content": "import os\n\npid = os.fork()\nif pid == 0:     # Kind\n    os.execvp(\"echo\",\n      [\"echo\", \"Kind sagt hallo\"])\nelse:            # Eltern\n    _, st = os.waitpid(pid, 0)\n    code = os.waitstatus_to_exitcode(st)\n    print(\"Kind fertig, Exit-Code\",\n          code)\n\n# Ausgabe:\nKind sagt hallo\nKind fertig, Exit-Code 0"
+    },
+    {
+      "type": "text",
+      "content": "strace (Linux) zeichnet alle System Calls eines Programms mit Parametern und Rückgabewerten auf. Mit -e trace=… filterst du bestimmte Aufrufe, mit -f verfolgst du auch Kindprozesse, mit -c bekommst du eine Statistik. Unter Windows erfüllt z. B. der Process Monitor aus den Sysinternals-Tools einen ähnlichen Zweck. Die Puffergröße bei read kann je nach System anders aussehen."
+    },
+    {
+      "type": "code",
+      "content": "$ strace -e trace=openat,read,\\\n  write,close cat gruss.txt\n…\nopenat(AT_FDCWD, \"gruss.txt\",\n       O_RDONLY) = 3\nread(3, \"Hallo HTL\\n\", 131072) = 10\nwrite(1, \"Hallo HTL\\n\", 10) = 10\nread(3, \"\", 131072) = 0\nclose(3) = 0\n\n# read liefert 0 → Dateiende"
+    },
+    {
+      "type": "code",
+      "content": "$ strace -e trace=openat \\\n  cat nichtda.txt\n…\nopenat(AT_FDCWD, \"nichtda.txt\",\n  O_RDONLY) = -1 ENOENT\n  (No such file or directory)\ncat: nichtda.txt: No such file\n  or directory\n+++ exited with 1 +++"
+    },
+    {
+      "type": "text",
+      "content": "So hilft strace bei der Fehlersuche: Startet ein Programm nicht, siehst du, welche Datei es vergeblich zu öffnen versucht (ENOENT = nicht vorhanden, EACCES = keine Berechtigung).\n\nZusammenfassung: System Calls sind die Schnittstelle zwischen Programm und Kernel. open/read/write/close arbeiten mit Dateideskriptoren (0, 1, 2 sind Standardkanäle), fork + exec + wait starten Prozesse, und strace macht diese Aufrufe sichtbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welchen Wert liefert fork() im Kindprozess?",
+      "options": [
+        "Die PID des Elternprozesses",
+        "0",
+        "-1",
+        "Die PID des Kindes"
+      ],
+      "correctIndex": 1,
+      "explanation": "Im Kind liefert fork 0, im Elternprozess die PID des Kindes. -1 bedeutet, dass fork fehlgeschlagen ist."
+    },
+    {
+      "question": "Ein Programm öffnet als erste Datei config.ini. Welchen Dateideskriptor bekommt es typischerweise?",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "0, 1 und 2 sind stdin, stdout und stderr. Der Kernel vergibt die kleinste freie Nummer – meist 3."
+    },
+    {
+      "question": "Was zeigt diese strace-Zeile?",
+      "code": "openat(AT_FDCWD, \"/etc/shadow\",\n  O_RDONLY) = -1 EACCES\n  (Permission denied)",
+      "options": [
+        "Die Datei wurde erfolgreich geöffnet",
+        "Die Datei existiert nicht",
+        "Dem Programm fehlt die Berechtigung, die Datei zu öffnen",
+        "Die Datei ist leer"
+      ],
+      "correctIndex": 2,
+      "explanation": "Rückgabewert -1 bedeutet Fehler, EACCES steht für „Permission denied“ – die Datei existiert, aber das Recht fehlt."
+    },
+    {
+      "question": "Warum brauchen Programme überhaupt System Calls?",
+      "options": [
+        "Weil nur der Kernel im Kernelmodus auf Hardware und geschützte Ressourcen zugreifen darf",
+        "Damit sie schneller laufen",
+        "Weil Programme sonst nicht kompiliert werden können",
+        "System Calls sind nur für die Fehlersuche gedacht"
+      ],
+      "correctIndex": 0,
+      "explanation": "Programme im Benutzermodus dürfen nicht direkt auf Hardware zugreifen. Der Systemaufruf ist der kontrollierte Weg, den Kernel um einen Dienst zu bitten."
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "id": "syp-j3-planung_pruefung",
+  "title": "Abschlussprüfung: Projektplanung & Controlling",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Wer unterschreibt den Projektauftrag?",
+      "options": [
+        "Nur das Projektteam",
+        "Auftraggeber und Projektleitung",
+        "Nur die Projektleitung",
+        "Alle Stakeholder"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Projektauftrag ist eine Vereinbarung zwischen Auftraggeber und Projektleitung – beide unterschreiben."
+    },
+    {
+      "question": "Welches Element macht ein Ziel „terminiert“ im Sinne von SMART?",
+      "options": [
+        "Ein konkretes Datum, bis wann das Ziel erreicht ist",
+        "Eine Liste der Teammitglieder",
+        "Eine Kostenschätzung",
+        "Eine Begründung, warum das Ziel attraktiv ist"
+      ],
+      "correctIndex": 0,
+      "explanation": "T steht für terminiert: Bis wann muss das Ziel erreicht sein?"
+    },
+    {
+      "question": "Beim Maturaball haben Anrainer:innen großen Einfluss (Beschwerden bei der Gemeinde), aber wenig Interesse am Ball. Welche Strategie passt laut Einfluss-Interesse-Matrix?",
+      "options": [
+        "Eng einbinden",
+        "Informieren",
+        "Zufriedenstellen",
+        "Ignorieren"
+      ],
+      "correctIndex": 2,
+      "explanation": "Hoher Einfluss, geringes Interesse: zufriedenstellen – z. B. rechtzeitig informieren und Lärmschutz zusagen, damit sie nicht zum Hindernis werden."
+    },
+    {
+      "question": "Was ist ein Arbeitspaket?",
+      "options": [
+        "Ein Meilenstein ohne Dauer",
+        "Die oberste Ebene im Projektstrukturplan",
+        "Eine Teilaufgabe auf der untersten Ebene des PSP mit Verantwortlichem, Ergebnis, Aufwand und Terminen",
+        "Der gesamte Projektauftrag"
+      ],
+      "correctIndex": 2,
+      "explanation": "Arbeitspakete sind die kleinsten Einheiten im PSP und werden einer verantwortlichen Person zugeordnet."
+    },
+    {
+      "question": "Wie lange dauert das Projekt mindestens?",
+      "code": "Vorg. Dauer Vorgänger\nA     2     –\nB     3     A\nC     5     A\nD     1     B\nE     1     C, D",
+      "options": [
+        "10 Tage",
+        "8 Tage",
+        "11 Tage",
+        "6 Tage"
+      ],
+      "correctIndex": 1,
+      "explanation": "A endet bei 2, B bei 5, C bei 7, D bei 6. E wartet auf den späteren von C und D, beginnt also bei 7 und endet bei 8."
+    },
+    {
+      "question": "Im selben Netzplan: Welche Vorgänge bilden den kritischen Pfad?",
+      "code": "Vorg. Dauer Vorgänger\nA     2     –\nB     3     A\nC     5     A\nD     1     B\nE     1     C, D",
+      "options": [
+        "A–B–D–E",
+        "A–C–E",
+        "A–B–C–D–E",
+        "Nur C"
+      ],
+      "correctIndex": 1,
+      "explanation": "A–C–E hat Gesamtpuffer 0 (2 + 5 + 1 = 8 Tage). Der Pfad A–B–D–E dauert nur 2 + 3 + 1 + 1 = 7 Tage, B und D haben je 1 Tag Gesamtpuffer."
+    },
+    {
+      "question": "Im selben Netzplan hat B: FAZ 2, FEZ 5, SAZ 3. D hat FAZ 5. Wie groß ist der freie Puffer von B?",
+      "code": "Vorg. Dauer Vorgänger\nA     2     –\nB     3     A\nC     5     A\nD     1     B\nE     1     C, D",
+      "options": [
+        "1",
+        "3",
+        "2",
+        "0"
+      ],
+      "correctIndex": 3,
+      "explanation": "FP = FAZ des Nachfolgers − FEZ = 5 − 5 = 0. Der Gesamtpuffer von B ist zwar 1, aber jede Verschiebung von B verschiebt sofort D mit."
+    },
+    {
+      "question": "Budget 20 000 €, Fertigstellungsgrad 30 %, Ist-Kosten 5000 €. Wie hoch ist die Kostenabweichung (Fertigstellungswert − Ist)?",
+      "options": [
+        "+1000 €",
+        "−1000 €",
+        "+15 000 €",
+        "−5000 €"
+      ],
+      "correctIndex": 0,
+      "explanation": "Fertigstellungswert = 0,3 × 20 000 = 6000 €. 6000 − 5000 = +1000 €: Die erledigte Arbeit war günstiger als geplant."
+    },
+    {
+      "question": "Warum ist eine Ampel, die immer auf Grün steht, problematisch?",
+      "options": [
+        "Grün ist keine erlaubte Farbe im Statusbericht",
+        "Der Auftraggeber muss dann jede Woche eine Entscheidung treffen",
+        "Sie verschleiert Probleme, sodass Auftraggeber zu spät gegensteuern können",
+        "Grün bedeutet, dass das Projekt abgebrochen wird"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein ehrlicher Statusbericht meldet Abweichungen früh. Nur dann können Auftraggeber und Projektleitung rechtzeitig reagieren."
+    },
+    {
+      "question": "Welche Frage gehört typischerweise in einen Lessons-Learned-Workshop?",
+      "options": [
+        "Was würden wir beim nächsten Projekt anders machen?",
+        "Welche Vorgänge liegen auf dem kritischen Pfad?",
+        "Wer unterschreibt den Projektauftrag?",
+        "Welche SMART-Ziele brauchen wir noch?"
+      ],
+      "correctIndex": 0,
+      "explanation": "Lessons Learned reflektieren das abgeschlossene Projekt: Was lief gut, was schlecht, was ändern wir künftig?"
+    }
+  ]
+}

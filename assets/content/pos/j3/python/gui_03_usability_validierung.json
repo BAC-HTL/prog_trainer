@@ -1,0 +1,90 @@
+{
+  "id": "pos-j3-python-gui_03_usability_validierung",
+  "title": "Usability und Eingabevalidierung",
+  "summary": "Benutzerfreundliche Oberflächen gestalten, Eingaben prüfen und Fehler verständlich mit messagebox melden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Usability (Gebrauchstauglichkeit) beschreibt, wie effektiv, effizient und zufriedenstellend Menschen mit einer Software ihr Ziel erreichen. Die Norm ISO 9241-110 nennt Grundsätze der Dialoggestaltung, u. a.: Aufgabenangemessenheit (nur das Nötige, passend zur Aufgabe), Selbstbeschreibungsfähigkeit (man erkennt, was zu tun ist), Erwartungskonformität (verhält sich wie gewohnt und einheitlich), Steuerbarkeit (Nutzer:innen bestimmen Tempo und Ablauf, können abbrechen), Fehlertoleranz bzw. Robustheit gegen Benutzungsfehler und Lernförderlichkeit."
+    },
+    {
+      "type": "text",
+      "content": "Praktische Regeln für deine Oberflächen: Jedes Feld hat eine klare Beschriftung, bei Zahlen mit Einheit („Gewicht in kg“). Die Tab-Taste springt in sinnvoller Reihenfolge durch die Felder (bei tkinter: Reihenfolge der Erzeugung), der Cursor steht beim Start im ersten Feld (focus_set()), Enter löst die Hauptaktion aus. Nach jeder Aktion gibt es eine Rückmeldung. Gleiche Dinge sehen überall gleich aus. Information nie nur über Farbe vermitteln. Und in Österreich tippen viele 2,5 statt 2.5 – float(\"2,5\") wirft einen ValueError, also vorher Komma durch Punkt ersetzen."
+    },
+    {
+      "type": "text",
+      "content": "Eingaben sind nie vertrauenswürdig: leer, Buchstaben statt Zahlen, Werte außerhalb des erlaubten Bereichs. Prüfe sie deshalb, bevor du damit arbeitest (Validierung). Ein bewährtes Muster: Die Prüfung steht in einer eigenen Funktion ohne GUI-Code. Sie liefert den umgewandelten Wert oder löst einen ValueError mit einer verständlichen Meldung aus. So kannst du sie ohne Fenster testen."
+    },
+    {
+      "type": "code",
+      "content": "def pruefe_note(text):\n    text = text.strip()\n    if text == \"\":\n        raise ValueError(\n            \"Bitte gib eine Note ein.\")\n    if not text.isdigit():\n        raise ValueError(\n            \"Nur ganze Zahlen erlaubt.\")\n    note = int(text)\n    if not 1 <= note <= 5:\n        raise ValueError(\n            \"Die Note muss 1 bis 5 sein.\")\n    return note\n\nfor t in [\"2\", \" 4 \", \"\",\n          \"sehr gut\", \"7\"]:\n    try:\n        print(repr(t), pruefe_note(t))\n    except ValueError as e:\n        print(repr(t), e)\n# '2' 2\n# ' 4 ' 4\n# '' Bitte gib eine Note ein.\n# 'sehr gut' Nur ganze Zahlen erlaubt.\n# '7' Die Note muss 1 bis 5 sein."
+    },
+    {
+      "type": "text",
+      "content": "Fehler meldest du mit dem Modul tkinter.messagebox. showinfo(), showwarning() und showerror() zeigen ein Dialogfenster mit Titel und Text. askyesno() stellt eine Ja/Nein-Frage und liefert True oder False. Eine gute Fehlermeldung sagt, was falsch ist und wie es richtig geht – höflich, ohne Fachbegriffe wie „ValueError“ und ohne der Person die Schuld zu geben. Danach setzt du den Fokus zurück in das fehlerhafte Feld und markierst den Inhalt."
+    },
+    {
+      "type": "code",
+      "content": "import tkinter as tk\nfrom tkinter import messagebox\n\nfenster = tk.Tk()\neingabe = tk.Entry(fenster)\neingabe.pack()\n\ndef speichern():\n    try:\n        note = pruefe_note(eingabe.get())\n    except ValueError as fehler:\n        messagebox.showerror(\n            \"Ungültige Eingabe\",\n            str(fehler))\n        eingabe.focus_set()\n        eingabe.select_range(0, tk.END)\n        return\n    messagebox.showinfo(\"Gespeichert\",\n        f\"Note {note} gespeichert.\")\n\nknopf = tk.Button(fenster,\n    text=\"Speichern\", command=speichern)\nknopf.pack()\nfenster.mainloop()"
+    },
+    {
+      "type": "text",
+      "content": "Noch besser als eine Fehlermeldung ist es, Fehler gar nicht erst zu ermöglichen. Ein Button kann mit state=\"disabled\" deaktiviert werden, solange die Eingabe unvollständig ist. Bei Aktionen, die sich nicht rückgängig machen lassen (Löschen!), fragst du vorher mit askyesno() nach."
+    },
+    {
+      "type": "code",
+      "content": "knopf = tk.Button(fenster, text=\"Senden\",\n                  state=\"disabled\")\ntext = tk.StringVar()\nfeld = tk.Entry(fenster,\n                textvariable=text)\n\ndef pruefen(*args):\n    if text.get().strip():\n        knopf.config(state=\"normal\")\n    else:\n        knopf.config(state=\"disabled\")\n\ntext.trace_add(\"write\", pruefen)\n\ndef loeschen():\n    frage = \"Wirklich alle Noten löschen?\"\n    if messagebox.askyesno(\"Löschen\",\n                           frage):\n        print(\"gelöscht\")"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Gute Oberflächen sind selbsterklärend, einheitlich, per Tastatur bedienbar und geben Rückmeldung. Validiere jede Eingabe in einer eigenen, testbaren Funktion und melde Fehler verständlich mit messagebox.showerror(). Verhindere Fehler, wo es geht (deaktivierte Buttons), und frage vor endgültigen Aktionen mit askyesno() nach."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "try:\n    print(pruefe_note(\"2.5\"))\nexcept ValueError as e:\n    print(e)",
+      "options": [
+        "2.5",
+        "ValueError: Bitte gib eine Note ein.",
+        "Nur ganze Zahlen erlaubt.",
+        "Die Note muss 1 bis 5 sein."
+      ],
+      "correctIndex": 2,
+      "explanation": "\"2.5\".isdigit() ist False, weil der Punkt keine Ziffer ist. pruefe_note() löst daher den ValueError „Nur ganze Zahlen erlaubt.“ aus, der abgefangen und ausgegeben wird."
+    },
+    {
+      "question": "Welche Funktion gibt True oder False zurück, je nachdem, welchen Knopf die Person im Dialog drückt?",
+      "options": [
+        "messagebox.showinfo()",
+        "messagebox.askyesno()",
+        "messagebox.showerror()",
+        "messagebox.showwarning()"
+      ],
+      "correctIndex": 1,
+      "explanation": "askyesno() zeigt die Knöpfe Ja und Nein und liefert True bzw. False. Die show…-Funktionen informieren nur."
+    },
+    {
+      "question": "Welche Fehlermeldung ist am benutzerfreundlichsten, wenn jemand im Feld „Alter“ den Text „zwölf“ eingibt?",
+      "options": [
+        "„ValueError: invalid literal for int() with base 10“",
+        "„Falsche Eingabe!“",
+        "„Bitte gib dein Alter als Zahl ein, z. B. 16.“",
+        "„Du hast einen Fehler gemacht.“"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine gute Meldung sagt, was erwartet wird, gibt ein Beispiel und verzichtet auf Fachbegriffe und Schuldzuweisungen."
+    },
+    {
+      "question": "Ein Formular hat einen Button „Senden“, der erst klickbar sein soll, wenn ein Name eingegeben wurde. Welcher Usability-Grundsatz steht hinter dieser Idee?",
+      "options": [
+        "Individualisierbarkeit",
+        "Lernförderlichkeit",
+        "Aufgabenangemessenheit",
+        "Fehlertoleranz (Fehler gar nicht erst entstehen lassen)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein deaktivierter Button verhindert, dass ein unvollständiges Formular abgeschickt wird – das System ist robust gegenüber Benutzungsfehlern."
+    }
+  ]
+}

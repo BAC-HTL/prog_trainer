@@ -1,0 +1,96 @@
+{
+  "id": "pos-j3-python-graphen_03_kuerzeste_wege",
+  "title": "Kürzeste Wege mit Dijkstra",
+  "summary": "Wie der Algorithmus von Dijkstra mit einer Prioritätswarteschlange (heapq) die schnellste Verbindung in einem gewichteten Graphen findet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im Öffi-Netz zählt nicht die Anzahl der Stationen, sondern die Fahrzeit. Zwischen zwei Haltestellen liegen unterschiedlich viele Minuten – der Graph ist gewichtet. Die BFS hilft hier nicht mehr, denn ein Weg mit mehr Kanten kann schneller sein. Die Lösung ist der Algorithmus von Edsger W. Dijkstra (1959). Er funktioniert für Graphen mit nichtnegativen Kantengewichten."
+    },
+    {
+      "type": "code",
+      "content": "netz = {\n    \"Hbf\":     {\"Uni\": 2, \"Zentrum\": 6},\n    \"Uni\":     {\"Hbf\": 2, \"Zentrum\": 3,\n                \"Spital\": 8},\n    \"Zentrum\": {\"Hbf\": 6, \"Uni\": 3,\n                \"HTL\": 4, \"Spital\": 4},\n    \"HTL\":     {\"Zentrum\": 4, \"Spital\": 1},\n    \"Spital\":  {\"Uni\": 8, \"Zentrum\": 4,\n                \"HTL\": 1},\n}\n\n# Fahrzeiten in Minuten"
+    },
+    {
+      "type": "text",
+      "content": "Die Idee: Dijkstra merkt sich für jeden Knoten die bisher beste bekannte Distanz (am Anfang unendlich, beim Start 0). In jedem Schritt nimmt er den noch nicht fertigen Knoten mit der kleinsten Distanz – dessen Distanz ist dann endgültig. Von dort aus prüft er alle Nachbarn: Ist der Weg über diesen Knoten kürzer als der bisher bekannte, wird die Distanz verbessert (Relaxation)."
+    },
+    {
+      "type": "text",
+      "content": "Um schnell den Knoten mit der kleinsten Distanz zu finden, nimmst du eine Prioritätswarteschlange. Python liefert dafür das Modul heapq: heappush() fügt ein Element ein, heappop() entnimmt immer das kleinste. Tupel werden nach dem ersten Element verglichen – darum speicherst du (distanz, knoten)."
+    },
+    {
+      "type": "code",
+      "content": "import heapq\n\npq = []\nheapq.heappush(pq, (5, \"C\"))\nheapq.heappush(pq, (2, \"A\"))\nheapq.heappush(pq, (4, \"B\"))\nprint(heapq.heappop(pq))  # (2, 'A')\nprint(heapq.heappop(pq))  # (4, 'B')"
+    },
+    {
+      "type": "code",
+      "content": "import heapq\n\ndef dijkstra(graph, start):\n    dist = {k: float(\"inf\") for k in graph}\n    vorg = {k: None for k in graph}\n    dist[start] = 0\n    pq = [(0, start)]\n    while pq:\n        d, k = heapq.heappop(pq)\n        if d > dist[k]:\n            continue  # veralteter Eintrag\n        for n, w in graph[k].items():\n            neu = d + w\n            if neu < dist[n]:\n                dist[n] = neu\n                vorg[n] = k\n                heapq.heappush(pq, (neu, n))\n    return dist, vorg"
+    },
+    {
+      "type": "text",
+      "content": "Ein Knoten kann mehrmals in der Queue landen, wenn seine Distanz verbessert wird. Die Zeile „if d > dist[k]: continue“ überspringt solche veralteten Einträge. Zusätzlich speichert vorg für jeden Knoten, von wo aus er am besten erreicht wird – damit lässt sich der Weg wie bei der BFS rückwärts rekonstruieren."
+    },
+    {
+      "type": "code",
+      "content": "netz = {\n    \"Hbf\":     {\"Uni\": 2, \"Zentrum\": 6},\n    \"Uni\":     {\"Hbf\": 2, \"Zentrum\": 3,\n                \"Spital\": 8},\n    \"Zentrum\": {\"Hbf\": 6, \"Uni\": 3,\n                \"HTL\": 4, \"Spital\": 4},\n    \"HTL\":     {\"Zentrum\": 4, \"Spital\": 1},\n    \"Spital\":  {\"Uni\": 8, \"Zentrum\": 4,\n                \"HTL\": 1},\n}\nimport heapq\n\ndef dijkstra(graph, start):\n    dist = {k: float(\"inf\") for k in graph}\n    vorg = {k: None for k in graph}\n    dist[start] = 0\n    pq = [(0, start)]\n    while pq:\n        d, k = heapq.heappop(pq)\n        if d > dist[k]:\n            continue  # veralteter Eintrag\n        for n, w in graph[k].items():\n            neu = d + w\n            if neu < dist[n]:\n                dist[n] = neu\n                vorg[n] = k\n                heapq.heappush(pq, (neu, n))\n    return dist, vorg\n\ndist, vorg = dijkstra(netz, \"Hbf\")\nprint(dist[\"Spital\"])  # 9\npfad, k = [], \"Spital\"\nwhile k is not None:\n    pfad.append(k)\n    k = vorg[k]\nprint(pfad[::-1])\n# ['Hbf', 'Uni', 'Zentrum', 'Spital']"
+    },
+    {
+      "type": "text",
+      "content": "Schau dir das Ergebnis an: Die direkte Verbindung Hbf–Zentrum dauert 6 Minuten, der Umweg über die Uni nur 2 + 3 = 5. Zum Spital wäre Uni–Spital direkt 2 + 8 = 10, über das Zentrum sind es 2 + 3 + 4 = 9. Genau solche Abwägungen trifft Dijkstra automatisch. Navigationssysteme und Routenplaner arbeiten mit Verfeinerungen dieser Idee."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Dijkstra findet kürzeste Wege von einem Start zu allen Knoten, wenn alle Gewichte ≥ 0 sind. Bei negativen Kanten (z. B. Gutschriften) ist er nicht korrekt – dort verwendet man etwa den Bellman-Ford-Algorithmus. Unerreichbare Knoten behalten die Distanz inf. Typische Fehler: (knoten, distanz) statt (distanz, knoten) in den Heap legen – dann wird nach dem Namen statt nach der Distanz sortiert – oder vergessen, vorg mitzuführen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Distanzen liefert dijkstra(g, \"A\")?",
+      "code": "g = {\"A\": {\"B\": 1, \"C\": 4},\n     \"B\": {\"C\": 2, \"D\": 6},\n     \"C\": {\"D\": 3},\n     \"D\": {}}",
+      "options": [
+        "{'A': 0, 'B': 1, 'C': 4, 'D': 7}",
+        "{'A': 0, 'B': 1, 'C': 3, 'D': 7}",
+        "{'A': 0, 'B': 1, 'C': 3, 'D': 6}",
+        "{'A': 0, 'B': 1, 'C': 4, 'D': 6}"
+      ],
+      "correctIndex": 2,
+      "explanation": "A→B kostet 1. C erreichst du über B mit 1 + 2 = 3 statt direkt mit 4. D erreichst du über C mit 3 + 3 = 6, über B direkt wären es 1 + 6 = 7."
+    },
+    {
+      "question": "Was gibt heapq.heappop(pq) zurück?",
+      "code": "import heapq\npq = []\nfor e in [(7, \"A\"), (3, \"Z\"), (5, \"M\")]:\n    heapq.heappush(pq, e)\nprint(heapq.heappop(pq))",
+      "options": [
+        "(3, 'Z')",
+        "(7, 'A')",
+        "(5, 'M')",
+        "'A'"
+      ],
+      "correctIndex": 0,
+      "explanation": "heappop() liefert immer das kleinste Element. Tupel werden zuerst nach dem ersten Wert verglichen – 3 ist am kleinsten."
+    },
+    {
+      "question": "Für welchen Graphen ist der Algorithmus von Dijkstra NICHT geeignet?",
+      "options": [
+        "Ein Straßennetz mit Kilometerangaben",
+        "Ein ungewichteter Graph, bei dem jede Kante Gewicht 1 hat",
+        "Ein Öffi-Netz mit Fahrzeiten in Minuten",
+        "Ein Graph mit negativen Kantengewichten"
+      ],
+      "correctIndex": 3,
+      "explanation": "Dijkstra setzt voraus, dass ein einmal als fertig entnommener Knoten nicht mehr verbessert werden kann. Mit negativen Kanten gilt das nicht mehr – dafür gibt es z. B. Bellman-Ford."
+    },
+    {
+      "question": "Welchen Wert hat dist[\"C\"] nach dijkstra(g, \"A\")?",
+      "code": "g = {\"A\": {\"B\": 1},\n     \"B\": {},\n     \"C\": {}}",
+      "options": [
+        "0",
+        "inf",
+        "1",
+        "None"
+      ],
+      "correctIndex": 1,
+      "explanation": "C ist von A aus nicht erreichbar. Sein Startwert float(\"inf\") wird nie verbessert."
+    }
+  ]
+}

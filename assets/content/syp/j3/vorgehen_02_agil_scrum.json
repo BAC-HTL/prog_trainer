@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-vorgehen_02_agil_scrum",
+  "title": "Agile Entwicklung und Scrum",
+  "summary": "Iterativ-inkrementelles Arbeiten, das Agile Manifest und Scrum mit Verantwortlichkeiten, Events und Artefakten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Iterativ heißt: Man durchläuft die Tätigkeiten (Analyse, Entwurf, Umsetzung, Test) mehrmals und verbessert das Ergebnis Schritt für Schritt. Inkrementell heißt: Das Produkt wächst in Teilstücken (Inkrementen), von denen jedes lauffähig ist. Agile Methoden kombinieren beides: kurze Zyklen, und nach jedem Zyklus gibt es ein nutzbares Stück Software. Beispiel Vereins-App: zuerst Login und Terminliste, dann die Trainingsanmeldung, dann Push-Nachrichten – und der Verein gibt nach jedem Schritt Feedback."
+    },
+    {
+      "type": "text",
+      "content": "2001 formulierten 17 Softwareentwickler das „Manifest für Agile Softwareentwicklung“. Es besteht aus vier Werten und zwölf Prinzipien. Die vier Werte stellen jeweils zwei Dinge gegenüber:"
+    },
+    {
+      "type": "code",
+      "content": "Individuen und Interaktionen\n  mehr als Prozesse und Werkzeuge\n\nFunktionierende Software\n  mehr als umfassende Dokumentation\n\nZusammenarbeit mit dem Kunden\n  mehr als Vertragsverhandlung\n\nReagieren auf Veränderung\n  mehr als das Befolgen eines Plans"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig ist das „mehr als“: Die Dinge rechts haben durchaus Wert, die Dinge links aber mehr. Typischer Fehler: „Agil heißt, wir brauchen keine Doku und keinen Plan.“ Das steht nirgends im Manifest. Zu den Prinzipien gehören z. B.: häufig funktionierende Software ausliefern, Änderungen der Anforderungen auch spät noch willkommen heißen, Fachleute und Entwickler:innen arbeiten täglich zusammen, und das Team reflektiert regelmäßig, wie es besser werden kann."
+    },
+    {
+      "type": "text",
+      "content": "Scrum ist das bekannteste agile Rahmenwerk (Framework). Es ist im Scrum Guide von Ken Schwaber und Jeff Sutherland beschrieben. Ein Scrum Team ist klein (typischerweise 10 Personen oder weniger), arbeitet selbstmanagend und hat drei Verantwortlichkeiten: Product Owner, Scrum Master und Developers. Der aktuelle Scrum Guide spricht bewusst von „Verantwortlichkeiten“, nicht von Rollen oder Jobtiteln."
+    },
+    {
+      "type": "text",
+      "content": "Der Product Owner (eine Person, kein Komitee) ist dafür verantwortlich, den Wert des Produkts zu maximieren: Er oder sie pflegt und ordnet das Product Backlog und formuliert das Produktziel. Der Scrum Master sorgt dafür, dass Scrum verstanden und gelebt wird, und hilft, Hindernisse zu beseitigen – er ist kein Chef, der Aufgaben verteilt. Die Developers erstellen in jedem Sprint ein nutzbares Inkrement und planen selbst, wie sie die Arbeit erledigen. In einer Diplomarbeit übernimmt oft ein Teammitglied die Product-Owner-Aufgabe und hält engen Kontakt zum Kunden."
+    },
+    {
+      "type": "code",
+      "content": "Product Backlog (Produktziel)\n        |\n   Sprint Planning\n        v\nSprint Backlog (Sprint-Ziel)\n        |\n+-- Sprint (max. 1 Monat) ---+\n|  Daily Scrum, 15 Minuten   |\n+----------------------------+\n        v\nInkrement (Definition of Done)\n        |\nSprint Review -> Retrospektive"
+    },
+    {
+      "type": "text",
+      "content": "Die Events: Der Sprint ist der Container für alle anderen Events, hat eine feste Länge von höchstens einem Monat, und der nächste Sprint beginnt direkt nach dem vorigen. Im Sprint Planning klärt das Team, warum der Sprint wertvoll ist (Sprint-Ziel), was erledigt werden kann und wie. Das Daily Scrum dauert 15 Minuten – unabhängig von der Sprintlänge – und dient den Developers, den Fortschritt zum Sprint-Ziel zu prüfen. Im Sprint Review wird das Ergebnis mit den Stakeholdern besprochen und das Product Backlog angepasst. In der Sprint Retrospective verbessert das Team seine Zusammenarbeit. Bei einem Monats-Sprint gilt: Planning höchstens 8 Stunden, Review höchstens 4, Retrospective höchstens 3; bei kürzeren Sprints meist weniger."
+    },
+    {
+      "type": "text",
+      "content": "Die drei Artefakte haben jeweils ein Commitment: Zum Product Backlog gehört das Produktziel, zum Sprint Backlog das Sprint-Ziel, zum Inkrement die Definition of Done (DoD). Das Product Backlog verantwortet der Product Owner, das Sprint Backlog gehört den Developers. Arbeit, die am Sprintende die DoD nicht erfüllt, ist nicht Teil des Inkrements und darf im Review nicht als fertig präsentiert werden – sie geht zurück ins Product Backlog."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Das Daily Scrum wird zum Statusbericht an den Scrum Master; der Scrum Master wird als Projektleiter gesehen; das Review wird zur reinen Präsentation ohne Feedback. Zusammenfassung: Agil heißt iterativ-inkrementell mit viel Kundenfeedback. Scrum hat drei Verantwortlichkeiten (Product Owner, Scrum Master, Developers), fünf Events (Sprint, Sprint Planning, Daily Scrum, Sprint Review, Sprint Retrospective) und drei Artefakte mit Commitments."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wer ist in Scrum dafür verantwortlich, das Product Backlog zu ordnen?",
+      "options": [
+        "Der Scrum Master",
+        "Die Developers gemeinsam",
+        "Der Product Owner",
+        "Der Kunde direkt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Product Owner ist für das Product Backlog verantwortlich, inklusive der Reihenfolge der Einträge. Er kann Arbeit delegieren, bleibt aber verantwortlich."
+    },
+    {
+      "question": "Welches Commitment gehört zum Inkrement?",
+      "options": [
+        "Definition of Done",
+        "Sprint-Ziel",
+        "Produktziel",
+        "Velocity"
+      ],
+      "correctIndex": 0,
+      "explanation": "Inkrement ↔ Definition of Done, Sprint Backlog ↔ Sprint-Ziel, Product Backlog ↔ Produktziel. Velocity ist kein Begriff aus dem Scrum Guide."
+    },
+    {
+      "question": "Euer Team stellt von 4-Wochen-Sprints auf 2-Wochen-Sprints um. Wie lange dauert das Daily Scrum jetzt?",
+      "options": [
+        "7,5 Minuten – es wird halbiert",
+        "15 Minuten",
+        "30 Minuten",
+        "So lange, bis alle Aufgaben verteilt sind"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Daily Scrum hat immer eine Timebox von 15 Minuten, unabhängig von der Sprintlänge. Nur Planning, Review und Retrospective werden bei kürzeren Sprints meist kürzer."
+    },
+    {
+      "question": "Was bedeutet der Wert „Funktionierende Software mehr als umfassende Dokumentation“?",
+      "options": [
+        "Agile Teams schreiben keine Dokumentation",
+        "Dokumentation wird erst nach Projektende erstellt",
+        "Der Kunde muss die Dokumentation selbst schreiben",
+        "Doku hat Wert, lauffähige Software wiegt aber mehr"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das Manifest sagt „mehr als“, nicht „statt“. Die Dinge rechts sind wertvoll, die Dinge links werden höher geschätzt."
+    }
+  ]
+}

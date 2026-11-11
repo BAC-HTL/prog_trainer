@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j3-dbms_03_installation_administration",
+  "title": "DBMS-Arten, Installation und Administration",
+  "summary": "Relationale und NoSQL-Systeme, Client/Server vs. eingebettet, Installation, Benutzerrechte und Backup.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bevor du ein DBMS installierst, musst du wissen, welche Art du brauchst:\n• Relationale DBMS speichern Daten in Tabellen mit festem Schema und werden mit SQL abgefragt: MySQL/MariaDB, PostgreSQL, Microsoft SQL Server, Oracle, SQLite. Sie sind der Standard für strukturierte Daten mit Beziehungen, z. B. eine Schulverwaltung.\n• NoSQL-Datenbanken verzichten auf das starre Tabellenschema: Dokumentdatenbanken (z. B. MongoDB) speichern JSON-ähnliche Dokumente, Key-Value-Stores (z. B. Redis) einfache Schlüssel-Wert-Paare, Graphdatenbanken (z. B. Neo4j) Knoten und Kanten, spaltenorientierte Systeme (z. B. Cassandra) riesige verteilte Datenmengen.\n• Objektrelationale DBMS wie PostgreSQL erweitern das relationale Modell um eigene Datentypen, Arrays oder JSON-Spalten."
+    },
+    {
+      "type": "code",
+      "content": "-- relational: Zeile in Tabelle\n4 | David | Wolf | NULL | aktiv | 2\n\n// Dokument (JSON)\n{ \"vorname\": \"David\",\n  \"klasse\": \"3BHIT\",\n  \"noten\": [\n    {\"fach\": \"DBI\", \"note\": 5},\n    {\"fach\": \"AM\",  \"note\": 4}\n  ] }\n\n# Key-Value\nsession:8f3a  ->  \"user=4\""
+    },
+    {
+      "type": "text",
+      "content": "Außerdem unterscheidet man zwei Betriebsarten:\n• Client/Server: Das DBMS läuft als eigener Serverprozess (Dienst) auf einem Rechner. Programme verbinden sich als Clients über das Netzwerk – mit Host, Port, Benutzername, Passwort und Datenbankname. Standardports: MySQL/MariaDB 3306, PostgreSQL 5432, SQL Server 1433. Ideal für viele gleichzeitige Benutzer:innen und zentrale Rechteverwaltung.\n• Eingebettet (embedded): Das DBMS ist eine Bibliothek im Programm, die Datenbank ist eine einzige Datei. Kein Server, keine Benutzerverwaltung. Bestes Beispiel: SQLite – es steckt in Handy-Apps, Browsern und vielen Desktop-Programmen."
+    },
+    {
+      "type": "code",
+      "content": "# eingebettet: Python + SQLite\nimport sqlite3\ncon = sqlite3.connect(\"schule.db\")\n\n# Client/Server: Verbindung mit\n# dem PostgreSQL-Client psql\npsql -h db.htl.local -p 5432 \\\n     -U app_user -d schule"
+    },
+    {
+      "type": "text",
+      "content": "Die Installation eines Datenbankservers läuft bei allen Produkten ähnlich ab:\n1. Installieren – unter Linux über den Paketmanager, unter Windows mit dem Installer, oder als Container.\n2. Dienst starten und für den Systemstart aktivieren.\n3. Administratorkonto absichern: bei MySQL/MariaDB root (Hilfsskript mysql_secure_installation bzw. mariadb-secure-installation), bei PostgreSQL der Benutzer postgres.\n4. Konfigurieren: In der Konfigurationsdatei (MySQL/MariaDB: my.cnf bzw. Dateien in einem conf.d-Ordner; PostgreSQL: postgresql.conf und pg_hba.conf für erlaubte Verbindungen) stellst du Port, Netzwerkadresse, Speicher, Zeichensatz (UTF-8, bei MySQL utf8mb4) und Logs ein.\n5. Netzwerk: Standardmäßig lauscht der Server meist nur auf localhost. Öffne ihn nur für Rechner, die ihn wirklich brauchen, und sichere ihn mit der Firewall ab."
+    },
+    {
+      "type": "code",
+      "content": "# Ubuntu/Debian, PostgreSQL\nsudo apt install postgresql\nsudo systemctl enable --now \\\n     postgresql\nsudo -u postgres psql\n\n-- in psql: Einstellungen prüfen\nSHOW config_file;\nSHOW port;              -- 5432\nSHOW listen_addresses;  -- localhost"
+    },
+    {
+      "type": "text",
+      "content": "Benutzer und Rechte: Eine Anwendung darf sich nie mit dem Administratorkonto verbinden. Lege pro Anwendung bzw. Personengruppe einen eigenen Benutzer an und gib ihm nur die Rechte, die er wirklich braucht (Prinzip der minimalen Rechte). Mit GRANT vergibst du Rechte, mit REVOKE entziehst du sie. Gemeinsame Rechte fasst man in Rollen zusammen. SQLite kennt kein GRANT – dort regeln die Dateirechte des Betriebssystems, wer die Datenbankdatei lesen oder schreiben darf."
+    },
+    {
+      "type": "code",
+      "content": "-- PostgreSQL\nCREATE USER app_user\n  WITH PASSWORD 'Geheim123';\nGRANT SELECT, INSERT, UPDATE\n  ON noten TO app_user;\nREVOKE UPDATE\n  ON noten FROM app_user;\n\n-- MySQL / MariaDB: Benutzer\n-- gehört zu einem Host\nCREATE USER 'app_user'@'localhost'\n  IDENTIFIED BY 'Geheim123';\nGRANT SELECT\n  ON schule.* -- alle Tabellen\n  TO 'app_user'@'localhost';"
+    },
+    {
+      "type": "text",
+      "content": "Backup: Ohne Sicherung ist jede Datenbank nur einen Festplattenschaden oder ein DELETE ohne WHERE vom Totalverlust entfernt. Ein logisches Backup (Dump) schreibt die SQL-Befehle, die Struktur und Daten wiederherstellen. Ein physisches Backup kopiert die Datendateien – das geht nur bei gestopptem Server oder mit eigenen Werkzeugen, sonst ist die Kopie womöglich unbrauchbar.\nRegeln: automatisiert und regelmäßig sichern, Kopien an einem anderen Ort aufbewahren und die Wiederherstellung regelmäßig testen – ein nie getestetes Backup ist nur eine Hoffnung."
+    },
+    {
+      "type": "code",
+      "content": "# PostgreSQL: Dump und Restore\npg_dump schule > schule.sql\ncreatedb schule_neu\npsql -d schule_neu -f schule.sql\n\n# MySQL / MariaDB\nmysqldump schule > schule.sql\n\n# SQLite (Kommandozeile)\nsqlite3 schule.db \".backup bak.db\"\nsqlite3 schule.db .dump > schule.sql\n\n# Zusammenfassung: Art (relational/\n# NoSQL) und Betrieb (Client/Server\n# oder eingebettet) wählen,\n# installieren, Admin absichern,\n# minimale Rechte, Backups testen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Datenbank arbeitet eingebettet (embedded) – ohne eigenen Serverprozess, mit einer einzigen Datei?",
+      "options": [
+        "PostgreSQL",
+        "MariaDB",
+        "SQLite",
+        "Microsoft SQL Server"
+      ],
+      "correctIndex": 2,
+      "explanation": "SQLite ist eine Bibliothek, die direkt im Programm läuft. Die anderen sind Client/Server-Systeme."
+    },
+    {
+      "question": "Eine Web-App soll Noten lesen und eintragen, aber keine Tabellen löschen oder Benutzer anlegen. Wie verbindet sie sich am besten?",
+      "options": [
+        "Mit dem Konto root bzw. postgres, damit nichts fehlschlägt",
+        "Mit einem eigenen Benutzer, der nur SELECT und INSERT auf den nötigen Tabellen hat",
+        "Ohne Passwort, weil der Server nur auf localhost lauscht",
+        "Mit dem Benutzerkonto der Direktorin"
+      ],
+      "correctIndex": 1,
+      "explanation": "Prinzip der minimalen Rechte: ein eigener Benutzer pro Anwendung mit genau den nötigen Rechten. Wird die App gehackt, ist der Schaden begrenzt."
+    },
+    {
+      "question": "Auf welchem Port lauscht ein PostgreSQL-Server standardmäßig?",
+      "options": [
+        "3306",
+        "1433",
+        "8080",
+        "5432"
+      ],
+      "correctIndex": 3,
+      "explanation": "PostgreSQL verwendet 5432, MySQL/MariaDB 3306, SQL Server 1433."
+    },
+    {
+      "question": "Was ist das wichtigste Zeichen dafür, dass eine Backup-Strategie funktioniert?",
+      "options": [
+        "Die Backup-Datei ist möglichst groß",
+        "Die Wiederherstellung wurde regelmäßig erfolgreich getestet",
+        "Das Backup liegt im selben Ordner wie die Datenbank",
+        "Es wird einmal pro Jahr händisch gesichert"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur ein getestetes Restore beweist, dass das Backup brauchbar ist. Sicherungen gehören außerdem automatisiert an einen anderen Ort."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "pos-j3-python-dbzugriff_01_verbindung_abfragen",
+  "title": "Verbindung und Abfragen mit sqlite3",
+  "summary": "Aus Python heraus eine Datenbank öffnen, SQL ausführen, Ergebnisse abholen und Änderungen mit commit speichern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "SQL kennst du aus DBI. Jetzt sprichst du die Datenbank direkt aus deinem Programm an. Python bringt dafür das Modul sqlite3 mit – SQLite speichert die ganze Datenbank in einer einzigen Datei, ein eigener Datenbankserver ist nicht nötig. Der Ablauf ist bei fast allen Datenbanken gleich: verbinden → Cursor holen → SQL ausführen → Ergebnis abholen → bei Änderungen commit → Verbindung schließen."
+    },
+    {
+      "type": "code",
+      "content": "import sqlite3\n\ncon = sqlite3.connect(\"schule.db\")\ncur = con.cursor()\ncur.execute(\"\"\"CREATE TABLE IF NOT EXISTS\n  schueler(id INTEGER PRIMARY KEY,\n           name TEXT, klasse TEXT)\"\"\")\ncur.execute(\"\"\"INSERT INTO schueler\n  (name, klasse) VALUES\n  ('Lea', '3AHIF'), ('Tim', '3AHIF'),\n  ('Ida', '3BHIF')\"\"\")\ncon.commit()\nprint(cur.rowcount)   # 3\ncon.close()"
+    },
+    {
+      "type": "text",
+      "content": "connect() öffnet die Datei (und legt sie an, falls es sie noch nicht gibt). Der Cursor führt mit execute() SQL-Befehle aus. Bei SELECT holst du das Ergebnis mit fetchone() (eine Zeile oder None), fetchall() (Liste aller Zeilen) oder du gehst mit for direkt über den Cursor. Jede Zeile ist ein Tupel in der Reihenfolge der Spalten."
+    },
+    {
+      "type": "code",
+      "content": "import sqlite3\n\ncon = sqlite3.connect(\"schule.db\")\ncur = con.cursor()\ncur.execute(\"SELECT name, klasse \"\n            \"FROM schueler ORDER BY name\")\nprint(cur.fetchone())  # ('Ida', '3BHIF')\nprint(cur.fetchall())\n# [('Lea', '3AHIF'), ('Tim', '3AHIF')]\n\ncur.execute(\"SELECT COUNT(*) FROM schueler\")\nanzahl = cur.fetchone()[0]\nprint(anzahl)          # 3\ncon.close()"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: commit vergessen. INSERT, UPDATE und DELETE laufen in einer Transaktion. Erst con.commit() macht die Änderungen dauerhaft. Schließt du die Verbindung ohne commit, sind die Änderungen weg – das Programm meldet dabei keinen Fehler! Bei SELECT brauchst du kein commit."
+    },
+    {
+      "type": "code",
+      "content": "import sqlite3\n\ncon = sqlite3.connect(\"test.db\")\ncon.execute(\"CREATE TABLE t(x INTEGER)\")\ncon.commit()\ncon.execute(\"INSERT INTO t VALUES (1)\")\ncon.close()           # ohne commit!\n\ncon = sqlite3.connect(\"test.db\")\nn = con.execute(\n    \"SELECT COUNT(*) FROM t\").fetchone()[0]\nprint(n)              # 0\ncon.close()"
+    },
+    {
+      "type": "text",
+      "content": "Praktisch ist der with-Block: with con: führt am Ende automatisch commit aus – oder rollback, falls im Block eine Exception auftritt. So bleibt die Datenbank konsistent. Achtung: with con: schließt die Verbindung NICHT. Dafür nimmst du con.close() oder contextlib.closing. Übrigens: con.execute() ist eine Abkürzung, die intern selbst einen Cursor anlegt."
+    },
+    {
+      "type": "code",
+      "content": "import sqlite3\nfrom contextlib import closing\n\ndb = sqlite3.connect(\":memory:\")\nwith closing(db) as con:\n    con.execute(\"CREATE TABLE k(stand)\")\n    con.execute(\"INSERT INTO k VALUES(100)\")\n    con.commit()\n    try:\n        with con:   # Transaktion\n            con.execute(\"UPDATE k SET \"\n                        \"stand = stand - 30\")\n            raise ValueError(\"Fehler!\")\n    except ValueError:\n        pass\n    sql = \"SELECT stand FROM k\"\n    print(con.execute(sql).fetchone())\n    # (100,) -> rollback hat gewirkt"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: sqlite3.connect(datei) → Verbindung; cursor() bzw. con.execute() führt SQL aus; fetchone/fetchall liefern Tupel. Änderungen erst nach commit() dauerhaft. with con: erledigt commit bzw. rollback automatisch, schließt aber nicht – Verbindung immer mit close() oder closing() beenden. \":memory:\" erzeugt eine Datenbank nur im Arbeitsspeicher, ideal zum Testen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import sqlite3\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE t(x INT)\")\ncon.execute(\"INSERT INTO t VALUES (1), (2)\")\ncur = con.execute(\n    \"SELECT x FROM t WHERE x > 1\")\nprint(cur.fetchall())",
+      "options": [
+        "[(2,), (1,)]",
+        "(2,)",
+        "2",
+        "[(2,)]"
+      ],
+      "correctIndex": 3,
+      "explanation": "fetchall() liefert immer eine Liste von Tupeln – auch wenn nur eine Zeile passt. Nur die Zeile mit x = 2 erfüllt die Bedingung."
+    },
+    {
+      "question": "Was liefert fetchone(), wenn die Abfrage keine Zeile gefunden hat?",
+      "options": [
+        "Ein leeres Tupel ()",
+        "None",
+        "Eine leere Liste []",
+        "Es wird eine Exception ausgelöst"
+      ],
+      "correctIndex": 1,
+      "explanation": "fetchone() gibt None zurück, wenn keine (weitere) Zeile vorhanden ist. Ein Zugriff wie fetchone()[0] führt dann zu einem TypeError."
+    },
+    {
+      "question": "Ein Programm fügt mit INSERT einen Datensatz ein und ruft danach con.close() auf. Beim nächsten Start ist der Datensatz weg. Was fehlt?",
+      "options": [
+        "con.commit() vor close()",
+        "cur.fetchall() nach INSERT",
+        "Ein zweiter Cursor",
+        "SELECT * nach dem INSERT"
+      ],
+      "correctIndex": 0,
+      "explanation": "Änderungen werden erst mit commit() dauerhaft gespeichert. Ohne commit wird die offene Transaktion beim Schließen verworfen."
+    },
+    {
+      "question": "Welche Aussage über with con: (con ist eine sqlite3-Verbindung) stimmt?",
+      "options": [
+        "Die Verbindung wird am Ende des Blocks geschlossen",
+        "Bei Erfolg wird committet, bei einer Exception zurückgerollt; die Verbindung bleibt offen",
+        "Es wird nie committet, nur gelesen",
+        "Jede Anweisung im Block wird einzeln committet"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Verbindung als Kontextmanager steuert nur die Transaktion (commit oder rollback). Schließen musst du sie selbst, z. B. mit close() oder contextlib.closing."
+    }
+  ]
+}

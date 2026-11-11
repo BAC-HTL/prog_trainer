@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j3-stored_02_stored_procedures",
+  "title": "Stored Procedures und Funktionen",
+  "summary": "Du speicherst Programmlogik direkt in der Datenbank und rufst sie mit CALL oder in SELECT auf – am Beispiel von PostgreSQL (PL/pgSQL).",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Stored Procedure ist ein benanntes Programm, das in der Datenbank gespeichert und dort ausgeführt wird. Statt dass jede Anwendung (Web-App, C#-Programm, Python-Skript) dieselbe Prüflogik selbst implementiert, rufen alle dieselbe Routine auf. Leider ist die Syntax nicht einheitlich: Jedes DBMS hat seinen eigenen Dialekt. Wir verwenden PostgreSQL mit der Sprache PL/pgSQL. SQLite kennt gar keine Stored Procedures."
+    },
+    {
+      "type": "text",
+      "content": "Vorteile: Logik liegt zentral bei den Daten, weniger Datenverkehr zwischen Anwendung und Server, Benutzer:innen bekommen nur das Recht, die Routine auszuführen, nicht direkt auf die Tabelle zu schreiben. Nachteile: an einen Dialekt gebunden (schwer zu wechseln), schwieriger zu testen und zu versionieren, und Logik ist auf Datenbank und Anwendung verteilt."
+    },
+    {
+      "type": "text",
+      "content": "PostgreSQL unterscheidet Funktionen und Prozeduren. Eine Funktion (CREATE FUNCTION) liefert einen Wert zurück und kann in SELECT verwendet werden. Eine Prozedur (CREATE PROCEDURE) liefert keinen Wert, sondern erledigt eine Aufgabe; du rufst sie mit CALL auf. Der Rumpf steht zwischen $$ … $$ (Dollar-Quoting), damit die Strichpunkte darin nicht als Ende des CREATE-Befehls gelten."
+    },
+    {
+      "type": "code",
+      "content": "CREATE FUNCTION notenschnitt(\n  p_sch_id INT\n)\nRETURNS NUMERIC\nLANGUAGE sql\nAS $$\n  SELECT ROUND(AVG(note), 2)\n  FROM noten\n  WHERE sch_id = p_sch_id;\n$$;\n\nSELECT notenschnitt(1);\n-- 1.50  (Anna: DBI 1, POS 2)"
+    },
+    {
+      "type": "code",
+      "content": "CREATE PROCEDURE note_eintragen(\n  p_sch  INT,\n  p_fach VARCHAR,\n  p_note INT\n)\nLANGUAGE plpgsql\nAS $$\nBEGIN\n  IF p_note NOT BETWEEN 1 AND 5 THEN\n    RAISE EXCEPTION\n      'Note % ist ungültig', p_note;\n  END IF;\n  INSERT INTO noten\n    VALUES (p_sch, p_fach, p_note);\nEND;\n$$;"
+    },
+    {
+      "type": "code",
+      "content": "CALL note_eintragen(1, 'DBI', 1);\n-- CALL\n\nCALL note_eintragen(1, 'AM', 7);\n-- ERROR:  Note 7 ist ungültig\n\nSELECT note_eintragen(1, 'E', 2);\n-- ERROR: ... is a procedure\n-- HINT:  To call a procedure,\n--        use CALL."
+    },
+    {
+      "type": "text",
+      "content": "RAISE EXCEPTION bricht ab und macht den Befehl rückgängig; das % wird durch den Wert ersetzt. In PL/pgSQL gibt es außerdem Variablen (im DECLARE-Block), Zuweisungen mit SELECT … INTO, Verzweigungen mit IF / ELSIF / ELSE und Schleifen. Parameter bekommen oft ein Präfix wie p_, Variablen v_ – so verwechselst du sie nicht mit Spaltennamen."
+    },
+    {
+      "type": "code",
+      "content": "CREATE FUNCTION beurteilung(\n  p_sch_id INT\n)\nRETURNS TEXT\nLANGUAGE plpgsql\nAS $$\nDECLARE\n  v_schnitt NUMERIC;\nBEGIN\n  SELECT AVG(note) INTO v_schnitt\n  FROM noten WHERE sch_id = p_sch_id;\n\n  IF v_schnitt IS NULL THEN\n    RETURN 'keine Noten';\n  ELSIF v_schnitt <= 1.5 THEN\n    RETURN 'ausgezeichnet';\n  ELSIF v_schnitt <= 2.0 THEN\n    RETURN 'guter Erfolg';\n  ELSE\n    RETURN 'bestanden';\n  END IF;\nEND;\n$$;"
+    },
+    {
+      "type": "code",
+      "content": "-- Dialekt MySQL/MariaDB:\nDELIMITER //\nCREATE PROCEDURE note_eintragen(\n  IN p_sch INT,\n  IN p_fach VARCHAR(10),\n  IN p_note INT)\nBEGIN\n  IF p_note NOT BETWEEN 1 AND 5 THEN\n    SIGNAL SQLSTATE '45000'\n      SET MESSAGE_TEXT =\n        'Note ungültig';\n  END IF;\n  INSERT INTO noten\n    VALUES (p_sch, p_fach, p_note);\nEND //\nDELIMITER ;"
+    },
+    {
+      "type": "text",
+      "content": "Vergleich: MySQL/MariaDB verwenden statt $$ den Befehl DELIMITER im Client, Parameter mit IN/OUT und SIGNAL statt RAISE. Die Idee ist aber dieselbe. Zusammenfassung: Stored Procedures und Funktionen speichern Logik in der Datenbank. In PostgreSQL liefert eine Funktion einen Wert (Aufruf in SELECT), eine Prozedur wird mit CALL aufgerufen. Fehler meldest du mit RAISE EXCEPTION. Alle Routinen findest du im Katalog unter information_schema.routines."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Anna hat die Noten 1 (DBI) und 2 (POS), Ben 3 (DBI) und 4 (POS). Was liefert der Aufruf für Ben?",
+      "code": "SELECT beurteilung(2);",
+      "options": [
+        "ausgezeichnet",
+        "guter Erfolg",
+        "bestanden",
+        "keine Noten"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bens Schnitt ist (3 + 4) / 2 = 3.5. Das ist weder NULL noch ≤ 1.5 oder ≤ 2.0, also landet man im ELSE-Zweig: 'bestanden'."
+    },
+    {
+      "question": "Wie rufst du in PostgreSQL die Prozedur note_eintragen auf?",
+      "options": [
+        "SELECT note_eintragen(1, 'DBI', 2);",
+        "EXECUTE note_eintragen(1, 'DBI', 2);",
+        "RUN note_eintragen(1, 'DBI', 2);",
+        "CALL note_eintragen(1, 'DBI', 2);"
+      ],
+      "correctIndex": 3,
+      "explanation": "Prozeduren werden mit CALL aufgerufen. SELECT funktioniert nur für Funktionen – PostgreSQL meldet sonst, dass es eine Prozedur ist."
+    },
+    {
+      "question": "Wozu dienen die $$ … $$ beim Anlegen einer Funktion in PostgreSQL?",
+      "options": [
+        "Sie umschließen den Rumpf, damit Strichpunkte darin den CREATE-Befehl nicht beenden.",
+        "Sie markieren Geldbeträge.",
+        "Sie kennzeichnen Variablen.",
+        "Sie machen die Funktion für alle Benutzer sichtbar."
+      ],
+      "correctIndex": 0,
+      "explanation": "Dollar-Quoting ist eine Art Zeichenkette ohne Escape-Probleme. Der Rumpf wird als Ganzes an CREATE FUNCTION übergeben."
+    },
+    {
+      "question": "Was passiert bei diesem Aufruf?",
+      "code": "CALL note_eintragen(3, 'DBI', 0);",
+      "options": [
+        "Die Note 0 wird gespeichert.",
+        "Fehler: Note 0 ist ungültig – es wird nichts eingefügt.",
+        "Die Note wird automatisch auf 1 gesetzt.",
+        "Die Prozedur gibt NULL zurück."
+      ],
+      "correctIndex": 1,
+      "explanation": "0 liegt nicht zwischen 1 und 5, daher wird RAISE EXCEPTION ausgeführt. Die Prozedur bricht ab, bevor das INSERT erreicht wird."
+    }
+  ]
+}

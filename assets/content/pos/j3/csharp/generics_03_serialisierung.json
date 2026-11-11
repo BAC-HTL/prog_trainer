@@ -1,0 +1,96 @@
+{
+  "id": "pos-j3-csharp-generics_03_serialisierung",
+  "title": "Serialisierung mit System.Text.Json",
+  "summary": "Objekte in JSON umwandeln, speichern und wieder einlesen – mit dem JsonSerializer aus .NET.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Serialisierung bedeutet: Ein Objekt im Speicher wird in ein Format umgewandelt, das man speichern oder übers Netzwerk schicken kann. Deserialisierung ist der Rückweg. Das häufigste Format ist JSON – du kennst es von Web-APIs und Konfigurationsdateien. In .NET ist dafür System.Text.Json schon eingebaut, du brauchst kein zusätzliches Paket."
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.Json;\n\nclass Schueler\n{\n    public string Name { get; set; } = \"\";\n    public string Klasse { get; set; } = \"\";\n    public List<int> Noten { get; set; }\n        = [];\n}\n\nvar s = new Schueler\n{\n    Name = \"Lena\", Klasse = \"3AHIF\",\n    Noten = [1, 2, 1]\n};\nstring json =\n    JsonSerializer.Serialize(s);\nConsole.WriteLine(json);\n// {\"Name\":\"Lena\",\"Klasse\":\"3AHIF\",\n//  \"Noten\":[1,2,1]}"
+    },
+    {
+      "type": "text",
+      "content": "Serialize nimmt standardmäßig alle öffentlichen Properties (mit get). Öffentliche Felder (public int x;) und private Properties werden ignoriert! Deserialize<T> ist eine generische Methode: Du sagst mit dem Typargument, welches Objekt entstehen soll. Das Ergebnis ist nullable (T?), weil der JSON-Text auch null sein kann."
+    },
+    {
+      "type": "code",
+      "content": "Schueler? z = JsonSerializer\n    .Deserialize<Schueler>(json);\nConsole.WriteLine(z!.Name);   // Lena\n\nvar liste = JsonSerializer\n    .Deserialize<List<Schueler>>(\n        \"[{\\\"Name\\\":\\\"Tom\\\"}]\");\nConsole.WriteLine(liste!.Count); // 1"
+    },
+    {
+      "type": "text",
+      "content": "Mit JsonSerializerOptions steuerst du das Format. WriteIndented = true erzeugt eingerückten, gut lesbaren Text. PropertyNamingPolicy = JsonNamingPolicy.CamelCase schreibt Namen klein beginnend („name“), wie es in JavaScript üblich ist. Achtung, typischer Fehler: Beim Einlesen unterscheidet System.Text.Json standardmäßig Groß-/Kleinschreibung. {\"name\":\"Max\"} landet NICHT in der Property Name – sie bleibt leer, ohne Fehlermeldung! Abhilfe: PropertyNameCaseInsensitive = true."
+    },
+    {
+      "type": "code",
+      "content": "var opt = new JsonSerializerOptions\n{\n    WriteIndented = true,\n    PropertyNamingPolicy =\n        JsonNamingPolicy.CamelCase,\n    PropertyNameCaseInsensitive = true\n};\nstring j = JsonSerializer\n    .Serialize(s, opt);\n// {\n//   \"name\": \"Lena\",\n//   \"klasse\": \"3AHIF\", ..."
+    },
+    {
+      "type": "text",
+      "content": "Attribute steuern einzelne Properties (using System.Text.Json.Serialization): [JsonPropertyName(\"inhaber\")] legt den Namen im JSON fest, [JsonIgnore] lässt eine Property ganz weg – praktisch für Passwörter oder berechnete Werte. Records funktionieren direkt, auch über ihren Konstruktor. Enums werden standardmäßig als Zahl gespeichert."
+    },
+    {
+      "type": "code",
+      "content": "class Konto\n{\n    [JsonPropertyName(\"inhaber\")]\n    public string Inhaber { get; set; }\n        = \"\";\n    [JsonIgnore]\n    public string Passwort { get; set; }\n        = \"\";\n    public decimal Stand { get; set; }\n}\n// {\"inhaber\":\"Ali\",\"Stand\":12.5}\n\nrecord Punkt(int X, int Y);\n// {\"X\":3,\"Y\":4}"
+    },
+    {
+      "type": "text",
+      "content": "Mit Generics baust du dir eine Speichern/Laden-Hilfe, die für jeden Typ funktioniert – das verbindet die letzten beiden Lektionen. Ungültiges JSON (z. B. {X:1} ohne Anführungszeichen) führt beim Deserialisieren zu einer JsonException, die du abfangen solltest. Umlaute werden standardmäßig als \\u00FC usw. maskiert; das ist gültiges JSON und wird beim Einlesen korrekt zurückverwandelt."
+    },
+    {
+      "type": "code",
+      "content": "static void Speichern<T>(string pfad,\n                         T daten)\n{\n    string json =\n        JsonSerializer.Serialize(daten);\n    File.WriteAllText(pfad, json);\n}\nstatic T? Laden<T>(string pfad)\n{\n    string json = File.ReadAllText(pfad);\n    return JsonSerializer\n        .Deserialize<T>(json);\n}\n\nSpeichern(\"punkte.json\",\n    new List<Punkt> { new(1, 2) });\nvar p = Laden<List<Punkt>>(\n    \"punkte.json\");"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "record Punkt(int X, int Y);\n\nvar p = new Punkt(3, 4);\nConsole.WriteLine(\n    JsonSerializer.Serialize(p));",
+      "options": [
+        "{\"x\":3,\"y\":4}",
+        "{\"X\":3,\"Y\":4}",
+        "Punkt { X = 3, Y = 4 }",
+        "{X:3,Y:4}"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne Optionen übernimmt der JsonSerializer die Property-Namen unverändert (X, Y) und setzt sie in Anführungszeichen."
+    },
+    {
+      "question": "Finde den Fehler: Warum ist name nach dem Einlesen leer?",
+      "code": "class S\n{\n    public string Name { get; set; }\n        = \"\";\n}\nvar s = JsonSerializer.Deserialize<S>(\n    \"{\\\"name\\\":\\\"Max\\\"}\");\nConsole.WriteLine($\"[{s!.Name}]\");",
+      "options": [
+        "Deserialize funktioniert nur mit Records",
+        "JSON-Strings müssen in einfachen Anführungszeichen stehen",
+        "Es fehlt WriteIndented = true",
+        "Standardmäßig wird Groß-/Kleinschreibung unterschieden – \"name\" passt nicht zu Name"
+      ],
+      "correctIndex": 3,
+      "explanation": "System.Text.Json ordnet beim Einlesen standardmäßig case-sensitiv zu. Der Schlüssel \"name\" wird ignoriert, Name behält seinen Startwert \"\". Mit PropertyNameCaseInsensitive = true (oder JsonSerializerDefaults.Web) klappt es."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class M\n{\n    public int Feld = 1;\n    private int Geheim { get; set; }\n        = 2;\n    public int Sichtbar { get; set; }\n        = 3;\n}\nConsole.WriteLine(\n    JsonSerializer.Serialize(new M()));",
+      "options": [
+        "{\"Feld\":1,\"Sichtbar\":3}",
+        "{\"Feld\":1,\"Geheim\":2,\"Sichtbar\":3}",
+        "{\"Sichtbar\":3}",
+        "{}"
+      ],
+      "correctIndex": 2,
+      "explanation": "Standardmäßig werden nur öffentliche Properties serialisiert. Das öffentliche Feld Feld und die private Property Geheim fehlen daher."
+    },
+    {
+      "question": "Wozu dient [JsonIgnore] an einer Property?",
+      "options": [
+        "Die Property wird beim Serialisieren und Deserialisieren übersprungen",
+        "Fehler in dieser Property werden ignoriert",
+        "Die Property wird verschlüsselt gespeichert",
+        "Die Property darf im JSON fehlen, wird aber sonst normal geschrieben"
+      ],
+      "correctIndex": 0,
+      "explanation": "[JsonIgnore] nimmt die Property komplett aus der (De-)Serialisierung – sinnvoll für Passwörter oder berechnete Werte. Verschlüsselt wird dabei nichts."
+    }
+  ]
+}

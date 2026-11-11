@@ -1,0 +1,124 @@
+{
+  "id": "pos-j3-csharp-gui_pruefung",
+  "title": "Abschlussprüfung: Grafische Benutzeroberflächen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Wie werden diese drei Buttons angeordnet?",
+      "code": "<StackPanel>\n  <Button Content=\"A\" />\n  <Button Content=\"B\" />\n  <Button Content=\"C\" />\n</StackPanel>",
+      "options": [
+        "Nebeneinander von links nach rechts",
+        "Untereinander",
+        "Alle übereinander in derselben Position",
+        "In einem 3×1-Raster mit gleich breiten Spalten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne Orientation-Angabe stapelt ein StackPanel vertikal, also untereinander. Nebeneinander geht mit Orientation=\"Horizontal\"."
+    },
+    {
+      "question": "Das Grid ist 330 Einheiten hoch, der Inhalt der ersten Zeile 30 Einheiten. Wie hoch wird die dritte Zeile?",
+      "code": "<Grid.RowDefinitions>\n  <RowDefinition Height=\"Auto\" />\n  <RowDefinition Height=\"*\" />\n  <RowDefinition Height=\"2*\" />\n</Grid.RowDefinitions>",
+      "options": [
+        "110",
+        "100",
+        "220",
+        "200"
+      ],
+      "correctIndex": 3,
+      "explanation": "Auto nimmt nur so viel Platz wie der Inhalt: 30. Übrig bleiben 300, die im Verhältnis 1 : 2 aufgeteilt werden: 100 und 200. Die dritte Zeile (2*) ist 200 hoch."
+    },
+    {
+      "question": "Der Button wird viermal geklickt. Was zeigt lblStand danach?",
+      "code": "private int stand = 10;\n\nprivate void BtnMinus_Click(\n    object sender, RoutedEventArgs e)\n{\n    stand -= 3;\n    if (stand < 0)\n        stand = 0;\n    lblStand.Text = stand.ToString();\n}",
+      "options": [
+        "-2",
+        "0",
+        "1",
+        "10"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ablauf: 10 → 7 → 4 → 1 → -2. Beim vierten Klick ist der Wert negativ und wird auf 0 gesetzt. Angezeigt wird 0."
+    },
+    {
+      "question": "Finde den Fehler: Warum kompiliert diese Zeile im Code-Behind nicht?",
+      "code": "btnOk.Text = \"Weiter\";",
+      "options": [
+        "btnOk muss zuerst mit new erzeugt werden",
+        "Strings müssen in XAML stehen",
+        "Button hat keine Eigenschaft Text – die Beschriftung steht in Content",
+        "Im Code-Behind darf man Controls nur lesen, nicht ändern"
+      ],
+      "correctIndex": 2,
+      "explanation": "Button ist ein ContentControl. Die Beschriftung setzt du mit btnOk.Content = \"Weiter\";. Text gibt es bei TextBox und TextBlock."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int.TryParse(\" 42 \", out int n);\nConsole.WriteLine(n + 1);",
+      "options": [
+        "43",
+        "42",
+        "False",
+        "1"
+      ],
+      "correctIndex": 0,
+      "explanation": "int.TryParse erlaubt Leerzeichen am Anfang und Ende. n wird also 42, ausgegeben wird 42 + 1 = 43."
+    },
+    {
+      "question": "Bei welchem Aufruf liefert PruefeNote den Wert null?",
+      "code": "static string PruefeNote(string eingabe)\n{\n    if (!int.TryParse(eingabe, out int note))\n        return \"Keine Zahl\";\n    if (note < 1 || note > 5)\n        return \"Nur 1 bis 5\";\n    return null;\n}",
+      "options": [
+        "PruefeNote(\"0\")",
+        "PruefeNote(\"drei\")",
+        "PruefeNote(\"6\")",
+        "PruefeNote(\"5\")"
+      ],
+      "correctIndex": 3,
+      "explanation": "\"0\" und \"6\" sind gültige Zahlen, liegen aber außerhalb von 1 bis 5. \"drei\" ist keine Zahl. Nur \"5\" besteht beide Prüfungen."
+    },
+    {
+      "question": "Welche Fehlermeldung ist aus Sicht der Usability am besten?",
+      "options": [
+        "„Fehler 0x17!“",
+        "„Ungültige Eingabe.“",
+        "„Die Teilnehmerzahl muss eine ganze Zahl zwischen 1 und 30 sein.“",
+        "„FormatException in BtnSpeichern_Click“"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine gute Meldung sagt konkret, was falsch ist und wie es richtig geht – in der Sprache der Benutzer. Technische Codes und Exception-Namen helfen ihnen nicht."
+    },
+    {
+      "question": "Welchen Typ liefert MessageBox.Show zurück, damit du bei einer Ja/Nein-Frage die Antwort auswerten kannst?",
+      "options": [
+        "bool",
+        "MessageBoxResult",
+        "MessageBoxButton",
+        "string"
+      ],
+      "correctIndex": 1,
+      "explanation": "Show liefert ein MessageBoxResult, z. B. MessageBoxResult.Yes oder MessageBoxResult.No. MessageBoxButton gibt nur an, welche Buttons angezeigt werden."
+    },
+    {
+      "question": "Was bewirkt dieses XAML, wenn die Benutzerin Alt+N drückt?",
+      "code": "<Label Content=\"_Name:\"\n  Target=\"{Binding ElementName=txtName}\" />\n<TextBox x:Name=\"txtName\" />",
+      "options": [
+        "Der Fokus springt in die TextBox txtName",
+        "Das Fenster wird geschlossen",
+        "Im Label wird ein Unterstrich angezeigt, sonst passiert nichts",
+        "Die TextBox wird geleert"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Unterstrich vor N macht N zur Zugriffstaste des Labels. Über Target ist das Label mit txtName verbunden, deshalb springt der Fokus dorthin."
+    },
+    {
+      "question": "Ein Click-Handler rechnet 20 Sekunden lang. Was bemerkt die Benutzerin in dieser Zeit?",
+      "options": [
+        "Nichts, WPF startet jeden Handler automatisch in einem eigenen Thread",
+        "Das Programm stürzt sofort mit einer Exception ab",
+        "Nur der geklickte Button ist gesperrt, der Rest funktioniert",
+        "Das Fenster reagiert nicht mehr, weil der UI-Thread blockiert ist"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eventhandler laufen im UI-Thread. Solange er rechnet, kann das Fenster weder neu zeichnen noch Klicks verarbeiten – es friert ein. Deshalb sollen Handler kurz bleiben."
+    }
+  ]
+}

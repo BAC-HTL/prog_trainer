@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-theorie-automaten_03_automaten_implementieren",
+  "title": "Automaten implementieren",
+  "summary": "Einen DEA mit einer Zustandstabelle in Pseudocode, Python und C# programmieren.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein DEA lässt sich fast mechanisch in Code übersetzen. Als Beispiel prüfen wir ganze Zahlen mit optionalem Vorzeichen: „42“, „-7“ und „+0“ sind gültig, „+“, „4-2“ und das leere Wort nicht. Als Regex wäre das [+-]?[0-9]+. Statt einzelner Zeichen fassen wir Zeichenklassen zusammen: vz (+ oder -), ziffer und sonst."
+    },
+    {
+      "type": "code",
+      "content": "  δ       │ vz  │ ziffer │ sonst\n──────────┼─────┼────────┼──────\n→ START   │ VZ  │ ZAHL   │ FEHL\n  VZ      │ FEHL│ ZAHL   │ FEHL\n* ZAHL    │ FEHL│ ZAHL   │ FEHL\n  FEHL    │ FEHL│ FEHL   │ FEHL"
+    },
+    {
+      "type": "text",
+      "content": "Der Algorithmus ist immer gleich, egal wie groß der Automat ist: Starte im Startzustand, schlage für jedes Zeichen den Folgezustand in der Tabelle nach und prüfe am Ende, ob du in einem Endzustand bist. Pro Zeichen gibt es genau einen Tabellenzugriff – die Laufzeit ist also linear in der Wortlänge."
+    },
+    {
+      "type": "code",
+      "content": "FUNKTION akzeptiert(wort)\n  zustand ← START\n  FÜR JEDES zeichen IN wort\n    k ← klasse(zeichen)\n    zustand ← delta[zustand][k]\n  ENDE FÜR\n  RÜCKGABE zustand ∈ ENDZUSTÄNDE\nENDE FUNKTION"
+    },
+    {
+      "type": "text",
+      "content": "In Python eignet sich ein Dictionary aus Dictionaries als Tabelle. Fehlende Einträge bedeuten „Fehlerzustand“ – sobald einer erreicht wird, kann die Funktion sofort False liefern. Achtung: isdigit() würde auch Zeichen wie „²“ als Ziffer werten, deshalb prüfen wir explizit gegen \"0123456789\"."
+    },
+    {
+      "type": "code",
+      "content": "def klasse(z):\n    if z in \"+-\":\n        return \"vz\"\n    if z in \"0123456789\":\n        return \"ziffer\"\n    return \"sonst\"\n\ndelta = {\n    \"START\": {\"vz\": \"VZ\",\n              \"ziffer\": \"ZAHL\"},\n    \"VZ\":    {\"ziffer\": \"ZAHL\"},\n    \"ZAHL\":  {\"ziffer\": \"ZAHL\"},\n}\nENDE = {\"ZAHL\"}\n\ndef akzeptiert(wort):\n    zustand = \"START\"\n    for z in wort:\n        zeile = delta[zustand]\n        k = klasse(z)\n        if k not in zeile:\n            return False  # Fehler\n        zustand = zeile[k]\n    return zustand in ENDE\n\nfor w in [\"42\", \"-7\", \"+\", \"4-2\"]:\n    print(w, akzeptiert(w))\n\n# 42 True\n# -7 True\n# + False\n# 4-2 False"
+    },
+    {
+      "type": "text",
+      "content": "In C# nummerierst du die Zustände durch und speicherst die Tabelle als zweidimensionales Array. Der Fehlerzustand bekommt eine eigene Zeile, die nur auf sich selbst zeigt – so braucht die Schleife keine Sonderfälle. Das Beispiel nutzt Top-Level-Statements und lokale Funktionen."
+    },
+    {
+      "type": "code",
+      "content": "// Zustände: 0=Start 1=Vz 2=Zahl 3=Fehler\n// Spalten:  vz, ziffer, sonst\nint[,] delta =\n{\n    { 1, 2, 3 },   // 0 Start\n    { 3, 2, 3 },   // 1 Vz\n    { 3, 2, 3 },   // 2 Zahl\n    { 3, 3, 3 },   // 3 Fehler\n};\n\nint Klasse(char c) =>\n    c is '+' or '-' ? 0\n    : char.IsAsciiDigit(c) ? 1\n    : 2;\n\nbool Akzeptiert(string wort)\n{\n    int z = 0;\n    foreach (char c in wort)\n        z = delta[z, Klasse(c)];\n    return z == 2;\n}\n\nstring[] tests = [\"42\", \"-7\", \"+\", \"4-2\"];\nforeach (var w in tests)\n{\n    bool ok = Akzeptiert(w);\n    Console.WriteLine($\"{w}: {ok}\");\n}\n\n// 42: True\n// -7: True\n// +: False\n// 4-2: False"
+    },
+    {
+      "type": "text",
+      "content": "Alternativ kannst du jeden Zustand als case in einem switch programmieren. Das ist bei kleinen Automaten gut lesbar, aber die Tabellenvariante hat einen großen Vorteil: Um den Automaten zu ändern, änderst du nur Daten, nicht den Algorithmus. Genau so arbeiten Lexer in Compilern und Regex-Engines. Typische Fehler: Startzustand bei jedem Aufruf nicht zurücksetzen, am Ende nicht prüfen, ob ein Endzustand erreicht ist (dann wäre „+“ gültig), oder Zeichen vergessen, die in keine Klasse passen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Zustandstabelle aufstellen, Zeichenklassen festlegen, dann eine Schleife mit einem Tabellenzugriff pro Zeichen. Teste deinen Automaten mit Randfällen (leeres Wort, nur Vorzeichen, Zeichen außerhalb des Alphabets) und vergleiche ihn bei Bedarf automatisch mit der passenden Regex, z. B. mit re.fullmatch in Python."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was liefert akzeptiert(\"+-1\") für den Vorzeichen-Automaten?",
+      "options": [
+        "True, weil am Ende eine Ziffer steht",
+        "False, weil nach VZ ein vz-Zeichen in den Fehlerzustand führt",
+        "True, weil + und - beide Vorzeichen sind",
+        "Einen KeyError"
+      ],
+      "correctIndex": 1,
+      "explanation": "START -+-> VZ. In der Zeile VZ gibt es für vz keinen Eintrag, also gibt die Funktion sofort False zurück. Kein KeyError, weil vorher mit in geprüft wird."
+    },
+    {
+      "question": "Was gibt dieser C#-Code aus, wenn delta die Tabelle aus der Lektion ist (0=Start, 1=Vz, 2=Zahl, 3=Fehler; Spalten vz, ziffer, sonst)?",
+      "code": "int z = 0;\nforeach (char c in \"5a7\")\n    z = delta[z, Klasse(c)];\nConsole.WriteLine(z);",
+      "options": [
+        "2",
+        "1",
+        "3",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Start -5(ziffer)-> 2, dann -a(sonst)-> 3, dann -7(ziffer)-> 3. Aus dem Fehlerzustand kommt man nicht mehr heraus."
+    },
+    {
+      "question": "Finde den Fehler: Welches Wort wird dadurch fälschlich akzeptiert?",
+      "code": "def akzeptiert(wort):\n    zustand = \"START\"\n    for z in wort:\n        zeile = delta[zustand]\n        k = klasse(z)\n        if k not in zeile:\n            return False\n        zustand = zeile[k]\n    return True",
+      "options": [
+        "\"42\"",
+        "\"4-2\"",
+        "\"a\"",
+        "\"-\""
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Funktion prüft am Ende nicht, ob der Zustand ein Endzustand ist. Bei „-“ landet sie in VZ und liefert True, obwohl keine Ziffer folgt."
+    },
+    {
+      "question": "Welchen Vorteil hat die Implementierung mit Zustandstabelle gegenüber vielen if-Abfragen?",
+      "options": [
+        "Sie akzeptiert mehr Sprachen",
+        "Sie braucht keine Endzustände",
+        "Der Automat lässt sich ändern, ohne den Algorithmus anzupassen",
+        "Sie ist nur in Python möglich"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Logik steckt in den Daten. Die Schleife bleibt gleich, egal wie viele Zustände oder Zeichenklassen der Automat hat."
+    }
+  ]
+}

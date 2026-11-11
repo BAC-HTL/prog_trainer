@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j3-entwurf_03_monitoring_snmp",
+  "title": "Monitoring mit SNMP und Syslog",
+  "summary": "Netzwerkgeräte mit SNMP abfragen, Auslastung aus Interface-Zählern berechnen und Meldungen zentral per Syslog sammeln und auswerten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein gut betreutes Netz meldet Probleme, bevor die ersten Lehrkräfte anrufen. Monitoring dient dazu, Ausfälle sofort zu erkennen, die Auslastung zu beobachten (Kapazitätsplanung), einen Normalzustand (Baseline) zu kennen und Auffälligkeiten zu sehen, die auf Angriffe hindeuten. Zwei Wege gibt es: Polling – der Monitoring-Server fragt regelmäßig nach – und Push – das Gerät meldet sich von selbst, z. B. per SNMP-Trap oder Syslog."
+    },
+    {
+      "type": "text",
+      "content": "SNMP (Simple Network Management Protocol) hat drei Bausteine: den Manager (Monitoring-Server), den Agent (läuft auf Switch, Router, Drucker, Server) und die MIB (Management Information Base), die beschreibt, welche Werte es gibt. Jeder Wert hat eine OID (Object Identifier) – eine Zahlenfolge in einem weltweit einheitlichen Baum. Operationen: Get, GetNext und GetBulk (lesen), Set (schreiben) sowie Trap/Inform (Meldung des Agents an den Manager). Der Agent lauscht auf UDP-Port 161, Traps gehen an UDP-Port 162 des Managers."
+    },
+    {
+      "type": "code",
+      "content": "1 iso\n└ 3 org\n  └ 6 dod\n    └ 1 internet\n      └ 2 mgmt\n        └ 1 mib-2\n          ├ 1 system\n          │ ├ 1 sysDescr\n          │ ├ 3 sysUpTime\n          │ └ 5 sysName\n          └ 2 interfaces\n\nsysName.0 = 1.3.6.1.2.1.1.5.0"
+    },
+    {
+      "type": "code",
+      "content": "# Net-SNMP-Werkzeuge (Linux)\nsnmpget -v2c -c <community> \\\n  10.10.99.11 1.3.6.1.2.1.1.5.0\n\nSNMPv2-MIB::sysName.0 =\n  STRING: SW-A-OG1-01\n\n# ganzen Teilbaum abfragen\nsnmpwalk -v2c -c <community> \\\n  10.10.99.11 1.3.6.1.2.1.2\n\n# SNMPv3 mit Anmeldung + Verschl.\nsnmpget -v3 -l authPriv -u monitor \\\n  -a SHA -A <pw1> -x AES -X <pw2> \\\n  10.10.99.11 sysName.0"
+    },
+    {
+      "type": "text",
+      "content": "Versionen: SNMPv1 und v2c schützen den Zugriff nur mit einem „Community String“, der im Klartext übertragen wird – praktisch ein Passwort für alle. Der Standardwert „public“ muss unbedingt geändert werden. v2c bringt GetBulk und 64-Bit-Zähler. SNMPv3 bietet echte Benutzer, Authentifizierung und Verschlüsselung (Stufe authPriv) und sollte bevorzugt werden. Zusätzlich: nur lesenden Zugriff erlauben und Abfragen nur vom Monitoring-Server zulassen.\n\nInterface-Zähler wie ifInOctets zählen die empfangenen Bytes nur hoch. Die Auslastung ergibt sich aus der Differenz zweier Abfragen. Ein 32-Bit-Zähler läuft schon nach 2³² Byte (rund 4,3 GB) über – bei voll ausgelastetem 1 Gbit/s alle ca. 34 Sekunden. Deshalb nutzt man die 64-Bit-Zähler ifHCInOctets."
+    },
+    {
+      "type": "code",
+      "content": "# ifHCInOctets zweimal abgefragt\nt1, c1 = 0, 8_250_000_000\nt2, c2 = 60, 8_700_000_000\n\nbits = (c2 - c1) * 8\nrate = bits / (t2 - t1)\nprint(rate / 1_000_000, \"Mbit/s\")\n\n# Auslastung eines 1-Gbit/s-Links\nprint(f\"{rate / 1e9:.0%}\")\n\n# Ausgabe:\n# 60.0 Mbit/s\n# 6%"
+    },
+    {
+      "type": "text",
+      "content": "Syslog sammelt die Meldungen aller Geräte auf einem zentralen Server – klassisch über UDP-Port 514, verlässlicher über TCP oder verschlüsselt mit TLS. Jede Meldung hat eine Facility (Herkunft) und einen Schweregrad (Severity) von 0 bis 7; je kleiner die Zahl, desto ernster. Cisco-Meldungen haben die Form %FACILITY-SEVERITY-MNEMONIC, z. B. „%LINK-3-UPDOWN“. „logging trap warnings“ schickt alle Meldungen mit Stufe 4 oder ernster (0–4). Ohne synchronisierte Uhren (NTP) lassen sich Meldungen verschiedener Geräte nicht zeitlich zuordnen."
+    },
+    {
+      "type": "code",
+      "content": "Severity\n0 Emergency    4 Warning\n1 Alert        5 Notice\n2 Critical     6 Informational\n3 Error        7 Debug\n\n! Cisco IOS\nservice timestamps log datetime msec\nlogging host 10.10.40.20\nlogging trap warnings"
+    },
+    {
+      "type": "code",
+      "content": "import re\n\nmsgs = [\n \"%LINK-3-UPDOWN: Interface Gi0/1,\"\n \" changed state to down\",\n \"%SYS-5-CONFIG_I: Configured from\"\n \" console by admin\",\n \"%LINEPROTO-5-UPDOWN: Line protocol\"\n \" on Interface Gi0/1, changed\"\n \" state to down\",\n]\npat = re.compile(r\"%(\\w+)-(\\d)-(\\w+):\")\nfor m in msgs:\n    fac, sev, mn = pat.search(m).groups()\n    if int(sev) <= 4:\n        print(\"ALARM\", fac, sev, mn)\n\n# Ausgabe:\n# ALARM LINK 3 UPDOWN"
+    },
+    {
+      "type": "text",
+      "content": "In der Praxis übernehmen Monitoring-Systeme wie Zabbix, LibreNMS oder Icinga das Abfragen, Speichern und Darstellen. Sinnvolle Schwellwerte (z. B. Auslastung über 80 % für längere Zeit) lösen Alarme aus – aber nicht zu viele, sonst ignoriert man sie. Zusammenfassung: SNMP-Manager fragen Agents per OID ab (UDP 161, Traps an 162), bevorzugt mit SNMPv3; Auslastung = Zählerdifferenz · 8 / Zeit, mit 64-Bit-Zählern; Syslog sammelt Meldungen zentral, Severity 0 ist am ernstesten, und NTP sorgt für vergleichbare Zeitstempel."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Monitoring-Server liest ifHCInOctets im Abstand von 30 Sekunden: zuerst 1 000 000 000, dann 1 150 000 000. Wie hoch war die durchschnittliche Eingangsrate?",
+      "options": [
+        "5 Mbit/s",
+        "150 Mbit/s",
+        "40 Mbit/s",
+        "4,5 Gbit/s"
+      ],
+      "correctIndex": 2,
+      "explanation": "Differenz 150 000 000 Byte · 8 = 1 200 000 000 Bit; geteilt durch 30 s = 40 000 000 bit/s = 40 Mbit/s."
+    },
+    {
+      "question": "Ein Router ist mit „logging trap warnings“ konfiguriert. Welche Meldung wird NICHT an den Syslog-Server geschickt?",
+      "options": [
+        "%LINK-3-UPDOWN",
+        "%LINEPROTO-5-UPDOWN",
+        "%SYS-2-MALLOCFAIL",
+        "%SYS-4-CONFIG_RESOLVE_FAILURE"
+      ],
+      "correctIndex": 1,
+      "explanation": "warnings = Stufe 4: gesendet werden 0 bis 4. Die LINEPROTO-Meldung hat Stufe 5 (Notice) und bleibt lokal."
+    },
+    {
+      "question": "Welche SNMP-Version bietet Authentifizierung und Verschlüsselung?",
+      "options": [
+        "SNMPv1",
+        "SNMPv2c",
+        "Keine – SNMP ist immer im Klartext",
+        "SNMPv3"
+      ],
+      "correctIndex": 3,
+      "explanation": "v1 und v2c nutzen nur einen im Klartext übertragenen Community String. SNMPv3 bietet Benutzer, Authentifizierung und Verschlüsselung (authPriv)."
+    },
+    {
+      "question": "Auf welchem Port empfängt ein SNMP-Manager standardmäßig Traps?",
+      "options": [
+        "UDP 162",
+        "UDP 161",
+        "UDP 514",
+        "TCP 22"
+      ],
+      "correctIndex": 0,
+      "explanation": "Agents lauschen auf UDP 161 für Abfragen, Traps gehen an UDP 162 des Managers. 514 ist Syslog."
+    }
+  ]
+}

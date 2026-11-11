@@ -1,0 +1,91 @@
+{
+  "id": "pos-j3-csharp-compiler_01_aufbau_compiler",
+  "title": "Aufbau eines Compilers",
+  "summary": "Welche Phasen ein Compiler durchläuft und in welcher Phase welcher Fehler gefunden wird.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Compiler übersetzt ein Programm aus einer Quellsprache (z. B. C#) in eine Zielsprache (z. B. Maschinencode oder Zwischencode). Ein Interpreter führt das Programm dagegen direkt Schritt für Schritt aus, ohne vorher alles zu übersetzen. C# nutzt beides: Der C#-Compiler übersetzt in die Zwischensprache IL (Intermediate Language). Beim Ausführen übersetzt der JIT-Compiler der .NET-Laufzeit den IL-Code in Maschinencode für den jeweiligen Prozessor."
+    },
+    {
+      "type": "text",
+      "content": "Ein Compiler arbeitet in Phasen. Jede Phase bekommt das Ergebnis der vorigen:\n1. Lexikalische Analyse (Lexer/Scanner): Zeichen → Tokens.\n2. Syntaktische Analyse (Parser): Tokens → Syntaxbaum.\n3. Semantische Analyse: Typen prüfen, Namen auflösen.\n4. Zwischencode erzeugen.\n5. Optimierung.\n6. Codeerzeugung: Zielcode.\n\nDie Phasen 1–3 bilden das Frontend (abhängig von der Quellsprache), 5–6 das Backend (abhängig von der Zielplattform). Alle Phasen nutzen die Symboltabelle, in der z. B. Variablennamen und ihre Typen stehen."
+    },
+    {
+      "type": "code",
+      "content": "Quelltext:  summe = summe + 5;\n\nLexer -> Tokens:\n  Bezeichner(summe)  Zuweisung\n  Bezeichner(summe)  Plus\n  Zahl(5)            Semikolon\n\nParser -> Syntaxbaum:\n        =\n       / \\\n  summe   +\n         / \\\n     summe   5"
+    },
+    {
+      "type": "text",
+      "content": "Der Lexer liest den Text Zeichen für Zeichen und fasst sie zu Tokens zusammen – den „Wörtern“ der Sprache: Schlüsselwörter, Bezeichner, Zahlen, Operatoren, Klammern. Leerzeichen und Kommentare wirft er weg. Die Muster der Tokens sind reguläre Sprachen; ein Lexer ist im Kern ein endlicher Automat, wie du ihn im Modul „Formale Sprachen & Automaten“ kennengelernt hast."
+    },
+    {
+      "type": "text",
+      "content": "Der Parser prüft, ob die Folge der Tokens der Grammatik der Sprache entspricht, und baut daraus einen Syntaxbaum. Programmiersprachen sind (im Wesentlichen) kontextfreie Sprachen: Verschachtelte Klammern kann ein endlicher Automat nicht prüfen, ein Parser schon.\n\nDie semantische Analyse prüft dann, was die Grammatik nicht sagen kann: Ist die Variable deklariert? Passen die Typen zusammen? Dafür schlägt sie in der Symboltabelle nach."
+    },
+    {
+      "type": "text",
+      "content": "Jede Phase findet ihre eigene Art von Fehlern. Die folgenden Meldungen liefert der C#-Compiler tatsächlich (dotnet build):"
+    },
+    {
+      "type": "code",
+      "content": "// Lexikalischer Fehler\nint x = 5 $;\n// CS1056: Unexpected character '$'\n\n// Syntaxfehler\nint x = 5\n// CS1002: ; expected\nint y = (3 + 4;\n// CS1026: ) expected\n\n// Semantische Fehler\nint z = \"Hallo\";\n// CS0029: Cannot implicitly convert\n//         type 'string' to 'int'\nint w = q + 1;\n// CS0103: The name 'q' does not exist\n//         in the current context"
+    },
+    {
+      "type": "text",
+      "content": "Die Optimierung verbessert den Code, ohne seine Bedeutung zu ändern. Ein Beispiel ist Constant Folding: Ausdrücke aus lauter Konstanten werden schon beim Übersetzen ausgerechnet. Aus int sekunden = 60 * 60 * 24; wird int sekunden = 86400;. Ein anderes Beispiel ist das Entfernen von Code, der nie erreicht wird.\n\nFehler zur Laufzeit (z. B. Division durch 0 mit Variablen, fehlende Datei) kann der Compiler dagegen nicht finden – sie zeigen sich erst beim Ausführen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Lexer (Zeichen → Tokens), Parser (Tokens → Syntaxbaum), semantische Analyse (Typen, Namen), dann Zwischencode, Optimierung und Codeerzeugung. Frontend = Analyse der Quellsprache, Backend = Erzeugung für die Zielplattform. C# wird zuerst in IL übersetzt und zur Laufzeit per JIT in Maschinencode. In der nächsten Lektion baust du selbst einen Lexer und einen Parser für Rechenausdrücke."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Phase meldet der C#-Compiler den Fehler in dieser Zeile?",
+      "code": "int anzahl = \"drei\";",
+      "options": [
+        "Lexikalische Analyse",
+        "Syntaktische Analyse",
+        "Semantische Analyse",
+        "Codeerzeugung"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Zeile ist lexikalisch und syntaktisch korrekt (Typ, Name, =, Literal, ;). Erst die semantische Analyse merkt, dass ein string nicht in ein int passt (CS0029)."
+    },
+    {
+      "question": "Was liefert der Lexer für die Eingabe „x1 = 42;“?",
+      "options": [
+        "Die Zeichen x, 1, =, 4, 2, ; einzeln",
+        "Bezeichner(x1), Zuweisung, Zahl(42), Semikolon",
+        "Einen Syntaxbaum mit = als Wurzel",
+        "Den Wert 42"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Lexer fasst Zeichen zu Tokens zusammen: x1 ist ein Bezeichner, 42 eine Zahl. Leerzeichen fallen weg. Den Syntaxbaum baut erst der Parser."
+    },
+    {
+      "question": "Finde den Fehler: Welche Meldung liefert der C#-Compiler hier?",
+      "code": "int y = (3 + 4;",
+      "options": [
+        "CS1002: ; expected",
+        "CS0103: The name ... does not exist",
+        "CS1056: Unexpected character",
+        "CS1026: ) expected"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die öffnende Klammer wird nie geschlossen. Das ist ein Syntaxfehler: Der Parser erwartet ) vor dem Semikolon."
+    },
+    {
+      "question": "Was macht der JIT-Compiler bei einem C#-Programm?",
+      "options": [
+        "Er übersetzt C#-Quelltext in IL-Code",
+        "Er prüft beim Build die Typen",
+        "Er übersetzt zur Laufzeit IL-Code in Maschinencode für den Prozessor",
+        "Er interpretiert den C#-Quelltext Zeile für Zeile"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der C#-Compiler erzeugt IL. Erst beim Ausführen übersetzt der JIT-Compiler (Just-in-Time) diesen in Maschinencode."
+    }
+  ]
+}

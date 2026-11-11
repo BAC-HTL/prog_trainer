@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-gui_01_gui_grundlagen",
+  "title": "GUI-Grundlagen mit WPF",
+  "summary": "Wie ein Fenster mit XAML und Code-Behind aufgebaut ist und auf Klicks reagiert.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Konsolenprogramm bestimmt selbst, was als Nächstes passiert: Es fragt mit Console.ReadLine() und wartet genau dort auf die Antwort. Eine grafische Benutzeroberfläche (GUI) funktioniert anders: Das Fenster wartet, bis die Benutzerin etwas tut – klicken, tippen, auswählen. Jede solche Aktion ist ein Ereignis (Event), und dein Programm reagiert darauf mit einer Methode, dem Eventhandler. Man nennt das ereignisgesteuerte Programmierung."
+    },
+    {
+      "type": "text",
+      "content": "An HTLs wird für Desktop-GUIs in C# meist WPF (Windows Presentation Foundation) verwendet. WPF gehört zu .NET, läuft aber nur unter Windows. In Visual Studio legst du ein Projekt mit der Vorlage „WPF-Anwendung“ an (oder auf der Kommandozeile mit dotnet new wpf).\n\nJedes Fenster besteht aus zwei Dateien:\n• MainWindow.xaml – das Aussehen, beschrieben in XAML (einer XML-Sprache).\n• MainWindow.xaml.cs – das Verhalten, der sogenannte Code-Behind in C#."
+    },
+    {
+      "type": "code",
+      "content": "<Window x:Class=\"Noten.MainWindow\"\n  xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n  xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n  Title=\"Notenrechner\"\n  Height=\"200\" Width=\"300\">\n  <StackPanel Margin=\"10\">\n    <TextBlock Text=\"Punkte:\" />\n    <TextBox x:Name=\"txtPunkte\" />\n    <Button x:Name=\"btnBerechnen\"\n            Content=\"Berechnen\"\n            Click=\"BtnBerechnen_Click\" />\n    <TextBlock x:Name=\"lblErgebnis\" />\n  </StackPanel>\n</Window>"
+    },
+    {
+      "type": "text",
+      "content": "So liest du das XAML:\n• Jedes Element (<Button …/>) erzeugt ein Objekt, jedes Attribut setzt eine Eigenschaft (Content, Width, …).\n• x:Class verbindet das Fenster mit der C#-Klasse Noten.MainWindow.\n• Die beiden xmlns-Zeilen binden die WPF-Namensräume ein – die stehen in jedem Fenster.\n• x:Name gibt einem Control einen Namen. Unter diesem Namen kannst du es im C#-Code ansprechen.\n• Ein Window hat genau einen Inhalt. Für mehrere Controls brauchst du deshalb einen Layout-Container wie das StackPanel."
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigsten Controls und ihre Haupt-Eigenschaft:\n• TextBlock – zeigt Text an (Text).\n• Label – Beschriftung (Content).\n• TextBox – einzeilige Eingabe (Text).\n• Button – Schaltfläche (Content, Ereignis Click).\n• CheckBox – Häkchen (IsChecked, Typ bool?).\n• RadioButton – eine Auswahl aus mehreren (GroupName).\n• ComboBox und ListBox – Listen (Items, SelectedItem).\n\nTypischer Fehler: Button und Label haben kein Text, sondern Content. TextBox und TextBlock haben Text."
+    },
+    {
+      "type": "code",
+      "content": "using System.Windows;\n\nnamespace Noten;\n\npublic partial class MainWindow : Window\n{\n    public MainWindow()\n    {\n        InitializeComponent();\n    }\n\n    private void BtnBerechnen_Click(\n        object sender, RoutedEventArgs e)\n    {\n        string eingabe = txtPunkte.Text;\n        lblErgebnis.Text =\n            $\"Du hast {eingabe} eingegeben\";\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Warum partial? Die Klasse MainWindow ist auf zwei Teile aufgeteilt: Deinen Teil schreibst du selbst, den anderen erzeugt der Build automatisch aus dem XAML. Dort stehen die Felder für alle Controls mit x:Name und die Methode InitializeComponent(), die das XAML lädt.\n\nDaraus folgen zwei typische Fehler:\n• Code, der vor InitializeComponent() auf ein Control zugreift, bekommt eine NullReferenceException – das Control gibt es noch nicht.\n• Der Name bei Click=\"…\" muss genau zur Methode passen, sonst schlägt der Build fehl. Ein Doppelklick auf den Button im Designer von Visual Studio legt den Handler automatisch an."
+    },
+    {
+      "type": "code",
+      "content": "// CheckBox: IsChecked ist bool?\nint punkte = 40;\nif (chkHausuebung.IsChecked == true)\n    punkte += 5;\n\n// ListBox befüllen\nlstSchueler.Items.Add(\"Anna\");\nlstSchueler.Items.Add(\"Ben\");\n\n// Button sperren\nbtnSenden.IsEnabled = false;"
+    },
+    {
+      "type": "text",
+      "content": "Alle Eventhandler laufen im UI-Thread – demselben Thread, der auch das Fenster zeichnet und Klicks entgegennimmt. Solange ein Handler arbeitet, kann das Fenster nicht reagieren. Rechnet ein Click-Handler sehr lange, „friert“ die Oberfläche ein. Halte Handler daher kurz: Eingaben lesen, etwas berechnen, Ergebnis anzeigen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine GUI ist ereignisgesteuert. In WPF beschreibt XAML das Aussehen, der Code-Behind das Verhalten. Mit x:Name sprichst du Controls im Code an, mit Click=\"Methode\" verbindest du ein Ereignis mit einem Handler. Merke dir: TextBox/TextBlock → Text, Button/Label → Content."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Mit welcher Eigenschaft liest du im Code-Behind aus, was in eine TextBox getippt wurde?",
+      "options": [
+        "Content",
+        "Text",
+        "Value",
+        "Input"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine TextBox speichert die Eingabe in der Eigenschaft Text (Typ string). Content gibt es bei Button und Label."
+    },
+    {
+      "question": "Finde den Fehler: Warum lässt sich dieses Fenster nicht bauen?",
+      "code": "<Window ... Title=\"Login\">\n  <TextBox x:Name=\"txtName\" />\n  <Button Content=\"OK\" />\n</Window>",
+      "options": [
+        "Die TextBox braucht ein x:Name",
+        "Ein Button darf nicht direkt in einem Window stehen, nur in einem Grid",
+        "Title muss nach Height stehen",
+        "Ein Window kann nur einen einzigen Inhalt haben – hier sind es zwei Controls"
+      ],
+      "correctIndex": 3,
+      "explanation": "Window ist ein Control mit genau einem Inhalt. Für mehrere Controls brauchst du einen Layout-Container wie StackPanel oder Grid, der dann die Controls enthält."
+    },
+    {
+      "question": "Der Button wird dreimal angeklickt. Was steht danach in lblAusgabe?",
+      "code": "private int klicks = 0;\n\nprivate void BtnZaehlen_Click(\n    object sender, RoutedEventArgs e)\n{\n    klicks++;\n    lblAusgabe.Text = $\"{klicks} Klicks\";\n}",
+      "options": [
+        "1 Klicks",
+        "0 Klicks",
+        "3 Klicks",
+        "123 Klicks"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Feld klicks gehört zum Fenster-Objekt und behält seinen Wert zwischen den Klicks. Nach drei Aufrufen ist es 3, angezeigt wird „3 Klicks“. Eine lokale Variable im Handler würde dagegen jedes Mal neu bei 0 beginnen."
+    },
+    {
+      "question": "Warum ist die Klasse MainWindow als partial deklariert?",
+      "options": [
+        "Damit sie von mehreren Fenstern gleichzeitig verwendet werden kann",
+        "Weil WPF-Klassen nicht vererbt werden dürfen",
+        "Damit sie schneller geladen wird",
+        "Weil der zweite Teil der Klasse (Felder für die Controls, InitializeComponent) automatisch aus dem XAML erzeugt wird"
+      ],
+      "correctIndex": 3,
+      "explanation": "partial erlaubt es, eine Klasse auf mehrere Dateien aufzuteilen. Den einen Teil schreibst du, den anderen generiert der Build aus der XAML-Datei."
+    }
+  ]
+}

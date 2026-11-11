@@ -1,0 +1,117 @@
+{
+  "id": "dbi-j3-dbms_pruefung",
+  "title": "Abschlussprüfung: Datenbanksysteme & Architektur",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Das Sekretariat und die Bibliothek speichern Schülername und Klasse jeweils in einer eigenen Datei. Welches Problem entsteht dadurch zuerst – und welches folgt daraus?",
+      "options": [
+        "Inkonsistenz, daraus folgt Redundanz",
+        "Redundanz, daraus kann Inkonsistenz folgen",
+        "Lost Update, daraus folgt Redundanz",
+        "Datenunabhängigkeit, daraus folgt Inkonsistenz"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mehrfach gespeicherte Daten sind redundant. Wird nur eine Kopie geändert, widersprechen sich die Daten – Inkonsistenz."
+    },
+    {
+      "question": "Zwei Lehrkräfte bearbeiten gleichzeitig dieselbe Notendatei. Wer zuletzt speichert, überschreibt die Änderung des anderen. Welche DBMS-Fähigkeit verhindert das?",
+      "options": [
+        "Physische Datenunabhängigkeit",
+        "Mehrbenutzerbetrieb mit Sperren und Transaktionen",
+        "Der Datenkatalog",
+        "Ein logisches Backup"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das DBMS synchronisiert gleichzeitige Zugriffe (Isolation in ACID) und verhindert so Lost Updates – ohne die ganze Datei sperren zu müssen."
+    },
+    {
+      "question": "Eine Klasse wechselt in einer Transaktion: Alle 25 Schüler:innen bekommen eine neue klasse_id. Nach 10 Zeilen stürzt der Server ab. Was garantiert Atomicity?",
+      "options": [
+        "Die 10 Änderungen bleiben, der Rest wird beim Neustart nachgeholt",
+        "Die 10 Änderungen bleiben, der Rest fehlt",
+        "Keine der Änderungen ist wirksam – ganz oder gar nicht",
+        "Die Datenbank ist danach unbrauchbar"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine nicht abgeschlossene Transaktion wird vollständig zurückgesetzt. Es gibt keinen halben Zustand."
+    },
+    {
+      "question": "Auf welcher Ebene der ANSI/SPARC-Architektur liegt eine View, die dem Sekretariat nur Name, Klasse und Adresse zeigt?",
+      "options": [
+        "Externe Ebene",
+        "Konzeptionelle Ebene",
+        "Interne Ebene",
+        "Physische Ebene"
+      ],
+      "correctIndex": 0,
+      "explanation": "Benutzergruppenspezifische Sichten gehören zur externen Ebene."
+    },
+    {
+      "question": "Welche Änderung betrifft NUR die interne Ebene?",
+      "options": [
+        "Neue Spalte geburtsdatum in schueler",
+        "Neue View für die Schüler-App",
+        "Die Datenbankdateien werden auf eine schnellere SSD verschoben",
+        "Neuer CHECK-Constraint auf note"
+      ],
+      "correctIndex": 2,
+      "explanation": "Speicherort und -medium sind physische Details. Spalten und Constraints sind konzeptionell, Views extern."
+    },
+    {
+      "question": "Eine Spalte, die von einer View verwendet wird, wird aus der Tabelle gelöscht. Warum stößt die logische Datenunabhängigkeit hier an ihre Grenze?",
+      "options": [
+        "Weil Indizes dabei verloren gehen",
+        "Weil die View eine Information liefern müsste, die es im Schema nicht mehr gibt",
+        "Weil Views grundsätzlich nur lesbar sind",
+        "Weil die interne Ebene neu aufgebaut werden muss"
+      ],
+      "correctIndex": 1,
+      "explanation": "Views können Schemaänderungen nur verbergen, solange die nötigen Daten noch irgendwo vorhanden sind."
+    },
+    {
+      "question": "Wo speichert SQLite die Beschreibung aller Tabellen, Indizes und Views (den Datenkatalog)?",
+      "options": [
+        "In information_schema.tables",
+        "In der Tabelle sqlite_master",
+        "In einer eigenen Datei catalog.db",
+        "Gar nicht – nur im Programmcode"
+      ],
+      "correctIndex": 1,
+      "explanation": "SQLite führt den Katalog in sqlite_master. MySQL und PostgreSQL bieten dafür das information_schema."
+    },
+    {
+      "question": "Für ein Online-Spiel sollen Sitzungsdaten extrem schnell unter einer Sitzungs-ID gespeichert werden; Beziehungen und JOINs werden nicht gebraucht. Welcher Datenbanktyp passt am besten?",
+      "options": [
+        "Key-Value-Store",
+        "Graphdatenbank",
+        "Relationales DBMS mit vielen Fremdschlüsseln",
+        "Tabellenkalkulation"
+      ],
+      "correctIndex": 0,
+      "explanation": "Einfache Zugriffe über einen Schlüssel sind genau der Einsatzzweck von Key-Value-Stores wie Redis."
+    },
+    {
+      "question": "Ein PostgreSQL-Server ist frisch installiert. Ein Rechner im Schulnetz kann sich nicht verbinden, lokal auf dem Server klappt es. Was ist die wahrscheinlichste Ursache?",
+      "options": [
+        "Der Server hat keinen Port",
+        "Der Server lauscht standardmäßig nur auf localhost (listen_addresses)",
+        "PostgreSQL unterstützt keine Netzwerkverbindungen",
+        "Der Benutzer postgres wurde gelöscht"
+      ],
+      "correctIndex": 1,
+      "explanation": "Aus Sicherheitsgründen lauscht PostgreSQL standardmäßig nur lokal. Für Fernzugriff müssen listen_addresses, pg_hba.conf und die Firewall angepasst werden."
+    },
+    {
+      "question": "Welche Aussage über Backups ist richtig?",
+      "options": [
+        "Die Datenbankdateien eines laufenden Servers einfach zu kopieren ist immer ein sicheres Backup",
+        "Ein Dump (z. B. pg_dump) enthält SQL-Befehle, mit denen Struktur und Daten wiederhergestellt werden",
+        "SQLite-Datenbanken lassen sich nicht sichern",
+        "Backups auf derselben Festplatte schützen vor einem Festplattenschaden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein logisches Backup ist eine Folge von SQL-Befehlen. Dateien eines laufenden Servers zu kopieren kann inkonsistente Kopien liefern; Sicherungen gehören an einen anderen Ort."
+    }
+  ]
+}

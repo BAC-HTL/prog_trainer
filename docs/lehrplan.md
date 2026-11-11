@@ -75,34 +75,34 @@ Die Inhalte folgen dem Lehrplan der **Höheren Lehranstalt für Informatik** (HT
 | Fach | Modul | Sem. | Stand |
 |---|---|---|---|
 | POS | Funktionale Programmierung | 5 | ✅ Python, C# |
-| POS | Formale Sprachen & Automaten | 5 | ○ |
-| POS | Polymorphie & Generics | 5 | ○ |
-| POS | Versionsverwaltung mit Git | 5 | ○ |
-| POS | Teststrategien & Unit-Tests | 5 | ○ |
-| POS | Grafische Benutzeroberflächen | 5 | ○ |
-| POS | Graphen & Graphalgorithmen | 6 | ○ |
-| POS | Compiler & Parser | 6 | ○ |
-| POS | Threads & Race Conditions | 6 | ○ |
-| POS | Datenbankzugriff aus Programmen | 6 | ○ |
-| DBI | Datenbanksysteme & Architektur | 5 | ○ |
-| DBI | SQL: DDL, DML & Views | 5 | ○ |
-| DBI | Datenbankentwurf & ER-Modell | 6 | ○ |
-| DBI | Stored Procedures & Trigger | 6 | ○ |
-| DBI | Semistrukturierte Daten: XML & JSON | 6 | ○ |
-| NVS | Aktive Netzwerkkomponenten | 5 | ○ |
-| NVS | Verzeichnis- & Authentifizierungsdienste | 5 | ○ |
-| NVS | Netzwerkentwurf & -management | 6 | ○ |
-| NVS | Netzwerksicherheit | 6 | ○ |
-| TINF | Betriebssysteme: Architektur & Prozesse | 5 | ○ |
-| TINF | Speicher-, Geräte- & Dateiverwaltung | 5 | ○ |
-| TINF | Virtualisierung & Administration | 5 | ○ |
-| TINF | Betriebssystem-Sicherheit & Monitoring | 6 | ○ |
-| TINF | Shell-Programmierung & System Calls | 6 | ○ |
-| SYP | Projektmanagement-Grundlagen | 5 | ○ |
-| SYP | Projektplanung & Controlling | 5 | ○ |
-| SYP | Vorgehensmodelle im Software Engineering | 6 | ○ |
-| SYP | Anforderungsanalyse & Aufwandsschätzung | 6 | ○ |
-| SYP | Qualitätsmanagement & Dokumentation | 6 | ○ |
+| POS | Formale Sprachen & Automaten | 5 | ✅ |
+| POS | Polymorphie & Generics | 5 | ✅ Python, C# |
+| POS | Versionsverwaltung mit Git | 5 | ✅ |
+| POS | Teststrategien & Unit-Tests | 5 | ✅ Python, C# |
+| POS | Grafische Benutzeroberflächen | 5 | ✅ Python, C# |
+| POS | Graphen & Graphalgorithmen | 6 | ✅ Python, C# |
+| POS | Compiler & Parser | 6 | ✅ Python, C# |
+| POS | Threads & Race Conditions | 6 | ✅ Python, C# |
+| POS | Datenbankzugriff aus Programmen | 6 | ✅ Python, C# |
+| DBI | Datenbanksysteme & Architektur | 5 | ✅ |
+| DBI | SQL: DDL, DML & Views | 5 | ✅ |
+| DBI | Datenbankentwurf & ER-Modell | 6 | ✅ |
+| DBI | Stored Procedures & Trigger | 6 | ✅ |
+| DBI | Semistrukturierte Daten: XML & JSON | 6 | ✅ |
+| NVS | Aktive Netzwerkkomponenten | 5 | ✅ |
+| NVS | Verzeichnis- & Authentifizierungsdienste | 5 | ✅ |
+| NVS | Netzwerkentwurf & -management | 6 | ✅ |
+| NVS | Netzwerksicherheit | 6 | ✅ |
+| TINF | Betriebssysteme: Architektur & Prozesse | 5 | ✅ |
+| TINF | Speicher-, Geräte- & Dateiverwaltung | 5 | ✅ |
+| TINF | Virtualisierung & Administration | 5 | ✅ |
+| TINF | Betriebssystem-Sicherheit & Monitoring | 6 | ✅ |
+| TINF | Shell-Programmierung & System Calls | 6 | ✅ |
+| SYP | Projektmanagement-Grundlagen | 5 | ✅ |
+| SYP | Projektplanung & Controlling | 5 | ✅ |
+| SYP | Vorgehensmodelle im Software Engineering | 6 | ✅ |
+| SYP | Anforderungsanalyse & Aufwandsschätzung | 6 | ✅ |
+| SYP | Qualitätsmanagement & Dokumentation | 6 | ✅ |
 
 ### 4. Jahrgang
 

@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j3-ermodell_01_entitaeten_attribute",
+  "title": "Entitäten und Attribute",
+  "summary": "Mit dem ER-Modell beschreibst du, welche Objekte deine Datenbank speichert und welche Eigenschaften sie haben.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bevor du CREATE TABLE tippst, solltest du wissen, WAS gespeichert werden soll. Dafür gibt es das Entity-Relationship-Modell (ER-Modell, Peter Chen, 1976). Es ist ein konzeptuelles Modell: Es beschreibt die Welt der Anwendung, unabhängig davon, ob später SQLite, PostgreSQL oder MariaDB verwendet wird. Das passt zur konzeptuellen Ebene der Drei-Ebenen-Architektur."
+    },
+    {
+      "type": "text",
+      "content": "Eine Entität ist ein einzelnes, unterscheidbares Objekt der realen Welt, z. B. die Schülerin Anna oder das Buch „SQL lernen“. Gleichartige Entitäten fasst du zu einem Entitätstyp zusammen: SCHÜLER, BUCH, KLASSE. Im Diagramm zeichnest du nur Entitätstypen – als Rechteck. Tipp: Die Substantive im Anforderungstext sind gute Kandidaten."
+    },
+    {
+      "type": "code",
+      "content": "Anforderung Schulbibliothek:\n\n„Jeder SCHÜLER gehört zu einer\nKLASSE. Schüler:innen leihen\nEXEMPLARE von BÜCHERN aus. Jede\nKlasse hat eine LEHRKRAFT als KV.“\n\nKandidaten für Entitätstypen:\nSCHÜLER, KLASSE, BUCH, EXEMPLAR,\nLEHRER"
+    },
+    {
+      "type": "text",
+      "content": "Attribute sind die Eigenschaften eines Entitätstyps, z. B. Vorname, Geburtsdatum oder ISBN. Ein Schlüsselattribut identifiziert jede Entität eindeutig und wird im Diagramm unterstrichen. Natürliche Schlüssel kommen aus der Realität (ISBN, Lehrerkürzel), künstliche Schlüssel (Surrogatschlüssel) vergibst du selbst, z. B. eine fortlaufende Schülernummer. Typischer Fehler: den Nachnamen als Schlüssel nehmen – es gibt mehrere Hubers."
+    },
+    {
+      "type": "text",
+      "content": "Es gibt mehrere Arten von Attributen:\n• einfach: ein unteilbarer Wert (Vorname)\n• zusammengesetzt: besteht aus Teilen (Adresse = Straße, PLZ, Ort)\n• mehrwertig: kann mehrere Werte haben (Telefonnummern)\n• abgeleitet: lässt sich berechnen (Alter aus Geburtsdatum) und wird meist nicht gespeichert"
+    },
+    {
+      "type": "code",
+      "content": "Chen-Notation (ASCII):\n\n  (Vorname)    ((Telefon))\n        \\       //\n(_SchNr_)--[SCHÜLER]--(Adresse)\n        /       |      /  |  \\\n(GebDatum)  (/Alter/) (Str)(PLZ)(Ort)\n\n[ ]     Entitätstyp\n( )     Attribut\n(_ _)   Schlüsselattribut\n(( ))   mehrwertig\n(/ /)   abgeleitet (gestrichelt)"
+    },
+    {
+      "type": "text",
+      "content": "Entität oder Attribut? Faustregel: Hat ein Ding eigene Eigenschaften oder eigene Beziehungen, wird es ein eigener Entitätstyp. „Klasse“ als reiner Text beim Schüler reicht nicht, sobald du auch Raum und Klassenvorstand speichern willst – dann ist KLASSE ein Entitätstyp. Eine Farbe oder ein Vorname bleiben dagegen einfache Attribute."
+    },
+    {
+      "type": "text",
+      "content": "Ein häufiger Fehler bei mehrwertigen Attributen ist es, sie als durchnummerierte Spalten zu modellieren. Was passiert bei der vierten Nummer? Und wie suchst du, wem die Nummer 0664 222 gehört? Im ER-Modell markierst du das Attribut als mehrwertig; beim Umsetzen in Tabellen bekommt es später eine eigene Tabelle."
+    },
+    {
+      "type": "code",
+      "content": "-- schlecht: starre Spalten\nschueler(sch_nr, vorname,\n  telefon1, telefon2, telefon3)\n\n-- besser: mehrwertiges Attribut\n-- wird später eigene Tabelle\ntelefon(sch_nr, nummer)"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Das ER-Modell beschreibt Entitätstypen (Rechtecke) mit ihren Attributen (Ellipsen). Jeder Entitätstyp braucht einen Schlüssel. Achte auf zusammengesetzte, mehrwertige und abgeleitete Attribute – sie werden beim Umsetzen in Tabellen unterschiedlich behandelt. In der nächsten Lektion verbindest du Entitätstypen durch Beziehungen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Attribut eines Schülers ist typischerweise mehrwertig?",
+      "options": [
+        "Geburtsdatum",
+        "Schülernummer",
+        "Telefonnummer",
+        "Vorname"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Schüler kann mehrere Telefonnummern haben (Handy, Eltern, Festnetz). Geburtsdatum, Schülernummer und Vorname haben jeweils genau einen Wert."
+    },
+    {
+      "question": "Welches Attribut eignet sich am besten als Schlüssel für den Entitätstyp SCHÜLER?",
+      "options": [
+        "Nachname",
+        "eine eindeutige Schülernummer",
+        "Geburtsdatum",
+        "Klasse"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur die Schülernummer ist garantiert eindeutig. Nachnamen und Geburtsdaten können mehrfach vorkommen, und in einer Klasse sind viele Schüler:innen."
+    },
+    {
+      "question": "Das Alter eines Schülers wird aus dem Geburtsdatum und dem heutigen Datum berechnet. Welche Attributart ist „Alter“?",
+      "options": [
+        "zusammengesetzt",
+        "mehrwertig",
+        "Schlüsselattribut",
+        "abgeleitet"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein abgeleitetes Attribut lässt sich aus anderen Daten berechnen. Man speichert es meist nicht, weil es sonst veralten würde."
+    },
+    {
+      "question": "„Anna Huber, 3AHIF“ ist im ER-Modell …",
+      "options": [
+        "ein Entitätstyp",
+        "eine Entität",
+        "eine Beziehung",
+        "ein Attribut"
+      ],
+      "correctIndex": 1,
+      "explanation": "Anna ist ein konkretes Objekt, also eine Entität. SCHÜLER wäre der Entitätstyp, zu dem sie gehört."
+    }
+  ]
+}

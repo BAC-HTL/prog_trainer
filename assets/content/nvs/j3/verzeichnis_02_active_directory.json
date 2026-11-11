@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j3-verzeichnis_02_active_directory",
+  "title": "Active Directory",
+  "summary": "Domänen und Domain Controller, Organisationseinheiten, Gruppen nach dem AGDLP-Prinzip, Gruppenrichtlinien und warum Active Directory ohne DNS nicht funktioniert.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Active Directory (AD) ist der Verzeichnisdienst von Microsoft und in Schulen und Firmen mit Windows-Clients Standard. Er kombiniert ein LDAP-Verzeichnis mit Kerberos für die Anmeldung und DNS zum Auffinden der Server. Die Grundeinheit ist die Domäne, z. B. „htl.local“: ein gemeinsamer Verwaltungsbereich mit einer Benutzerdatenbank und gemeinsamen Richtlinien. Gespeichert wird sie auf Domain Controllern (DCs) – Windows Servern mit der Rolle AD DS. Man betreibt immer mindestens zwei DCs; sie replizieren Änderungen gegenseitig (Multi-Master), fällt einer aus, arbeitet der andere weiter. Mehrere Domänen können einen Baum (Tree) und mehrere Bäume eine Gesamtstruktur (Forest) bilden. In einer Schule reicht meist eine einzige Domäne."
+    },
+    {
+      "type": "code",
+      "content": "Gesamtstruktur (Forest)\n└─ Domäne htl.local\n   ├─ OU Schule\n   │  ├─ OU Lehrer\n   │  ├─ OU Schueler\n   │  │  ├─ OU 3AHIF\n   │  │  └─ OU 3BHIF\n   │  └─ OU Computer\n   │     ├─ OU EDV-Labor1\n   │     └─ OU Verwaltung\n   └─ CN=Users  (Standard-\n                 Container, keine OU)"
+    },
+    {
+      "type": "text",
+      "content": "Organisationseinheiten (OUs) ordnen die Objekte. Sie erfüllen drei Zwecke: Übersicht, Verknüpfen von Gruppenrichtlinien und Delegieren von Rechten – etwa darf der Klassenvorstand nur in „OU 3AHIF“ Passwörter zurücksetzen. Typischer Fehler: Neue Konten landen im Standard-Container „Users“ bzw. „Computers“. Das sind Container, keine OUs – Gruppenrichtlinien lassen sich dort nicht direkt verknüpfen.\n\nHinweis zum Domänennamen: In Übungsumgebungen ist „.local“ üblich. In echten Netzen empfiehlt man eine Subdomain einer eigenen registrierten Domain (z. B. „ad.meineschule.at“), weil „.local“ mit Multicast-DNS kollidieren kann."
+    },
+    {
+      "type": "text",
+      "content": "Gruppen bündeln Berechtigungen. Sicherheitsgruppen vergeben Rechte, Verteilergruppen dienen nur als E-Mail-Verteiler. Die wichtigsten Bereiche: globale Gruppen (Mitglieder aus der eigenen Domäne, gegliedert nach Rolle), domänenlokale Gruppen (für Rechte auf Ressourcen) und universelle Gruppen (über Domänen hinweg). Bewährt hat sich das AGDLP-Prinzip: Accounts kommen in Global Groups, diese in Domain Local Groups, und nur diese bekommen Permissions. Rechte direkt an einzelne Benutzer zu vergeben, ist ein typischer Fehler: Bei jedem Personalwechsel müsste man die Berechtigungen aller Ordner anfassen."
+    },
+    {
+      "type": "code",
+      "content": "A   ahuber, bnovak\n      │ Mitglied von\nG   GG_3AHIF           (global)\n      │ Mitglied von\nDL  DL_Projekte_Lesen  (domänenlokal)\n      │ erhält\nP   Lesen auf \\\\fs01\\Projekte\n\nNeue Schülerin? -> nur in GG_3AHIF"
+    },
+    {
+      "type": "text",
+      "content": "Gruppenrichtlinien (GPOs) sind Sammlungen von Einstellungen, die an Standort, Domäne oder OU verknüpft werden. Ein GPO hat zwei Teile: Die Computerkonfiguration gilt für Computerobjekte in der OU und wird beim Start angewendet, die Benutzerkonfiguration gilt für Benutzerobjekte und wird bei der Anmeldung angewendet. Beispiele: Netzlaufwerke verbinden, USB-Speicher sperren, Software verteilen, Desktop vorgeben. Die Verarbeitungsreihenfolge heißt LSDOU – Lokal, Standort (Site), Domäne, OU. Was später kommt, gewinnt bei Konflikten; die OU, die am nächsten am Objekt liegt, hat also das letzte Wort. Kennwortrichtlinien für Domänenkonten legt man auf Domänenebene fest."
+    },
+    {
+      "type": "code",
+      "content": "REM Windows-Client (cmd)\ngpupdate /force   & REM jetzt anwenden\ngpresult /r       & REM wirksame GPOs\n\n# PowerShell, Modul ActiveDirectory\n$ou = \"OU=3AHIF,OU=Schueler,\" +\n      \"OU=Schule,DC=htl,DC=local\"\n$pw = Read-Host -AsSecureString \"PW\"\nNew-ADUser -Name \"Anna Huber\" `\n  -SamAccountName ahuber `\n  -Path $ou -AccountPassword $pw `\n  -Enabled $true\nAdd-ADGroupMember -Identity GG_3AHIF `\n  -Members ahuber"
+    },
+    {
+      "type": "text",
+      "content": "AD funktioniert nicht ohne DNS. Clients finden ihren Domain Controller über spezielle SRV-Einträge, etwa „_ldap._tcp.dc._msdcs.htl.local“. Meist läuft der DNS-Server direkt auf den DCs, und Internetnamen leitet er an externe DNS-Server weiter (Forwarder). Der häufigste Fehler im Labor: Der Client bekommt per DHCP den Router oder einen öffentlichen DNS-Server (z. B. 8.8.8.8) zugewiesen. Dann findet er keinen DC – Domänenbeitritt und Anmeldung scheitern, obwohl ping auf den DC funktioniert."
+    },
+    {
+      "type": "code",
+      "content": "C:\\> nslookup -type=SRV\n      _ldap._tcp.dc._msdcs.htl.local\n(eine Zeile; Ausgabe vereinfacht)\n\n_ldap._tcp.dc._msdcs.htl.local\n  SRV service location:\n  priority     = 0\n  weight       = 100\n  port         = 389\n  svr hostname = dc01.htl.local"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Domäne wird von mindestens zwei replizierenden Domain Controllern getragen. OUs strukturieren, tragen GPOs und erlauben Delegation – die Standard-Container „Users“ und „Computers“ nicht. Rechte vergibst du nach AGDLP an domänenlokale Gruppen. GPOs werden in der Reihenfolge LSDOU angewendet, die nächstliegende OU gewinnt. Und: Clients müssen den AD-DNS-Server verwenden, sonst finden sie die Domäne nicht."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Admin verknüpft eine Gruppenrichtlinie mit der Domäne und eine zweite mit „OU 3AHIF“. Die Domänen-GPO setzt das Hintergrundbild auf Blau, die OU-GPO auf Rot. Welches Bild sieht Anna aus der 3AHIF?",
+      "options": [
+        "Blau",
+        "Zufällig eines von beiden",
+        "Das Windows-Standardbild",
+        "Rot"
+      ],
+      "correctIndex": 3,
+      "explanation": "LSDOU: Die OU-Richtlinie wird zuletzt angewendet und gewinnt bei Konflikten (sofern die Domänen-GPO nicht erzwungen ist)."
+    },
+    {
+      "question": "Nach dem AGDLP-Prinzip: Wem wird das Leserecht auf den Ordner \\\\fs01\\Projekte erteilt?",
+      "options": [
+        "Der domänenlokalen Gruppe DL_Projekte_Lesen",
+        "Jedem Schüler einzeln",
+        "Der globalen Gruppe GG_3AHIF",
+        "Dem Konto „Administrator“"
+      ],
+      "correctIndex": 0,
+      "explanation": "Berechtigungen bekommen nur domänenlokale Gruppen. Globale Gruppen (nach Rolle) werden Mitglied darin, Benutzer kommen in die globalen Gruppen."
+    },
+    {
+      "question": "Ein PC im Labor bekommt per DHCP den DNS-Server 8.8.8.8. ping auf den DC funktioniert, aber der Domänenbeitritt schlägt fehl. Warum?",
+      "options": [
+        "Der DC antwortet nicht auf Pings von Clients.",
+        "Kerberos braucht eine öffentliche IP-Adresse.",
+        "Der Client findet die SRV-Einträge der Domäne nicht, weil sie nur im AD-DNS stehen.",
+        "8.8.8.8 blockiert LDAP-Port 389."
+      ],
+      "correctIndex": 2,
+      "explanation": "Clients suchen DCs über SRV-Einträge im DNS. Ein öffentlicher DNS-Server kennt die interne Zone htl.local nicht. Lösung: den DC als DNS-Server per DHCP verteilen."
+    },
+    {
+      "question": "Warum kann man eine GPO NICHT direkt auf neue Konten im Standard-Container „Users“ wirken lassen?",
+      "options": [
+        "Weil „Users“ nur Computer enthalten darf",
+        "Weil „Users“ ein Container und keine OU ist – GPOs lassen sich dort nicht verknüpfen",
+        "Weil GPOs nur für Computer gelten",
+        "Weil „Users“ in einer anderen Domäne liegt"
+      ],
+      "correctIndex": 1,
+      "explanation": "GPOs werden an Standorte, Domänen und OUs verknüpft. Die Standard-Container sind keine OUs – deshalb verschiebt man Konten in passende OUs."
+    }
+  ]
+}

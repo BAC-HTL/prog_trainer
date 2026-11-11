@@ -1,0 +1,119 @@
+{
+  "id": "pos-j3-csharp-tests_pruefung",
+  "title": "Abschlussprüfung: Teststrategien & Unit-Tests",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Programm prüft, ob man mit 0–100 Punkten positiv ist: ab 50 Punkten positiv. Welche Testwerte liefert die Grenzwertanalyse für alle Grenzen?",
+      "options": [
+        "0, 50, 100",
+        "-1, 0, 49, 50, 100, 101",
+        "49, 50, 51",
+        "-1, 25, 75, 101"
+      ],
+      "correctIndex": 1,
+      "explanation": "Es gibt drei Grenzen: zwischen ungültig und 0, zwischen 49 und 50 und zwischen 100 und ungültig. An jeder testest du beide Seiten."
+    },
+    {
+      "question": "Wie viele Äquivalenzklassen ergeben sich im selben Beispiel (gültig 0–100, positiv ab 50)?",
+      "options": [
+        "2",
+        "3",
+        "5",
+        "4"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ungültig < 0, negativ 0–49, positiv 50–100 und ungültig > 100 – also vier Klassen."
+    },
+    {
+      "question": "Du testest, ob die Kursverwaltung Schüler:innen korrekt in die echte Datenbank schreibt und wieder liest. Welche Testart ist das?",
+      "options": [
+        "Integrationstest",
+        "Unit-Test",
+        "Abnahmetest",
+        "Whitebox-Test einer einzelnen Methode"
+      ],
+      "correctIndex": 0,
+      "explanation": "Hier wird das Zusammenspiel zweier Komponenten (Programm und Datenbank) geprüft – typisch für einen Integrationstest."
+    },
+    {
+      "question": "Welche Meldung liefert dieser Test sinngemäß, wenn Preis(5) wegen eines Fehlers 4 liefert?",
+      "code": "[Fact]\npublic void Preis_Alter5()\n{\n    Assert.Equal(0m,\n        Eintritt.Preis(5));\n}",
+      "options": [
+        "Der Test ist grün",
+        "Assert.Equal() Failure – Expected: 0, Actual: 4",
+        "Assert.Equal() Failure – Expected: 4, Actual: 0",
+        "Eine ArgumentOutOfRangeException"
+      ],
+      "correctIndex": 1,
+      "explanation": "Erwartet wurde 0m (erstes Argument), tatsächlich kam 4 (zweites Argument). Der Test schlägt mit dieser Meldung fehl."
+    },
+    {
+      "question": "Welche Aussage über [Fact] und [Theory] stimmt?",
+      "options": [
+        "[Fact] braucht immer [InlineData]",
+        "[Theory] ist nur für Exceptions gedacht",
+        "[Theory] mit [InlineData] führt dieselbe Testmethode mit verschiedenen Daten aus",
+        "Eine [Theory] zählt immer als genau ein Testfall"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine Theory ist ein parametrisierter Test – jede InlineData-Zeile ergibt einen eigenen Testfall. Ein Fact hat keine Parameter."
+    },
+    {
+      "question": "Was prüft dieser Test zusätzlich zum Exception-Typ?",
+      "code": "var ex = Assert.Throws<\n    ArgumentException>(\n    () => Rechner.Durchschnitt(\n        new List<int>()));\nAssert.Equal(\"Keine Noten\",\n    ex.Message);",
+      "options": [
+        "Nichts – Throws liefert void",
+        "Ob die Exception eine Unterklasse ist",
+        "Ob die Liste leer bleibt",
+        "Die Fehlermeldung der Exception"
+      ],
+      "correctIndex": 3,
+      "explanation": "Assert.Throws<T> gibt die gefangene Exception zurück. Damit kannst du z. B. ihre Message prüfen."
+    },
+    {
+      "question": "Zwei Tests in derselben xUnit-Testklasse verwenden das Feld _korb = new Warenkorb(). Test A fügt zwei Artikel hinzu. Wie viele Artikel sieht Test B?",
+      "options": [
+        "0 – xUnit erzeugt für jeden Test ein neues Objekt der Testklasse",
+        "2 – das Feld wird geteilt",
+        "Das hängt davon ab, welcher Test zuerst läuft",
+        "Der Code kompiliert nicht"
+      ],
+      "correctIndex": 0,
+      "explanation": "xUnit legt pro Testmethode eine neue Instanz der Testklasse an. Felder und Konstruktor dienen so als Setup, und Tests bleiben unabhängig."
+    },
+    {
+      "question": "Warum vergleicht man double-Ergebnisse mit Assert.Equal(1.67, ist, 2) statt mit Assert.Equal(1.67, ist)?",
+      "options": [
+        "Weil Assert.Equal mit zwei double-Werten nicht kompiliert",
+        "Weil der Durchschnitt 5/3 = 1,666… nie exakt 1.67 ist – verglichen wird auf 2 Nachkommastellen",
+        "Weil double-Werte immer auf 2 Stellen gespeichert werden",
+        "Weil der dritte Parameter die Anzahl der Wiederholungen ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "Kommazahlen sind oft nicht exakt darstellbar. Mit dem precision-Parameter werden beide Werte auf die angegebene Stellenzahl gerundet verglichen."
+    },
+    {
+      "question": "Im TDD-Zyklus ist dein erster Test „2024 ist Schaltjahr“ rot. Was ist der nächste Schritt?",
+      "options": [
+        "Die vollständige Schaltjahr-Regel implementieren",
+        "Alle weiteren Tests schreiben",
+        "Den Test löschen, weil er rot ist",
+        "Den minimalen Code schreiben, der genau diesen Test grün macht – z. B. return true;"
+      ],
+      "correctIndex": 3,
+      "explanation": "In der Green-Phase schreibst du nur so viel Code, wie der aktuelle Test verlangt. Die weiteren Regeln kommen durch weitere rote Tests."
+    },
+    {
+      "question": "Ein Benutzer meldet einen Bug. Wie geht man nach TDD vor?",
+      "options": [
+        "Zuerst einen Test schreiben, der den Bug zeigt (rot), dann beheben (grün)",
+        "Den Bug beheben und danach alle Tests löschen, die rot werden",
+        "Den Bug händisch über die Oberfläche nachtesten, Unit-Tests sind dafür ungeeignet",
+        "Erst refactoren, dann nachsehen, ob der Bug noch da ist"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Test reproduziert den Bug und bleibt danach als Regressionstest bestehen – derselbe Fehler kann nicht unbemerkt zurückkehren."
+    }
+  ]
+}

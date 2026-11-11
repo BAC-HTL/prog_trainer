@@ -1,0 +1,92 @@
+{
+  "id": "pos-j3-csharp-compiler_02_lexer_parser",
+  "title": "Lexer & rekursiver Abstiegsparser",
+  "summary": "Rechenausdrücke mit Punkt-vor-Strich und Klammern per EBNF beschreiben, zerlegen und auswerten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ziel dieser Lektion: ein Programm, das Ausdrücke wie (2+3)*4 korrekt ausrechnet – mit Punkt-vor-Strich und Klammern. Zuerst beschreibst du die Syntax mit einer Grammatik in EBNF (Erweiterte Backus-Naur-Form):\n• = definiert eine Regel, . beendet sie.\n• | bedeutet „oder“.\n• { … } bedeutet „beliebig oft (auch 0-mal)“.\n• [ … ] bedeutet „optional“.\n• \"…\" steht für ein Terminal (ein Token)."
+    },
+    {
+      "type": "code",
+      "content": "Ausdruck = Term { (\"+\" | \"-\") Term } .\nTerm     = Faktor { (\"*\" | \"/\") Faktor } .\nFaktor   = Zahl | \"(\" Ausdruck \")\" .\nZahl     = Ziffer { Ziffer } ."
+    },
+    {
+      "type": "text",
+      "content": "Die Grammatik steckt die Rangfolge in ihre Struktur: Ein Ausdruck besteht aus Termen, die mit + oder − verbunden sind. Ein Term besteht aus Faktoren, die mit * oder / verbunden sind. Weil * und / „tiefer“ in der Grammatik stehen, binden sie stärker – Punkt vor Strich. Klammern landen wieder bei Ausdruck, deshalb sind beliebig tiefe Verschachtelungen möglich."
+    },
+    {
+      "type": "code",
+      "content": "enum Art { Zahl, Plus, Minus, Mal,\n           Durch, KlAuf, KlZu, Ende }\n\nrecord Token(Art Art, int Wert = 0);\n\nstatic List<Token> Zerlege(string text)\n{\n    var tokens = new List<Token>();\n    int i = 0;\n    while (i < text.Length)\n    {\n        char c = text[i];\n        if (char.IsWhiteSpace(c)) { i++; continue; }\n        if (char.IsDigit(c))\n        {\n            int wert = 0;\n            while (i < text.Length\n                   && char.IsDigit(text[i]))\n            {\n                wert = wert * 10 + (text[i] - '0');\n                i++;\n            }\n            tokens.Add(new Token(Art.Zahl, wert));\n            continue;\n        }\n        Art art = c switch\n        {\n            '+' => Art.Plus,  '-' => Art.Minus,\n            '*' => Art.Mal,   '/' => Art.Durch,\n            '(' => Art.KlAuf, ')' => Art.KlZu,\n            _ => throw new FormatException(\n                $\"Unerwartetes Zeichen '{c}'\")\n        };\n        tokens.Add(new Token(art));\n        i++;\n    }\n    tokens.Add(new Token(Art.Ende));\n    return tokens;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Der Lexer überspringt Leerzeichen, fasst Ziffernfolgen zu einer Zahl zusammen und erkennt Operatoren und Klammern. Am Ende hängt er ein Ende-Token an, damit der Parser weiß, wann Schluss ist. Aus \"12+3*(4-1)\" wird:\nZahl(12) Plus Zahl(3) Mal KlAuf Zahl(4) Minus Zahl(1) KlZu Ende\n\nBeim rekursiven Abstiegsparser wird jede Grammatikregel zu einer Methode. { … } wird zu einer while-Schleife, | zu einer Fallunterscheidung, ein Nichtterminal zu einem Methodenaufruf. Weil Faktor wieder Ausdruck aufruft, ist der Parser rekursiv."
+    },
+    {
+      "type": "code",
+      "content": "// Felder: List<Token> tokens; int pos;\nToken Aktuell => tokens[pos];\n\nvoid Erwarte(Art art)\n{\n    if (Aktuell.Art != art)\n        throw new FormatException(\n          $\"{art} erwartet, {Aktuell.Art} gefunden\");\n    pos++;\n}\n\npublic int Parse()\n{\n    int wert = Ausdruck();\n    Erwarte(Art.Ende);\n    return wert;\n}\n\n// Ausdruck = Term { (\"+\"|\"-\") Term }\nint Ausdruck()\n{\n    int wert = Term();\n    while (Aktuell.Art is Art.Plus or Art.Minus)\n    {\n        Art op = Aktuell.Art;\n        pos++;\n        int rechts = Term();\n        wert = op == Art.Plus ? wert + rechts\n                              : wert - rechts;\n    }\n    return wert;\n}"
+    },
+    {
+      "type": "code",
+      "content": "// Term = Faktor { (\"*\"|\"/\") Faktor }\nint Term()\n{\n    int wert = Faktor();\n    while (Aktuell.Art is Art.Mal or Art.Durch)\n    {\n        Art op = Aktuell.Art;\n        pos++;\n        int rechts = Faktor();\n        wert = op == Art.Mal ? wert * rechts\n                             : wert / rechts;\n    }\n    return wert;\n}\n\n// Faktor = Zahl | \"(\" Ausdruck \")\"\nint Faktor()\n{\n    if (Aktuell.Art == Art.Zahl)\n    {\n        int wert = Aktuell.Wert;\n        pos++;\n        return wert;\n    }\n    if (Aktuell.Art == Art.KlAuf)\n    {\n        pos++;\n        int wert = Ausdruck();\n        Erwarte(Art.KlZu);\n        return wert;\n    }\n    throw new FormatException(\n      $\"Zahl oder ( erwartet, {Aktuell.Art} gefunden\");\n}"
+    },
+    {
+      "type": "code",
+      "content": "2+3*4      = 14\n(2+3)*4    = 20\n8-3-2      = 3\n20/4/5     = 1\n7/2        = 3     (Ganzzahldivision)\n\n2+*3   -> Zahl oder ( erwartet,\n          Mal gefunden\n(1+2   -> KlZu erwartet, Ende gefunden\n3 4    -> Ende erwartet, Zahl gefunden\n2#3    -> Unerwartetes Zeichen '#'"
+    },
+    {
+      "type": "text",
+      "content": "Die Schleife sorgt für Linksassoziativität: 8-3-2 wird als (8-3)-2 = 3 gerechnet. Typischer Fehler: Schreibt man die Regel rechtsrekursiv (Ausdruck = Term [ (\"+\"|\"-\") Ausdruck ]), rechnet der Parser 8-(3-2) = 7 – syntaktisch akzeptiert, aber falsch gerechnet. Achtung auch auf das Erwarte(Art.Ende) in Parse: Ohne diese Prüfung würde \"3 4\" still als 3 akzeptiert.\n\nZusammenfassung: Grammatik in EBNF → je Regel eine Methode; { } wird while, | wird if, Klammern führen zur Rekursion. Der Lexer liefert die Tokens, der Parser prüft die Syntax und rechnet hier gleich das Ergebnis aus. Unäres Minus wie in -3+5 kennt diese Grammatik nicht – das wäre eine Erweiterung von Faktor."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was liefert der Parser der Lektion für diese Eingabe?",
+      "code": "\"2*(3+4)*5\"",
+      "options": [
+        "70",
+        "41",
+        "19",
+        "35"
+      ],
+      "correctIndex": 0,
+      "explanation": "Term multipliziert von links nach rechts: 2 * (3+4) = 14, dann 14 * 5 = 70. Die Klammer wird über Faktor → Ausdruck zuerst ausgewertet."
+    },
+    {
+      "question": "Welche Fehlermeldung liefert der Parser der Lektion für \"(1+2\"?",
+      "options": [
+        "Unerwartetes Zeichen '('",
+        "Zahl oder ( erwartet, Ende gefunden",
+        "KlZu erwartet, Ende gefunden",
+        "Ende erwartet, KlAuf gefunden"
+      ],
+      "correctIndex": 2,
+      "explanation": "Faktor erkennt die öffnende Klammer, wertet 1+2 aus und ruft dann Erwarte(Art.KlZu) auf. Das aktuelle Token ist aber schon Ende."
+    },
+    {
+      "question": "Finde den Fehler: Diese Version von Ausdruck liefert für \"8-3-2\" das Ergebnis 7 statt 3. Warum?",
+      "code": "int Ausdruck()\n{\n    int links = Term();\n    if (Aktuell.Art is Art.Plus or Art.Minus)\n    {\n        Art op = Aktuell.Art;\n        pos++;\n        int rest = Ausdruck();\n        return op == Art.Plus ? links + rest\n                              : links - rest;\n    }\n    return links;\n}",
+      "options": [
+        "Term wird zu oft aufgerufen",
+        "Durch die Rekursion nach rechts wird 8-(3-2) gerechnet, die Subtraktion ist rechtsassoziativ",
+        "Der Lexer erkennt das zweite Minus nicht",
+        "Minus hat in dieser Version Vorrang vor Plus"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der rekursive Aufruf wertet zuerst den ganzen Rest „3-2“ = 1 aus und rechnet dann 8 - 1 = 7. Mit einer while-Schleife wird von links nach rechts gerechnet: (8-3)-2 = 3."
+    },
+    {
+      "question": "Was bedeuten die geschwungenen Klammern in dieser EBNF-Regel?",
+      "code": "Term = Faktor { (\"*\" | \"/\") Faktor } .",
+      "options": [
+        "Der Inhalt ist optional, also 0- oder 1-mal",
+        "Der Inhalt muss genau einmal vorkommen",
+        "Der Inhalt darf beliebig oft vorkommen, auch 0-mal",
+        "Der Inhalt ist ein Kommentar"
+      ],
+      "correctIndex": 2,
+      "explanation": "{ … } steht für Wiederholung (0-mal oder öfter). Im Parser wird daraus eine while-Schleife. „Optional“ schreibt man in EBNF mit [ … ]."
+    }
+  ]
+}

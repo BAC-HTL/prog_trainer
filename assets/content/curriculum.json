@@ -776,7 +776,13 @@
    "topics": [
     "theorie"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "pos/j3/theorie/automaten_01_formale_sprachen_grammatiken.json",
+    "pos/j3/theorie/automaten_02_endliche_automaten.json",
+    "pos/j3/theorie/automaten_03_automaten_implementieren.json"
+   ],
+   "exam": "pos/j3/theorie/automaten_pruefung.json"
   },
   {
    "id": "pos-j3-generics",
@@ -788,7 +794,27 @@
     "programmieren",
     "oop"
    ],
-   "semester": 5
+   "semester": 5,
+   "variants": {
+    "python": {
+     "id": "pos-j3-generics-python",
+     "lessons": [
+      "pos/j3/python/generics_01_polymorphie.json",
+      "pos/j3/python/generics_02_generische_typen.json",
+      "pos/j3/python/generics_03_serialisierung.json"
+     ],
+     "exam": "pos/j3/python/generics_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j3-generics-csharp",
+     "lessons": [
+      "pos/j3/csharp/generics_01_polymorphie.json",
+      "pos/j3/csharp/generics_02_generische_typen.json",
+      "pos/j3/csharp/generics_03_serialisierung.json"
+     ],
+     "exam": "pos/j3/csharp/generics_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j3-git",
@@ -799,7 +825,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "pos/j3/theorie/git_01_commits_repository.json",
+    "pos/j3/theorie/git_02_branches_merge.json",
+    "pos/j3/theorie/git_03_zusammenarbeit_remote.json"
+   ],
+   "exam": "pos/j3/theorie/git_pruefung.json"
   },
   {
    "id": "pos-j3-unit-tests",
@@ -810,7 +842,27 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 5
+   "semester": 5,
+   "variants": {
+    "python": {
+     "id": "pos-j3-unit-tests-python",
+     "lessons": [
+      "pos/j3/python/tests_01_teststrategien.json",
+      "pos/j3/python/tests_02_unit_tests_schreiben.json",
+      "pos/j3/python/tests_03_testgetrieben_entwickeln.json"
+     ],
+     "exam": "pos/j3/python/tests_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j3-unit-tests-csharp",
+     "lessons": [
+      "pos/j3/csharp/tests_01_teststrategien.json",
+      "pos/j3/csharp/tests_02_unit_tests_schreiben.json",
+      "pos/j3/csharp/tests_03_testgetrieben_entwickeln.json"
+     ],
+     "exam": "pos/j3/csharp/tests_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j3-gui",
@@ -821,7 +873,27 @@
    "topics": [
     "programmieren"
    ],
-   "semester": 5
+   "semester": 5,
+   "variants": {
+    "python": {
+     "id": "pos-j3-gui-python",
+     "lessons": [
+      "pos/j3/python/gui_01_gui_grundlagen.json",
+      "pos/j3/python/gui_02_layout_events.json",
+      "pos/j3/python/gui_03_usability_validierung.json"
+     ],
+     "exam": "pos/j3/python/gui_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j3-gui-csharp",
+     "lessons": [
+      "pos/j3/csharp/gui_01_gui_grundlagen.json",
+      "pos/j3/csharp/gui_02_layout_events.json",
+      "pos/j3/csharp/gui_03_usability_validierung.json"
+     ],
+     "exam": "pos/j3/csharp/gui_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j3-graphen",
@@ -833,7 +905,27 @@
     "algorithmen",
     "datenstrukturen"
    ],
-   "semester": 6
+   "semester": 6,
+   "variants": {
+    "python": {
+     "id": "pos-j3-graphen-python",
+     "lessons": [
+      "pos/j3/python/graphen_01_graphen_speichern.json",
+      "pos/j3/python/graphen_02_tiefen_breitensuche.json",
+      "pos/j3/python/graphen_03_kuerzeste_wege.json"
+     ],
+     "exam": "pos/j3/python/graphen_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j3-graphen-csharp",
+     "lessons": [
+      "pos/j3/csharp/graphen_01_graphen_speichern.json",
+      "pos/j3/csharp/graphen_02_tiefen_breitensuche.json",
+      "pos/j3/csharp/graphen_03_kuerzeste_wege.json"
+     ],
+     "exam": "pos/j3/csharp/graphen_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j3-compiler",
@@ -845,7 +937,27 @@
     "theorie",
     "algorithmen"
    ],
-   "semester": 6
+   "semester": 6,
+   "variants": {
+    "python": {
+     "id": "pos-j3-compiler-python",
+     "lessons": [
+      "pos/j3/python/compiler_01_aufbau_compiler.json",
+      "pos/j3/python/compiler_02_lexer_parser.json",
+      "pos/j3/python/compiler_03_hashing.json"
+     ],
+     "exam": "pos/j3/python/compiler_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j3-compiler-csharp",
+     "lessons": [
+      "pos/j3/csharp/compiler_01_aufbau_compiler.json",
+      "pos/j3/csharp/compiler_02_lexer_parser.json",
+      "pos/j3/csharp/compiler_03_hashing.json"
+     ],
+     "exam": "pos/j3/csharp/compiler_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j3-threads",
@@ -856,7 +968,27 @@
    "topics": [
     "programmieren"
    ],
-   "semester": 6
+   "semester": 6,
+   "variants": {
+    "python": {
+     "id": "pos-j3-threads-python",
+     "lessons": [
+      "pos/j3/python/threads_01_threads_grundlagen.json",
+      "pos/j3/python/threads_02_lebenszyklus.json",
+      "pos/j3/python/threads_03_race_conditions.json"
+     ],
+     "exam": "pos/j3/python/threads_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j3-threads-csharp",
+     "lessons": [
+      "pos/j3/csharp/threads_01_threads_grundlagen.json",
+      "pos/j3/csharp/threads_02_lebenszyklus.json",
+      "pos/j3/csharp/threads_03_race_conditions.json"
+     ],
+     "exam": "pos/j3/csharp/threads_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j3-db-zugriff",
@@ -868,7 +1000,27 @@
     "programmieren",
     "datenbanken"
    ],
-   "semester": 6
+   "semester": 6,
+   "variants": {
+    "python": {
+     "id": "pos-j3-db-zugriff-python",
+     "lessons": [
+      "pos/j3/python/dbzugriff_01_verbindung_abfragen.json",
+      "pos/j3/python/dbzugriff_02_parameter_sql_injection.json",
+      "pos/j3/python/dbzugriff_03_daten_in_objekte.json"
+     ],
+     "exam": "pos/j3/python/dbzugriff_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j3-db-zugriff-csharp",
+     "lessons": [
+      "pos/j3/csharp/dbzugriff_01_verbindung_abfragen.json",
+      "pos/j3/csharp/dbzugriff_02_parameter_sql_injection.json",
+      "pos/j3/csharp/dbzugriff_03_daten_in_objekte.json"
+     ],
+     "exam": "pos/j3/csharp/dbzugriff_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j4-paradigmen",
@@ -1135,7 +1287,13 @@
    "topics": [
     "datenbanken"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "dbi/j3/dbms_01_dateien_vs_datenbanken.json",
+    "dbi/j3/dbms_02_drei_ebenen_architektur.json",
+    "dbi/j3/dbms_03_installation_administration.json"
+   ],
+   "exam": "dbi/j3/dbms_pruefung.json"
   },
   {
    "id": "dbi-j3-sql",
@@ -1146,7 +1304,14 @@
    "topics": [
     "datenbanken"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "dbi/j3/sql_01_ddl_constraints.json",
+    "dbi/j3/sql_02_dml.json",
+    "dbi/j3/sql_03_abfragen_joins_gruppen.json",
+    "dbi/j3/sql_04_unterabfragen_views.json"
+   ],
+   "exam": "dbi/j3/sql_pruefung.json"
   },
   {
    "id": "dbi-j3-er-modell",
@@ -1157,7 +1322,13 @@
    "topics": [
     "datenbanken"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "dbi/j3/ermodell_01_entitaeten_attribute.json",
+    "dbi/j3/ermodell_02_beziehungen_kardinalitaeten.json",
+    "dbi/j3/ermodell_03_er_in_tabellen.json"
+   ],
+   "exam": "dbi/j3/ermodell_pruefung.json"
   },
   {
    "id": "dbi-j3-stored",
@@ -1168,7 +1339,13 @@
    "topics": [
     "datenbanken"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "dbi/j3/stored_01_data_dictionary.json",
+    "dbi/j3/stored_02_stored_procedures.json",
+    "dbi/j3/stored_03_trigger_integritaet.json"
+   ],
+   "exam": "dbi/j3/stored_pruefung.json"
   },
   {
    "id": "dbi-j3-xml-json",
@@ -1180,7 +1357,13 @@
     "datenbanken",
     "web"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "dbi/j3/semistrukturiert_01_xml_aufbau.json",
+    "dbi/j3/semistrukturiert_02_json.json",
+    "dbi/j3/semistrukturiert_03_schema_verarbeitung.json"
+   ],
+   "exam": "dbi/j3/semistrukturiert_pruefung.json"
   },
   {
    "id": "dbi-j4-normalformen",
@@ -1351,7 +1534,13 @@
    "topics": [
     "netzwerke"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "nvs/j3/komponenten_01_switches_konfigurieren.json",
+    "nvs/j3/komponenten_02_router_konfigurieren.json",
+    "nvs/j3/komponenten_03_wlan_access_points.json"
+   ],
+   "exam": "nvs/j3/komponenten_pruefung.json"
   },
   {
    "id": "nvs-j3-verzeichnis",
@@ -1363,7 +1552,13 @@
     "netzwerke",
     "security"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "nvs/j3/verzeichnis_01_verzeichnisdienste_ldap.json",
+    "nvs/j3/verzeichnis_02_active_directory.json",
+    "nvs/j3/verzeichnis_03_authentifizierung_radius.json"
+   ],
+   "exam": "nvs/j3/verzeichnis_pruefung.json"
   },
   {
    "id": "nvs-j3-entwurf",
@@ -1374,7 +1569,13 @@
    "topics": [
     "netzwerke"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "nvs/j3/entwurf_01_netzwerkmodelle_planung.json",
+    "nvs/j3/entwurf_02_netzwerkdokumentation.json",
+    "nvs/j3/entwurf_03_monitoring_snmp.json"
+   ],
+   "exam": "nvs/j3/entwurf_pruefung.json"
   },
   {
    "id": "nvs-j3-sicherheit",
@@ -1386,7 +1587,13 @@
     "netzwerke",
     "security"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "nvs/j3/sicherheit_01_bedrohungen_angriffe.json",
+    "nvs/j3/sicherheit_02_schutzmassnahmen.json",
+    "nvs/j3/sicherheit_03_firewall_grundlagen.json"
+   ],
+   "exam": "nvs/j3/sicherheit_pruefung.json"
   },
   {
    "id": "nvs-j4-policies",
@@ -1601,7 +1808,13 @@
    "topics": [
     "betriebssysteme"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "tinf/j3/bs_01_aufgaben_arten.json",
+    "tinf/j3/bs_02_prozesse_threads.json",
+    "tinf/j3/bs_03_scheduling_synchronisation.json"
+   ],
+   "exam": "tinf/j3/bs_pruefung.json"
   },
   {
    "id": "tinf-j3-speicher",
@@ -1612,7 +1825,13 @@
    "topics": [
     "betriebssysteme"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "tinf/j3/speicher_01_speicherverwaltung.json",
+    "tinf/j3/speicher_02_virtueller_speicher.json",
+    "tinf/j3/speicher_03_dateisysteme_geraete.json"
+   ],
+   "exam": "tinf/j3/speicher_pruefung.json"
   },
   {
    "id": "tinf-j3-virtualisierung",
@@ -1624,7 +1843,13 @@
     "betriebssysteme",
     "cloud"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "tinf/j3/virtualisierung_01_virtualisierung_container.json",
+    "tinf/j3/virtualisierung_02_benutzer_rechte.json",
+    "tinf/j3/virtualisierung_03_administration.json"
+   ],
+   "exam": "tinf/j3/virtualisierung_pruefung.json"
   },
   {
    "id": "tinf-j3-bs-sicherheit",
@@ -1636,7 +1861,13 @@
     "betriebssysteme",
     "security"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "tinf/j3/bssicherheit_01_sicherheitsrisiken.json",
+    "tinf/j3/bssicherheit_02_haertung_updates.json",
+    "tinf/j3/bssicherheit_03_monitoring_tuning.json"
+   ],
+   "exam": "tinf/j3/bssicherheit_pruefung.json"
   },
   {
    "id": "tinf-j3-shell",
@@ -1648,7 +1879,13 @@
     "betriebssysteme",
     "programmieren"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "tinf/j3/shell_01_kommandozeile.json",
+    "tinf/j3/shell_02_shell_skripte.json",
+    "tinf/j3/shell_03_system_calls.json"
+   ],
+   "exam": "tinf/j3/shell_pruefung.json"
   },
   {
    "id": "syp-j3-pm-grundlagen",
@@ -1659,7 +1896,13 @@
    "topics": [
     "projektmanagement"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "syp/j3/pm_01_projektbegriff.json",
+    "syp/j3/pm_02_phasenmodelle.json",
+    "syp/j3/pm_03_projektorganisation_rollen.json"
+   ],
+   "exam": "syp/j3/pm_pruefung.json"
   },
   {
    "id": "syp-j3-projektplanung",
@@ -1670,7 +1913,13 @@
    "topics": [
     "projektmanagement"
    ],
-   "semester": 5
+   "semester": 5,
+   "lessons": [
+    "syp/j3/planung_01_projektauftrag_umfeld.json",
+    "syp/j3/planung_02_psp_zeitplan.json",
+    "syp/j3/planung_03_controlling_abschluss.json"
+   ],
+   "exam": "syp/j3/planung_pruefung.json"
   },
   {
    "id": "syp-j3-vorgehensmodelle",
@@ -1682,7 +1931,13 @@
     "software-engineering",
     "projektmanagement"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "syp/j3/vorgehen_01_wasserfall_vmodell.json",
+    "syp/j3/vorgehen_02_agil_scrum.json",
+    "syp/j3/vorgehen_03_kanban_rollen.json"
+   ],
+   "exam": "syp/j3/vorgehen_pruefung.json"
   },
   {
    "id": "syp-j3-anforderungen",
@@ -1693,7 +1948,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "syp/j3/anforderungen_01_ist_erhebung.json",
+    "syp/j3/anforderungen_02_anforderungen_beschreiben.json",
+    "syp/j3/anforderungen_03_aufwandsschaetzung.json"
+   ],
+   "exam": "syp/j3/anforderungen_pruefung.json"
   },
   {
    "id": "syp-j3-qualitaet",
@@ -1704,7 +1965,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 6
+   "semester": 6,
+   "lessons": [
+    "syp/j3/qualitaet_01_qualitaetsmerkmale.json",
+    "syp/j3/qualitaet_02_qualitaetssicherung_reviews.json",
+    "syp/j3/qualitaet_03_dokumentation_wartung.json"
+   ],
+   "exam": "syp/j3/qualitaet_pruefung.json"
   },
   {
    "id": "syp-j4-prozesse",

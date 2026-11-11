@@ -1,0 +1,94 @@
+{
+  "id": "tinf-j3-bs_02_prozesse_threads",
+  "title": "Prozesse und Threads",
+  "summary": "Was ein Prozess ist, welche Zustände er durchläuft und wie sich Threads von Prozessen unterscheiden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Programm ist eine Datei auf der SSD – passiv, es tut nichts. Startest du es, wird daraus ein Prozess: ein Programm in Ausführung mit eigenem Adressraum (Speicherbereich), eigenen Registerinhalten und geöffneten Dateien. Dasselbe Programm kann mehrmals gleichzeitig laufen: Zwei Terminal-Fenster sind zwei Prozesse desselben Programms."
+    },
+    {
+      "type": "text",
+      "content": "Für jeden Prozess führt das BS einen Prozesskontrollblock (PCB). Darin stehen u. a.:\n• PID (Prozess-ID) und PID des Elternprozesses (PPID)\n• Zustand (bereit, laufend, …)\n• Befehlszähler und Registerinhalte\n• Speicherinformationen und geöffnete Dateien\n• Priorität\nUnter Linux siehst du Prozesse mit ps. $$ ist die PID der Shell, $! die des zuletzt im Hintergrund gestarteten Prozesses:"
+    },
+    {
+      "type": "code",
+      "content": "$ sleep 100 &\n$ ps -o pid,ppid,stat,comm -p $$,$!\n  PID  PPID STAT COMMAND\n 1955  1954 S    bash\n 1956  1955 S    sleep\n\n# sleep ist Kind der bash (PPID)\n# S = schlafend (wartet)\n# PIDs sind bei dir anders"
+    },
+    {
+      "type": "text",
+      "content": "Ein Prozess wechselt während seines Lebens zwischen Zuständen:\n• neu: wird gerade angelegt\n• bereit: könnte rechnen, wartet aber auf die CPU\n• laufend: bekommt gerade die CPU\n• blockiert: wartet auf ein Ereignis (Tastatur, Datei, Netzwerk)\n• beendet: fertig, wird aufgeräumt"
+    },
+    {
+      "type": "code",
+      "content": "  neu\n   | zugelassen\n   v\n bereit <------------+\n  |   ^              |\n  |   | Zeit um      | Ereignis\n  v   |              | tritt ein\n laufend -------> blockiert\n   |    wartet auf\n   |    Ereignis\n   v\n beendet"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig:\n• Auf einem CPU-Kern ist immer genau ein Prozess laufend.\n• Typischer Fehler: Von blockiert geht es nie direkt zu laufend, sondern immer zuerst nach bereit – der Scheduler entscheidet dann.\n• Beim Kontextwechsel speichert das BS Register und Befehlszähler des alten Prozesses im PCB und lädt die des neuen. Das kostet Zeit, in der niemand nützliche Arbeit macht."
+    },
+    {
+      "type": "text",
+      "content": "Ein Thread ist ein Ausführungsstrang innerhalb eines Prozesses. Ein Prozess hat mindestens einen Thread, kann aber mehrere haben – etwa ein Editor, der in einem Thread deine Eingaben annimmt und in einem anderen die Rechtschreibung prüft.\n• Gemeinsam: Adressraum, also globale Variablen, Heap und offene Dateien\n• Pro Thread eigen: Stack, Befehlszähler, Register\nThreads sind daher schneller erzeugt als Prozesse und tauschen Daten einfach aus."
+    },
+    {
+      "type": "code",
+      "content": "import threading\nimport multiprocessing as mp\n\nzahl = 0\n\ndef erhoehen():\n    global zahl\n    zahl += 1\n\nif __name__ == \"__main__\":\n    t = threading.Thread(target=erhoehen)\n    t.start(); t.join()\n    print(\"nach Thread:\", zahl)\n\n    p = mp.Process(target=erhoehen)\n    p.start(); p.join()\n    print(\"nach Prozess:\", zahl)\n\n# nach Thread: 1\n# nach Prozess: 1"
+    },
+    {
+      "type": "text",
+      "content": "Der Thread verändert dieselbe Variable wie das Hauptprogramm – zahl wird 1. Der neue Prozess arbeitet dagegen auf einer eigenen Kopie des Speichers: Er erhöht seine Kopie, beim Elternprozess bleibt zahl bei 1. Die Kehrseite der gemeinsamen Daten bei Threads: Greifen mehrere gleichzeitig darauf zu, braucht es Synchronisation (nächste Lektion), und ein abstürzender Thread reißt den ganzen Prozess mit."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Prozess = Programm in Ausführung mit eigenem Adressraum, verwaltet im PCB. Zustände: neu → bereit ⇄ laufend → beendet, dazu laufend → blockiert → bereit. Threads sind Ausführungsstränge in einem Prozess: gemeinsamer Speicher, aber eigener Stack und Befehlszähler."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Threads meldet /proc für diesen Python-Prozess?",
+      "code": "import threading, time, os\n\ndef arbeiten():\n    time.sleep(1)\n\nfor _ in range(3):\n    threading.Thread(\n        target=arbeiten).start()\n\npid = os.getpid()\nwith open(f\"/proc/{pid}/status\") as f:\n    for zeile in f:\n        if zeile.startswith(\"Threads\"):\n            print(zeile.strip())",
+      "options": [
+        "3",
+        "4",
+        "1",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder Prozess hat einen Hauptthread. Dazu kommen die 3 gestarteten Threads, die noch schlafen – zusammen 4."
+    },
+    {
+      "question": "Welcher Zustandsübergang ist im Zustandsmodell NICHT vorgesehen?",
+      "options": [
+        "laufend → bereit",
+        "bereit → laufend",
+        "blockiert → laufend",
+        "laufend → blockiert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Wenn das Ereignis eintritt, wird ein blockierter Prozess zunächst bereit. Erst der Scheduler teilt ihm dann wieder die CPU zu."
+    },
+    {
+      "question": "Was besitzt jeder Thread eines Prozesses für sich allein?",
+      "options": [
+        "Die globalen Variablen",
+        "Die geöffneten Dateien",
+        "Den Heap",
+        "Den Stack und den Befehlszähler"
+      ],
+      "correctIndex": 3,
+      "explanation": "Globale Variablen, Heap und offene Dateien gehören zum Prozess und werden von allen Threads geteilt. Jeder Thread braucht aber seinen eigenen Stack (lokale Variablen, Aufrufe) und Befehlszähler."
+    },
+    {
+      "question": "Dein Programm wartet in input() auf eine Eingabe. In welchem Zustand ist der Prozess?",
+      "options": [
+        "blockiert",
+        "bereit",
+        "laufend",
+        "neu"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Prozess kann erst weitermachen, wenn das Ereignis „Eingabe ist da“ eintritt. Bis dahin ist er blockiert und belegt keine CPU-Zeit."
+    }
+  ]
+}

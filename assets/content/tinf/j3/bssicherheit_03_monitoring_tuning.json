@@ -1,0 +1,93 @@
+{
+  "id": "tinf-j3-bssicherheit_03_monitoring_tuning",
+  "title": "Monitoring und Tuning",
+  "summary": "Mit top, ps, df, free, journalctl sowie Task-Manager, Ereignisanzeige und Leistungsüberwachung Engpässe und Auffälligkeiten finden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Monitoring heißt: den Zustand eines Systems laufend beobachten. Ziele: Engpässe erkennen, bevor Benutzer sich beschweren, Fehler und Sicherheitsvorfälle (z. B. viele fehlgeschlagene Anmeldungen) bemerken und eine Baseline kennen – also wie das System im Normalbetrieb aussieht. Nur mit Baseline erkennst du, was „ungewöhnlich“ ist.\n\nWichtige Effizienzmerkmale eines Systems:\n• CPU-Auslastung und Load Average\n• Arbeitsspeicher: belegt, verfügbar, Auslagerung (Swap)\n• Datenträger: freier Platz und Ein-/Ausgabelast (I/O)\n• Netzwerk: Datenrate\n• Antwortzeit – wie schnell reagiert das System?\n• Durchsatz – wie viele Aufträge pro Zeiteinheit?"
+    },
+    {
+      "type": "code",
+      "content": "$ top\ntop - 08:52:21 up 1 min,\n  load average: 0.60, 0.16, 0.05\nTasks: 78 total, 2 running ...\n%Cpu(s): 71.4 us, 4.8 sy,\n         19.0 id, 0.0 wa ...\n\n# us = Benutzerprozesse\n# sy = Kernel   id = Leerlauf\n# wa = Warten auf I/O\n# q beendet top"
+    },
+    {
+      "type": "text",
+      "content": "top (oder das komfortablere htop) zeigt live die Prozesse, sortiert nach CPU-Last. Der Load Average gibt die durchschnittliche Zahl an Prozessen an, die laufen oder auf die CPU warten (unter Linux zählen auch Prozesse dazu, die auf I/O warten) – gemittelt über 1, 5 und 15 Minuten. Faustregel: Liegt er dauerhaft über der Anzahl der CPU-Kerne, ist das System überlastet. Ein hoher wa-Wert deutet auf einen langsamen Datenträger hin."
+    },
+    {
+      "type": "code",
+      "content": "# Top-3 nach CPU, als Momentaufnahme\nps -eo pid,user,%cpu,%mem,comm \\\n   --sort=-%cpu | head -n 4\n\n$ df -h /\nFilesystem Size Used Avail Use%\n/dev/vda   252G  13G   30G  30%\n\n$ free -h\n      total  used  free ... available\nMem:  7.8Gi 587Mi 6.8Gi ... 7.3Gi"
+    },
+    {
+      "type": "text",
+      "content": "Bei free gilt: Linux nutzt freien RAM als Cache für Dateien (buff/cache). Entscheidend ist daher die Spalte „available“ – so viel Speicher steht Programmen noch zur Verfügung. Wird ständig Swap benutzt und das System dabei zäh, fehlt RAM. df -h zeigt den Platz pro Dateisystem; ein volles Dateisystem lässt Dienste und Logs abstürzen."
+    },
+    {
+      "type": "code",
+      "content": "# Logs mit journalctl (systemd)\njournalctl -b -p err\n#  Fehler seit dem letzten Boot\njournalctl -u ssh --since today\n#  Meldungen eines Dienstes\njournalctl -f\n#  live mitlesen (wie tail -f)"
+    },
+    {
+      "type": "text",
+      "content": "Unter Windows:\n• Task-Manager (Strg+Umschalt+Esc): Prozesse, Leistung (CPU, RAM, Datenträger, Netz), Autostart-Programme, Dienste\n• Ereignisanzeige (eventvwr.msc): Windows-Protokolle „Anwendung“, „Sicherheit“ und „System“ mit den Ebenen Fehler, Warnung, Information. Fehlgeschlagene Anmeldungen findest du im Sicherheitsprotokoll (Ereignis-ID 4625).\n• Leistungsüberwachung (perfmon): Leistungsindikatoren über längere Zeit aufzeichnen, z. B. um eine Baseline zu erstellen\n• Ressourcenmonitor: Detailansicht, welcher Prozess welche Datei oder Verbindung nutzt"
+    },
+    {
+      "type": "text",
+      "content": "Tuning geht wie Fehlersuche: 1. Baseline messen, 2. Engpass finden, 3. genau eine Änderung, 4. erneut messen. Typische Maßnahmen: Autostart entrümpeln, unnötige Dienste beenden, RAM aufrüsten bei ständigem Swapping, SSD statt HDD bei hohem I/O-Warten, lange Hintergrundjobs mit niedrigerer Priorität starten (siehe unten).\n\nTypischer Fehler: „Der PC ist langsam, wir kaufen eine schnellere CPU“ – ohne zu messen, ob überhaupt die CPU der Engpass ist."
+    },
+    {
+      "type": "code",
+      "content": "# Backup mit niedriger Priorität\n# starten (nice: -20 hoch … 19 niedrig)\nnice -n 10 ./backup.sh\n\n# Priorität von PID 1234 senken\nrenice -n 5 -p 1234"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Linux – top/htop (live), ps (Momentaufnahme), df (Platz), free (RAM, „available“ beachten), journalctl (Logs). Windows – Task-Manager, Ereignisanzeige, Leistungsüberwachung. Monitoring hilft bei Leistung und Sicherheit gleichermaßen: Wer seine Baseline kennt, erkennt Engpässe und Angriffe früher."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Server hat 4 CPU-Kerne. top zeigt dauerhaft „load average: 9.8, 9.5, 9.1“. Was schließt du daraus?",
+      "options": [
+        "Das System ist im Leerlauf",
+        "9,8 % der CPU sind ausgelastet",
+        "Es warten deutlich mehr Prozesse auf Rechenzeit (bzw. I/O), als Kerne vorhanden sind – Überlast",
+        "Der Arbeitsspeicher ist voll"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Load Average ist keine Prozentzahl, sondern die mittlere Zahl laufender bzw. wartender Prozesse. Dauerhaft deutlich über der Kernanzahl bedeutet Überlast."
+    },
+    {
+      "question": "free -h zeigt: free 200Mi, buff/cache 5.1Gi, available 5.0Gi. Wie bewertest du das?",
+      "options": [
+        "Akuter RAM-Mangel, sofort aufrüsten",
+        "Unbedenklich – Linux nutzt freien RAM als Cache, Programmen stehen ca. 5 GiB zur Verfügung",
+        "Der Swap ist voll",
+        "Die Festplatte ist fast voll"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Cache wird bei Bedarf freigegeben. Maßgeblich ist „available“."
+    },
+    {
+      "question": "Wo findest du unter Windows Einträge zu fehlgeschlagenen Anmeldeversuchen?",
+      "options": [
+        "Task-Manager → Autostart",
+        "Leistungsüberwachung → Datenträger",
+        "Ereignisanzeige → Windows-Protokolle → Anwendung",
+        "Ereignisanzeige → Windows-Protokolle → Sicherheit"
+      ],
+      "correctIndex": 3,
+      "explanation": "Anmeldeereignisse werden im Sicherheitsprotokoll geführt; ein fehlgeschlagener Anmeldeversuch hat die Ereignis-ID 4625."
+    },
+    {
+      "question": "Welcher Befehl zeigt alle Fehlermeldungen seit dem letzten Systemstart?",
+      "options": [
+        "journalctl -b -p err",
+        "journalctl -f",
+        "df -h",
+        "ps aux"
+      ],
+      "correctIndex": 0,
+      "explanation": "-b schränkt auf den aktuellen Boot ein, -p err auf die Priorität „err“ und wichtiger."
+    }
+  ]
+}

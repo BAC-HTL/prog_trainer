@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-generics_01_polymorphie",
+  "title": "Polymorphie wiederholt",
+  "summary": "virtual, override, abstrakte Klassen und Interfaces – damit ein Methodenaufruf je nach Objekt Unterschiedliches tut.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Polymorphie heißt „Vielgestaltigkeit“: Derselbe Methodenaufruf verhält sich je nach Objekt unterschiedlich. Du kennst das schon aus dem 2. Jahrgang (Vererbung & Interfaces). Bevor wir mit Generics weitermachen, frischen wir die Werkzeuge kurz auf – denn beide Techniken haben dasselbe Ziel: Code einmal schreiben und für viele Typen verwenden."
+    },
+    {
+      "type": "text",
+      "content": "Eine Methode der Basisklasse, die Unterklassen ändern dürfen, markierst du mit virtual. Die Unterklasse ersetzt sie mit override. Mit base.Methode() rufst du dabei die Version der Basisklasse auf. Entscheidend: Welche Version läuft, bestimmt der tatsächliche Objekttyp zur Laufzeit – nicht der Typ der Variable."
+    },
+    {
+      "type": "code",
+      "content": "class Fahrzeug\n{\n    public virtual string Info()\n        => \"Fahrzeug\";\n}\nclass Auto : Fahrzeug\n{\n    public override string Info()\n        => \"Auto\";\n}\nclass Fahrrad : Fahrzeug\n{\n    public override string Info()\n        => base.Info() + \" ohne Motor\";\n}\n\nList<Fahrzeug> fz =\n    [new Auto(), new Fahrrad()];\nforeach (var f in fz)\n    Console.WriteLine(f.Info());\n// Auto\n// Fahrzeug ohne Motor"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: override ohne virtual in der Basisklasse. Der Compiler meldet dann CS0506 („cannot override inherited member … because it is not marked virtual, abstract, or override“). Schreibst du in der Unterklasse stattdessen new (oder gar nichts), wird die Methode nur verdeckt: Dann entscheidet der Variablentyp, und die Polymorphie ist weg."
+    },
+    {
+      "type": "code",
+      "content": "class Tier\n{\n    public string Laut() => \"...\";\n}\nclass Hund : Tier\n{\n    public new string Laut() => \"Wuff\";\n}\n\nTier t = new Hund();\nConsole.WriteLine(t.Laut()); // ...\nHund h = new Hund();\nConsole.WriteLine(h.Laut()); // Wuff"
+    },
+    {
+      "type": "text",
+      "content": "Gibt es für eine Methode in der Basisklasse keine sinnvolle Implementierung, machst du Klasse und Methode abstract. Von einer abstrakten Klasse kannst du keine Objekte erzeugen, und jede (nicht abstrakte) Unterklasse muss die abstrakte Methode überschreiben – sonst meldet der Compiler CS0534."
+    },
+    {
+      "type": "code",
+      "content": "abstract class Form\n{\n    public abstract double Flaeche();\n}\nclass Rechteck(double a, double b)\n    : Form\n{\n    public override double Flaeche()\n        => a * b;\n}\nclass Kreis(double r) : Form\n{\n    public override double Flaeche()\n        => Math.PI * r * r;\n}\n\nForm[] formen =\n    [new Kreis(1), new Rechteck(2, 3)];\ndouble summe = 0;\nforeach (var f in formen)\n    summe += f.Flaeche();\nConsole.WriteLine($\"{summe:F2}\"); // 9.14"
+    },
+    {
+      "type": "text",
+      "content": "Ein Interface beschreibt nur, was eine Klasse können muss – ohne Basisklasse. Eine Klasse kann nur von einer Klasse erben, aber beliebig viele Interfaces implementieren. Viele Interfaces aus .NET wirst du gleich bei den Generics brauchen, z. B. IComparable<T> („kann sich mit einem anderen T vergleichen“) oder IEnumerable<T> („kann man mit foreach durchlaufen“)."
+    },
+    {
+      "type": "code",
+      "content": "interface IDruckbar\n{\n    void Drucken();\n}\nclass Zeugnis : IDruckbar\n{\n    public void Drucken() =>\n        Console.WriteLine(\"Druckt...\");\n}\n\nIDruckbar d = new Zeugnis();\nd.Drucken();\n\nobject o = new Zeugnis();\nif (o is IDruckbar x)  // Typprüfung\n    x.Drucken();"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: virtual + override = Laufzeit-Polymorphie, base ruft die Elternversion auf, new verdeckt nur. abstract erzwingt das Überschreiben, Interfaces beschreiben Fähigkeiten. Mit is prüfst (und castest) du Typen sicher. Polymorphie arbeitet mit einer gemeinsamen Basis – Generics, die nächste Lektion, mit einem Typ als Parameter."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Basis\n{\n    public virtual string Text()\n        => \"B\";\n}\nclass Abgeleitet : Basis\n{\n    public override string Text()\n        => base.Text() + \"A\";\n}\n\nBasis b = new Abgeleitet();\nConsole.WriteLine(b.Text());",
+      "options": [
+        "B",
+        "A",
+        "BA",
+        "AB"
+      ],
+      "correctIndex": 2,
+      "explanation": "b zeigt auf ein Abgeleitet-Objekt. Weil Text virtual ist und überschrieben wird, läuft die Version von Abgeleitet. Diese ruft base.Text() (\"B\") auf und hängt \"A\" an."
+    },
+    {
+      "question": "Finde den Fehler: Warum kompiliert dieser Code nicht?",
+      "code": "class A\n{\n    public string F() => \"A\";\n}\nclass B : A\n{\n    public override string F()\n        => \"B\";\n}",
+      "options": [
+        "B fehlt der Konstruktor",
+        "In A fehlt virtual (oder abstract) – nur solche Methoden darf man überschreiben",
+        "override darf nur bei Interfaces verwendet werden",
+        "Methoden mit => dürfen nicht überschrieben werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "override ist nur für Methoden erlaubt, die in der Basisklasse virtual, abstract oder selbst override sind. Sonst meldet der Compiler CS0506."
+    },
+    {
+      "question": "Eine Klasse Tier hat public string Laut() => \"...\"; (nicht virtual). Hund schreibt public new string Laut() => \"Wuff\";. Was liefert Tier t = new Hund(); t.Laut()?",
+      "options": [
+        "\"Wuff\"",
+        "Einen Compilerfehler",
+        "Eine Exception zur Laufzeit",
+        "\"...\""
+      ],
+      "correctIndex": 3,
+      "explanation": "new verdeckt die Methode nur. Ohne virtual/override entscheidet der Typ der Variable (Tier), daher läuft Tier.Laut()."
+    },
+    {
+      "question": "Welche Aussage über abstrakte Klassen in C# stimmt?",
+      "options": [
+        "Man kann mit new direkt Objekte davon erzeugen",
+        "Sie dürfen keine normalen (nicht abstrakten) Methoden enthalten",
+        "Eine nicht abstrakte Unterklasse muss alle abstrakten Methoden überschreiben",
+        "Eine Klasse kann von mehreren abstrakten Klassen erben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Abstrakte Klassen können normale und abstrakte Methoden mischen, sind aber nicht instanziierbar. Konkrete Unterklassen müssen jede abstrakte Methode überschreiben (sonst CS0534). Mehrfachvererbung von Klassen gibt es in C# nicht."
+    }
+  ]
+}

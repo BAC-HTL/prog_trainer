@@ -1,0 +1,94 @@
+{
+  "id": "syp-j3-anforderungen_03_aufwandsschaetzung",
+  "title": "Aufwandsschätzung",
+  "summary": "Aufwand mit Expertenschätzung, Drei-Punkt-Schätzung (PERT), Planning Poker und Function Points abschätzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ohne Schätzung gibt es kein Angebot für den Kunden und keinen realistischen Zeitplan für die Diplomarbeit. Eine Schätzung ist keine Zusage: Am Projektbeginn ist die Unsicherheit am größten und wird mit jedem geklärten Detail kleiner. Unterscheide Aufwand (z. B. Personenstunden) und Dauer (Kalenderzeit): 40 Stunden Aufwand können bei drei Leuten neben dem Unterricht trotzdem drei Wochen dauern."
+    },
+    {
+      "type": "text",
+      "content": "Bei der Expertenschätzung schätzen erfahrene Personen den Aufwand anhand ähnlicher Projekte. Das geht schnell, ist aber subjektiv. Besser wird es, wenn mehrere Expert:innen unabhängig schätzen und die Ergebnisse besprechen. Eine strukturierte Variante ist die Delphi-Methode: anonyme Schätzungen in mehreren Runden, nach jeder Runde bekommen alle die Ergebnisse zurückgemeldet. Geschätzt wird am besten pro Arbeitspaket aus dem Projektstrukturplan."
+    },
+    {
+      "type": "text",
+      "content": "Die Drei-Punkt-Schätzung berücksichtigt die Unsicherheit: Für jedes Arbeitspaket schätzt man einen optimistischen Wert O, einen wahrscheinlichsten Wert M und einen pessimistischen Wert P. Nach PERT berechnet man daraus den Erwartungswert E = (O + 4·M + P) / 6. Der wahrscheinlichste Wert zählt also vierfach. Als Maß für die Unsicherheit dient die Standardabweichung σ ≈ (P − O) / 6."
+    },
+    {
+      "type": "code",
+      "content": "Arbeitspaket: Login-Funktion\nO = 4 h, M = 6 h, P = 14 h\n\nE = (O + 4·M + P) / 6\n  = (4 + 24 + 14) / 6\n  = 42 / 6 = 7 h\n\nσ = (P − O) / 6\n  = 10 / 6 ≈ 1,7 h"
+    },
+    {
+      "type": "code",
+      "content": "def pert(o, m, p):\n    return (o + 4 * m + p) / 6\n\npakete = [(2, 4, 6), (3, 5, 13),\n          (1, 2, 3)]\nsumme = sum(pert(*x) for x in pakete)\nprint(summe)   # 12.0"
+    },
+    {
+      "type": "text",
+      "content": "E = 7 h liegt über M = 6 h, weil das Risiko nach oben größer ist (P liegt weit weg). Typische Fehler: einfach den Mittelwert (O + M + P) / 3 = 8 h rechnen oder nur den wahrscheinlichsten Wert M nehmen und damit das Risiko ignorieren. Im Python-Beispiel ergeben die drei Pakete 4 h + 6 h + 2 h = 12 h."
+    },
+    {
+      "type": "text",
+      "content": "Planning Poker ist eine agile Teamschätzung. Geschätzt wird meist in Story Points – einer relativen Größe für Aufwand, Komplexität und Risiko, nicht in Stunden. Jede:r hat Karten mit Werten wie 0, 1, 2, 3, 5, 8, 13, 20, 40, 100 und „?“. Der Product Owner erklärt die Story, alle wählen verdeckt eine Karte und decken gleichzeitig auf. So beeinflusst niemand die anderen (kein Anker-Effekt). Bei großen Abweichungen begründen die höchste und die niedrigste Schätzung ihre Sicht, danach wird erneut geschätzt."
+    },
+    {
+      "type": "text",
+      "content": "Function Points (FP) messen den fachlichen Umfang einer Software aus Benutzersicht – unabhängig von der Programmiersprache. Gezählt werden fünf Typen: externe Eingaben (EI), externe Ausgaben (EO), externe Abfragen (EQ), interne Datenbestände (ILF) und externe Datenbestände, die von anderen Systemen gepflegt werden (EIF). Jeder wird nach Komplexität (einfach, mittel, komplex) gewichtet. Die Summe wird mit einem Einflussfaktor angepasst und über Erfahrungswerte (Stunden pro FP) in Aufwand umgerechnet."
+    },
+    {
+      "type": "code",
+      "content": "Typ  Anzahl  Gewicht    FP\nEI     6  ×    4    =   24\nEO     3  ×    5    =   15\nEQ     4  ×    4    =   16\nILF    2  ×   10    =   20\nEIF    1  ×    7    =    7\n--------------------------\nSumme (unbewertet)      82\n× Einflussfaktor 1,05 ≈ 86"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Die Expertenschätzung ist schnell, aber subjektiv. Die Drei-Punkt-Schätzung (PERT) berücksichtigt Risiko: E = (O + 4·M + P) / 6. Planning Poker schätzt im Team relativ in Story Points mit gleichzeitigem Aufdecken. Function Points messen den Umfang sprachunabhängig aus den Anforderungen (Gewichte im Beispiel: mittlere Komplexität). In der Praxis kombiniert man mehrere Methoden und vergleicht die Ergebnisse."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Arbeitspaket wird mit O = 2 h, M = 3 h und P = 10 h geschätzt. Wie groß ist der Erwartungswert nach PERT?",
+      "options": [
+        "5 h",
+        "3 h",
+        "4 h",
+        "6 h"
+      ],
+      "correctIndex": 2,
+      "explanation": "E = (2 + 4·3 + 10) / 6 = 24 / 6 = 4 h. 5 h wäre der einfache Mittelwert, der den wahrscheinlichsten Wert zu wenig gewichtet."
+    },
+    {
+      "question": "Warum decken beim Planning Poker alle ihre Karten gleichzeitig auf?",
+      "options": [
+        "Damit es schneller geht",
+        "Damit sich niemand an der Schätzung anderer orientiert",
+        "Damit der Product Owner die Schätzung bestimmen kann",
+        "Weil sonst die Story Points in Stunden umgerechnet werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das gleichzeitige Aufdecken verhindert den Anker-Effekt: Wer zuerst eine Zahl nennt, würde sonst die anderen beeinflussen."
+    },
+    {
+      "question": "Wie viele unbewertete Function Points ergeben sich mit diesen Gewichten?",
+      "code": "Typ  Anzahl  Gewicht\nEI     5       4\nILF    2      10",
+      "options": [
+        "14",
+        "40",
+        "50",
+        "7"
+      ],
+      "correctIndex": 1,
+      "explanation": "5 · 4 + 2 · 10 = 20 + 20 = 40 FP."
+    },
+    {
+      "question": "Was sind Story Points?",
+      "options": [
+        "Die Anzahl der Arbeitsstunden einer Story",
+        "Die Zahl der Akzeptanzkriterien einer Story",
+        "Die Priorität einer Story im Backlog",
+        "Ein relatives Maß für die Größe einer Story"
+      ],
+      "correctIndex": 3,
+      "explanation": "Story Points sind relativ: Eine Story mit 8 Punkten ist etwa viermal so groß wie eine mit 2 Punkten. Sie stehen nicht direkt für Stunden."
+    }
+  ]
+}

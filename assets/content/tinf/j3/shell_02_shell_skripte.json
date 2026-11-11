@@ -1,0 +1,97 @@
+{
+  "id": "tinf-j3-shell_02_shell_skripte",
+  "title": "Bash-Skripte schreiben",
+  "summary": "Variablen, Parameter, Bedingungen, Schleifen, Exit-Codes und Funktionen in bash-Skripten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Shell-Skript ist eine Textdatei mit Befehlen, die nacheinander ausgeführt werden. Die erste Zeile, der Shebang #!/bin/bash, legt den Interpreter fest. Damit du es mit ./name.sh starten kannst, muss es ausführbar sein (chmod +x). Das ./ ist nötig, weil das aktuelle Verzeichnis aus Sicherheitsgründen nicht im Suchpfad liegt."
+    },
+    {
+      "type": "code",
+      "content": "#!/bin/bash\n# gruss.sh\nname=\"Anna\"\necho \"Hallo $name!\"\necho \"Skript: $0\"\necho \"Anzahl: $#\"\necho \"Erster: $1\"\n\n$ chmod +x gruss.sh\n$ ./gruss.sh Ben 3AHIF\nHallo Anna!\nSkript: ./gruss.sh\nAnzahl: 2\nErster: Ben"
+    },
+    {
+      "type": "text",
+      "content": "Variablen und Sonderparameter:\n• Zuweisung ohne Leerzeichen: name=\"Anna\"\n• Lesen mit $: \"$name\" – in doppelten Anführungszeichen wird ersetzt, in einfachen ('$name') nicht\n• $(befehl) – Ausgabe eines Befehls einsetzen\n• $((7 / 2)) – ganzzahlige Rechnung, ergibt 3\n• $0 Skriptname, $1, $2 … Parameter, $# Anzahl der Parameter, $@ alle Parameter, $? Exit-Code des letzten Befehls"
+    },
+    {
+      "type": "text",
+      "content": "Exit-Codes: Jeder Befehl meldet beim Beenden eine Zahl. 0 bedeutet Erfolg, alles andere einen Fehler. if prüft genau diesen Exit-Code. Der Befehl [ … ] (test) liefert 0, wenn die Bedingung stimmt:\n• Zahlen: -eq -ne -lt -le -gt -ge\n• Texte: = und !=\n• Dateien: -f (Datei existiert), -d (Verzeichnis)\nWichtig: Nach [ und vor ] muss ein Leerzeichen stehen. Kurzformen: befehl && echo ok (nur bei Erfolg), befehl || echo fehler (nur bei Fehler)."
+    },
+    {
+      "type": "code",
+      "content": "#!/bin/bash\n# pruef.sh\nif [ $# -ne 1 ]; then\n  echo \"Aufruf: $0 DATEI\" >&2\n  exit 1\nfi\nif [ -f \"$1\" ]; then\n  echo \"$1 hat $(wc -l < \"$1\") Zeilen\"\nelse\n  echo \"$1 nicht gefunden\" >&2\n  exit 2\nfi\n\n$ ./pruef.sh noten.csv; echo $?\nnoten.csv hat 6 Zeilen\n0\n$ ./pruef.sh x.txt; echo $?\nx.txt nicht gefunden\n2"
+    },
+    {
+      "type": "code",
+      "content": "#!/bin/bash\nfor f in *.csv; do\n  echo \"Datei: $f\"\ndone\n\nn=3\nwhile [ $n -gt 0 ]; do\n  echo \"Noch $n\"\n  n=$((n - 1))\ndone\necho \"Start!\"\n\n# Ausgabe:\nDatei: noten.csv\nNoch 3\nNoch 2\nNoch 1\nStart!"
+    },
+    {
+      "type": "text",
+      "content": "Funktionen fassen Befehle zusammen. Parameter kommen wie beim Skript als $1, $2 an. Ein Ergebnis gibt man meist mit echo aus und fängt es mit $(…) auf; mit return bzw. dem Exit-Code des letzten Befehls meldet eine Funktion Erfolg (0) oder Misserfolg. local macht eine Variable nur in der Funktion sichtbar."
+    },
+    {
+      "type": "code",
+      "content": "#!/bin/bash\nquadrat() {\n  local x=$1\n  echo $((x * x))\n}\nist_gerade() {\n  [ $(($1 % 2)) -eq 0 ]\n}\n\nerg=$(quadrat 7)\necho \"7² = $erg\"\nfor z in 4 7; do\n  if ist_gerade $z; then\n    echo \"$z ist gerade\"\n  else\n    echo \"$z ist ungerade\"\n  fi\ndone\n\n# Ausgabe:\n7² = 49\n4 ist gerade\n7 ist ungerade"
+    },
+    {
+      "type": "code",
+      "content": "# Fehler 1: Leerzeichen bei =\nname = \"Anna\"\n# → name: command not found\n#   (bash startet „name“ als Befehl)\n\n# Fehler 2: fehlende \"\"\ndatei=\"meine noten.txt\"\nif [ -f $datei ]; then …\n# → [: meine: binary operator\n#   expected\n# Richtig: [ -f \"$datei\" ]"
+    },
+    {
+      "type": "text",
+      "content": "Die Fehlermeldungen erscheinen je nach Spracheinstellung auch auf Deutsch. Faustregel: Variablen immer in doppelte Anführungszeichen setzen.\n\nZusammenfassung: Shebang und chmod +x, Variablen ohne Leerzeichen zuweisen, Parameter mit $1 und $#, if mit [ ] prüft Exit-Codes, for und while für Wiederholungen, Funktionen geben Ergebnisse per echo zurück, und exit liefert einen Exit-Code (0 = Erfolg)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt das Skript bei „./s.sh a b c“ aus?",
+      "code": "#!/bin/bash\necho \"$# $1\"",
+      "options": [
+        "3 a",
+        "3 c",
+        "4 a",
+        "a 3"
+      ],
+      "correctIndex": 0,
+      "explanation": "$# ist die Anzahl der Parameter (3), $1 der erste Parameter (a). Der Skriptname $0 zählt nicht mit."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "x=5\necho '$x'",
+      "options": [
+        "5",
+        "$x",
+        "x",
+        "\"5\""
+      ],
+      "correctIndex": 1,
+      "explanation": "In einfachen Anführungszeichen wird nichts ersetzt – es wird wörtlich $x ausgegeben."
+    },
+    {
+      "question": "Welchen Exit-Code liefert das Skript, wenn die Datei nicht existiert?",
+      "code": "#!/bin/bash\nif [ -f \"$1\" ]; then\n  exit 0\nelse\n  exit 3\nfi",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "-f ist falsch, also wird der else-Zweig ausgeführt und exit 3 beendet das Skript mit Code 3."
+    },
+    {
+      "question": "Was gibt die Schleife aus?",
+      "code": "n=3\nwhile [ $n -gt 0 ]; do\n  echo -n \"$n \"\n  n=$((n - 1))\ndone",
+      "options": [
+        "3 2 1 0",
+        "2 1 0",
+        "3 2 1",
+        "Endlosschleife"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ausgegeben wird, solange n > 0 ist: 3, 2, 1. Bei n = 0 ist die Bedingung falsch."
+    }
+  ]
+}

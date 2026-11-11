@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j3-stored_01_data_dictionary",
+  "title": "Data Dictionary und Systemtabellen",
+  "summary": "Die Datenbank beschreibt sich selbst: Im Data Dictionary stehen alle Tabellen, Spalten und Constraints – und du kannst es mit SELECT abfragen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Jede Datenbank enthält nicht nur deine Daten, sondern auch Metadaten – Daten über Daten: Welche Tabellen gibt es? Welche Spalten mit welchen Datentypen? Welche Primär- und Fremdschlüssel, Views, Indizes, Benutzer und Rechte? Diese Beschreibung heißt Data Dictionary oder Systemkatalog. Das Schema der Datenbank liegt damit in der Datenbank selbst."
+    },
+    {
+      "type": "text",
+      "content": "Das DBMS pflegt den Katalog automatisch: Jedes CREATE, ALTER oder DROP ändert ihn. Du schreibst nie direkt hinein, sondern liest ihn nur mit SELECT. In SQLite heißt die Systemtabelle sqlite_master (neuere Versionen kennen auch den Namen sqlite_schema). Sie hat die Spalten type, name, tbl_name, rootpage und sql."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE klasse (\n  bez  TEXT PRIMARY KEY,\n  raum TEXT\n);\nCREATE TABLE schueler (\n  sch_id  INTEGER PRIMARY KEY,\n  vorname TEXT NOT NULL,\n  klasse  TEXT REFERENCES klasse(bez)\n);\nCREATE VIEW v_3ahif AS\n  SELECT * FROM schueler\n  WHERE klasse = '3AHIF';\n\nSELECT type, name\nFROM sqlite_master;"
+    },
+    {
+      "type": "code",
+      "content": "type  | name\n------+--------------------------\ntable | klasse\nindex | sqlite_autoindex_klasse_1\ntable | schueler\nview  | v_3ahif"
+    },
+    {
+      "type": "text",
+      "content": "Interessant: Für den Primärschlüssel bez (TEXT) hat SQLite automatisch einen Index sqlite_autoindex_klasse_1 angelegt. Bei INTEGER PRIMARY KEY passiert das nicht, weil diese Spalte direkt die interne Zeilennummer ist. In der Spalte sql steht der originale CREATE-Befehl. Details zu den Spalten einer Tabelle liefert PRAGMA table_info: Nummer, Name, Typ, NOT NULL (1/0), Standardwert und Position im Primärschlüssel."
+    },
+    {
+      "type": "code",
+      "content": "PRAGMA table_info(schueler);\n\ncid|name   |type   |notnull|dflt|pk\n0  |sch_id |INTEGER|0      |NULL|1\n1  |vorname|TEXT   |1      |NULL|0\n2  |klasse |TEXT   |0      |NULL|0"
+    },
+    {
+      "type": "text",
+      "content": "Der SQL-Standard definiert für den Katalog die Sichten des INFORMATION_SCHEMA, z. B. tables, columns, table_constraints und routines. PostgreSQL, MySQL/MariaDB und SQL Server unterstützen sie, SQLite und Oracle nicht (Oracle hat eigene Sichten wie USER_TABLES). Zusätzlich hat jedes DBMS eigene, detailliertere Systemtabellen, in PostgreSQL etwa im Schema pg_catalog."
+    },
+    {
+      "type": "code",
+      "content": "-- PostgreSQL\nSELECT column_name, data_type,\n       is_nullable\nFROM information_schema.columns\nWHERE table_name = 'noten'\nORDER BY ordinal_position;\n\n-- Ergebnis:\n-- sch_id  integer            NO\n-- fach    character varying  NO\n-- note    integer            YES"
+    },
+    {
+      "type": "text",
+      "content": "Wofür brauchst du das? Datenbank-Tools wie DBeaver oder pgAdmin bauen ihre Baumansicht aus dem Katalog. Skripte prüfen damit, ob eine Tabelle schon existiert, bevor sie sie anlegen. Und du kannst automatisch eine Dokumentation aller Tabellen und Spalten erzeugen. Typischer Fehler: Spaltennamen per Hand abzuschreiben, statt sie aus dem Katalog zu lesen – nach dem nächsten ALTER TABLE stimmt die Doku dann nicht mehr."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Das Data Dictionary (Systemkatalog) enthält die Metadaten der Datenbank und wird vom DBMS selbst gepflegt. Du liest es mit SELECT: in SQLite über sqlite_master und PRAGMA table_info, standardisiert über INFORMATION_SCHEMA (z. B. in PostgreSQL und MariaDB). Auch Stored Procedures und Trigger, die du in den nächsten Lektionen schreibst, landen dort."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was speichert das Data Dictionary?",
+      "options": [
+        "die Sicherungskopien der Datenbank",
+        "Metadaten wie Tabellen, Spalten, Datentypen und Constraints",
+        "nur die Passwörter der Benutzer",
+        "die Ergebnisse der letzten Abfragen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Data Dictionary beschreibt die Struktur der Datenbank – es sind Daten über Daten (Metadaten)."
+    },
+    {
+      "question": "Wie viele Zeilen liefert diese Abfrage in SQLite?",
+      "code": "CREATE TABLE klasse (\n  bez TEXT PRIMARY KEY);\nCREATE TABLE schueler (\n  sch_id INTEGER PRIMARY KEY);\nCREATE VIEW v AS\n  SELECT * FROM schueler;\n\nSELECT name FROM sqlite_master\nWHERE type = 'table';",
+      "options": [
+        "0",
+        "1",
+        "3",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Abfrage liefert nur Einträge vom Typ table: klasse und schueler. View und automatischer Index haben einen anderen type."
+    },
+    {
+      "question": "Wie ändert sich der Systemkatalog, wenn du ALTER TABLE schueler ADD email TEXT ausführst?",
+      "options": [
+        "Gar nicht – du musst ihn mit UPDATE selbst anpassen.",
+        "Das DBMS trägt die neue Spalte automatisch ein.",
+        "Er wird erst nach einem Neustart des Servers aktualisiert.",
+        "Die Tabelle wird aus dem Katalog gelöscht und neu angelegt."
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder DDL-Befehl aktualisiert den Katalog automatisch. Direkt in Systemtabellen zu schreiben ist weder nötig noch erlaubt."
+    },
+    {
+      "question": "Welche Abfrage listet in PostgreSQL alle Spalten der Tabelle noten auf?",
+      "options": [
+        "SELECT * FROM sqlite_master WHERE name = 'noten';",
+        "PRAGMA table_info(noten);",
+        "SELECT column_name FROM information_schema.columns WHERE table_name = 'noten';",
+        "SHOW noten;"
+      ],
+      "correctIndex": 2,
+      "explanation": "INFORMATION_SCHEMA ist der standardisierte Katalog und wird von PostgreSQL unterstützt. sqlite_master und PRAGMA gibt es nur in SQLite."
+    }
+  ]
+}

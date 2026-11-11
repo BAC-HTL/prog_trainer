@@ -1,0 +1,93 @@
+{
+  "id": "pos-j3-python-compiler_02_lexer_parser",
+  "title": "Lexer und rekursiver Abstiegsparser",
+  "summary": "Du beschreibst arithmetische Ausdrücke mit EBNF und baust einen Lexer und einen Parser, der Punkt-vor-Strich und Klammern beherrscht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Syntax einer Sprache wird mit einer Grammatik beschrieben. Eine verbreitete Schreibweise ist die EBNF (Erweiterte Backus-Naur-Form). Eine Regel definiert ein Nichtterminal (einen Baustein wie „ausdruck“) durch Terminale (Zeichen, die wirklich im Text stehen, in Anführungszeichen) und andere Nichtterminale."
+    },
+    {
+      "type": "code",
+      "content": "EBNF-Zeichen:\n  =        Definition\n  |        Alternative (oder)\n  { ... }  Wiederholung, 0-mal oder öfter\n  [ ... ]  optional, 0- oder 1-mal\n  ( ... )  Gruppierung\n  \"...\"    Terminal\n  ;        Ende der Regel"
+    },
+    {
+      "type": "text",
+      "content": "Die Grammatik für Rechenausdrücke mit + - * / und Klammern hat drei Ebenen. Der Trick für Punkt-vor-Strich: * und / stehen in einer tieferen Regel (term) als + und - (ausdruck). Was tiefer im Syntaxbaum hängt, wird zuerst berechnet. Klammern führen über faktor wieder zurück zu ausdruck – die Grammatik ist rekursiv. Für 2 + 3 * 4 entsteht ein Baum mit + an der Wurzel und dem Teilbaum 3 * 4 als rechtem Kind."
+    },
+    {
+      "type": "code",
+      "content": "ausdruck = term { (\"+\" | \"-\") term } ;\nterm     = faktor { (\"*\" | \"/\") faktor } ;\nfaktor   = zahl | \"(\" ausdruck \")\" ;\nzahl     = ziffer { ziffer } ;\nziffer   = \"0\" | \"1\" | ... | \"9\" ;"
+    },
+    {
+      "type": "text",
+      "content": "Zuerst der Lexer: Er läuft Zeichen für Zeichen durch den Text, überspringt Leerzeichen, fasst aufeinanderfolgende Ziffern zu einer Zahl zusammen und erzeugt Tokens als Tupel (Art, Wert). Ein ENDE-Token markiert das Ende der Eingabe. Unbekannte Zeichen sind ein lexikalischer Fehler. (Mit regulären Ausdrücken aus dem 2. Jahrgang ginge das auch kürzer.)"
+    },
+    {
+      "type": "code",
+      "content": "ZIFFERN = \"0123456789\"\n\ndef lexer(text):\n    tokens = []\n    i = 0\n    while i < len(text):\n        z = text[i]\n        if z == \" \":\n            i += 1\n        elif z in ZIFFERN:\n            start = i\n            while (i < len(text)\n                   and text[i] in ZIFFERN):\n                i += 1\n            zahl = int(text[start:i])\n            tokens.append((\"ZAHL\", zahl))\n        elif z in \"+-*/()\":\n            tokens.append((\"OP\", z))\n            i += 1\n        else:\n            raise SyntaxError(\n                f\"Unbekannt: {z!r}\")\n    tokens.append((\"ENDE\", None))\n    return tokens\n\nprint(lexer(\"12+3*(4-1)\"))\n# [('ZAHL', 12), ('OP', '+'), ('ZAHL', 3),\n#  ('OP', '*'), ('OP', '('), ('ZAHL', 4),\n#  ('OP', '-'), ('ZAHL', 1), ('OP', ')'),\n#  ('ENDE', None)]"
+    },
+    {
+      "type": "text",
+      "content": "Ein rekursiver Abstiegsparser (recursive descent) setzt die Grammatik direkt in Code um: Für jedes Nichtterminal gibt es eine Methode. Eine Wiederholung { … } wird zur while-Schleife, eine Alternative | zu if/elif, ein Nichtterminal zu einem Methodenaufruf. Unser Parser rechnet gleich beim Parsen – statt einen Baum zu bauen, gibt jede Methode den Wert ihres Teilausdrucks zurück."
+    },
+    {
+      "type": "code",
+      "content": "class Parser:\n    def __init__(self, tokens):\n        self.tokens = tokens\n        self.pos = 0\n\n    def art(self):     # Art des Tokens\n        return self.tokens[self.pos][0]\n\n    def sieh(self):    # Wert des Tokens\n        return self.tokens[self.pos][1]\n\n    def weiter(self):\n        self.pos += 1\n\n    def parse(self):\n        wert = self.ausdruck()\n        if self.art() != \"ENDE\":\n            raise SyntaxError(\n                f\"Unerwartet: {self.sieh()}\")\n        return wert\n\n    # ausdruck = term {(\"+\"|\"-\") term}\n    def ausdruck(self):\n        wert = self.term()\n        while self.sieh() in (\"+\", \"-\"):\n            op = self.sieh()\n            self.weiter()\n            rechts = self.term()\n            if op == \"+\":\n                wert = wert + rechts\n            else:\n                wert = wert - rechts\n        return wert\n\n    # term = faktor {(\"*\"|\"/\") faktor}\n    def term(self):\n        wert = self.faktor()\n        while self.sieh() in (\"*\", \"/\"):\n            op = self.sieh()\n            self.weiter()\n            rechts = self.faktor()\n            if op == \"*\":\n                wert = wert * rechts\n            else:\n                wert = wert / rechts\n        return wert\n\n    # faktor = zahl | \"(\" ausdruck \")\"\n    def faktor(self):\n        wert = self.sieh()\n        if self.art() == \"ZAHL\":\n            self.weiter()\n            return wert\n        if wert == \"(\":\n            self.weiter()\n            ergebnis = self.ausdruck()\n            if self.sieh() != \")\":\n                raise SyntaxError(\"')' fehlt\")\n            self.weiter()\n            return ergebnis\n        raise SyntaxError(\n            f\"Zahl erwartet: {wert}\")"
+    },
+    {
+      "type": "text",
+      "content": "Jetzt testen. Weil die while-Schleife in ausdruck von links nach rechts arbeitet, wird 10 - 4 - 3 korrekt als (10 - 4) - 3 = 3 berechnet (linksassoziativ). Fehlerhafte Eingaben führen zu einem SyntaxError mit einer verständlichen Meldung. Zusammenfassung: Grammatik in EBNF → eine Methode pro Regel; Punkt-vor-Strich entsteht durch die Ebenen ausdruck/term/faktor, Klammern durch die Rekursion faktor → ausdruck."
+    },
+    {
+      "type": "code",
+      "content": "for t in [\"2+3*4\", \"(2+3)*4\",\n          \"10-4-3\", \"2*(3+4)-5\"]:\n    print(t, \"=\", rechne(t))\n# 2+3*4 = 14\n# (2+3)*4 = 20\n# 10-4-3 = 3\n# 2*(3+4)-5 = 9\nfor t in [\"2+*3\", \"(1+2\", \"3 $ 4\"]:\n    try:\n        rechne(t)\n    except SyntaxError as e:\n        print(t, \"->\", e)\n# 2+*3 -> Zahl erwartet: *\n# (1+2 -> ')' fehlt\n# 3 $ 4 -> Unbekannt: '$'"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was liefert rechne(\"7-2*3\") mit unserem Parser?",
+      "options": [
+        "15",
+        "1",
+        "-1",
+        "SyntaxError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Multiplikation steht in term und wird zuerst ausgewertet: 2 * 3 = 6, danach 7 - 6 = 1."
+    },
+    {
+      "question": "Wie viele Tokens (inklusive ENDE) erzeugt lexer(\"(15 + 2)\")?",
+      "options": [
+        "5",
+        "8",
+        "7",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "( , 15, +, 2, ) und ENDE – zusammen 6. Die Ziffern 1 und 5 werden zu einem einzigen ZAHL-Token zusammengefasst, Leerzeichen erzeugen keine Tokens."
+    },
+    {
+      "question": "Welche EBNF-Regel beschreibt „ein optionales Minus, gefolgt von einer oder mehreren Ziffern“?",
+      "options": [
+        "zahl = [ \"-\" ] ziffer { ziffer } ;",
+        "zahl = { \"-\" } ziffer ;",
+        "zahl = \"-\" | ziffer { ziffer } ;",
+        "zahl = [ \"-\" ziffer ] ;"
+      ],
+      "correctIndex": 0,
+      "explanation": "[ \"-\" ] heißt 0- oder 1-mal Minus. ziffer { ziffer } erzwingt mindestens eine Ziffer und erlaubt beliebig viele weitere."
+    },
+    {
+      "question": "Warum berechnet der Parser 2 + 3 * 4 als 14 und nicht als 20?",
+      "options": [
+        "Weil der Lexer die Tokens umsortiert",
+        "Weil Python intern eval() aufruft",
+        "Weil * und / in der Regel term stehen, die von ausdruck aufgerufen wird – sie werden also zuerst ausgewertet",
+        "Weil der Parser von rechts nach links liest"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bevor ausdruck die Addition ausführt, holt es mit self.term() den rechten Operanden – und term berechnet dabei bereits 3 * 4. Die Grammatik-Ebenen erzeugen Punkt-vor-Strich."
+    }
+  ]
+}

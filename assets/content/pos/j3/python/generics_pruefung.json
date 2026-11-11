@@ -1,0 +1,122 @@
+{
+  "id": "pos-j3-python-generics_pruefung",
+  "title": "Abschlussprüfung: Polymorphie & Generics",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus? (Zeilen durch Beistrich getrennt)",
+      "code": "class Rechteck:\n    def __init__(self, a, b):\n        self.a, self.b = a, b\n    def flaeche(self):\n        return self.a * self.b\n\nclass Quadrat(Rechteck):\n    def __init__(self, a):\n        super().__init__(a, a)\n\nfor f in [Rechteck(2, 3), Quadrat(2)]:\n    print(f.flaeche())",
+      "options": [
+        "6, 0",
+        "6, 4",
+        "0, 4",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Rechteck(2, 3) liefert 6. Quadrat erbt von Rechteck und setzt beide Seiten auf 2, daher 4. Die Methode flaeche() wird polymorph über die Vererbung aufgerufen."
+    },
+    {
+      "question": "Wann bemerkt Python bei Duck Typing, dass einem Objekt eine Methode fehlt?",
+      "options": [
+        "Beim Kompilieren des Moduls",
+        "Beim Erzeugen des Objekts",
+        "Erst beim Aufruf der fehlenden Methode",
+        "Gar nicht – der Aufruf wird ignoriert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Duck Typing prüft nichts im Voraus. Erst wenn die Methode wirklich aufgerufen wird, entsteht ein AttributeError."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from abc import ABC, abstractmethod\n\nclass Person(ABC):\n    def __init__(self, name):\n        self.name = name\n    @abstractmethod\n    def vorstellen(self):\n        ...\n\nclass Lehrer(Person):\n    def gruss(self):\n        return \"Hallo, ich bin \" + self.name\n\nprint(Lehrer(\"Ada\").gruss())",
+      "options": [
+        "Hallo, ich bin Ada",
+        "TypeError",
+        "AttributeError",
+        "None"
+      ],
+      "correctIndex": 1,
+      "explanation": "Lehrer erbt von der abstrakten Klasse Person, implementiert aber vorstellen() nicht. Deshalb ist auch Lehrer abstrakt und kann nicht instanziert werden – schon Lehrer(\"Ada\") löst einen TypeError aus."
+    },
+    {
+      "question": "Welche Aussage über abstrakte Basisklassen in Python stimmt?",
+      "options": [
+        "Sie dürfen keine konkreten (fertig implementierten) Methoden enthalten",
+        "Sie müssen in einem eigenen Modul namens abc liegen",
+        "Jede Methode einer ABC ist automatisch abstrakt",
+        "Sie können konkrete Methoden enthalten, die die Unterklassen erben"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur Methoden mit @abstractmethod sind Pflicht für die Unterklassen. Daneben darf eine ABC normale Methoden haben, die ganz normal vererbt werden."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def summe(werte: list[int]) -> int:\n    ergebnis = werte[0]\n    for w in werte[1:]:\n        ergebnis = ergebnis + w\n    return ergebnis\n\nprint(summe([\"1\", \"2\", \"3\"]))",
+      "options": [
+        "[1, 2, 3]",
+        "TypeError",
+        "6",
+        "123"
+      ],
+      "correctIndex": 3,
+      "explanation": "Type Hints werden zur Laufzeit nicht geprüft. Die Strings werden mit + verkettet, das Ergebnis ist \"123\" – obwohl list[int] angegeben ist."
+    },
+    {
+      "question": "Welcher Typ wird laut Typprüfer für p zurückgegeben?",
+      "code": "A = TypeVar(\"A\")\nB = TypeVar(\"B\")\n\ndef tausche(p: tuple[A, B]) -> tuple[B, A]:\n    return (p[1], p[0])\n\np = tausche((\"Max\", 17))",
+      "options": [
+        "tuple[str, int]",
+        "tuple[int, str]",
+        "tuple[T, U]",
+        "tuple[Any, Any]"
+      ],
+      "correctIndex": 1,
+      "explanation": "A wird an str gebunden, B an int. Die Funktion gibt tuple[B, A] zurück, also tuple[int, str]."
+    },
+    {
+      "question": "Wozu dient Generic[T] in class Box(Generic[T]):?",
+      "options": [
+        "Es macht die Klasse abstrakt",
+        "Es prüft zur Laufzeit, dass nur Objekte vom Typ T gespeichert werden",
+        "Es macht Box zu einer generischen Klasse, sodass man z. B. Box[int] schreiben kann",
+        "Es erzeugt automatisch Getter und Setter für T"
+      ],
+      "correctIndex": 2,
+      "explanation": "Generic[T] erlaubt es, die Klasse mit einem Typ zu parametrisieren (Box[int], Box[str]). Geprüft wird das von Typprüfern wie mypy, nicht zur Laufzeit."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import json\nd = {3: \"A\"}\nprint(json.loads(json.dumps(d)))",
+      "options": [
+        "{'3': 'A'}",
+        "{3: 'A'}",
+        "{'3': ['A']}",
+        "KeyError"
+      ],
+      "correctIndex": 0,
+      "explanation": "In JSON sind Schlüssel immer Strings. Aus der Zahl 3 wird beim Speichern \"3\", und so kommt sie auch zurück."
+    },
+    {
+      "question": "Du willst Spielstände deiner App mit einer Web-App in JavaScript austauschen. Welches Format ist geeignet?",
+      "options": [
+        "JSON, weil es textbasiert und sprachunabhängig ist",
+        "pickle, weil es auch eigene Klassen speichert",
+        "pickle, weil es kleiner ist",
+        "Keines – Objekte kann man nicht austauschen"
+      ],
+      "correctIndex": 0,
+      "explanation": "pickle ist ein Python-eigenes Binärformat. JSON ist lesbar, wird von praktisch allen Sprachen unterstützt und ist beim Laden fremder Daten sicher."
+    },
+    {
+      "question": "Welche Kombination ist richtig?",
+      "options": [
+        "json.dump schreibt in eine Datei, pickle braucht den Dateimodus \"wb\"",
+        "json.dumps schreibt in eine Datei, pickle braucht den Dateimodus \"w\"",
+        "json.load liest einen String, pickle.load einen Dateinamen",
+        "json.loads liest aus einer Datei, pickle braucht \"rt\""
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Varianten mit „s“ (dumps/loads) arbeiten mit Strings, ohne „s“ mit Dateiobjekten. pickle erzeugt Bytes, daher Binärmodus \"wb\"/\"rb\"."
+    }
+  ]
+}

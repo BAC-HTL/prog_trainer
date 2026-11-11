@@ -1,0 +1,89 @@
+{
+  "id": "syp-j3-pm_02_phasenmodelle",
+  "title": "Phasenmodelle",
+  "summary": "Wie man ein Projekt in Phasen gliedert und mit Meilensteinen überprüfbar macht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Projekt wie die Diplomarbeit dauert Monate. Damit du nicht den Überblick verlierst, teilst du es in Phasen ein. Jede Phase hat ein eigenes Ergebnis. Am Ende einer Phase wird geprüft, ob es weitergehen kann. So erkennst du Probleme früh und nicht erst kurz vor der Abgabe."
+    },
+    {
+      "type": "text",
+      "content": "Ein gängiges allgemeines Phasenmodell (z. B. in der DIN 69901) hat fünf Phasen: Initialisierung, Definition, Planung, Steuerung (Durchführung) und Abschluss. Es passt auf fast jedes Projekt – egal ob Software, Veranstaltung oder Umbau."
+    },
+    {
+      "type": "code",
+      "content": "Initialisierung -> Projektidee,\n                   Grobziel\nDefinition      -> Projektauftrag,\n                   Ziele, Rahmen\nPlanung         -> PSP, Termine,\n                   Kosten, Ressourcen\nSteuerung       -> umsetzen,\n                   Soll/Ist prüfen\nAbschluss       -> Abnahme, Bericht,\n                   Lessons Learned"
+    },
+    {
+      "type": "text",
+      "content": "Am Beispiel Diplomarbeit: Ihr findet ein Thema und einen Partner (Initialisierung). Ihr formuliert Ziele und reicht den Antrag ein (Definition). Ihr teilt Aufgaben auf und legt Termine fest (Planung). Ihr programmiert, testet und schreibt – und vergleicht dabei laufend mit dem Plan (Steuerung). Zum Schluss gebt ihr ab, präsentiert und haltet fest, was ihr gelernt habt (Abschluss)."
+    },
+    {
+      "type": "text",
+      "content": "Phasen werden durch Meilensteine abgeschlossen. Ein Meilenstein ist ein Zeitpunkt mit einem überprüfbaren Ergebnis, er hat selbst keine Dauer. Gute Meilensteine sind eindeutig: „Antrag genehmigt“ oder „Prototyp läuft am Handy“. Schlecht ist „Programmierung zu 80 % fertig“ – das lässt sich kaum objektiv prüfen."
+    },
+    {
+      "type": "code",
+      "content": "Phase:  Definition | Planung | ...\n                   ^         ^\nMeilen-            |         |\nsteine:   M1 Antrag    M2 Plan\n          genehmigt    freigegeben"
+    },
+    {
+      "type": "text",
+      "content": "In der österreichischen PM-Tradition (pma, nach Gareis) betrachtet man das Projektmanagement selbst als Prozess mit den Teilprozessen Projektstart, Projektkoordination, Projektcontrolling, Projektmarketing und Projektabschluss. Koordination, Controlling und Marketing laufen nicht nacheinander, sondern während des ganzen Projekts parallel."
+    },
+    {
+      "type": "text",
+      "content": "Wichtig: Unterscheide die Phasen des Projektmanagements von den inhaltlichen Phasen der eigentlichen Arbeit. Bei Software sind das z. B. Analyse, Entwurf, Implementierung, Test und Einführung. Wie diese Arbeit organisiert wird – nacheinander wie beim Wasserfallmodell oder in kurzen Zyklen wie bei Scrum –, lernst du im Modul „Vorgehensmodelle“."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Die Planung wird übersprungen („wir fangen einfach an“), Phasenergebnisse werden nicht geprüft, oder der Abschluss fällt weg, weil nach der Abgabe alle erleichtert sind. Dann gehen Erfahrungen verloren. Zusammenfassung: Phasen gliedern das Projekt zeitlich, Meilensteine markieren überprüfbare Ergebnisse, und das PM begleitet das Projekt vom Start bis zum Abschluss."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Reihenfolge entspricht dem allgemeinen Phasenmodell nach DIN 69901?",
+      "options": [
+        "Planung – Initialisierung – Definition – Steuerung – Abschluss",
+        "Initialisierung – Definition – Planung – Steuerung – Abschluss",
+        "Definition – Initialisierung – Steuerung – Planung – Abschluss",
+        "Initialisierung – Steuerung – Planung – Definition – Abschluss"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zuerst entsteht die Idee (Initialisierung), dann werden Ziele und Rahmen festgelegt (Definition), dann geplant, umgesetzt und gesteuert und schließlich abgeschlossen."
+    },
+    {
+      "question": "Welche Formulierung ist ein guter Meilenstein?",
+      "options": [
+        "Programmierung läuft",
+        "Datenbank zu 70 % fertig",
+        "Wir arbeiten an der App",
+        "Prototyp vom Kunden abgenommen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Meilenstein ist ein überprüfbares Ereignis. „Vom Kunden abgenommen“ ist eindeutig ja oder nein. Prozentangaben und Tätigkeiten lassen sich nicht objektiv prüfen."
+    },
+    {
+      "question": "Wie lange dauert ein Meilenstein?",
+      "options": [
+        "0 – er ist ein Zeitpunkt",
+        "Genau einen Tag",
+        "So lange wie die Phase davor",
+        "Eine Woche"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Meilenstein ist ein Ereignis ohne Dauer. Er markiert, dass ein bestimmtes Ergebnis zu einem Zeitpunkt vorliegt."
+    },
+    {
+      "question": "Welcher Teilprozess des Projektmanagements (nach pma/Gareis) läuft NICHT während des ganzen Projekts parallel?",
+      "options": [
+        "Projektkoordination",
+        "Projektcontrolling",
+        "Projektstart",
+        "Projektmarketing"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Projektstart steht am Anfang, der Projektabschluss am Ende. Koordination, Controlling und Marketing begleiten das Projekt laufend."
+    }
+  ]
+}

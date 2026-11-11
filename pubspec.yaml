@@ -41,5 +41,12 @@ flutter:
     - assets/content/nvs/j2/
     - assets/content/tinf/j1/
     - assets/content/tinf/j2/
+    - assets/content/pos/j3/python/
+    - assets/content/pos/j3/csharp/
+    - assets/content/pos/j3/theorie/
+    - assets/content/dbi/j3/
+    - assets/content/nvs/j3/
+    - assets/content/tinf/j3/
+    - assets/content/syp/j3/
     - assets/game/
     - assets/icon/logo_mark.png

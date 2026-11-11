@@ -1,0 +1,117 @@
+{
+  "id": "nvs-j3-komponenten_pruefung",
+  "title": "Abschlussprüfung: Aktive Netzwerkkomponenten",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Access-Port ist mit „switchport port-security violation restrict“ konfiguriert. Ein nicht erlaubtes Gerät wird angesteckt. Was passiert?",
+      "options": [
+        "Der Port wird err-disabled.",
+        "Frames des Geräts werden verworfen, der Verstoß wird gezählt und gemeldet, der Port bleibt aktiv.",
+        "Das Gerät wird in das Native VLAN verschoben.",
+        "Frames werden still verworfen, ohne Zähler oder Meldung."
+      ],
+      "correctIndex": 1,
+      "explanation": "restrict = verwerfen + melden/zählen, Port bleibt up. protect verwirft still, shutdown macht den Port err-disabled."
+    },
+    {
+      "question": "Du willst Port Security auf fa0/7 aktivieren, IOS meldet „Command rejected: FastEthernet0/7 is a dynamic port“. Was ist zu tun?",
+      "options": [
+        "„spanning-tree portfast“ setzen",
+        "Den Port mit „shutdown“ abschalten",
+        "Vorher „switchport mode access“ konfigurieren",
+        "„switchport port-security maximum 0“ setzen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Port Security braucht einen fest eingestellten Modus. Ein dynamisch aushandelnder Port wird abgelehnt."
+    },
+    {
+      "question": "Alle Switches haben Priorität 32768. SW-A hat die MAC 0011.2233.00b0, SW-B 0011.2233.00a0, SW-C 0011.2233.00c0. Was ist der beste Weg, SW-C (den zentralen Switch) zur Root Bridge zu machen?",
+      "options": [
+        "Auf SW-C die Priorität z. B. auf 4096 senken",
+        "Auf SW-C die Priorität auf 61440 erhöhen",
+        "Nichts tun, SW-C hat die größte MAC und gewinnt",
+        "STP auf SW-A und SW-B deaktivieren"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ohne Eingriff gewinnt SW-B (gleiche Priorität, kleinste MAC). Mit einer kleineren Priorität auf SW-C wird dieser zur Root – STP abzuschalten wäre gefährlich."
+    },
+    {
+      "question": "Auf welchen Ports ist „spanning-tree portfast“ sinnvoll?",
+      "options": [
+        "Auf allen Trunks zwischen Switches",
+        "Nur auf dem Port zur Root Bridge",
+        "Auf Ports, die blockiert sind",
+        "Auf Access-Ports, an denen nur Endgeräte hängen"
+      ],
+      "correctIndex": 3,
+      "explanation": "PortFast überspringt die Wartezustände – das ist nur sicher, wo keine Schleife entstehen kann, also bei Endgeräten. Zusätzlich schützt BPDU Guard, falls doch ein Switch angesteckt wird."
+    },
+    {
+      "question": "PCs in VLAN 30 erreichen das Gateway 10.10.32.1 (Subinterface gi0/0.30 am Router) nicht. PCs in VLAN 10 funktionieren. Der Switch-Port zum Router ist „switchport mode access“ in VLAN 10. Was ist der Fehler?",
+      "options": [
+        "Router-on-a-Stick funktioniert nur mit einem VLAN.",
+        "Der Switch-Port zum Router muss ein Trunk sein.",
+        "Das Subinterface braucht „ip nat inside“.",
+        "VLAN 30 braucht eine Default Route."
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Access-Port transportiert nur VLAN 10. Damit alle Subinterfaces ihre getaggten Frames bekommen, muss die Verbindung ein 802.1Q-Trunk sein."
+    },
+    {
+      "question": "Welche Wildcard-Maske erfasst in einer Cisco-ACL genau das Netz 10.10.40.0/26?",
+      "options": [
+        "0.0.0.63",
+        "255.255.255.192",
+        "0.0.0.64",
+        "0.0.0.127"
+      ],
+      "correctIndex": 0,
+      "explanation": "/26 = 255.255.255.192; Umkehrung: 255 − 192 = 63 → 0.0.0.63 (64 Adressen)."
+    },
+    {
+      "question": "R1 hat „ip route 0.0.0.0 0.0.0.0 203.0.113.1“ und „ip route 0.0.0.0 0.0.0.0 10.0.0.2 10“. Das Kabel zum Provider (203.0.113.0/30) wird gezogen, das Interface geht down. Was passiert?",
+      "options": [
+        "Kein Internet, bis der Admin die Route ändert",
+        "Beide Routen werden gelöscht",
+        "Die Route über 10.0.0.2 wird aktiv",
+        "Der Router wählt zufällig eine der beiden"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mit dem Interface verschwindet der Next Hop 203.0.113.1 und damit die Hauptroute. Die Floating Static Route mit AD 10 rückt nach."
+    },
+    {
+      "question": "Bei der PAT-Konfiguration hat ein Kollege „ip nat outside“ auf das LAN-Subinterface und „ip nat inside“ auf den Provider-Uplink gesetzt. Was ist die Folge?",
+      "options": [
+        "PAT funktioniert trotzdem, die Richtung ist egal.",
+        "Nur IPv6 wird übersetzt.",
+        "Der Router startet neu.",
+        "Die Übersetzung privater LAN-Adressen ins Internet funktioniert nicht."
+      ],
+      "correctIndex": 3,
+      "explanation": "inside markiert die Seite mit den zu übersetzenden (privaten) Adressen, outside die Seite zum Internet. Vertauscht passt die Regel „ip nat inside source …“ nicht auf den Verkehr aus dem LAN."
+    },
+    {
+      "question": "Zwei benachbarte Klassenzimmer-APs funken im 2,4-GHz-Band auf Kanal 1 und Kanal 3 mit maximaler Sendeleistung. Was ist die beste Verbesserung?",
+      "options": [
+        "Beide auf Kanal 2 stellen",
+        "Kanäle 1 und 6 (oder 11) wählen und die Sendeleistung reduzieren",
+        "Die SSID verstecken",
+        "Bei beiden die Kanalbreite auf 40 MHz erhöhen"
+      ],
+      "correctIndex": 1,
+      "explanation": "1 und 3 überlappen und stören sich. Überlappungsfreie Kanäle plus angepasste Sendeleistung verkleinern die Störungen; 40 MHz im 2,4-GHz-Band würde es noch verschlimmern."
+    },
+    {
+      "question": "Die Schule will, dass sich im WLAN jede Person mit eigenem Konto anmeldet und abgemeldete Schüler:innen sofort keinen Zugang mehr haben. Was passt?",
+      "options": [
+        "WPA2-Personal mit monatlich neuem Passwort",
+        "Offenes WLAN mit MAC-Filter",
+        "WPA2/WPA3-Enterprise mit 802.1X und RADIUS",
+        "WEP mit versteckter SSID"
+      ],
+      "correctIndex": 2,
+      "explanation": "Enterprise authentifiziert jede Person einzeln gegen einen zentralen Server; wird das Konto gesperrt, ist auch der WLAN-Zugang weg. Ein gemeinsames Passwort kennt jeder, der es einmal hatte."
+    }
+  ]
+}

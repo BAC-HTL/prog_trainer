@@ -1,0 +1,92 @@
+{
+  "id": "pos-j3-python-generics_02_generische_typen",
+  "title": "Generische Typen mit TypeVar und Generic",
+  "summary": "Mit Type Hints, TypeVar und Generic beschreibst du Funktionen und Klassen, die mit beliebigen, aber einheitlichen Typen arbeiten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Type Hints beschreiben, welche Typen eine Funktion erwartet und zurückgibt. Wichtig: Python selbst prüft sie zur Laufzeit nicht! Sie sind Dokumentation für Menschen, für die Entwicklungsumgebung (Autovervollständigung) und für Typprüfer wie mypy. Für Container gibst du den Typ der Elemente in eckigen Klammern an: list[int] ist eine Liste ganzer Zahlen, dict[str, int] ein Dictionary mit String-Schlüsseln und int-Werten. int | None heißt „eine Zahl oder None“."
+    },
+    {
+      "type": "code",
+      "content": "def verdopple(x: int) -> int:\n    return x * 2\n\nprint(verdopple(4))     # 8\nprint(verdopple(\"ab\"))  # abab  (!)\n\ndef schnitt(noten: list[int]) -> float:\n    return sum(noten) / len(noten)\n\ndef suche(d: dict[str, int],\n          name: str) -> int | None:\n    return d.get(name)\n\nprint(schnitt([1, 2, 2, 3]))      # 2.0\nprint(suche({\"Anna\": 2}, \"Ben\"))  # None"
+    },
+    {
+      "type": "text",
+      "content": "Manche Funktionen funktionieren mit jedem Typ, z. B. „liefere das erste Element“. Schreibst du dafür list[Any] -> Any, geht die Information verloren, was zurückkommt. Eine Typvariable (TypeVar) löst das: T steht für „irgendein Typ, aber überall derselbe“. Aus list[str] wird so als Rückgabetyp str."
+    },
+    {
+      "type": "code",
+      "content": "from typing import TypeVar\n\nT = TypeVar(\"T\")\n\ndef erstes(liste: list[T]) -> T:\n    return liste[0]\n\nn = erstes([3, 1, 2])      # T = int\ns = erstes([\"Ada\", \"Bo\"])  # T = str\nprint(n + 1, s.upper())    # 4 ADA"
+    },
+    {
+      "type": "text",
+      "content": "Auch Klassen können generisch sein. Du erbst von Generic[T] und verwendest T in den Methoden. Beim Anlegen schreibst du dazu, wofür T steht: Stapel[int] ist ein Stack nur für Zahlen. So muss man den Stapel aus dem 2. Jahrgang nur einmal programmieren und kann ihn für jeden Typ verwenden."
+    },
+    {
+      "type": "code",
+      "content": "from typing import Generic, TypeVar\n\nT = TypeVar(\"T\")\n\nclass Stapel(Generic[T]):\n    def __init__(self) -> None:\n        self._daten: list[T] = []\n\n    def push(self, x: T) -> None:\n        self._daten.append(x)\n\n    def pop(self) -> T:\n        return self._daten.pop()\n\ns: Stapel[int] = Stapel()\ns.push(5)\ns.push(7)\nprint(s.pop())   # 7"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Man glaubt, s.push(\"hallo\") auf einem Stapel[int] würde abstürzen. Tut es nicht – zur Laufzeit läuft alles. Den Fehler findet erst ein Typprüfer wie mypy, und zwar ohne das Programm auszuführen. Genau darin liegt der Nutzen: Fehler fallen auf, bevor der Code läuft."
+    },
+    {
+      "type": "code",
+      "content": "# stapel.py: Code von oben, danach\ns.push(\"hallo\")   # Zeile 18\n\n$ mypy stapel.py\nstapel.py:18: error: Argument 1 to\n\"push\" of \"Stapel\" has incompatible\ntype \"str\"; expected \"int\"\n[arg-type]\nFound 1 error in 1 file"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Type Hints (list[int], int | None) werden zur Laufzeit nicht geprüft. TypeVar(\"T\") ist ein Platzhalter für einen beliebigen, aber einheitlichen Typ. Mit Generic[T] baust du generische Klassen wie Stapel[int]. Prüfen lässt sich das Ganze mit mypy. Hinweis: In neueren Python-Versionen gibt es dafür auch die Kurzschreibweise class Stapel[T]: ohne TypeVar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def verdopple(x: int) -> int:\n    return x * 2\n\nprint(verdopple(3.5))",
+      "options": [
+        "TypeError",
+        "8",
+        "3.53.5",
+        "7.0"
+      ],
+      "correctIndex": 3,
+      "explanation": "Type Hints werden zur Laufzeit nicht geprüft. 3.5 * 2 ergibt 7.0 – obwohl int angegeben ist, läuft der Code ohne Fehler."
+    },
+    {
+      "question": "Welchen Typ hat laut Typprüfer die Variable w?",
+      "code": "T = TypeVar(\"T\")\n\ndef letztes(liste: list[T]) -> T:\n    return liste[-1]\n\nw = letztes([\"Mo\", \"Di\", \"Mi\"])",
+      "options": [
+        "list[str]",
+        "T",
+        "str",
+        "Any"
+      ],
+      "correctIndex": 2,
+      "explanation": "T wird beim Aufruf an den Elementtyp der Liste gebunden. Bei list[str] steht T für str, daher ist der Rückgabetyp str."
+    },
+    {
+      "question": "Was passiert, wenn du diesen Code mit python3 ausführst?",
+      "code": "s: Stapel[int] = Stapel()\ns.push(\"x\")\nprint(s.pop())",
+      "options": [
+        "TypeError, weil ein String nicht in einen Stapel[int] passt",
+        "Es wird x ausgegeben",
+        "mypy wird automatisch gestartet und meldet einen Fehler",
+        "SyntaxError bei Stapel[int]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zur Laufzeit werden Typparameter nicht geprüft. Der String landet im Stapel und wird wieder ausgegeben. Erst mypy würde den Aufruf push(\"x\") als Fehler melden."
+    },
+    {
+      "question": "Welche Signatur beschreibt am besten eine Funktion, die zwei Werte gleichen Typs bekommt und einen davon zurückgibt?",
+      "options": [
+        "def waehle(a: T, b: T) -> T",
+        "def waehle(a, b)",
+        "def waehle(a: object, b: object) -> object",
+        "def waehle(a: list[T], b: T) -> list[T]"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit derselben Typvariable T für beide Parameter und den Rückgabewert sagst du: Alle drei haben denselben Typ. Mit object ginge die Information verloren, was genau zurückkommt."
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "id": "syp-j3-anforderungen_pruefung",
+  "title": "Abschlussprüfung: Anforderungsanalyse & Aufwandsschätzung",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Der Verein schickt euch seine bisherige Mitglieder-Excel-Liste mit allen Spalten. Welche Erhebungsmethode ist das, und was liefert sie vor allem?",
+      "options": [
+        "Beobachtung – sie zeigt die tatsächlichen Abläufe",
+        "Dokumentenanalyse – sie zeigt vorhandene Datenstrukturen",
+        "Fragebogen – sie liefert die Meinung vieler Mitglieder",
+        "Interview – sie ermöglicht Rückfragen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Untersuchen vorhandener Unterlagen ist Dokumentenanalyse. Sie zeigt schnell, welche Daten es gibt, kann aber veraltet sein."
+    },
+    {
+      "question": "Was ist ein typischer Nachteil eines Fragebogens?",
+      "options": [
+        "Er erreicht nur wenige Personen",
+        "Die Antworten sind schwer auszuwerten",
+        "Er ist immer teurer als ein Interview",
+        "Bei unklaren Antworten kann man nicht nachfragen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beim Fragebogen fehlt der direkte Kontakt: Unklare oder überraschende Antworten lassen sich nicht vertiefen."
+    },
+    {
+      "question": "„Passwörter werden nur gehasht gespeichert.“ Um welche Art von Anforderung handelt es sich?",
+      "options": [
+        "Funktionale Anforderung",
+        "Nicht-funktionale Anforderung (Sicherheit)",
+        "User Story",
+        "Akzeptanzkriterium der Definition of Done"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Anforderung beschreibt keine Funktion für Benutzer:innen, sondern eine Qualitätseigenschaft im Bereich Sicherheit."
+    },
+    {
+      "question": "Im Lastenheft steht: „Die App soll benutzerfreundlich sein.“ Was ist das Hauptproblem dieser Anforderung?",
+      "options": [
+        "Sie ist nicht prüfbar",
+        "Sie ist funktional statt nicht-funktional",
+        "Sie gehört ins Pflichtenheft",
+        "Sie ist zu technisch formuliert"
+      ],
+      "correctIndex": 0,
+      "explanation": "„Benutzerfreundlich“ lässt sich nicht objektiv prüfen. Besser: z. B. „Neue Benutzer:innen können sich ohne Anleitung in unter 2 Minuten für ein Training anmelden.“"
+    },
+    {
+      "question": "Was unterscheidet Akzeptanzkriterien von der Definition of Done?",
+      "options": [
+        "Akzeptanzkriterien schreibt der Scrum Master, die DoD der Kunde",
+        "Es gibt keinen Unterschied",
+        "Akzeptanzkriterien gelten für eine Story, die DoD für alle Einträge",
+        "Die DoD gilt nur für Bugs, Akzeptanzkriterien nur für Features"
+      ],
+      "correctIndex": 2,
+      "explanation": "Akzeptanzkriterien beschreiben die fachlichen Bedingungen einer bestimmten Story. Die DoD ist eine gemeinsame Qualitätscheckliste, die jeder Eintrag erfüllen muss."
+    },
+    {
+      "question": "Welche Aussage über das Lastenheft stimmt?",
+      "options": [
+        "Es beschreibt die technische Umsetzung und die Datenbankstruktur",
+        "Es wird vom Auftraggeber erstellt und beschreibt Was und Wofür",
+        "Es entsteht erst nach der Implementierung",
+        "Es wird vom Auftragnehmer auf Basis des Pflichtenhefts geschrieben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Lastenheft kommt vom Auftraggeber und enthält die Anforderungen aus Kundensicht. Das Pflichtenheft (Wie/Womit) baut darauf auf."
+    },
+    {
+      "question": "Wo werden in einem Use-Case-Diagramm die Akteure gezeichnet?",
+      "options": [
+        "Innerhalb der Systemgrenze",
+        "Als Ellipsen neben den Anwendungsfällen",
+        "Gar nicht – nur Anwendungsfälle sind erlaubt",
+        "Außerhalb der Systemgrenze"
+      ],
+      "correctIndex": 3,
+      "explanation": "Akteure (Personen oder andere Systeme) stehen außerhalb des Rechtecks, das die Systemgrenze darstellt. Anwendungsfälle liegen innerhalb."
+    },
+    {
+      "question": "Zwei Arbeitspakete werden mit drei Punkten geschätzt. Wie groß ist der gesamte Erwartungswert nach PERT?",
+      "code": "     O    M    P\nA    2    4    6\nB    3    5   13",
+      "options": [
+        "9 h",
+        "10 h",
+        "11 h",
+        "12 h"
+      ],
+      "correctIndex": 1,
+      "explanation": "A: (2 + 16 + 6) / 6 = 4 h. B: (3 + 20 + 13) / 6 = 6 h. Summe 10 h. 9 h wäre die Summe der M-Werte, 11 h die Summe der einfachen Mittelwerte."
+    },
+    {
+      "question": "Beim Planning Poker zeigen vier Personen 5, eine Person 3 und eine Person 13. Wie geht es weiter?",
+      "options": [
+        "Man nimmt den Durchschnitt und rundet",
+        "Die Mehrheit gewinnt: 5 Punkte",
+        "Die Personen mit 3 und 13 begründen ihre Schätzung, dann wird neu geschätzt",
+        "Der Scrum Master entscheidet"
+      ],
+      "correctIndex": 2,
+      "explanation": "Große Abweichungen deuten auf unterschiedliches Verständnis hin. Die Extremwerte erklären ihre Sicht, danach schätzen alle noch einmal."
+    },
+    {
+      "question": "Was ist ein Vorteil von Function Points gegenüber einer Schätzung in Codezeilen?",
+      "options": [
+        "Sie sind unabhängig von der Programmiersprache und früh aus den Anforderungen bestimmbar",
+        "Man braucht keine Erfahrungswerte, um Aufwand zu berechnen",
+        "Sie sind in wenigen Sekunden ermittelt",
+        "Sie messen die Qualität des Codes"
+      ],
+      "correctIndex": 0,
+      "explanation": "Function Points zählen Eingaben, Ausgaben, Abfragen und Datenbestände aus Benutzersicht. Das geht schon vor dem Programmieren und unabhängig von der Sprache. Für den Aufwand braucht man dennoch Erfahrungswerte."
+    }
+  ]
+}

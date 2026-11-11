@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j3-entwurf_02_netzwerkdokumentation",
+  "title": "Netzwerkdokumentation",
+  "summary": "Was eine gute Netzwerkdokumentation enthält, wie Namenskonventionen und Patchpläne helfen und wie Git und kleine Skripte die Doku aktuell und fehlerfrei halten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Netz, das nur im Kopf des Admins existiert, ist ein Risiko: Ist er krank oder wechselt er die Schule, weiß niemand, welches Kabel wohin führt. Eine gute Dokumentation beschleunigt die Fehlersuche, erleichtert Erweiterungen und Übergaben und ist Grundlage für Sicherheitsprüfungen. Bei Diplomarbeiten und in Firmenprojekten wird sie ausdrücklich verlangt."
+    },
+    {
+      "type": "text",
+      "content": "Was gehört hinein?\n• Logischer Plan: VLANs, Subnetze, Router, Routing, Sicherheitszonen\n• Physischer Plan: Standorte von Verteilern und Racks, Kabelwege, Geräte\n• Adress- und VLAN-Plan (IPAM): welche Adresse ist wem zugeordnet\n• Geräteinventar: Hostname, Modell, Seriennummer, Firmware, Standort\n• Patchplan: welche Netzwerkdose an welchem Switch-Port hängt\n• Konfigurationen samt Änderungsprotokoll\nZugangsdaten gehören NICHT in die Doku, sondern in einen Passwortmanager mit Zugriffskontrolle."
+    },
+    {
+      "type": "code",
+      "content": "Logischer Plan    Physischer Plan\n----------------  ----------------\nVLANs, Subnetze   Räume, Racks\nGateways          Kabelwege\nRouting           Patchfelder\nZonen/Firewall    Geräte-Standorte\n\"Wie fließen      \"Wo steckt was?\"\n die Daten?\""
+    },
+    {
+      "type": "text",
+      "content": "Namenskonventionen machen Geräte selbsterklärend. Wichtig ist nicht das „perfekte“ Schema, sondern dass sich alle daran halten. Kabel werden an BEIDEN Enden beschriftet, Netzwerkdosen und Patchfeld-Ports eindeutig nummeriert. So findest du in Sekunden heraus, an welchem Switch-Port die Dose in Raum 104 hängt – ohne Kabel zu verfolgen."
+    },
+    {
+      "type": "code",
+      "content": "SW-A-OG1-01\n│  │ │   └─ laufende Nummer\n│  │ └───── Stockwerk (EG, OG1, ...)\n│  └─────── Gebäude A\n└────────── Typ (SW, RT, AP, PRN)\n\nPatchplan (Auszug)\nDose    Panel  Switch       Port VLAN\nA104-1  P1-04  SW-A-OG1-01  Fa0/5  20\nA104-2  P1-05  SW-A-OG1-01  Fa0/6  30"
+    },
+    {
+      "type": "text",
+      "content": "Werkzeuge: Pläne zeichnet man mit Diagramm-Programmen (z. B. draw.io), Adressen und Inventar verwaltet man oft in IPAM-/DCIM-Software wie NetBox oder phpIPAM statt in verstreuten Tabellen. Wichtiger als das Werkzeug ist die Aktualität: Eine veraltete Doku ist gefährlich, weil man ihr vertraut. Deshalb gehört die Doku-Aktualisierung zu jeder Änderung (Change Management: was, warum, wer, wann, wie rückgängig machen). Konfigurationsdateien lassen sich hervorragend mit Git versionieren – jede Änderung ist mit Grund und Zeitpunkt nachvollziehbar."
+    },
+    {
+      "type": "code",
+      "content": "# Konfigurationen versionieren\ngit add SW-A-OG1-01.cfg\ngit commit -m \"Ausgangskonfiguration\"\n# ... Port umkonfiguriert ...\ngit diff\n\n--- a/SW-A-OG1-01.cfg\n+++ b/SW-A-OG1-01.cfg\n@@ -1,4 +1,4 @@\n hostname SW-A-OG1-01\n !\n interface Fa0/5\n- switchport access vlan 30\n+ switchport access vlan 20\n\ngit commit -am \"Fa0/5 in VLAN 20\n  (Lehrer-PC Raum 104)\""
+    },
+    {
+      "type": "text",
+      "content": "Auch die Dokumentation selbst kann man prüfen: Doppelt vergebene Adressen oder Adressen im falschen VLAN fallen in einer langen Tabelle kaum auf, ein Skript findet sie sofort. Typische Fehler in der Praxis: dieselbe IP zweimal vergeben, Geräte umgesteckt ohne Patchplan-Update, Konfigurationen nur auf dem Gerät selbst gespeichert."
+    },
+    {
+      "type": "code",
+      "content": "import csv, io, ipaddress as ip\n\ndoku = \"\"\"host,ip,vlan\nSW-A-OG1-01,10.10.99.11,99\nSW-A-OG2-01,10.10.99.12,99\nSW-B-EG-01,10.10.99.12,99\nPRN-A-OG1-01,10.10.21.50,20\n\"\"\"\nnetz = {\"99\": \"10.10.99.0/27\",\n        \"20\": \"10.10.20.0/24\"}\ngesehen = {}\nzeilen = csv.DictReader(io.StringIO(doku))\nfor z in zeilen:\n    a = ip.ip_address(z[\"ip\"])\n    n = ip.ip_network(netz[z[\"vlan\"]])\n    if a not in n:\n        print(\"Falsches Netz:\", z[\"host\"])\n    if a in gesehen:\n        print(\"Doppelt:\", a, gesehen[a],\n              z[\"host\"])\n    gesehen[a] = z[\"host\"]\n\n# Ausgabe:\n# Doppelt: 10.10.99.12 SW-A-OG2-01\n#          SW-B-EG-01  (eine Zeile)\n# Falsches Netz: PRN-A-OG1-01"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Dokumentiere logisch (wie fließen Daten) und physisch (wo steckt was), führe Adressplan, Inventar und Patchplan, verwende einheitliche Namen und beschrifte Kabel an beiden Enden. Halte die Doku bei jeder Änderung aktuell, versioniere Konfigurationen mit Git und prüfe Tabellen automatisch. Passwörter gehören in einen Passwortmanager, nicht in die Doku."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was bedeutet nach der Konvention der Lektion der Gerätename „AP-B-EG-03“?",
+      "options": [
+        "Dritter Access Point im Erdgeschoß von Gebäude B",
+        "Access Point mit IP-Adresse 3 im VLAN B",
+        "Dritter Switch-Port eines Access Points",
+        "Access Point im 3. Stock von Gebäude B"
+      ],
+      "correctIndex": 0,
+      "explanation": "Typ (AP) – Gebäude (B) – Stockwerk (EG) – laufende Nummer (03)."
+    },
+    {
+      "question": "Welche Information gehört in den LOGISCHEN Netzwerkplan?",
+      "options": [
+        "Die Lage der Kabelkanäle",
+        "Die Rack-Position eines Switches",
+        "Die Seriennummer des Routers",
+        "Welche Subnetze und VLANs über welche Gateways verbunden sind"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der logische Plan zeigt den Datenfluss: VLANs, Subnetze, Gateways, Routing und Zonen. Kabelwege und Racks gehören in den physischen Plan, Seriennummern ins Inventar."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "doku = [(\"SW-A-01\", \"10.10.99.11\"),\n        (\"SW-A-02\", \"10.10.99.12\"),\n        (\"AP-A-01\", \"10.10.99.11\"),\n        (\"AP-A-02\", \"10.10.99.13\")]\ngesehen = {}\nfor host, ip in doku:\n    if ip in gesehen:\n        print(gesehen[ip], host)\n    gesehen[ip] = host\nprint(len(gesehen))",
+      "options": [
+        "SW-A-02 AP-A-02\n4",
+        "SW-A-01 AP-A-01\n3",
+        "SW-A-01 AP-A-01\n4",
+        "AP-A-01 SW-A-01\n3"
+      ],
+      "correctIndex": 1,
+      "explanation": "AP-A-01 hat dieselbe IP wie SW-A-01 → eine Meldung. Im Dictionary überschreibt der zweite Eintrag den ersten, es bleiben 3 verschiedene IPs."
+    },
+    {
+      "question": "Ein Admin steckt bei der Fehlersuche ein Patchkabel um, trägt es aber nicht ein. Warum ist das problematisch?",
+      "options": [
+        "Der Switch merkt sich die Änderung nicht.",
+        "Patchkabel dürfen nur einmal gesteckt werden.",
+        "Die Doku stimmt nicht mehr – man vertraut ihr und sucht beim nächsten Fehler an der falschen Stelle.",
+        "Das VLAN wird automatisch gelöscht."
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine veraltete Doku ist gefährlicher als gar keine, weil man ihr glaubt. Jede Änderung muss in die Doku (Change Management)."
+    }
+  ]
+}

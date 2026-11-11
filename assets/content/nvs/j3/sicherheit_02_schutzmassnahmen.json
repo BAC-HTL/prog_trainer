@@ -1,0 +1,90 @@
+{
+  "id": "nvs-j3-sicherheit_02_schutzmassnahmen",
+  "title": "Schutzmaßnahmen im Netzwerk",
+  "summary": "Mit Segmentierung, Updates, minimalen Rechten, Verschlüsselung, starker Authentifizierung und Backups ein Netz in mehreren Schichten absichern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Es gibt keine einzelne Maßnahme, die alles verhindert. Deshalb kombiniert man mehrere Schutzschichten – Defense in Depth: Fällt eine Schicht, hält die nächste. Die wichtigsten Bausteine sind Segmentierung, Updates, minimale Rechte, Verschlüsselung, starke Authentifizierung, Backups, Überwachung und geschulte Benutzer:innen."
+    },
+    {
+      "type": "text",
+      "content": "Segmentierung: Das Netz wird in Zonen geteilt, z. B. Verwaltung, Lehrkräfte, Schüler:innen, Gäste, Server, Drucker/IoT und Management. Technisch geschieht das mit VLANs und Subnetzen; zwischen den Zonen regeln ACLs oder eine Firewall, was erlaubt ist. Ein befallener Schüler-Laptop kann so nicht direkt die Verwaltungs-PCs oder die Switch-Verwaltung erreichen. Die Management-Oberflächen von Switches und Routern sollten nur aus dem Management-VLAN zugänglich sein."
+    },
+    {
+      "type": "code",
+      "content": "Zone          darf zugreifen auf\n------------  ----------------------\nSchüler       Internet, Schulserver\n              (nur benötigte Dienste)\nLehrer        Internet, Schulserver,\n              Drucker\nVerwaltung    eigene Server, Internet\nGäste         nur Internet\nManagement    alle Netzwerkgeräte\nServer        antwortet, beginnt keine\n              Verbindungen ins LAN"
+    },
+    {
+      "type": "text",
+      "content": "Updates (Patch-Management): Viele Angriffe nutzen längst bekannte Lücken. Öffentlich bekannte Schwachstellen bekommen eine CVE-Nummer, Hersteller liefern Updates. Das gilt nicht nur für PCs, sondern auch für Firmware von Switches, Routern, Access Points, Druckern und Firewalls – die werden am häufigsten vergessen. Updates sollten geplant, zuerst an wenigen Geräten getestet und dann zügig verteilt werden. Nicht mehr unterstützte Geräte (End of Life) gehören ausgetauscht oder isoliert."
+    },
+    {
+      "type": "text",
+      "content": "Least Privilege (Prinzip der minimalen Rechte): Jede Person und jeder Dienst bekommt nur die Rechte, die wirklich nötig sind. Alltagskonten haben keine Administratorrechte; Admins verwenden für Verwaltungsaufgaben ein eigenes Admin-Konto. In Active Directory setzt man das mit Gruppen nach AGDLP und Delegation auf OUs um. Ein Dienst, der nur lesen muss, bekommt nur Leserechte. So richtet ein gekapertes Konto möglichst wenig Schaden an – auch Ransomware kann nur verschlüsseln, worauf das Konto Schreibrechte hat."
+    },
+    {
+      "type": "text",
+      "content": "Verschlüsselung schützt Daten bei der Übertragung und bei der Speicherung. Bei der Übertragung: HTTPS statt HTTP, SSH statt Telnet, SFTP statt FTP, SNMPv3 statt v2c, LDAPS, WPA2/WPA3 im WLAN und VPNs für Zugriffe von außen. Bei der Speicherung: Festplattenverschlüsselung (z. B. BitLocker unter Windows) – wichtig bei Laptops, die verloren gehen können. Dazu kommt starke Authentifizierung: lange Passphrasen und, wo möglich, Multi-Faktor-Authentifizierung. Wie viel Länge bringt, zeigt eine kleine Rechnung (Anzahl möglicher Kombinationen):"
+    },
+    {
+      "type": "code",
+      "content": "a = 62 ** 8        # 8 Zeichen a-z A-Z 0-9\nb = 7776 ** 5      # 5 Wörter aus 7776\nprint(f\"{a:.2e}\")\nprint(f\"{b:.2e}\")\nprint(round(b / a))\n\n# Ausgabe:\n# 2.18e+14\n# 2.84e+19\n# 130211"
+    },
+    {
+      "type": "text",
+      "content": "Fünf zufällig gewählte Wörter aus einer Liste mit 7776 Wörtern ergeben rund 130 000-mal mehr Möglichkeiten als 8 zufällige Zeichen – und sind leichter zu merken. Voraussetzung: wirklich zufällig gewählt, kein bekannter Spruch.\n\nBackups sind die letzte Verteidigungslinie gegen Ransomware und Defekte. Bewährt ist die 3-2-1-Regel: 3 Kopien der Daten, auf 2 verschiedenen Medien, davon 1 außer Haus bzw. offline. Ein Backup, das ständig als Netzlaufwerk verbunden ist, kann mitverschlüsselt werden. Und: Wiederherstellen regelmäßig testen."
+    },
+    {
+      "type": "text",
+      "content": "Weitere Maßnahmen: ungenutzte Ports und Dienste abschalten (Härtung), Standardpasswörter sofort ändern, Port Security und 802.1X am Switch, Logs zentral sammeln und auswerten, Benutzer:innen regelmäßig schulen. Typischer Fehler: sich auf eine Maßnahme zu verlassen („wir haben ja eine Firewall“). Zusammenfassung: Segmentieren, Updates auch für Netzwerkgeräte, minimale Rechte, verschlüsseln bei Übertragung und Speicherung, lange Passphrasen plus MFA, Backups nach 3-2-1 mit Offline-Kopie – mehrere Schichten zusammen machen das Netz sicher."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Schüler-Laptop wird mit Malware infiziert. Welche Maßnahme verhindert am direktesten, dass die Malware die PCs der Verwaltung erreicht?",
+      "options": [
+        "Ein längeres WLAN-Passwort",
+        "Segmentierung in getrennte VLANs mit Regeln zwischen den Zonen",
+        "Häufigere Backups",
+        "Eine versteckte SSID"
+      ],
+      "correctIndex": 1,
+      "explanation": "Getrennte Zonen mit Filterregeln dazwischen begrenzen die Ausbreitung. Backups helfen erst danach, die anderen Maßnahmen betreffen das Problem nicht."
+    },
+    {
+      "question": "Eine Handy-PIN wird von 4 auf 6 Ziffern verlängert. Was gibt der Code aus?",
+      "code": "print(10 ** 6 // 10 ** 4)",
+      "options": [
+        "100",
+        "2",
+        "20",
+        "1000"
+      ],
+      "correctIndex": 0,
+      "explanation": "10⁶ / 10⁴ = 100: Zwei zusätzliche Ziffern ergeben 100-mal so viele Kombinationen. Länge wirkt exponentiell."
+    },
+    {
+      "question": "Nach der 3-2-1-Regel: Was ist bei Ransomware die entscheidende Eigenschaft einer der Kopien?",
+      "options": [
+        "Sie liegt auf demselben Server wie die Originaldaten.",
+        "Sie ist als Netzlaufwerk dauerhaft verbunden.",
+        "Sie wird nie getestet, damit sie unverändert bleibt.",
+        "Sie liegt außer Haus bzw. offline und kann deshalb nicht mitverschlüsselt werden."
+      ],
+      "correctIndex": 3,
+      "explanation": "Ransomware verschlüsselt alles, worauf sie schreibend zugreifen kann – auch verbundene Backup-Laufwerke. Eine Offline-/Offsite-Kopie bleibt verschont."
+    },
+    {
+      "question": "Welche Umsetzung entspricht dem Prinzip der minimalen Rechte?",
+      "options": [
+        "Alle Lehrkräfte sind lokale Administratoren, damit sie Software installieren können.",
+        "Der Admin arbeitet im Alltag mit seinem Domänen-Admin-Konto.",
+        "Der Admin nutzt im Alltag ein normales Konto und nur für Verwaltungsaufgaben ein separates Admin-Konto.",
+        "Ein Backup-Dienst bekommt Vollzugriff auf alle Server, damit nichts fehlt."
+      ],
+      "correctIndex": 2,
+      "explanation": "Minimale Rechte heißt: nur so viel wie nötig, nur so lange wie nötig. Mails lesen und Surfen mit Admin-Rechten vergrößert den Schaden bei einem Angriff."
+    }
+  ]
+}

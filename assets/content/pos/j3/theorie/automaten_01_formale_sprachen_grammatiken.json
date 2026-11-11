@@ -1,0 +1,94 @@
+{
+  "id": "pos-j3-theorie-automaten_01_formale_sprachen_grammatiken",
+  "title": "Formale Sprachen und Grammatiken",
+  "summary": "Alphabet, Wort und Sprache – und wie eine Grammatik festlegt, welche Wörter dazugehören.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Compiler muss entscheiden, ob dein Code gültig ist: Ist „x1“ ein erlaubter Variablenname, „1x“ aber nicht? Damit man solche Regeln exakt festlegen kann, gibt es formale Sprachen. Sie sind die Grundlage für Compiler, Parser, Eingabeprüfungen und reguläre Ausdrücke."
+    },
+    {
+      "type": "text",
+      "content": "Die Grundbegriffe: Ein Alphabet Σ ist eine endliche Menge von Zeichen. Ein Wort ist eine endliche Folge von Zeichen aus Σ, |w| ist seine Länge. Das leere Wort ε hat die Länge 0. Σ* ist die Menge aller Wörter über Σ. Eine (formale) Sprache L ist eine beliebige Teilmenge von Σ*."
+    },
+    {
+      "type": "code",
+      "content": "Σ = {0, 1}\n\nWörter:  ε, 0, 1, 00, 01, 10, ...\n|0110| = 4      |ε| = 0\n\nL = Wörter mit gerader Anzahl 1\n0110 ∈ L   (zwei Einsen)\n1011 ∉ L   (drei Einsen)\nε    ∈ L   (null Einsen)"
+    },
+    {
+      "type": "text",
+      "content": "Eine Grammatik G = (N, T, P, S) beschreibt eine Sprache durch Ersetzungsregeln. N sind die Nichtterminale (Hilfssymbole, meist Großbuchstaben), T die Terminale (die Zeichen des Alphabets), P die Produktionsregeln und S das Startsymbol. Man beginnt bei S und ersetzt so lange, bis nur noch Terminale übrig sind – das ist eine Ableitung."
+    },
+    {
+      "type": "code",
+      "content": "Bezeichner: Buchstabe, dann\nBuchstaben oder Ziffern\n(b = Buchstabe, z = Ziffer)\n\nS → bA\nA → bA | zA | ε\n\nAbleitung von „bzb“ (z. B. x1y):\nS ⇒ bA ⇒ bzA ⇒ bzbA ⇒ bzb"
+    },
+    {
+      "type": "text",
+      "content": "Die Chomsky-Hierarchie ordnet Grammatiken nach der Form ihrer Regeln in vier Typen. Je höher der Typ, desto strenger die Regeln und desto einfacher die Maschine, die die Sprache erkennt. Jede Typ-3-Sprache ist auch Typ 2, jede Typ-2-Sprache auch Typ 1 usw."
+    },
+    {
+      "type": "code",
+      "content": "Typ 0  allgemein          Turingmaschine\nTyp 1  kontextsensitiv    linear beschr.\n                          Automat\nTyp 2  kontextfrei        Kellerautomat\n       A → beliebig\nTyp 3  regulär            endlicher\n       A → aB | a | ε     Automat"
+    },
+    {
+      "type": "text",
+      "content": "Reguläre Grammatiken (Typ 3) haben rechts höchstens ein Terminal, gefolgt von höchstens einem Nichtterminal. Die Bezeichner-Grammatik oben ist regulär. Kontextfreie Grammatiken (Typ 2) erlauben beliebige rechte Seiten. Damit lassen sich verschachtelte Strukturen wie Klammern beschreiben, etwa aⁿbⁿ – gleich viele a wie b. Diese Sprache ist nachweislich nicht regulär: Ein endlicher Automat kann nicht beliebig weit mitzählen."
+    },
+    {
+      "type": "code",
+      "content": "S → aSb | ε     (kontextfrei)\n\nS ⇒ aSb ⇒ aaSbb ⇒ aabb\n\nL = { ε, ab, aabb, aaabbb, ... }\n„abab“ und „aab“ gehören nicht dazu"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Reguläre Sprachen (Typ 3) sind genau die Sprachen, die du aus dem 2. Jahrgang als reguläre Ausdrücke kennst. Die Bezeichner-Grammatik entspricht der Regex [a-zA-Z][a-zA-Z0-9]*. Typischer Fehler: zu glauben, eine Regex könne korrekt verschachtelte Klammern prüfen – dafür braucht man mindestens eine kontextfreie Grammatik."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Wort wird von dieser Grammatik erzeugt?",
+      "code": "S → aSb | ε",
+      "options": [
+        "abab",
+        "aab",
+        "aabb",
+        "ba"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jede Anwendung von S → aSb fügt außen ein a und ein b hinzu: S ⇒ aSb ⇒ aaSbb ⇒ aabb. Alle a stehen vor allen b, und es sind gleich viele."
+    },
+    {
+      "question": "Wie lang ist das leere Wort ε?",
+      "options": [
+        "1",
+        "0",
+        "Es hat keine Länge",
+        "Das hängt vom Alphabet ab"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das leere Wort enthält kein Zeichen, also gilt |ε| = 0. Es ist trotzdem ein Wort über jedem Alphabet."
+    },
+    {
+      "question": "Zu welchem Chomsky-Typ gehört eine Grammatik, deren Regeln alle die Form A → aB, A → a oder A → ε haben?",
+      "options": [
+        "Typ 0",
+        "Typ 1",
+        "Typ 2",
+        "Typ 3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das ist genau die Form regulärer (rechtslinearer) Grammatiken, also Typ 3. Solche Sprachen erkennt ein endlicher Automat."
+    },
+    {
+      "question": "Welche Sprache lässt sich NICHT mit einem regulären Ausdruck beschreiben?",
+      "options": [
+        "Alle Wörter über {a, b}, die auf b enden",
+        "aⁿbⁿ – erst n-mal a, dann n-mal b",
+        "Wörter aus beliebig vielen a",
+        "Wörter über {0, 1} mit gerader Anzahl Einsen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Für aⁿbⁿ müsste man beliebig viele a mitzählen. Das geht mit endlich vielen Zuständen nicht – die Sprache ist kontextfrei, aber nicht regulär."
+    }
+  ]
+}

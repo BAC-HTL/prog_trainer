@@ -1,0 +1,96 @@
+{
+  "id": "pos-j3-csharp-threads_01_threads_grundlagen",
+  "title": "Threads – Grundlagen",
+  "summary": "Mehrere Dinge gleichzeitig erledigen: Threads erzeugen, starten und mit Join auf sie warten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein laufendes Programm ist ein Prozess mit eigenem Speicher. Darin arbeitet mindestens ein Thread („Ausführungsfaden“), der die Anweisungen der Reihe nach abarbeitet. Ein Prozess kann aber mehrere Threads haben, die nebenläufig laufen und sich denselben Speicher teilen. Wozu? Eine Oberfläche bleibt bedienbar, während im Hintergrund eine Datei geladen wird, oder eine Berechnung nutzt mehrere CPU-Kerne gleichzeitig."
+    },
+    {
+      "type": "text",
+      "content": "In C# erzeugst du mit new Thread(…) einen Thread und übergibst ihm die Methode, die er ausführen soll – oft als Lambda. Der Thread läuft erst nach Start() los. Mit Join() wartet der aufrufende Thread, bis der andere fertig ist. Die Klasse Thread liegt im Namespace System.Threading (bei ImplicitUsings automatisch eingebunden)."
+    },
+    {
+      "type": "code",
+      "content": "var a = new Thread(() =>\n{\n    for (int i = 0; i < 3; i++)\n        Console.WriteLine($\"A{i}\");\n});\nvar b = new Thread(() =>\n{\n    for (int i = 0; i < 3; i++)\n        Console.WriteLine($\"B{i}\");\n});\na.Start();\nb.Start();\na.Join();\nb.Join();\nConsole.WriteLine(\"Fertig\");"
+    },
+    {
+      "type": "text",
+      "content": "Welche Ausgabe entsteht? Das ist nicht festgelegt! Das Betriebssystem entscheidet, wann welcher Thread auf einer CPU läuft (Scheduling). Die Ausgabe kann z. B. so aussehen wie unten – bei einem anderen Lauf aber auch A0 B0 A1 … oder zuerst alle B. Sicher ist nur: Innerhalb eines Threads bleibt die Reihenfolge erhalten, und „Fertig“ kommt dank Join zuletzt."
+    },
+    {
+      "type": "code",
+      "content": "// z. B.:\nB0\nB1\nB2\nA0\nA1\nA2\nFertig"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Join vergessen. Dann läuft das Hauptprogramm einfach weiter und liest ein Ergebnis, das der Thread noch gar nicht berechnet hat. Im Beispiel unten ist erg beim ersten Ausgeben fast immer noch 0 – erst nach Join ist sicher 42 gespeichert."
+    },
+    {
+      "type": "code",
+      "content": "int erg = 0;\nvar t = new Thread(() =>\n{\n    Thread.Sleep(100); // 100 ms\n    erg = 42;\n});\nt.Start();\nConsole.WriteLine(erg); // meist 0\nt.Join();\nConsole.WriteLine(erg); // 42"
+    },
+    {
+      "type": "text",
+      "content": "Threads direkt zu erzeugen ist aufwendig. In modernem C# verwendest du oft Task.Run: Die Arbeit wird an einen Thread aus dem ThreadPool übergeben, der wiederverwendet wird. Ein Task<T> kann ein Ergebnis zurückgeben; .Result bzw. .Wait() warten wie Join auf das Ende. (Mit async/await geht das später noch eleganter.) Um die Grundbegriffe zu verstehen, arbeiten wir in diesem Modul trotzdem mit Thread."
+    },
+    {
+      "type": "code",
+      "content": "Task<int> task =\n    Task.Run(() => 6 * 7);\nConsole.WriteLine(task.Result); // 42\n\nvar tasks = new[]\n{\n    Task.Run(() => 1),\n    Task.Run(() => 2)\n};\nTask.WaitAll(tasks);\nConsole.WriteLine(\n    tasks.Sum(x => x.Result)); // 3"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Prozess kann mehrere Threads haben, die sich den Speicher teilen. new Thread(…) erzeugt, Start() startet, Join() wartet. Die Reihenfolge zwischen Threads ist nicht vorhersagbar – rechne nie mit einer bestimmten Ausgabe-Reihenfolge. Task.Run ist die bequemere Alternative mit ThreadPool und Rückgabewert."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was ist an der Ausgabe dieses Programms sicher?",
+      "code": "var t1 = new Thread(() =>\n    Console.WriteLine(\"A\"));\nvar t2 = new Thread(() =>\n    Console.WriteLine(\"B\"));\nt1.Start(); t2.Start();\nt1.Join(); t2.Join();\nConsole.WriteLine(\"Ende\");",
+      "options": [
+        "Es kommt immer zuerst A, dann B",
+        "A und B wechseln sich immer ab",
+        "„Ende“ steht immer als letzte Zeile",
+        "„Ende“ steht immer als erste Zeile"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Reihenfolge von A und B ist nicht vorhersagbar. Weil das Hauptprogramm aber mit Join auf beide Threads wartet, wird „Ende“ immer zuletzt ausgegeben."
+    },
+    {
+      "question": "Finde den Fehler: Warum gibt das Programm keine Zeile „Hallo“ aus?",
+      "code": "var t = new Thread(() =>\n    Console.WriteLine(\"Hallo\"));\nt.Join();",
+      "options": [
+        "Lambdas sind in Threads nicht erlaubt",
+        "Der Thread wird nie gestartet – es fehlt t.Start()",
+        "Join darf nur nach Sleep aufgerufen werden",
+        "Console.WriteLine funktioniert nur im Hauptthread"
+      ],
+      "correctIndex": 1,
+      "explanation": "new Thread erzeugt den Thread nur. Ohne Start() läuft er nie; Join() auf einen nicht gestarteten Thread wirft sogar eine ThreadStateException."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Task<int> t = Task.Run(() => 6 * 7);\nConsole.WriteLine(t.Result);",
+      "options": [
+        "42",
+        "0",
+        "6 * 7",
+        "Task"
+      ],
+      "correctIndex": 0,
+      "explanation": "Task.Run führt die Berechnung im ThreadPool aus. .Result wartet, bis der Task fertig ist, und liefert den Rückgabewert 42."
+    },
+    {
+      "question": "Was teilen sich zwei Threads desselben Prozesses?",
+      "options": [
+        "Nichts – jeder Thread hat einen eigenen Speicher",
+        "Nur die Konsole",
+        "Nur lokale Variablen der Methode Main",
+        "Den Speicher des Prozesses, z. B. gemeinsame Objekte und Felder"
+      ],
+      "correctIndex": 3,
+      "explanation": "Threads eines Prozesses arbeiten im selben Adressraum. Das macht den Datenaustausch einfach – aber auch gefährlich, wie du bei Race Conditions sehen wirst."
+    }
+  ]
+}

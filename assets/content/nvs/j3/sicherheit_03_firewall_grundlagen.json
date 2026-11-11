@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j3-sicherheit_03_firewall_grundlagen",
+  "title": "Firewall-Grundlagen",
+  "summary": "Paketfilter und Stateful Firewall unterscheiden, Regeln in der richtigen Reihenfolge formulieren und eine DMZ für öffentlich erreichbare Server planen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Firewall kontrolliert den Verkehr zwischen Netzbereichen (Zonen) nach festgelegten Regeln: Was nicht ausdrücklich erlaubt ist, wird blockiert. Man unterscheidet Netzwerk-Firewalls (eigenes Gerät oder Funktion im Router zwischen Zonen) und Host-Firewalls (z. B. die Windows-Firewall auf jedem PC). Beide ergänzen sich – das ist wieder Defense in Depth."
+    },
+    {
+      "type": "text",
+      "content": "Ein (zustandsloser) Paketfilter prüft jedes Paket einzeln anhand der Header: Quell- und Ziel-IP, Protokoll (TCP/UDP/ICMP) und Ports. Er „weiß“ nicht, ob ein Paket zu einer bestehenden Verbindung gehört. Deshalb muss man auch für die Antworten Regeln schreiben – und öffnet dabei leicht zu viel. Cisco-ACLs auf Routern sind ein Beispiel für Paketfilter.\n\nEine Stateful Firewall führt eine Zustandstabelle (State Table) aller Verbindungen. Startet ein PC eine erlaubte Verbindung nach außen, lässt sie die Antworten automatisch zurück; ein Paket, das scheinbar eine Antwort ist, zu dem es aber keine Verbindung gibt, wird verworfen. Heutige Firewalls arbeiten stateful; Next-Generation Firewalls erkennen zusätzlich Anwendungen und Inhalte."
+    },
+    {
+      "type": "code",
+      "content": "Zustandstabelle (vereinfacht)\nInnen             Außen         Zust.\n----------------  ------------  -----\n10.10.33.7:50123  1.2.3.4:443   EST\n10.10.20.5:50200  5.6.7.8:443   EST\n\nAntwort 1.2.3.4:443 -> 10.10.33.7:50123\n  passt zur Tabelle -> erlaubt\nPaket 9.9.9.9:443 -> 10.10.33.7:50999\n  keine Verbindung  -> verworfen"
+    },
+    {
+      "type": "text",
+      "content": "Regeln werden von oben nach unten abgearbeitet, die ERSTE passende Regel entscheidet (First Match). Am Ende steht eine Default-Deny-Regel: Alles, was keine Regel erlaubt, wird blockiert (bei Cisco-ACLs ein implizites „deny any“). Deshalb gehören spezielle Regeln nach oben, allgemeine nach unten. Typischer Fehler: Eine breite „allow“-Regel steht vor einer spezifischen „deny“-Regel – die deny-Regel greift dann nie. Das Prinzip lässt sich gut in Python nachbauen:"
+    },
+    {
+      "type": "code",
+      "content": "import ipaddress as ip\n\nrules = [  # (Quelle, Port, Aktion)\n    (\"10.10.32.0/22\", 443, \"allow\"),\n    (\"10.10.32.0/22\", 22,  \"deny\"),\n    (\"10.10.20.0/24\", 22,  \"allow\"),\n    (\"0.0.0.0/0\",     None, \"deny\"),\n]\n\ndef check(src, port):\n    for net, p, action in rules:\n        if (ip.ip_address(src) in\n                ip.ip_network(net)\n                and p in (None, port)):\n            return action\n    return \"deny\"\n\nprint(check(\"10.10.33.7\", 443))\nprint(check(\"10.10.33.7\", 22))\nprint(check(\"10.10.20.5\", 22))\nprint(check(\"10.10.20.5\", 80))\n\n# Ausgabe:\n# allow\n# deny\n# allow\n# deny"
+    },
+    {
+      "type": "text",
+      "content": "Die Schülerin mit 10.10.33.7 darf HTTPS (443), aber kein SSH (22). Die Lehrkraft mit 10.10.20.5 darf SSH, aber Port 80 trifft keine erlaubende Regel und landet beim abschließenden deny. Gute Regeln sind so eng wie möglich: konkrete Quellnetze, Ziele und Ports statt „any“, und jede Regel bekommt eine Beschreibung, warum es sie gibt."
+    },
+    {
+      "type": "text",
+      "content": "Eine DMZ (demilitarisierte Zone) ist ein eigenes Netzsegment für Server, die aus dem Internet erreichbar sein müssen – z. B. Webserver der Schule oder Mail-Gateway. Wird ein solcher Server kompromittiert, steht der Angreifer nicht gleich im internen Netz. Typischer Aufbau: eine Firewall mit drei Zonen (Internet, DMZ, LAN) oder zwei hintereinander geschaltete Firewalls."
+    },
+    {
+      "type": "code",
+      "content": "   Internet\n      │\n ┌────┴─────┐\n │ Firewall │──── DMZ\n └────┬─────┘     (Webserver\n      │            10.10.200.10)\n     LAN\n\nInternet -> DMZ   nur TCP 443   erlaubt\nInternet -> LAN   alles         gesperrt\nDMZ      -> LAN   alles         gesperrt\nLAN      -> DMZ   443, SSH von\n                  Admin-Netz    erlaubt\nLAN      -> Internet  nach Bedarf"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig ist vor allem die Regel DMZ → LAN: gesperrt. Braucht der Webserver Daten aus dem LAN, holt sie besser ein interner Dienst und schiebt sie in die DMZ, statt dem DMZ-Server Zugriff nach innen zu geben. Zusammenfassung: Paketfilter prüfen Pakete einzeln, Stateful Firewalls kennen Verbindungen und lassen Antworten automatisch zu; Regeln werden von oben nach unten geprüft, die erste passende gewinnt, am Ende steht Default Deny; öffentlich erreichbare Server gehören in eine DMZ, aus der keine Verbindungen ins LAN erlaubt sind."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein PC im LAN ruft eine Webseite auf. Welche Firewall lässt die Antworten zu, ohne dass dafür eine eigene Regel nötig ist?",
+      "options": [
+        "Eine Stateful Firewall",
+        "Ein zustandsloser Paketfilter",
+        "Keine Firewall kann das",
+        "Nur eine Host-Firewall"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Stateful Firewall merkt sich die ausgehende Verbindung in der Zustandstabelle und erlaubt die passenden Antworten automatisch."
+    },
+    {
+      "question": "Was gibt check(\"10.10.20.5\", 443) mit den Regeln aus der Lektion zurück?",
+      "options": [
+        "allow",
+        "Fehler, weil keine Regel für 10.10.20.0/24 und 443 existiert",
+        "None",
+        "deny"
+      ],
+      "correctIndex": 3,
+      "explanation": "Regel 1 und 2 passen nicht (anderes Quellnetz), Regel 3 betrifft nur Port 22. Die letzte Regel 0.0.0.0/0 mit beliebigem Port passt → deny."
+    },
+    {
+      "question": "Die erste Regel lautet „allow 10.10.32.0/22 any“, die zweite „deny 10.10.32.0/22 Port 22“. Was passiert mit SSH aus dem Schülernetz?",
+      "options": [
+        "Es wird blockiert, weil deny immer Vorrang hat.",
+        "Es wird erlaubt, weil die erste passende Regel entscheidet.",
+        "Die Firewall meldet einen Konflikt und sperrt alles.",
+        "Es wird nur jede zweite Verbindung erlaubt."
+      ],
+      "correctIndex": 1,
+      "explanation": "First Match: Die breite allow-Regel passt zuerst, die deny-Regel wird nie erreicht. Spezifische Regeln gehören nach oben."
+    },
+    {
+      "question": "Welche Regel ist für eine DMZ besonders wichtig?",
+      "options": [
+        "Aus dem Internet ist alles in die DMZ erlaubt.",
+        "Die DMZ darf alles im LAN erreichen.",
+        "Verbindungen aus der DMZ ins LAN sind gesperrt.",
+        "Die DMZ braucht keine Firewall-Regeln."
+      ],
+      "correctIndex": 2,
+      "explanation": "Wird ein DMZ-Server übernommen, darf er kein Sprungbrett ins interne Netz sein. Deshalb ist DMZ → LAN gesperrt."
+    }
+  ]
+}

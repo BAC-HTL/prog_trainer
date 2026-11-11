@@ -1,0 +1,93 @@
+{
+  "id": "pos-j3-csharp-tests_03_testgetrieben_entwickeln",
+  "title": "Testgetrieben entwickeln (TDD)",
+  "summary": "Erst der Test, dann der Code: der Red-Green-Refactor-Zyklus am Beispiel einer Schaltjahr-Prüfung.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Normalerweise schreibst du zuerst den Code und testest danach (wenn überhaupt). Bei Test-Driven Development (TDD) ist es umgekehrt: Du schreibst zuerst einen Test, der eine neue Anforderung beschreibt, und erst dann den Code, der ihn erfüllt. Die Tests werden so zur ausführbaren Spezifikation."
+    },
+    {
+      "type": "code",
+      "content": "   ┌──────────────┐\n   │ 1. RED       │ Test schreiben,\n   │              │ er schlägt fehl\n   └──────┬───────┘\n          ▼\n   ┌──────────────┐\n   │ 2. GREEN     │ minimaler Code,\n   │              │ Test wird grün\n   └──────┬───────┘\n          ▼\n   ┌──────────────┐\n   │ 3. REFACTOR  │ Code verbessern,\n   │              │ Tests bleiben grün\n   └──────┬───────┘\n          └──► zurück zu 1"
+    },
+    {
+      "type": "text",
+      "content": "Die Regeln: Schreib Produktivcode nur, um einen fehlschlagenden Test grün zu machen. Schreib nur so viel Test, dass er fehlschlägt. Und schreib nur so viel Code, dass der Test grün wird – auch wenn das anfangs fast lächerlich wenig ist. Warum zuerst Rot? Ein Test, den du nie scheitern gesehen hast, könnte auch immer grün sein – etwa weil er das Falsche prüft."
+    },
+    {
+      "type": "text",
+      "content": "Beispiel: Eine Methode IstSchaltjahr. Die Regel lautet: durch 4 teilbar, außer durch 100 teilbar – es sei denn, durch 400 teilbar. Runde 1: Der erste Test fordert, dass 2024 ein Schaltjahr ist. Die Methode existiert noch nicht → Compilerfehler zählt auch als Rot. Die minimale Lösung ist wirklich nur return true;."
+    },
+    {
+      "type": "code",
+      "content": "// Test 1\n[Fact]\npublic void J2024_IstSchaltjahr()\n    => Assert.True(\n        Jahr.IstSchaltjahr(2024));\n\n// Code nach Runde 1 (grün)\nstatic bool IstSchaltjahr(int j)\n    => true;"
+    },
+    {
+      "type": "text",
+      "content": "Runde 2: Test „2023 ist kein Schaltjahr“ → rot. Lösung: j % 4 == 0 → grün. Runde 3: Test „1900 ist kein Schaltjahr“ → rot, denn 1900 ist durch 4 teilbar. Lösung: && j % 100 != 0 → grün. Runde 4: Test „2000 ist ein Schaltjahr“ → rot, denn die bisherige Lösung liefert false. Erst jetzt kommt die 400er-Regel dazu."
+    },
+    {
+      "type": "code",
+      "content": "// nach Runde 4: alle Tests grün\nstatic bool IstSchaltjahr(int j)\n    => j % 4 == 0\n       && (j % 100 != 0\n           || j % 400 == 0);\n\n// Refactor: Tests zur Theory\n// zusammenfassen\n[Theory]\n[InlineData(2024, true)]\n[InlineData(2023, false)]\n[InlineData(1900, false)]\n[InlineData(2000, true)]\npublic void Schaltjahr(int j, bool e)\n    => Assert.Equal(e,\n        Jahr.IstSchaltjahr(j));"
+    },
+    {
+      "type": "text",
+      "content": "Refactoring heißt: Struktur verbessern, ohne das Verhalten zu ändern – bessere Namen, doppelten Code entfernen, Tests zusammenfassen. Weil die Tests nach jedem Schritt laufen, merkst du sofort, wenn du dabei etwas kaputt machst. Das gilt auch für später: Wird ein Fehler gemeldet, schreibst du zuerst einen Test, der ihn reproduziert (rot), und behebst ihn dann (grün). So kann derselbe Fehler nicht unbemerkt zurückkommen (Regressionstest)."
+    },
+    {
+      "type": "text",
+      "content": "Vorteile von TDD: hohe Testabdeckung „nebenbei“, kleine überschaubare Schritte, besser testbares Design (Methoden mit klaren Ein- und Ausgaben) und Mut zum Umbauen. Nachteile: anfangs langsamer, und schlecht gewählte Tests geben falsche Sicherheit. Typischer Fehler: zu große Schritte – fünf Anforderungen auf einmal implementieren, statt einen Test nach dem anderen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Red – Green – Refactor, immer in kleinen Schritten. Erst ein scheiternder Test, dann minimaler Code, dann aufräumen. Gefundene Bugs werden zuerst als Test festgehalten. Die Testfälle findest du mit den Techniken aus Lektion 1 (Äquivalenzklassen, Grenzwerte) und schreibst sie mit xUnit aus Lektion 2."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Reihenfolge läuft der TDD-Zyklus ab?",
+      "options": [
+        "Green – Red – Refactor",
+        "Refactor – Red – Green",
+        "Red – Green – Refactor",
+        "Code – Test – Debug"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst ein fehlschlagender Test (Red), dann minimaler Code, bis er grün ist (Green), dann Aufräumen ohne Verhaltensänderung (Refactor)."
+    },
+    {
+      "question": "Bisheriger Code: j % 4 == 0 && j % 100 != 0. Welcher neue Test wird rot?",
+      "options": [
+        "IstSchaltjahr(2000) soll true liefern",
+        "IstSchaltjahr(2024) soll true liefern",
+        "IstSchaltjahr(1900) soll false liefern",
+        "IstSchaltjahr(2023) soll false liefern"
+      ],
+      "correctIndex": 0,
+      "explanation": "2000 ist durch 100 teilbar, also liefert der Code false. Laut Regel ist 2000 aber ein Schaltjahr (durch 400 teilbar) – der Test schlägt fehl."
+    },
+    {
+      "question": "Warum soll ein neuer Test zuerst rot sein, bevor du Code schreibst?",
+      "options": [
+        "Weil xUnit grüne Tests beim ersten Lauf ignoriert",
+        "Damit du siehst, dass der Test die neue Anforderung wirklich prüft und nicht immer grün ist",
+        "Weil rote Tests schneller laufen",
+        "Damit die Testabdeckung sinkt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Test, der nie gescheitert ist, könnte fehlerhaft sein und immer bestehen. Das kurze Rot beweist, dass er auf fehlendes Verhalten reagiert."
+    },
+    {
+      "question": "Was darfst du in der Refactor-Phase NICHT tun?",
+      "options": [
+        "Methoden umbenennen",
+        "Doppelten Code zusammenfassen",
+        "Mehrere Facts zu einer Theory zusammenfassen",
+        "Neues Verhalten einbauen, für das es noch keinen Test gibt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Refactoring verbessert die Struktur, ohne das Verhalten zu ändern. Neues Verhalten kommt nur über einen neuen roten Test in den Code."
+    }
+  ]
+}

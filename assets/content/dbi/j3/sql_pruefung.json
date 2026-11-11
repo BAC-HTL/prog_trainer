@@ -1,0 +1,125 @@
+{
+  "id": "dbi-j3-sql_pruefung",
+  "title": "Abschlussprüfung: SQL: DDL, DML & Views",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Eine Klasse soll sich nicht löschen lassen, solange ihr noch Schüler:innen zugeordnet sind. Welche Definition von schueler.klasse_id erreicht das?",
+      "options": [
+        "REFERENCES klassen(klasse_id) ON DELETE CASCADE",
+        "REFERENCES klassen(klasse_id) ON DELETE SET NULL",
+        "REFERENCES klassen(klasse_id) ON DELETE RESTRICT",
+        "klasse_id INTEGER UNIQUE"
+      ],
+      "correctIndex": 2,
+      "explanation": "RESTRICT verbietet das Löschen eines referenzierten Datensatzes. CASCADE würde die Schüler:innen mitlöschen, SET NULL sie von der Klasse entkoppeln."
+    },
+    {
+      "question": "klassen.kv_id ist als INTEGER NOT NULL REFERENCES lehrer(lehrer_id) ON DELETE SET NULL definiert. Was passiert beim Löschen einer Lehrkraft, die KV ist?",
+      "options": [
+        "kv_id wird auf NULL gesetzt",
+        "Die Klasse wird mitgelöscht",
+        "Das Löschen schlägt fehl, weil NULL in kv_id nicht erlaubt ist",
+        "kv_id behält die alte, jetzt ungültige ID"
+      ],
+      "correctIndex": 2,
+      "explanation": "SET NULL versucht kv_id auf NULL zu setzen, das verletzt NOT NULL. Die ganze DELETE-Anweisung wird abgebrochen (SQLite: NOT NULL constraint failed). Die Constraints widersprechen sich – ein Designfehler."
+    },
+    {
+      "question": "Was meldet SQLite bei diesem INSERT? (schueler hat 6 Spalten)",
+      "code": "INSERT INTO schueler\nVALUES (8, 'Max', 'Mai', 3);",
+      "options": [
+        "Der Datensatz wird eingefügt, email und status werden NULL",
+        "Fehler: table schueler has 6 columns but 4 values were supplied",
+        "Der Datensatz wird eingefügt, status bekommt den DEFAULT 'aktiv'",
+        "Fehler: NOT NULL constraint failed: schueler.status"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne Spaltenliste müssen Werte für alle Spalten in Tabellenreihenfolge angegeben werden. Ein DEFAULT greift nur, wenn die Spalte in der Spaltenliste weggelassen wird."
+    },
+    {
+      "question": "Wie viele Zeilen hat noten danach? (vorher 12)",
+      "code": "BEGIN;\nDELETE FROM noten;\nROLLBACK;\nSELECT COUNT(*) FROM noten;",
+      "options": [
+        "12",
+        "0",
+        "Fehler: DELETE ohne WHERE ist verboten",
+        "Das hängt vom DBMS ab"
+      ],
+      "correctIndex": 0,
+      "explanation": "ROLLBACK macht alle Änderungen seit BEGIN rückgängig. Die Löschung wird nie endgültig, es bleiben 12 Zeilen."
+    },
+    {
+      "question": "Wie viele Zeilen liefert dieser JOIN? (3AHIT und 3BHIT haben je 3 Schüler:innen, die 5AHIT keine)",
+      "code": "SELECT k.bezeichnung, s.vorname\nFROM klassen k\nLEFT JOIN schueler s\n  ON s.klasse_id = k.klasse_id;",
+      "options": [
+        "6",
+        "3",
+        "9",
+        "7"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jede Schülerin und jeder Schüler ergibt eine Zeile (6). Die 5AHIT ohne Partner bleibt beim LEFT JOIN mit NULL erhalten: 6 + 1 = 7."
+    },
+    {
+      "question": "Was liefert diese Abfrage? (Noten der 3AHIT: 1,2,2,3,4,2,3 – Noten der 3BHIT: 2,1,3,5,4)",
+      "code": "SELECT k.bezeichnung\nFROM klassen k\nJOIN schueler s\n  ON s.klasse_id = k.klasse_id\nJOIN noten n\n  ON n.schueler_id = s.schueler_id\nGROUP BY k.bezeichnung\nHAVING AVG(n.note) > 2.5;",
+      "options": [
+        "3AHIT",
+        "3BHIT",
+        "3AHIT und 3BHIT",
+        "Keine Zeile"
+      ],
+      "correctIndex": 1,
+      "explanation": "Schnitt 3AHIT = 17 / 7 ≈ 2,43, Schnitt 3BHIT = 15 / 5 = 3,0. Nur die 3BHIT erfüllt HAVING AVG(n.note) > 2.5."
+    },
+    {
+      "question": "David hat als Einziger keine E-Mail (NULL). Was liefert die Abfrage?",
+      "code": "SELECT COUNT(*), COUNT(email)\nFROM schueler;",
+      "options": [
+        "6 | 6",
+        "5 | 5",
+        "6 | 5",
+        "5 | 6"
+      ],
+      "correctIndex": 2,
+      "explanation": "COUNT(*) zählt alle Zeilen (6), COUNT(email) nur Zeilen, in denen email nicht NULL ist (5)."
+    },
+    {
+      "question": "Wie viele Lehrkräfte liefert dieser Selbst-Join? (Huber hat chef_id NULL, alle anderen drei haben eine:n Vorgesetzte:n)",
+      "code": "SELECT l.kuerzel, c.kuerzel\nFROM lehrer l\nJOIN lehrer c\n  ON l.chef_id = c.lehrer_id;",
+      "options": [
+        "4",
+        "3",
+        "1",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim INNER JOIN fällt Huber weg, weil chef_id NULL keinen Partner findet. Für alle vier bräuchtest du LEFT JOIN."
+    },
+    {
+      "question": "In der 3BHIT hat David keine E-Mail (NULL). Was liefert diese Abfrage?",
+      "code": "SELECT COUNT(*) FROM schueler\nWHERE email NOT IN (\n  SELECT email FROM schueler\n  WHERE klasse_id = 2\n);",
+      "options": [
+        "3 (die Schüler:innen der 3AHIT)",
+        "4",
+        "6",
+        "0"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Unterabfrage enthält NULL. x NOT IN (…, NULL) ist nie wahr, sondern unbekannt – daher wird keine Zeile gezählt. Mit NOT EXISTS wäre das nicht passiert."
+    },
+    {
+      "question": "Zu Beginn gibt es genau eine Note 5. Was liefert das letzte SELECT?",
+      "code": "CREATE VIEW v_nicht_gen AS\nSELECT schueler_id, fach\nFROM noten WHERE note = 5;\n\nINSERT INTO noten\nVALUES (2, 'AM', 5);\n\nSELECT COUNT(*)\nFROM v_nicht_gen;",
+      "options": [
+        "1, weil die View beim Anlegen gespeichert wurde",
+        "2, weil die View bei jeder Abfrage neu ausgewertet wird",
+        "Fehler: in eine Tabelle mit View darf nicht eingefügt werden",
+        "0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine View speichert nur die Abfrage, keine Daten. Die neue Note 5 ist sofort sichtbar."
+    }
+  ]
+}

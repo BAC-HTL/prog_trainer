@@ -1,0 +1,117 @@
+{
+  "id": "syp-j3-vorgehen_pruefung",
+  "title": "Abschlussprüfung: Vorgehensmodelle im Software Engineering",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Wann werden im V-Modell die Testfälle für den Systemtest festgelegt?",
+      "options": [
+        "Erst nach der Implementierung",
+        "Parallel zum Systementwurf",
+        "Bei der Abnahme durch den Kunden",
+        "Gar nicht – der Systemtest ist explorativ"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jede Entwurfsebene hat eine gegenüberliegende Testebene. Die Testfälle werden schon beim Entwurf geplant, ausgeführt werden sie auf dem rechten Ast."
+    },
+    {
+      "question": "Die Software besteht alle Tests gegen das Pflichtenheft. Bei der Abnahme stellt sich heraus, dass die Vereinsmitglieder sie für ihre Arbeit gar nicht brauchen können. Was ist hier gescheitert?",
+      "options": [
+        "Die Verifikation",
+        "Der Komponententest",
+        "Die Validierung",
+        "Der Integrationstest"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Produkt wurde „richtig gebaut“ (Verifikation erfolgreich), aber es ist nicht das „richtige Produkt“ – die Validierung ist gescheitert."
+    },
+    {
+      "question": "In welcher Situation ist ein phasenorientiertes Modell wie Wasserfall am ehesten sinnvoll?",
+      "options": [
+        "Startup-App, deren Zielgruppe noch unklar ist",
+        "Laufender Support mit vielen kleinen Tickets",
+        "Kunde will jede Woche neue Ideen einbringen",
+        "Stabile, klar dokumentierte Anforderungen bei Fixpreis"
+      ],
+      "correctIndex": 3,
+      "explanation": "Wasserfall spielt seine Stärken (Planbarkeit, klare Dokumente) aus, wenn sich die Anforderungen kaum ändern und der Umfang vertraglich fix ist."
+    },
+    {
+      "question": "Welche Beschreibung passt zu „inkrementell“?",
+      "options": [
+        "Das Produkt wächst in lauffähigen Teilstücken",
+        "Alle Phasen werden genau einmal durchlaufen",
+        "Das Team arbeitet ohne Planung",
+        "Getestet wird nur am Projektende"
+      ],
+      "correctIndex": 0,
+      "explanation": "Inkrementell heißt: Das Produkt entsteht Stück für Stück, jedes Inkrement ist nutzbar. Iterativ bedeutet das wiederholte Durchlaufen und Verbessern."
+    },
+    {
+      "question": "Wer entscheidet in Scrum, wie viel Arbeit aus dem Product Backlog in einen Sprint übernommen wird und wie sie umgesetzt wird?",
+      "options": [
+        "Der Scrum Master",
+        "Der Product Owner allein",
+        "Die Stakeholder im Review",
+        "Die Developers"
+      ],
+      "correctIndex": 3,
+      "explanation": "Im Sprint Planning wählen die Developers – in Abstimmung mit dem Product Owner – die Einträge aus und planen das Wie. Das Sprint Backlog gehört den Developers."
+    },
+    {
+      "question": "Was ist der Zweck des Sprint Reviews?",
+      "options": [
+        "Das Team bespricht seine Zusammenarbeit und Prozesse",
+        "Ergebnis mit Stakeholdern prüfen und Backlog anpassen",
+        "Der Scrum Master bewertet die Leistung der Developers",
+        "Die nächsten 24 Stunden werden geplant"
+      ],
+      "correctIndex": 1,
+      "explanation": "Im Review wird das Ergebnis gemeinsam mit den Stakeholdern begutachtet, und es wird entschieden, wie es weitergeht. Die Zusammenarbeit ist Thema der Retrospective, die nächsten 24 Stunden des Daily Scrums."
+    },
+    {
+      "question": "Am Sprintende ist eine Story programmiert, aber noch nicht getestet. Laut Definition of Done gehört „Tests grün“ dazu. Was passiert mit der Story?",
+      "options": [
+        "Sie wird im Review als fertig gezeigt",
+        "Der Sprint wird automatisch um eine Woche verlängert",
+        "Sie ist nicht Teil des Inkrements und kommt zurück ins Product Backlog",
+        "Der Scrum Master testet sie schnell selbst"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur Arbeit, die die DoD erfüllt, gehört zum Inkrement. Unfertige Arbeit wird nicht als fertig präsentiert und geht zurück ins Product Backlog. Sprints werden nicht verlängert."
+    },
+    {
+      "question": "Welche maximale Dauer hat das Sprint Planning bei einem Sprint von einem Monat?",
+      "options": [
+        "8 Stunden",
+        "4 Stunden",
+        "15 Minuten",
+        "2 Tage"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei einem Monats-Sprint ist das Sprint Planning auf höchstens 8 Stunden begrenzt, das Review auf 4 und die Retrospective auf 3 Stunden."
+    },
+    {
+      "question": "Was beschreibt das Pull-Prinzip in Kanban?",
+      "options": [
+        "Die Projektleitung teilt jedem morgens Aufgaben zu",
+        "Aufgaben werden am Sprintbeginn fix verteilt",
+        "Neue Arbeit wird nur gezogen, wenn in der Spalte Platz frei ist",
+        "Fertige Karten werden zurück nach „To Do“ gezogen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beim Pull-Prinzip holt sich das Team selbst neue Arbeit, sobald die Kapazität (das WIP-Limit) es zulässt. Arbeit wird nicht hineingedrückt."
+    },
+    {
+      "question": "Ein Team entwickelt Steuerungssoftware für ein medizinisches Gerät. Behörden verlangen nachvollziehbare Nachweise, welche Anforderung durch welchen Test geprüft wurde. Welches Modell passt am besten?",
+      "options": [
+        "Kanban ohne Dokumentation",
+        "V-Modell",
+        "Reines Ad-hoc-Programmieren",
+        "Scrum ohne Definition of Done"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das V-Modell ordnet jeder Spezifikationsebene eine Testebene zu und liefert damit die geforderte Nachvollziehbarkeit zwischen Anforderungen und Tests."
+    }
+  ]
+}

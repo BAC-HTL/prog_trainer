@@ -1,0 +1,96 @@
+{
+  "id": "dbi-j3-sql_04_unterabfragen_views",
+  "title": "Unterabfragen und Views",
+  "summary": "Abfragen verschachteln mit IN, EXISTS und korrelierten Unterabfragen und Abfragen als Views speichern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Unterabfrage (Subquery) ist ein SELECT in Klammern innerhalb einer anderen Abfrage. Liefert sie genau einen Wert, kannst du sie wie eine Zahl verwenden – zum Beispiel, um alle DBI-Noten zu finden, die besser als der DBI-Schnitt sind. Den Schnitt musst du dafür nicht kennen oder händisch eintippen: Die Datenbank berechnet ihn bei jeder Ausführung neu. Wir arbeiten weiter mit der Schulverwaltung."
+    },
+    {
+      "type": "code",
+      "content": "SELECT s.vorname, n.note\nFROM noten n\nJOIN schueler s\n  ON s.schueler_id = n.schueler_id\nWHERE n.fach = 'DBI'\n  AND n.note < (\n    SELECT AVG(note)\n    FROM noten\n    WHERE fach = 'DBI'\n  );\n-- Anna  | 1\n-- Clara | 2\n-- Eva   | 2\n-- DBI-Schnitt: 13 / 5 = 2.6"
+    },
+    {
+      "type": "text",
+      "content": "Liefert die Unterabfrage eine ganze Spalte, prüfst du mit IN, ob ein Wert darin vorkommt. Beispiel: alle Schüler:innen, deren Klassenvorstand Maier (lehrer_id 2) ist.\n\nGefährliche Falle: NOT IN mit NULL. Enthält die Liste ein NULL, ist x NOT IN (…) nie wahr, sondern „unbekannt“ – die Abfrage liefert plötzlich keine einzige Zeile. Im Beispiel unten verliert die 5AHIT ihren KV, und schon findet die Abfrage „Lehrkräfte, die nicht KV sind“ niemanden mehr."
+    },
+    {
+      "type": "code",
+      "content": "SELECT vorname FROM schueler\nWHERE klasse_id IN (\n  SELECT klasse_id FROM klassen\n  WHERE kv_id = 2\n);\n-- Anna\n-- Ben\n-- Eva\n\nSELECT kuerzel FROM lehrer\nWHERE lehrer_id NOT IN (\n  SELECT kv_id FROM klassen\n);\n-- WEI\n\nUPDATE klassen SET kv_id = NULL\nWHERE klasse_id = 3;\n\n-- gleiche Abfrage noch einmal:\nSELECT kuerzel FROM lehrer\nWHERE lehrer_id NOT IN (\n  SELECT kv_id FROM klassen\n);\n-- (keine Zeilen)"
+    },
+    {
+      "type": "text",
+      "content": "EXISTS prüft nur, ob die Unterabfrage mindestens eine Zeile liefert. Meist ist sie korreliert: Sie verweist auf eine Spalte der äußeren Abfrage (hier l.lehrer_id) und wird gedanklich für jede äußere Zeile neu ausgeführt. NOT EXISTS ist die sichere Alternative zu NOT IN – NULL-Werte stören hier nicht. Was im SELECT der Unterabfrage steht, ist egal; üblich ist SELECT 1."
+    },
+    {
+      "type": "code",
+      "content": "-- (KV der 5AHIT ist weiter NULL)\nSELECT l.kuerzel\nFROM lehrer l\nWHERE NOT EXISTS (\n  SELECT 1 FROM klassen k\n  WHERE k.kv_id = l.lehrer_id\n);\n-- HUB\n-- WEI\n\n-- Wer hat mind. ein Nicht genügend?\nSELECT s.vorname\nFROM schueler s\nWHERE EXISTS (\n  SELECT 1 FROM noten n\n  WHERE n.schueler_id = s.schueler_id\n    AND n.note = 5\n);\n-- David"
+    },
+    {
+      "type": "code",
+      "content": "-- Korreliert: beste Note je Fach\nSELECT n.fach, s.vorname, n.note\nFROM noten n\nJOIN schueler s\n  ON s.schueler_id = n.schueler_id\nWHERE n.note = (\n  SELECT MIN(n2.note)\n  FROM noten n2\n  WHERE n2.fach = n.fach\n)\nORDER BY n.fach;\n-- AM  | Anna  | 2\n-- DBI | Anna  | 1\n-- POS | Clara | 1"
+    },
+    {
+      "type": "text",
+      "content": "Eine View (Sicht) ist eine gespeicherte Abfrage mit Namen. Du fragst sie ab wie eine Tabelle, sie speichert aber keine eigenen Daten – bei jedem Zugriff wird die Abfrage neu ausgeführt, das Ergebnis ist also immer aktuell. Views vereinfachen komplizierte JOINs, zeigen nur bestimmte Spalten (z. B. ohne E-Mail-Adressen) und lassen sich gezielt berechtigen. Damit setzen sie die externe Ebene der Drei-Ebenen-Architektur um.\n\nDialekt-Hinweis: Einfache Views (eine Tabelle, keine Aggregate) sind in MySQL und PostgreSQL auch änderbar (UPDATE auf die View). In SQLite sind Views grundsätzlich nur lesbar."
+    },
+    {
+      "type": "code",
+      "content": "CREATE VIEW v_zeugnis AS\nSELECT s.vorname,\n       k.bezeichnung AS klasse,\n       n.fach, n.note\nFROM schueler s\nJOIN klassen k\n  ON k.klasse_id = s.klasse_id\nJOIN noten n\n  ON n.schueler_id = s.schueler_id;\n\nSELECT klasse, COUNT(*) AS anz,\n       SUM(note = 5) AS nicht_gen\nFROM v_zeugnis\nGROUP BY klasse;\n-- 3AHIT | 7 | 0\n-- 3BHIT | 5 | 1\n\n-- David verbessert sich in DBI\nUPDATE noten SET note = 4\nWHERE schueler_id = 4\n  AND fach = 'DBI';\nSELECT COUNT(*) FROM v_zeugnis\nWHERE note = 5;\n-- 0\n\nUPDATE v_zeugnis SET note = 1;\n-- Fehler:\n-- cannot modify v_zeugnis because it is a view\n\nDROP VIEW v_zeugnis;"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Skalare Unterabfragen liefern einen Wert, IN prüft gegen eine Liste, EXISTS prüft, ob es überhaupt Zeilen gibt. Korrelierte Unterabfragen verweisen auf die äußere Zeile. Vorsicht bei NOT IN, wenn die Liste NULL enthalten kann – nimm dann NOT EXISTS. Views speichern Abfragen, nicht Daten. Hinweis: SUM(note = 5) funktioniert in SQLite und MySQL, weil ein Vergleich dort 1 oder 0 ergibt; portabel ist SUM(CASE WHEN note = 5 THEN 1 ELSE 0 END)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Namen liefert diese Abfrage? (AM-Noten haben Anna, Clara und David)",
+      "code": "SELECT vorname FROM schueler\nWHERE schueler_id NOT IN (\n  SELECT schueler_id\n  FROM noten\n  WHERE fach = 'AM'\n);",
+      "options": [
+        "Anna, Clara, David",
+        "Ben, Eva, Filip",
+        "Ben und Eva",
+        "Keine Zeilen wegen NULL"
+      ],
+      "correctIndex": 1,
+      "explanation": "Gesucht sind alle, deren ID nicht in der Liste {1, 3, 4} steht. Filip hat gar keine Noten, gehört also auch dazu. Die Liste enthält kein NULL, daher keine Falle."
+    },
+    {
+      "question": "Wie viele Schüler:innen zählt diese Abfrage?",
+      "code": "SELECT COUNT(*)\nFROM schueler s\nWHERE NOT EXISTS (\n  SELECT 1 FROM noten n\n  WHERE n.schueler_id\n        = s.schueler_id\n    AND n.note > 2\n);",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "6"
+      ],
+      "correctIndex": 2,
+      "explanation": "Gezählt wird, wer keine Note schlechter als 2 hat: Anna (1, 2, 2) und Filip, der gar keine Noten hat – NOT EXISTS ist bei einer leeren Unterabfrage wahr."
+    },
+    {
+      "question": "Was macht diese Unterabfrage zu einer korrelierten Unterabfrage?",
+      "code": "SELECT s.vorname\nFROM schueler s\nWHERE (\n  SELECT COUNT(*) FROM noten n\n  WHERE n.schueler_id\n        = s.schueler_id\n) > 2;",
+      "options": [
+        "Sie verwendet COUNT(*)",
+        "Sie steht in der WHERE-Klausel",
+        "Sie verweist mit s.schueler_id auf die Zeile der äußeren Abfrage",
+        "Sie liefert genau einen Wert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Korreliert heißt: Die innere Abfrage hängt von der aktuellen Zeile der äußeren ab und wird pro Zeile ausgewertet. Ergebnis hier: Anna und Clara (je 3 Noten)."
+    },
+    {
+      "question": "Welche Aussage über Views stimmt?",
+      "options": [
+        "Eine View speichert eine Kopie der Daten zum Zeitpunkt von CREATE VIEW",
+        "Eine View ist eine gespeicherte Abfrage; ihr Ergebnis wird bei jedem Zugriff neu ermittelt",
+        "Eine View kann nur Spalten aus einer einzigen Tabelle enthalten",
+        "DROP VIEW löscht auch die Daten der zugrunde liegenden Tabellen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Views speichern nur die Abfrage. Änderungen an den Tabellen sind sofort in der View sichtbar; DROP VIEW entfernt nur die Sicht selbst."
+    }
+  ]
+}

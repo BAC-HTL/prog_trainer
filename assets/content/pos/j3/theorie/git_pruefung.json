@@ -1,0 +1,120 @@
+{
+  "id": "pos-j3-theorie-git_pruefung",
+  "title": "Abschlussprüfung: Versionsverwaltung mit Git",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "a.txt enthielt „1“ und war committet. Welcher Inhalt von a.txt steht danach im neuen Commit?",
+      "code": "$ echo 2 > a.txt\n$ git add a.txt\n$ echo 3 > a.txt\n$ git commit -m \"Wert ändern\"",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "2 und 3"
+      ],
+      "correctIndex": 1,
+      "explanation": "git add merkt den Stand zum Zeitpunkt des Aufrufs vor (2). Die spätere Änderung auf 3 liegt nur im Arbeitsverzeichnis und wird weiterhin als „ M a.txt“ angezeigt."
+    },
+    {
+      "question": "Du hast die bekannte Datei a.txt geändert und die neue Datei neu.py angelegt. Was landet mit git commit -am \"…\" im Commit?",
+      "options": [
+        "Beide Dateien",
+        "Nur neu.py",
+        "Gar nichts, -a funktioniert nur nach git add",
+        "Nur die Änderung an a.txt"
+      ],
+      "correctIndex": 3,
+      "explanation": "-a merkt nur Änderungen an Dateien vor, die Git schon verfolgt. Neue (untracked) Dateien musst du einmal mit git add hinzufügen."
+    },
+    {
+      "question": "Welche Dateien zeigt git status --short noch als ?? an (neben .gitignore selbst)?",
+      "code": "# .gitignore\n*.log\n!wichtig.log\nbuild/\n\n# neue Dateien:\nbuild/x.o  fehler.log\nwichtig.log  notiz.txt",
+      "options": [
+        "fehler.log und notiz.txt",
+        "notiz.txt und wichtig.log",
+        "nur notiz.txt",
+        "alle vier"
+      ],
+      "correctIndex": 1,
+      "explanation": "*.log ignoriert fehler.log, aber !wichtig.log nimmt diese Datei wieder aus. build/ ignoriert den ganzen Ordner. Übrig bleiben notiz.txt und wichtig.log."
+    },
+    {
+      "question": "Welche Commit-Message folgt den üblichen Regeln am besten?",
+      "options": [
+        "Absturz bei leerer Eingabe beheben",
+        "Ich habe den Bug gefixt, der gestern aufgetreten ist, und noch ein paar andere Sachen geändert",
+        "fix",
+        "WIP"
+      ],
+      "correctIndex": 0,
+      "explanation": "Kurz, konkret, im Imperativ, ein Thema pro Commit. Die zweite Antwort mischt mehrere Themen und ist zu lang für die erste Zeile."
+    },
+    {
+      "question": "Du zweigst feature von main ab. Danach entstehen Commits auf feature UND auf main (andere Dateien). Was passiert bei git merge feature auf main?",
+      "options": [
+        "Ein Fast-Forward",
+        "Ein Merge-Konflikt",
+        "Ein Merge-Commit mit zwei Eltern",
+        "Git verweigert den Merge"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beide Branches haben sich weiterentwickelt, also kann Git den Zeiger nicht einfach vorschieben. Weil verschiedene Dateien betroffen sind, gibt es keinen Konflikt – Git erstellt einen Merge-Commit."
+    },
+    {
+      "question": "Wie viele Elterncommits hat der Commit fb84b06?",
+      "code": "*   fb84b06 Merge englisch\n|\\\n| * 22a54c2 Begrüßung Englisch\n* | 621fcf3 Begrüßung Deutsch\n|/\n* d233891 Login anlegen",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Merge-Commit führt zwei Entwicklungslinien zusammen und hat daher zwei Eltern: 621fcf3 und 22a54c2."
+    },
+    {
+      "question": "Du bist auf main und führst git merge test aus. Was steht zwischen ======= und >>>>>>> test?",
+      "options": [
+        "Die Version von main",
+        "Die Version des Branches test",
+        "Die Version des gemeinsamen Vorfahren",
+        "Eine von Git vorgeschlagene Lösung"
+      ],
+      "correctIndex": 1,
+      "explanation": "Oben (nach <<<<<<< HEAD) steht die Version des aktuellen Branches, unten (vor >>>>>>> test) die des gemergten Branches."
+    },
+    {
+      "question": "Du führst git fetch aus, und auf dem Remote gibt es zwei neue Commits auf main. Was stimmt danach?",
+      "options": [
+        "Deine Dateien im Arbeitsverzeichnis enthalten die neuen Änderungen",
+        "Es entsteht ein Merge-Commit",
+        "Dein lokaler main wurde auf origin/main zurückgesetzt",
+        "origin/main zeigt auf den neuen Stand, dein lokaler main ist unverändert"
+      ],
+      "correctIndex": 3,
+      "explanation": "fetch aktualisiert nur die Remote-Tracking-Branches wie origin/main. Erst merge (oder git pull) bringt die Änderungen in deinen Branch."
+    },
+    {
+      "question": "Warum ist git push --force auf einem gemeinsamen Branch gefährlich?",
+      "options": [
+        "Es überschreibt den Remote-Branch und kann Commits anderer löschen",
+        "Es pusht alle Branches auf einmal",
+        "Es funktioniert nur ohne Internet",
+        "Es löscht dein lokales Repository"
+      ],
+      "correctIndex": 0,
+      "explanation": "--force ersetzt den Stand des Remote-Branches durch deinen. Commits, die andere inzwischen gepusht haben, gehen dort verloren."
+    },
+    {
+      "question": "Du hast ein Open-Source-Projekt geforkt und deinen Fork geklont. Wie holst du später neue Commits aus dem Original?",
+      "options": [
+        "git push upstream main",
+        "Einen Pull Request an dich selbst stellen",
+        "git remote add upstream <URL-des-Originals>, dann git pull upstream main",
+        "git clone erneut ausführen, ein anderer Weg ist nicht möglich"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Original wird als zweites Remote (meist upstream) eingetragen. origin ist dein Fork. Mit git pull upstream main (oder fetch + merge) holst du die neuen Commits."
+    }
+  ]
+}

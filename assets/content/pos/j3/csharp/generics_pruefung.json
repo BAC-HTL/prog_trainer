@@ -1,0 +1,124 @@
+{
+  "id": "pos-j3-csharp-generics_pruefung",
+  "title": "Abschlussprüfung: Polymorphie & Generics",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Fahrzeug\n{\n    public virtual string Info()\n        => \"Fahrzeug\";\n    public string Zeig() => \"Fahrzeug\";\n}\nclass Auto : Fahrzeug\n{\n    public override string Info()\n        => \"Auto\";\n    public new string Zeig() => \"Auto\";\n}\nFahrzeug a = new Auto();\nConsole.WriteLine(\n    $\"{a.Info()} {a.Zeig()}\");",
+      "options": [
+        "Fahrzeug Fahrzeug",
+        "Auto Fahrzeug",
+        "Auto Auto",
+        "Fahrzeug Auto"
+      ],
+      "correctIndex": 1,
+      "explanation": "a hat den Laufzeittyp Auto, und Info ist virtual/override → \"Auto\". Zeig ist nicht virtual, Auto verdeckt sie nur mit new; die Variable hat den Typ Fahrzeug → \"Fahrzeug\"."
+    },
+    {
+      "question": "Welche Fehlermeldung liefert der Compiler hier?",
+      "code": "abstract class Form\n{\n    public abstract double Flaeche();\n}\nclass Quadrat : Form { }",
+      "options": [
+        "CS0506: Methode nicht virtual",
+        "CS0019: Operator nicht anwendbar",
+        "Keine – der Code kompiliert",
+        "CS0534: abstraktes Mitglied Flaeche() nicht implementiert"
+      ],
+      "correctIndex": 3,
+      "explanation": "Quadrat ist nicht abstrakt, erbt aber die abstrakte Methode Flaeche, ohne sie zu überschreiben. Das ist Fehler CS0534."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Box<T> { }\n\nConsole.WriteLine(\n    typeof(Box<int>) ==\n    typeof(Box<string>));",
+      "options": [
+        "False",
+        "True",
+        "Compilerfehler",
+        "Box`1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Box<int> und Box<string> sind zwei verschiedene konstruierte Typen. typeof liefert daher verschiedene Type-Objekte."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static T Max<T>(T[] w)\n    where T : IComparable<T>\n{\n    T m = w[0];\n    foreach (T x in w)\n        if (x.CompareTo(m) > 0) m = x;\n    return m;\n}\nConsole.WriteLine(Max(new[]\n  { \"Birne\", \"Apfel\", \"Zitrone\" }));",
+      "options": [
+        "9",
+        "Birne",
+        "Zitrone",
+        "Apfel"
+      ],
+      "correctIndex": 2,
+      "explanation": "string implementiert IComparable<string> und vergleicht alphabetisch. \"Zitrone\" kommt am weitesten hinten, ist also das größte Element."
+    },
+    {
+      "question": "Warum meldet der Compiler bei List<object> l = new List<string>(); einen Fehler (CS0029)?",
+      "options": [
+        "Weil List<object> abstrakt ist",
+        "Weil List<string> kein Untertyp von List<object> ist – sonst könnte man über l auch Zahlen in eine String-Liste einfügen",
+        "Weil string kein object ist",
+        "Weil man generische Typen nie Variablen zuweisen kann"
+      ],
+      "correctIndex": 1,
+      "explanation": "Obwohl string von object erbt, sind List<string> und List<object> unabhängige Typen. Erlaubte man die Zuweisung, könnte l.Add(42) eine Zahl in eine String-Liste schmuggeln."
+    },
+    {
+      "question": "Welche Constraint-Kombination ist gültig, wenn T ein Referenztyp sein, IHatId implementieren und mit new T() erzeugbar sein soll?",
+      "options": [
+        "where T : new(), class, IHatId",
+        "where T : IHatId, new(), class",
+        "where T : class, IHatId, new()",
+        "where T : class & IHatId & new()"
+      ],
+      "correctIndex": 2,
+      "explanation": "class (bzw. struct) muss zuerst stehen, new() immer zuletzt. Mehrere Constraints werden mit Beistrichen getrennt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static int Zaehle<T>(\n    IEnumerable<T> werte,\n    Func<T, bool> bed)\n{\n    int n = 0;\n    foreach (var w in werte)\n        if (bed(w)) n++;\n    return n;\n}\nConsole.WriteLine(Zaehle(\n    new[] { \"a\", \"bb\", \"ccc\" },\n    w => w.Length >= 2));",
+      "options": [
+        "2",
+        "1",
+        "3",
+        "0"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zaehle ist generisch mit T = string (Typinferenz). Die Bedingung w.Length >= 2 trifft auf \"bb\" und \"ccc\" zu."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Konto\n{\n    [JsonPropertyName(\"inhaber\")]\n    public string Inhaber { get; set; }\n        = \"Ali\";\n    [JsonIgnore]\n    public string Passwort { get; set; }\n        = \"x\";\n    public int Stand { get; set; } = 5;\n}\nConsole.WriteLine(JsonSerializer\n    .Serialize(new Konto()));",
+      "options": [
+        "{\"inhaber\":\"Ali\",\"Passwort\":\"x\",\"Stand\":5}",
+        "{\"Inhaber\":\"Ali\",\"Stand\":5}",
+        "{\"inhaber\":\"Ali\",\"stand\":5}",
+        "{\"inhaber\":\"Ali\",\"Stand\":5}"
+      ],
+      "correctIndex": 3,
+      "explanation": "[JsonPropertyName] benennt Inhaber in \"inhaber\" um, [JsonIgnore] lässt Passwort weg. Stand behält seinen Namen, weil keine Naming-Policy gesetzt ist."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "record Punkt(int X, int Y);\n\nvar p = JsonSerializer\n    .Deserialize<Punkt>(\n        \"{\\\"X\\\":1,\\\"Z\\\":9}\");\nConsole.WriteLine(p);",
+      "options": [
+        "Punkt { X = 1, Y = 9 }",
+        "Punkt { X = 1, Y = 0 }",
+        "JsonException",
+        "Punkt { X = 0, Y = 0 }"
+      ],
+      "correctIndex": 1,
+      "explanation": "Unbekannte Schlüssel wie Z werden standardmäßig ignoriert, fehlende Werte (Y) bekommen den Standardwert 0. Eine Exception gibt es nur bei ungültigem JSON."
+    },
+    {
+      "question": "Du willst eine Liste von Schülern aus einer JSON-Datei laden. Welcher Aufruf ist richtig?",
+      "options": [
+        "JsonSerializer.Deserialize(json, Schueler)",
+        "JsonSerializer.Serialize<List<Schueler>>(json)",
+        "JsonSerializer.Deserialize<List<Schueler>>(json)",
+        "(List<Schueler>)JsonSerializer.Deserialize(json)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Deserialize<T> ist generisch: Das Typargument List<Schueler> legt fest, welches Objekt aus dem JSON-Text entsteht. Serialize geht in die andere Richtung."
+    }
+  ]
+}

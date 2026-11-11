@@ -1,0 +1,121 @@
+{
+  "id": "pos-j3-python-tests_pruefung",
+  "title": "Abschlussprüfung: Teststrategien & Unit-Tests",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Aussage über Tests stimmt?",
+      "options": [
+        "Wenn alle Tests grün sind, ist das Programm fehlerfrei",
+        "Tests können Fehler finden, aber nicht deren Abwesenheit beweisen",
+        "Systemtests ersetzen Unit-Tests vollständig",
+        "Grenzwerttests sind nur bei White-Box-Tests möglich"
+      ],
+      "correctIndex": 1,
+      "explanation": "Tests prüfen nur die gewählten Eingaben. Fehler bei nicht getesteten Eingaben bleiben unentdeckt."
+    },
+    {
+      "question": "Eine Funktion nimmt eine Punktezahl von 0 bis 100 an. Unter 50 ist negativ, ab 50 positiv. Welche Menge enthält ALLE Grenzwerte?",
+      "options": [
+        "0, 50, 100",
+        "0, 49, 50, 51, 100",
+        "-1, 0, 50, 100",
+        "-1, 0, 49, 50, 100, 101"
+      ],
+      "correctIndex": 3,
+      "explanation": "Grenzen gibt es bei 0 (gültig/ungültig), zwischen 49 und 50 (negativ/positiv) und bei 100 (gültig/ungültig). An jeder Grenze testet man beide Seiten: -1/0, 49/50, 100/101."
+    },
+    {
+      "question": "Welche Äquivalenzklassen gehören zur Funktion aus der vorigen Frage (Punkte 0–100, ab 50 positiv)?",
+      "options": [
+        "< 0, 0–49, 50–100, > 100",
+        "gültig, ungültig",
+        "0–49, 50–100",
+        "< 0, 0–100, > 100"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zwei gültige Klassen (negativ 0–49, positiv 50–100) werden unterschiedlich behandelt, dazu kommen zwei ungültige Klassen: zu klein und zu groß."
+    },
+    {
+      "question": "Was wird hier geprüft?",
+      "code": "import pytest\n\ndef test_umwandeln():\n    with pytest.raises(ValueError):\n        int(\"x\")",
+      "options": [
+        "Dass int(\"x\") den Wert 0 liefert",
+        "Dass int(\"x\") einen ValueError auslöst",
+        "Dass int(\"x\") keine Exception auslöst",
+        "Dass der Test übersprungen wird"
+      ],
+      "correctIndex": 1,
+      "explanation": "pytest.raises(ValueError) als with-Block erwartet, dass im Block ein ValueError entsteht. Passiert das nicht, schlägt der Test fehl."
+    },
+    {
+      "question": "Welche Ausgabe passt zu diesem pytest-Lauf, wenn liste_max([]) None liefert?",
+      "code": "def liste_max(xs):\n    if not xs:\n        return None\n    return max(xs)\n\ndef test_max():\n    assert liste_max([3, 7, 5]) == 7\n\ndef test_leer():\n    assert liste_max([]) is None",
+      "options": [
+        "2 passed",
+        "1 failed, 1 passed",
+        "2 failed",
+        "1 passed"
+      ],
+      "correctIndex": 0,
+      "explanation": "max([3, 7, 5]) liefert 7, der erste Test besteht. liste_max([]) liefert dank des if None, also besteht auch der zweite Test."
+    },
+    {
+      "question": "Wie heißen in unittest die Klasse, von der Testklassen erben, und der Startbefehl?",
+      "options": [
+        "unittest.Test und python -m pytest",
+        "TestCase und python unittest.py",
+        "TestCase und python -m unittest",
+        "Assert und python -m test"
+      ],
+      "correctIndex": 2,
+      "explanation": "Testklassen erben von unittest.TestCase. Gestartet wird z. B. mit python -m unittest oder python -m unittest test_modul."
+    },
+    {
+      "question": "Wie viele Tests sammelt pytest hier?",
+      "code": "import pytest\n\n@pytest.mark.parametrize(\"n\", [1, 2, 3])\ndef test_positiv(n):\n    assert n > 0",
+      "options": [
+        "1",
+        "2",
+        "6",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "parametrize mit drei Datensätzen erzeugt drei Testfälle aus einer Funktion."
+    },
+    {
+      "question": "Du willst prüfen, ob dein Programm zusammen mit der echten Schuldatenbank und der Weboberfläche den kompletten Ablauf „Note eintragen“ schafft. Welche Testart ist das?",
+      "options": [
+        "Systemtest",
+        "Unit-Test",
+        "Grenzwerttest",
+        "Refactoring"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das gesamte System wird von außen über einen kompletten Ablauf geprüft – das ist ein Systemtest. Davon gibt es laut Testpyramide nur wenige."
+    },
+    {
+      "question": "Im TDD-Zyklus ist dein neuer Test sofort grün, obwohl du noch keinen Code geändert hast. Was solltest du tun?",
+      "options": [
+        "Nichts – grün ist immer gut",
+        "Den Test sofort löschen",
+        "Prüfen, ob der Test überhaupt das Richtige testet oder das Verhalten schon existiert",
+        "Direkt zum nächsten Feature weitergehen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein neuer Test sollte zuerst rot sein. Ist er grün, testet er entweder etwas schon Vorhandenes oder er ist fehlerhaft (z. B. prüft er nichts)."
+    },
+    {
+      "question": "Welcher Test findet den Fehler in dieser Funktion (Spezifikation: ab 18 volljährig)?",
+      "code": "def volljaehrig(alter):\n    return alter > 18",
+      "options": [
+        "assert volljaehrig(30)",
+        "assert not volljaehrig(10)",
+        "assert volljaehrig(18)",
+        "assert not volljaehrig(0)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mit > statt >= liefert volljaehrig(18) False – genau der Grenzwert 18 deckt den Fehler auf. Die anderen Werte liegen mitten in den Äquivalenzklassen und bestehen."
+    }
+  ]
+}

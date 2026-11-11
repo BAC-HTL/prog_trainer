@@ -1,0 +1,120 @@
+{
+  "id": "pos-j3-python-gui_pruefung",
+  "title": "Abschlussprüfung: Grafische Benutzeroberflächen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was bedeutet „ereignisgesteuert“ bei einem GUI-Programm?",
+      "options": [
+        "Das Programm läuft einmal von oben nach unten durch",
+        "Das Programm wartet in einer Ereignisschleife und reagiert mit Callbacks auf Klicks, Tastendrücke usw.",
+        "Das Programm fragt alle Eingaben mit input() ab",
+        "Das Programm startet automatisch zu bestimmten Uhrzeiten"
+      ],
+      "correctIndex": 1,
+      "explanation": "mainloop() wartet auf Ereignisse und ruft die hinterlegten Funktionen auf. Die Reihenfolge bestimmt die Person, die das Programm bedient."
+    },
+    {
+      "question": "Welche Zeile wird zuerst ausgegeben, wenn das Programm startet und das Fenster später geschlossen wird?",
+      "code": "fenster = tk.Tk()\nprint(\"Start\")\nfenster.mainloop()\nprint(\"Ende\")",
+      "options": [
+        "Ende",
+        "Start",
+        "Beide gleichzeitig",
+        "Keine – print funktioniert in tkinter nicht"
+      ],
+      "correctIndex": 1,
+      "explanation": "„Start“ wird vor mainloop() ausgegeben. mainloop() blockiert, bis das Fenster geschlossen wird – erst dann erscheint „Ende“."
+    },
+    {
+      "question": "Ein Schüler erzeugt ein Label, sieht es aber nicht im Fenster. Was fehlt am wahrscheinlichsten?",
+      "options": [
+        "Ein Aufruf eines Geometriemanagers wie pack() oder grid()",
+        "Ein command-Parameter",
+        "Ein zweiter Aufruf von tk.Tk()",
+        "Ein return am Ende des Programms"
+      ],
+      "correctIndex": 0,
+      "explanation": "Widgets werden erst sichtbar, wenn ein Geometriemanager sie platziert."
+    },
+    {
+      "question": "Was ergibt diese Rechnung im Callback, wenn im Entry 12 steht?",
+      "code": "wert = eingabe.get() * 2\nlabel.config(text=wert)",
+      "options": [
+        "24",
+        "1212",
+        "TypeError",
+        "\"24\""
+      ],
+      "correctIndex": 1,
+      "explanation": "eingabe.get() liefert den String \"12\". String * 2 wiederholt den Text: \"1212\". Für 24 müsste man int(eingabe.get()) * 2 rechnen."
+    },
+    {
+      "question": "Finde den Fehler: Warum stürzt dieser Code mit „AttributeError: 'NoneType' object has no attribute 'get'“ ab?",
+      "code": "name = tk.Entry(f).grid(row=0,\n                        column=1)\nprint(name.get())",
+      "options": [
+        "Entry-Widgets haben keine Methode get()",
+        "grid() darf nur mit row aufgerufen werden",
+        "grid() gibt None zurück – name enthält also nicht das Entry, sondern None",
+        "Das Fenster wurde noch nicht mit mainloop() gestartet"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Variable name bekommt den Rückgabewert von grid(), und der ist None. Widget erzeugen und platzieren gehören in zwei getrennte Zeilen."
+    },
+    {
+      "question": "Was passiert, wenn du in einem Fenster ein Widget mit pack() und ein anderes mit grid() platzierst?",
+      "options": [
+        "Beide werden nebeneinander angezeigt",
+        "grid() wird automatisch in pack() umgewandelt",
+        "Das zweite Widget wird unsichtbar, aber es gibt keinen Fehler",
+        "tkinter löst einen TclError aus, weil die Geometriemanager im selben Container nicht gemischt werden dürfen"
+      ],
+      "correctIndex": 3,
+      "explanation": "tkinter verweigert das Mischen von pack und grid im selben Container mit einem TclError („cannot use geometry manager …“)."
+    },
+    {
+      "question": "Welcher Handler passt sowohl für command= eines Buttons als auch für bind(\"<Return>\", …)?",
+      "options": [
+        "def ok(event=None): …",
+        "def ok(): …",
+        "def ok(event): …",
+        "def ok(self, event, widget): …"
+      ],
+      "correctIndex": 0,
+      "explanation": "command ruft ohne Argument auf, bind mit einem Event-Objekt. Ein Standardwert event=None deckt beide Fälle ab."
+    },
+    {
+      "question": "Welche grid-Option sorgt dafür, dass ein Button die ganze Breite seiner Zelle(n) ausfüllt?",
+      "options": [
+        "columnspan=\"ew\"",
+        "padx=\"full\"",
+        "sticky=\"ew\"",
+        "fill=True"
+      ],
+      "correctIndex": 2,
+      "explanation": "sticky=\"ew\" heftet das Widget an den linken (West) und rechten (Ost) Zellrand – es wird also über die ganze Breite gezogen. columnspan bestimmt dagegen, über wie viele Spalten die Zelle reicht."
+    },
+    {
+      "question": "Was gibt pruefe_note(\" 5 \") aus der Lektion zurück?",
+      "options": [
+        "\" 5 \"",
+        "5",
+        "ValueError: Nur ganze Zahlen erlaubt.",
+        "None"
+      ],
+      "correctIndex": 1,
+      "explanation": "strip() entfernt zuerst die Leerzeichen. \"5\" besteht nur aus Ziffern, int(\"5\") ergibt 5, und 5 liegt im erlaubten Bereich."
+    },
+    {
+      "question": "Welche Maßnahme verbessert die Usability eines Eingabeformulars NICHT?",
+      "options": [
+        "Beschriftungen mit Einheit, z. B. „Gewicht in kg“",
+        "Fokus beim Start ins erste Eingabefeld setzen",
+        "Enter-Taste löst die Hauptaktion aus",
+        "Fehler nur durch rote Farbe des Feldes anzeigen, ohne Text"
+      ],
+      "correctIndex": 3,
+      "explanation": "Wer Farben schlecht unterscheiden kann, bemerkt den Fehler nicht, und es fehlt der Hinweis, was richtig wäre. Fehler immer zusätzlich mit verständlichem Text melden."
+    }
+  ]
+}

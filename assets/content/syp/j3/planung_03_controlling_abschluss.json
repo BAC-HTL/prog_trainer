@@ -1,0 +1,94 @@
+{
+  "id": "syp-j3-planung_03_controlling_abschluss",
+  "title": "Controlling und Projektabschluss",
+  "summary": "Soll/Ist-Vergleich, Statusbericht mit Ampel, Steuerungsmaßnahmen, Abschluss und Lessons Learned.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Plan allein bringt nichts, wenn niemand nachschaut, ob er eingehalten wird. Projektcontrolling heißt: regelmäßig den Ist-Stand erheben, mit dem Plan (Soll) vergleichen und bei Abweichungen gegensteuern. Das ist ein Regelkreis, der während des ganzen Projekts läuft."
+    },
+    {
+      "type": "code",
+      "content": "   +--------+     +---------+\n   | Planen | --> | Ist-    |\n   | (Soll) |     | Stand   |\n   +--------+     | erheben |\n       ^          +---------+\n       |               |\n   +---------+    +----------+\n   | Steuern | <- | Soll/Ist |\n   +---------+    | verglei- |\n                  | chen     |\n                  +----------+"
+    },
+    {
+      "type": "text",
+      "content": "Verglichen werden die drei Ecken des magischen Dreiecks: Termine (sind die Meilensteine erreicht?), Kosten (wurde mehr ausgegeben als geplant?) und Leistung (wie viel ist wirklich fertig?). Für die Leistung schätzt man den Fertigstellungsgrad. Aber Vorsicht: „90 % fertig“ heißt bei Software oft, dass die schwierigsten 10 % noch fehlen. Besser ist, nur fertige Arbeitspakete zu zählen."
+    },
+    {
+      "type": "text",
+      "content": "Kosten allein sagen wenig. Wenn erst 5500 € von 6000 € geplanten Kosten ausgegeben sind, wirkt das gut. Ist aber erst die Hälfte fertig, sieht es anders aus. Der Fertigstellungswert (Fertigstellungsgrad × Gesamtbudget) zeigt, wie viel die erledigte Arbeit laut Plan wert ist. Ein negativer Wert bei den Abweichungen ist schlecht."
+    },
+    {
+      "type": "code",
+      "content": "budget = 10000   # Euro (Gesamtbudget)\nsoll   = 6000    # Plankosten bis heute\nist    = 5500    # tatsächliche Kosten\nfgr    = 0.5     # Fertigstellungsgrad\n\nfw = fgr * budget  # Fertigstellungswert\nprint(\"Fertigstellungswert:\", fw)\nprint(\"Kostenabw.:\", fw - ist)\nprint(\"Planabw.:  \", fw - soll)\n\n# Ausgabe:\n# Fertigstellungswert: 5000.0\n# Kostenabw.: -500.0\n# Planabw.:   -1000.0"
+    },
+    {
+      "type": "text",
+      "content": "Deutung: Die erledigte Arbeit ist laut Plan 5000 € wert, gekostet hat sie 5500 € – das Projekt ist um 500 € zu teuer. Laut Plan sollte bis heute Arbeit im Wert von 6000 € erledigt sein, geschafft ist Arbeit um 5000 € – das Projekt hängt hinterher."
+    },
+    {
+      "type": "text",
+      "content": "Die Ergebnisse fasst die Projektleitung regelmäßig im Statusbericht für den Auftraggeber zusammen: Fortschritt seit dem letzten Bericht, Termine, Kosten, Risiken, offene Entscheidungen und nächste Schritte. Eine Ampel zeigt den Zustand auf einen Blick. Typischer Fehler: die Ampel aus Angst immer auf Grün stellen. Probleme früh zu melden ist ein Zeichen guter Projektleitung."
+    },
+    {
+      "type": "code",
+      "content": "Statusbericht KW 48\nBestell-App Bäckerei\n\nTermine   GELB  Frontend\n                2 Tage im Verzug\nKosten    GRÜN  im Plan\nLeistung  GRÜN  Login fertig\nRisiken   ROT   Kunde antwortet\n                nicht auf Fragen\n\nGrün = im Plan\nGelb = Abweichung, im Team lösbar\nRot  = Entscheidung des AG nötig"
+    },
+    {
+      "type": "text",
+      "content": "Mögliche Steuerungsmaßnahmen: Puffer nutzen, Aufgaben umverteilen, mehr Ressourcen einsetzen, Umfang reduzieren oder den Termin verschieben. Alles, was Ziele, Termin oder Budget aus dem Projektauftrag ändert, muss der Auftraggeber genehmigen (Änderungsantrag, engl. change request)."
+    },
+    {
+      "type": "text",
+      "content": "Beim Projektabschluss nimmt der Auftraggeber das Ergebnis formal ab (Abnahmeprotokoll), die Dokumentation wird übergeben, Restaufgaben werden geklärt und das Team wird aufgelöst. Im Abschlussbericht und einem Lessons-Learned-Workshop haltet ihr fest: Was lief gut? Was lief schlecht? Was machen wir beim nächsten Projekt anders? Zusammenfassung: Soll/Ist-Vergleich, ehrlicher Statusbericht, Steuern mit Zustimmung des Auftraggebers und ein bewusster Abschluss mit Lessons Learned."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Werte berechnet das Programm?",
+      "code": "budget = 4000\nist = 2000\nfgr = 0.4\nfw = fgr * budget\nprint(fw, fw - ist)",
+      "options": [
+        "Fertigstellungswert 1600, Kostenabweichung 400",
+        "Fertigstellungswert 2000, Kostenabweichung 0",
+        "Fertigstellungswert 1600, Kostenabweichung -400",
+        "Fertigstellungswert 2400, Kostenabweichung 400"
+      ],
+      "correctIndex": 2,
+      "explanation": "0.4 × 4000 = 1600. Gekostet hat die Arbeit 2000, also 1600 − 2000 = −400: Das Projekt ist um 400 € zu teuer."
+    },
+    {
+      "question": "Der Kunde möchte mitten im Projekt eine Online-Bezahlung, die laut Projektauftrag ein Nicht-Ziel ist. Was ist richtig?",
+      "options": [
+        "Das Team baut sie sofort ein, der Kunde hat immer recht",
+        "Die Projektleitung lehnt grundsätzlich ab, Änderungen sind verboten",
+        "Das Team baut sie heimlich ein und meldet es nicht",
+        "Es wird ein Änderungsantrag gestellt; Auswirkungen auf Zeit und Kosten werden bewertet und vom Auftraggeber genehmigt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Änderungen sind erlaubt, aber geregelt: Auswirkungen auf das magische Dreieck abschätzen, dann entscheidet der Auftraggeber, ob Termin oder Budget angepasst werden."
+    },
+    {
+      "question": "Ein Vorgang auf dem kritischen Pfad ist zwei Tage im Verzug, das Team kann es aber durch Umverteilung aufholen. Welche Ampelfarbe passt?",
+      "options": [
+        "Gelb",
+        "Grün",
+        "Rot",
+        "Gar keine – Verzug wird nicht berichtet"
+      ],
+      "correctIndex": 0,
+      "explanation": "Es gibt eine Abweichung, die das Team selbst lösen kann – das ist Gelb. Rot wäre es, wenn der Auftraggeber entscheiden müsste."
+    },
+    {
+      "question": "Was gehört NICHT zum Projektabschluss?",
+      "options": [
+        "Formale Abnahme durch den Auftraggeber",
+        "Erstellen des Projektstrukturplans",
+        "Lessons Learned festhalten",
+        "Team auflösen und Dokumentation übergeben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der PSP entsteht in der Planungsphase. Beim Abschluss wird abgenommen, dokumentiert, reflektiert und das Team aufgelöst."
+    }
+  ]
+}

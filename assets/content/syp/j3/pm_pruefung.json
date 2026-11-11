@@ -1,0 +1,117 @@
+{
+  "id": "syp-j3-pm_pruefung",
+  "title": "Abschlussprüfung: Projektmanagement-Grundlagen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Kombination beschreibt ein Projekt am besten?",
+      "options": [
+        "Wiederkehrend, unbefristet, routiniert",
+        "Einmalig, befristet, zielorientiert, mit begrenzten Ressourcen",
+        "Einmalig, aber ohne festes Ende",
+        "Befristet, aber ohne konkretes Ziel"
+      ],
+      "correctIndex": 1,
+      "explanation": "Einmaligkeit, zeitliche Befristung, klares Ziel und begrenzte Ressourcen sind Kernmerkmale eines Projekts."
+    },
+    {
+      "question": "Der Kunde einer App möchte zusätzlich eine Chatfunktion – Termin und Budget sollen aber gleich bleiben. Was ist die realistische Folge?",
+      "options": [
+        "Kein Problem, das magische Dreieck gilt nur für Großprojekte",
+        "Das Team wird automatisch schneller",
+        "Die Qualität oder andere Leistungen leiden, wenn Zeit und Kosten fix sind",
+        "Die Kosten sinken"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mehr Leistung bei gleicher Zeit und gleichen Kosten geht meist zulasten der Qualität. Sauber wäre, mit dem Auftraggeber Termin, Budget oder Umfang neu zu verhandeln."
+    },
+    {
+      "question": "Was unterscheidet ein Portfolio von einem Programm?",
+      "options": [
+        "Ein Portfolio ist dauerhaft und umfasst alle Projekte und Programme einer Organisation",
+        "Ein Portfolio ist ein einzelnes kleines Projekt",
+        "Ein Programm ist unbefristet, ein Portfolio befristet",
+        "Es gibt keinen Unterschied"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Programm ist befristet und verfolgt ein gemeinsames Ziel mehrerer Projekte. Das Portfolio ist dauerhaft und dient der Priorisierung aller Vorhaben."
+    },
+    {
+      "question": "Ein Team soll erforschen, ob sich KI zur Korrektur von Programmieraufgaben eignet. Ergebnis offen, nur das Team selbst ist betroffen. Welche Projektart nach Boos/Heitger?",
+      "options": [
+        "Standardprojekt",
+        "Akzeptanzprojekt",
+        "Pionierprojekt",
+        "Potenzialprojekt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Offene Aufgabe bei geringer sozialer Komplexität ergibt ein Potenzialprojekt. Wäre zusätzlich die ganze Schule betroffen, wäre es ein Pionierprojekt."
+    },
+    {
+      "question": "In welcher Phase wird der Projektauftrag erstellt?",
+      "options": [
+        "Definition",
+        "Abschluss",
+        "Steuerung",
+        "Initialisierung, noch bevor es eine Idee gibt"
+      ],
+      "correctIndex": 0,
+      "explanation": "In der Definitionsphase werden Ziele, Rahmenbedingungen und Verantwortung im Projektauftrag festgelegt."
+    },
+    {
+      "question": "Welche Aussage über Meilensteine stimmt?",
+      "options": [
+        "Ein Meilenstein ist ein Arbeitspaket mit mindestens einer Woche Dauer",
+        "Meilensteine braucht man nur bei Software-Projekten",
+        "Ein Meilenstein ist ein Zeitpunkt mit einem überprüfbaren Ergebnis, oft am Ende einer Phase",
+        "Ein Meilenstein ist erreicht, sobald mehr als die Hälfte erledigt ist"
+      ],
+      "correctIndex": 2,
+      "explanation": "Meilensteine haben keine Dauer und markieren eindeutig prüfbare Ergebnisse, z. B. „Pflichtenheft unterschrieben“."
+    },
+    {
+      "question": "Welche Aussage zu Projektmanagement- und Entwicklungsphasen ist richtig?",
+      "options": [
+        "Analyse, Entwurf und Test sind Phasen des Projektmanagements",
+        "Das PM begleitet das Projekt; Analyse, Entwurf, Implementierung und Test beschreiben die inhaltliche Arbeit",
+        "Bei Softwareprojekten gibt es kein Projektmanagement",
+        "Projektcontrolling findet erst nach dem Abschluss statt"
+      ],
+      "correctIndex": 1,
+      "explanation": "PM-Phasen (Start, Planung, Controlling, Abschluss) steuern das Projekt; die inhaltlichen Phasen beschreiben die Erstellung des Produkts."
+    },
+    {
+      "question": "Ein Mitarbeiter klagt: „Mein Abteilungsleiter und die Projektleiterin wollen beide, dass ich diese Woche nur für sie arbeite.“ Für welche Organisationsform ist dieses Problem typisch?",
+      "options": [
+        "Reine Projektorganisation",
+        "Einfluss-Projektorganisation",
+        "Projekt ohne Projektleitung",
+        "Matrix-Projektorganisation"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Doppelunterstellung in der Matrix führt häufig zu Konflikten um Zeit und Prioritäten."
+    },
+    {
+      "question": "Welche Aufgabe gehört zur Projektleitung und NICHT zum Auftraggeber?",
+      "options": [
+        "Das Projekt beauftragen und das Budget freigeben",
+        "Das Ergebnis abnehmen",
+        "Das Projekt laufend planen, steuern und das Team führen",
+        "Grundsatzentscheidungen über den Projektfortbestand treffen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Projektleitung plant und steuert operativ. Beauftragung, Budgetfreigabe, Grundsatzentscheidungen und Abnahme liegen beim Auftraggeber."
+    },
+    {
+      "question": "Die Projektleiterin des Maturaballs kann einen Streit zwischen Musik- und Finanzteam gut schlichten. Welchem IPMA-Kompetenzbereich ist das zuzuordnen?",
+      "options": [
+        "Persönliche und soziale Kompetenzen (People)",
+        "Methodenkompetenz (Practice)",
+        "Kontextkompetenz (Perspective)",
+        "Technische Programmierkompetenz"
+      ],
+      "correctIndex": 0,
+      "explanation": "Konfliktlösung, Führung und Kommunikation gehören zu den persönlichen und sozialen Kompetenzen."
+    }
+  ]
+}

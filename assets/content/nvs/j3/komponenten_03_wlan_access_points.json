@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j3-komponenten_03_wlan_access_points",
+  "title": "WLAN und Access Points",
+  "summary": "WLAN-Standards im Überblick, Kanalplanung, SSIDs mit VLANs, WPA2/WPA3 richtig einsetzen und viele Access Points zentral mit einem Controller verwalten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Access Point (AP) verbindet Funk-Clients mit dem kabelgebundenen LAN – er arbeitet als Brücke auf Schicht 2. Zu Hause steckt der AP meist im WLAN-Router, der zusätzlich Router und Switch ist. In der Schule hängen dagegen dutzende eigenständige APs an der Decke, werden per PoE (Power over Ethernet) über das Netzwerkkabel mit Strom versorgt und zentral verwaltet. Die Frequenzbänder 2,4, 5 und 6 GHz kennst du schon aus dem 2. Jahrgang."
+    },
+    {
+      "type": "code",
+      "content": "Standard  Wi-Fi-Name  Bänder (GHz)\n--------  ----------  ------------\n802.11n   Wi-Fi 4     2,4 und 5\n802.11ac  Wi-Fi 5     5\n802.11ax  Wi-Fi 6     2,4 und 5\n          Wi-Fi 6E    zusätzlich 6\n802.11be  Wi-Fi 7     2,4, 5 und 6"
+    },
+    {
+      "type": "text",
+      "content": "Neuere Standards sind abwärtskompatibel und werden vor allem bei vielen gleichzeitigen Clients effizienter. Die beworbenen Maximalraten erreichst du praktisch nie: WLAN ist ein geteiltes Medium, alle Geräte einer Funkzelle wechseln sich beim Senden ab. Weil ein Funkgerät Kollisionen nicht zuverlässig erkennen kann, während es sendet, verwendet WLAN CSMA/CA (Collision Avoidance): vor dem Senden horchen, bei freiem Kanal nach einer Zufallswartezeit senden und auf eine Bestätigung warten."
+    },
+    {
+      "type": "text",
+      "content": "Kanalplanung im 2,4-GHz-Band: Die Kanäle liegen nur 5 MHz auseinander, ein Kanal ist aber rund 20 MHz breit. Benachbarte Kanäle überlappen sich daher und stören sich. Überlappungsfrei sind nur drei – üblicherweise 1, 6 und 11. Das kannst du nachrechnen:"
+    },
+    {
+      "type": "code",
+      "content": "# Mittenfrequenz im 2,4-GHz-Band\ndef mhz(kanal):\n    return 2407 + 5 * kanal\n\nfor k in (1, 6, 11):\n    print(k, mhz(k))\nprint(mhz(6) - mhz(1))"
+    },
+    {
+      "type": "text",
+      "content": "Der Abstand von 25 MHz ist größer als die Kanalbreite, die Kanäle 1, 6 und 11 überlappen also nicht. Kanal 1 und 3 liegen nur 10 MHz auseinander – das stört meist stärker als ein zweites Netz auf demselben Kanal, weil sich die Geräte dann nicht einmal geordnet abwechseln.\n\nIm 5-GHz-Band gibt es viel mehr überlappungsfreie Kanäle. Durch Kanalbündelung (40, 80 oder 160 MHz) steigt die Datenrate pro Client, aber es bleiben weniger unabhängige Kanäle übrig. Auf manchen 5-GHz-Kanälen muss der AP Radarsignale erkennen und ausweichen (DFS). Faustregeln: Nachbar-APs auf verschiedene Kanäle, Sendeleistung nicht auf Maximum, sondern so, dass sich Zellen nur leicht überlappen."
+    },
+    {
+      "type": "text",
+      "content": "Die SSID ist der Name des WLANs. Strahlen mehrere APs dieselbe SSID aus, bilden sie ein gemeinsames Netz (ESS) und Clients können beim Gang durchs Schulhaus von AP zu AP wechseln (Roaming). Jede Funkzelle hat zusätzlich eine BSSID – die MAC-Adresse des AP-Funkmoduls für diese SSID. Ein AP kann mehrere SSIDs anbieten, die jeweils auf ein VLAN abgebildet werden, z. B. „HTL-Lehrer“ → VLAN 20, „HTL-Gast“ → VLAN 60. Der Port zum AP ist dann ein Trunk.\n\nTypischer Irrglaube: Eine versteckte SSID oder ein MAC-Filter sei ein Schutz. Beides ist im Funkverkehr sichtbar bzw. leicht nachzuahmen – Sicherheit bringt nur Verschlüsselung mit sauberer Authentifizierung."
+    },
+    {
+      "type": "code",
+      "content": "Verfahren   Bewertung\n----------  ------------------------\nWEP         gebrochen - nie nutzen\nWPA (TKIP)  veraltet - nicht nutzen\nWPA2 (AES)  Mindeststandard\nWPA3        aktueller Standard\n\nPersonal:   ein gemeinsames Passwort\nEnterprise: eigenes Konto/Zertifikat\n            pro Person (802.1X)"
+    },
+    {
+      "type": "text",
+      "content": "WPA2-Personal (PSK): Alle teilen sich ein Passwort. Wer den Verbindungsaufbau mitschneidet, kann ein schwaches Passwort offline per Wörterbuch erraten. WPA3-Personal ersetzt PSK durch SAE: Raten geht nur noch online, Versuch für Versuch, und abgehörter Verkehr bleibt auch bei späterem Passwortverlust geschützt (Forward Secrecy). Für Schule und Firma ist Enterprise die richtige Wahl: Jede Person meldet sich mit eigenem Konto an, gesperrte Konten verlieren sofort den Zugang. Wie das mit RADIUS funktioniert, lernst du im Modul über Authentifizierung. Für ältere Geräte gibt es einen Übergangsmodus WPA2/WPA3. WPS sollte deaktiviert sein."
+    },
+    {
+      "type": "text",
+      "content": "Verwaltung: Autonome APs werden einzeln konfiguriert – bei zwei, drei Geräten in Ordnung. Ab vielen APs nutzt man einen WLAN-Controller (WLC) oder eine Cloud-Verwaltung. Die APs holen sich ihre Konfiguration vom Controller (z. B. über das Protokoll CAPWAP), der Kanäle und Sendeleistung automatisch abstimmt, Firmware verteilt, Roaming unterstützt und fremde „Rogue“-APs meldet. Zusammenfassung: 802.11-Standards werden effizienter, real teilen sich alle Clients die Zelle; im 2,4-GHz-Band nur die Kanäle 1/6/11; SSIDs auf VLANs abbilden; mindestens WPA2-AES, besser WPA3 oder Enterprise; viele APs zentral per Controller."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Drei APs im 2,4-GHz-Band sollen sich möglichst wenig stören. Welche Kanalwahl ist richtig?",
+      "options": [
+        "1, 2, 3",
+        "1, 6, 11",
+        "6, 6, 6",
+        "11, 12, 13"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur Kanäle mit mindestens 25 MHz Abstand (5 Kanalnummern) überlappen nicht. 1, 6 und 11 sind die übliche überlappungsfreie Kombination."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "def mhz(kanal):\n    return 2407 + 5 * kanal\n\nprint(mhz(11))",
+      "options": [
+        "2455",
+        "2417",
+        "2462",
+        "2472"
+      ],
+      "correctIndex": 2,
+      "explanation": "2407 + 5 · 11 = 2407 + 55 = 2462 MHz – die Mittenfrequenz von Kanal 11."
+    },
+    {
+      "question": "Was ist der wichtigste Sicherheitsvorteil von WPA3-Personal (SAE) gegenüber WPA2-Personal (PSK)?",
+      "options": [
+        "Die SSID wird automatisch versteckt.",
+        "Es ist kein Passwort mehr nötig.",
+        "Es funktioniert nur im 6-GHz-Band.",
+        "Ein mitgeschnittener Verbindungsaufbau erlaubt kein Offline-Erraten des Passworts."
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei WPA2-PSK kann ein Angreifer nach dem Mitschneiden beliebig viele Passwörter offline testen. SAE verhindert das, jeder Rateversuch erfordert eine echte Verbindung."
+    },
+    {
+      "question": "Eine Schule hat 60 Access Points. Welche Aufgabe übernimmt typischerweise ein WLAN-Controller?",
+      "options": [
+        "Er stimmt Kanäle und Sendeleistung zentral ab und verteilt die Konfiguration an alle APs.",
+        "Er ersetzt die Switches, an denen die APs hängen.",
+        "Er vergibt IP-Adressen an die Clients anstelle von DHCP.",
+        "Er verschlüsselt den Verkehr im Internet."
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Controller verwaltet viele APs zentral: Konfiguration, Firmware, Kanal- und Leistungsplanung, Roaming-Unterstützung und das Erkennen fremder APs."
+    }
+  ]
+}

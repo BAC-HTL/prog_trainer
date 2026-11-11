@@ -1,0 +1,93 @@
+{
+  "id": "pos-j3-csharp-tests_01_teststrategien",
+  "title": "Teststrategien",
+  "summary": "Welche Testarten es gibt, wie die Testpyramide aussieht und wie du mit Äquivalenzklassen und Grenzwerten gute Testfälle findest.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "„Bei mir hat's funktioniert“ ist kein Beweis. Ein Programm, das du einmal mit einer Eingabe ausprobiert hast, kann bei der nächsten trotzdem abstürzen. Testen heißt: systematisch prüfen, ob sich ein Programm so verhält wie gefordert. Tests finden Fehler – sie beweisen aber nie, dass ein Programm fehlerfrei ist. Deshalb kommt es darauf an, die richtigen Testfälle auszuwählen."
+    },
+    {
+      "type": "text",
+      "content": "Testarten nach Umfang:\n• Unit-Test (Komponententest): prüft eine einzelne Methode oder Klasse isoliert – schnell, automatisiert.\n• Integrationstest: prüft das Zusammenspiel mehrerer Teile, z. B. Programm + Datenbank.\n• Systemtest / End-to-End-Test: prüft das ganze System aus Sicht der Benutzer:innen, etwa über die Oberfläche.\n• Abnahmetest (Akzeptanztest): Auftraggeber:innen prüfen, ob die Anforderungen erfüllt sind."
+    },
+    {
+      "type": "code",
+      "content": "Testpyramide\n\n        /\\        wenige\n       /E2E\\       langsam, teuer\n      /------\\\n     /Integra-\\\n    /  tion    \\\n   /------------\\\n  /  Unit-Tests  \\  viele\n /________________\\ schnell, billig"
+    },
+    {
+      "type": "text",
+      "content": "Die Testpyramide empfiehlt: viele Unit-Tests als Basis, weniger Integrationstests, nur wenige End-to-End-Tests an der Spitze. Grund: Unit-Tests laufen in Millisekunden und zeigen genau, wo der Fehler sitzt. E2E-Tests sind langsam, aufwendig zu warten und sagen oft nur „irgendwo ist etwas kaputt“. Ein typischer Fehler ist die umgekehrte Pyramide („Eistüte“): fast alles wird händisch über die Oberfläche getestet."
+    },
+    {
+      "type": "text",
+      "content": "Zwei Sichtweisen beim Entwerfen: Beim Blackbox-Test kennst du nur die Spezifikation (Eingabe → erwartete Ausgabe), nicht den Code. Beim Whitebox-Test schaust du in den Code und sorgst z. B. dafür, dass jeder Zweig (jedes if/else) mindestens einmal durchlaufen wird. Für Blackbox-Tests gibt es zwei klassische Techniken: Äquivalenzklassen und Grenzwertanalyse."
+    },
+    {
+      "type": "text",
+      "content": "Beispiel Schulkino: Der Eintritt kostet 0 € bis einschließlich 5 Jahre, 4 € von 6 bis 17 Jahre und 8 € ab 18. Ein negatives Alter ist ungültig. Alle Alterswerte, die gleich behandelt werden, bilden eine Äquivalenzklasse. Es reicht ein Vertreter pro Klasse – 30 und 45 testen dasselbe. Vergiss die ungültige Klasse nicht!"
+    },
+    {
+      "type": "code",
+      "content": "Klasse        Bereich   Vertreter\n------------  --------  ---------\nungültig      < 0       -3\ngratis        0 – 5     3\nermäßigt      6 – 17    12\nvoll          ≥ 18      30"
+    },
+    {
+      "type": "text",
+      "content": "Fehler passieren besonders oft an den Rändern: Steht im Code alter < 5 statt alter <= 5, findet der Vertreter 3 das nicht. Bei der Grenzwertanalyse testest du deshalb jeweils den letzten Wert einer Klasse und den ersten der nächsten. So entstehen aus Äquivalenzklassen und Grenzwerten die Testfälle samt erwartetem Ergebnis – das Ergebnis legst du aus der Spezifikation fest, nie aus dem Programm."
+    },
+    {
+      "type": "code",
+      "content": "Grenzwerte  -1 | 0  5 | 6  17 | 18\nErwartet   Ex. | 0  0 | 4   4 |  8\n\nEx. = ArgumentOutOfRangeException"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Tests zeigen Fehler, beweisen aber keine Fehlerfreiheit. Die Testpyramide setzt auf viele schnelle Unit-Tests. Äquivalenzklassen reduzieren die Anzahl der Testfälle, Grenzwerte fangen die häufigen „um eins daneben“-Fehler. In der nächsten Lektion schreibst du genau diese Testfälle als automatische Unit-Tests."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Rabatt gilt für Bestellungen von 10 bis 50 Stück (jeweils inklusive). Welche Testwerte deckt die Grenzwertanalyse ab?",
+      "options": [
+        "10 und 50",
+        "9, 10, 50, 51",
+        "1, 25, 100",
+        "0, 10, 20, 30, 40, 50"
+      ],
+      "correctIndex": 1,
+      "explanation": "An jeder Grenze testest du den letzten Wert vor und den ersten Wert in der Klasse: 9/10 und 50/51."
+    },
+    {
+      "question": "Wie viele Äquivalenzklassen hat dieses Beispiel? Eine Note ist gültig von 1 bis 5, alles andere ist ungültig.",
+      "options": [
+        "1",
+        "2",
+        "5",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Es gibt eine gültige Klasse (1–5) und zwei ungültige: kleiner als 1 und größer als 5. Diese verhalten sich zwar gleich (Fehler), liegen aber auf verschiedenen Seiten und werden getrennt betrachtet."
+    },
+    {
+      "question": "Was empfiehlt die Testpyramide?",
+      "options": [
+        "Viele Unit-Tests, weniger Integrationstests, wenige End-to-End-Tests",
+        "Hauptsächlich End-to-End-Tests, weil sie das ganze System prüfen",
+        "Gleich viele Tests jeder Art",
+        "Nur manuelle Tests durch die Benutzer:innen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Unit-Tests sind schnell, billig und zeigen genau, wo der Fehler sitzt – deshalb bilden sie die breite Basis. E2E-Tests sind langsam und teuer, daher wenige."
+    },
+    {
+      "question": "Du testest, ob jeder if- und else-Zweig einer Methode mindestens einmal ausgeführt wird. Welche Art von Test ist das?",
+      "options": [
+        "Abnahmetest",
+        "Blackbox-Test",
+        "Whitebox-Test",
+        "Lasttest"
+      ],
+      "correctIndex": 2,
+      "explanation": "Dafür musst du den Code kennen – das ist Whitebox-Testen. Blackbox-Tests orientieren sich nur an der Spezifikation."
+    }
+  ]
+}

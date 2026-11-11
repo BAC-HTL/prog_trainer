@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-qualitaet_01_qualitaetsmerkmale",
+  "title": "Softwarequalität und ISO/IEC 25010",
+  "summary": "Was Softwarequalität bedeutet und welche Qualitätsmerkmale das Modell der ISO/IEC 25010 unterscheidet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Qualität ist der Grad, in dem ein Produkt die Anforderungen erfüllt – die ausdrücklich genannten und die selbstverständlich erwarteten. Je nach Sicht bedeutet Qualität etwas anderes: Benutzer:innen wollen eine App, die einfach und schnell ist. Der Kunde (z. B. der Verein) will Nutzen zu vertretbaren Kosten. Entwickler:innen wollen Code, den sie verstehen und ändern können."
+    },
+    {
+      "type": "text",
+      "content": "Damit alle dieselbe Sprache sprechen, beschreibt die internationale Norm ISO/IEC 25010 ein Produktqualitätsmodell: Qualitätsmerkmale, die jeweils in Teilmerkmale gegliedert sind. Das Modell dient als Checkliste, um nicht-funktionale Anforderungen vollständig zu erheben und Software zu bewerten. Die bekannte Fassung unterscheidet acht Merkmale:"
+    },
+    {
+      "type": "code",
+      "content": "Funktionale Eignung\nLeistungseffizienz\nKompatibilität\nBenutzbarkeit\nZuverlässigkeit\nSicherheit (Security)\nWartbarkeit\nÜbertragbarkeit"
+    },
+    {
+      "type": "text",
+      "content": "Funktionale Eignung: Sind die Funktionen vollständig, korrekt und angemessen? Leistungseffizienz: Zeitverhalten (Antwortzeit), Ressourcenverbrauch (Akku, Speicher) und Kapazität. Kompatibilität: Koexistenz mit anderer Software und Interoperabilität, also Datenaustausch mit anderen Systemen, etwa ein CSV-Export für Excel. Benutzbarkeit: Erkennbarkeit der Eignung, Erlernbarkeit, Bedienbarkeit, Schutz vor Fehlbedienung, ansprechende Oberfläche und Barrierefreiheit."
+    },
+    {
+      "type": "text",
+      "content": "Zuverlässigkeit: Reife, Verfügbarkeit, Fehlertoleranz und Wiederherstellbarkeit nach einem Ausfall. Sicherheit: Vertraulichkeit (nur Berechtigte sehen Daten), Integrität (Daten werden nicht unbemerkt verändert), Nachweisbarkeit, Verantwortlichkeit und Authentizität. Wartbarkeit: Modularität, Wiederverwendbarkeit, Analysierbarkeit, Änderbarkeit und Testbarkeit. Übertragbarkeit: Anpassbarkeit an andere Umgebungen, Installierbarkeit und Austauschbarkeit."
+    },
+    {
+      "type": "text",
+      "content": "In der überarbeiteten Fassung der Norm von 2023 kam als neuntes Merkmal „Safety“ dazu – der Schutz von Menschen und Umwelt vor Gefährdungen. Außerdem wurden einige Merkmale umbenannt (z. B. Benutzbarkeit in Interaktionsfähigkeit, Übertragbarkeit in Flexibilität). Die Grundidee bleibt gleich: Qualität wird in benannte, prüfbare Merkmale zerlegt."
+    },
+    {
+      "type": "code",
+      "content": "Anforderung          Merkmal\nListe lädt in < 2 s  Leistungseff.\nLäuft auf Android    Übertragbark.\n  und iOS\nCSV-Export für Excel Kompatibilität\nNur Trainer sehen    Sicherheit\n  Telefonnummern\nNach Absturz in      Zuverlässigk.\n  5 min wieder da"
+    },
+    {
+      "type": "text",
+      "content": "Merkmale können sich widersprechen: Eine Zwei-Faktor-Anmeldung erhöht die Sicherheit, macht die App aber umständlicher (Benutzbarkeit). Extrem optimierter Code ist schneller (Leistungseffizienz), aber oft schwer zu verstehen (Wartbarkeit). Solche Zielkonflikte musst du mit dem Kunden besprechen und Prioritäten festlegen."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Qualität mit „fehlerfrei“ gleichsetzen – eine fehlerfreie, aber langsame oder unbedienbare App ist keine gute Software. Und: Qualität kann man nicht nachträglich „hineintesten“. Sie muss von Anfang an in Anforderungen, Entwurf und Arbeitsweise eingeplant werden."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: ISO/IEC 25010 gliedert Produktqualität in Merkmale wie funktionale Eignung, Leistungseffizienz, Kompatibilität, Benutzbarkeit, Zuverlässigkeit, Sicherheit, Wartbarkeit und Übertragbarkeit. Ordne jede nicht-funktionale Anforderung einem Merkmal zu, formuliere sie messbar und kläre Zielkonflikte früh."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "„Nach einem Serverabsturz ist die App innerhalb von 5 Minuten ohne Datenverlust wieder verfügbar.“ Zu welchem Qualitätsmerkmal gehört diese Anforderung?",
+      "options": [
+        "Leistungseffizienz",
+        "Wartbarkeit",
+        "Zuverlässigkeit",
+        "Benutzbarkeit"
+      ],
+      "correctIndex": 2,
+      "explanation": "Verfügbarkeit und Wiederherstellbarkeit sind Teilmerkmale der Zuverlässigkeit."
+    },
+    {
+      "question": "Zu welchem Merkmal gehört die Interoperabilität, also der Datenaustausch mit anderen Systemen?",
+      "options": [
+        "Kompatibilität",
+        "Übertragbarkeit",
+        "Funktionale Eignung",
+        "Sicherheit"
+      ],
+      "correctIndex": 0,
+      "explanation": "Kompatibilität umfasst Koexistenz und Interoperabilität. Übertragbarkeit betrifft den Wechsel auf andere Umgebungen, z. B. ein anderes Betriebssystem."
+    },
+    {
+      "question": "Modularität, Analysierbarkeit und Testbarkeit sind Teilmerkmale von …",
+      "options": [
+        "Zuverlässigkeit",
+        "Benutzbarkeit",
+        "Leistungseffizienz",
+        "Wartbarkeit"
+      ],
+      "correctIndex": 3,
+      "explanation": "Diese Teilmerkmale beschreiben, wie leicht sich Software verstehen, ändern und prüfen lässt – also die Wartbarkeit."
+    },
+    {
+      "question": "Das Team führt eine Zwei-Faktor-Anmeldung ein. Welcher Zielkonflikt entsteht am ehesten?",
+      "options": [
+        "Kompatibilität gegen Übertragbarkeit",
+        "Sicherheit gegen Benutzbarkeit",
+        "Wartbarkeit gegen funktionale Eignung",
+        "Zuverlässigkeit gegen Kompatibilität"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der zusätzliche Anmeldeschritt erhöht die Sicherheit, macht die Bedienung aber aufwendiger."
+    }
+  ]
+}

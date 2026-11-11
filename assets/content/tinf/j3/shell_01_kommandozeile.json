@@ -1,0 +1,96 @@
+{
+  "id": "tinf-j3-shell_01_kommandozeile",
+  "title": "Die Kommandozeile",
+  "summary": "Pfade, Filter wie grep, sort, wc und cut sowie Umleitungen und Pipes – und wie PowerShell mit Objekten statt Text arbeitet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Shell ist ein Kommandointerpreter: Sie liest deine Befehle, startet die passenden Programme und zeigt deren Ausgabe. Unter Linux ist meist die bash Standard, unter Windows die PowerShell. Warum Kommandozeile statt Maus? Server haben oft keine grafische Oberfläche, Fernwartung läuft über SSH, und alles, was du tippen kannst, kannst du auch automatisieren.\n\nPfade: Ein absoluter Pfad beginnt bei der Wurzel / (z. B. /etc/hosts). Ein relativer Pfad geht vom aktuellen Verzeichnis aus. Dabei gilt:\n• . = aktuelles Verzeichnis\n• .. = übergeordnetes Verzeichnis\n• ~ = dein Home-Verzeichnis\npwd zeigt, wo du gerade bist, cd wechselt das Verzeichnis."
+    },
+    {
+      "type": "code",
+      "content": "$ cd /tmp\n$ mkdir -p projekt/src\n$ cd projekt/src\n$ pwd\n/tmp/projekt/src\n$ cd ../..\n$ pwd\n/tmp"
+    },
+    {
+      "type": "code",
+      "content": "$ cat noten.csv\nname;klasse;note\nAnna;3AHIF;1\nBen;3AHIF;3\nClara;3BHIF;2\nDavid;3AHIF;5\nEva;3BHIF;1\n\n$ grep 3AHIF noten.csv\nAnna;3AHIF;1\nBen;3AHIF;3\nDavid;3AHIF;5\n\n$ grep -c 3AHIF noten.csv\n3"
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Filter:\n• grep MUSTER – Zeilen, die das Muster enthalten (-c zählen, -v alle anderen, -i ohne Groß-/Kleinschreibung)\n• cut -d';' -f1,3 – Spalten 1 und 3, getrennt durch ;\n• sort – sortieren (-n numerisch, -r absteigend, -t';' -k3 nach Spalte 3)\n• uniq -c – gleiche benachbarte Zeilen zusammenfassen und zählen\n• wc -l – Zeilen zählen\n• head -n 2 / tail -n +2 – erste 2 Zeilen / ab Zeile 2"
+    },
+    {
+      "type": "text",
+      "content": "Umleitungen: Jedes Programm hat drei Standardkanäle – Eingabe (stdin, 0), Ausgabe (stdout, 1) und Fehlerausgabe (stderr, 2).\n• > datei – Ausgabe in Datei (überschreibt!)\n• >> datei – Ausgabe anhängen\n• 2> datei – Fehlermeldungen in Datei\n• > datei 2>&1 – beides in dieselbe Datei\n• < datei – Datei als Eingabe\n• > /dev/null – Ausgabe verwerfen"
+    },
+    {
+      "type": "code",
+      "content": "$ grep 3BHIF noten.csv > b.txt\n$ wc -l < b.txt\n2\n$ ls nichtda 2> fehler.txt\n$ cat fehler.txt\nls: cannot access 'nichtda':\nNo such file or directory"
+    },
+    {
+      "type": "text",
+      "content": "Die Pipe | verbindet die Ausgabe eines Befehls mit der Eingabe des nächsten. So baust du aus kleinen Werkzeugen, die je eine Sache gut können, eine Auswertung. Beispiel: Wie viele Schüler:innen pro Klasse? Typischer Fehler: uniq ohne vorheriges sort – uniq fasst nur benachbarte gleiche Zeilen zusammen."
+    },
+    {
+      "type": "code",
+      "content": "$ tail -n +2 noten.csv \\\n  | cut -d';' -f2 \\\n  | sort | uniq -c\n      3 3AHIF\n      2 3BHIF"
+    },
+    {
+      "type": "text",
+      "content": "Vergleich PowerShell: Dort fließen durch die Pipeline keine Textzeilen, sondern Objekte mit Eigenschaften. Statt Spalten mit cut auszuschneiden, greifst du direkt auf Eigenschaften wie klasse oder CPU zu (Beispiele unten).\n\nZusammenfassung: absolute vs. relative Pfade, Filter (grep, cut, sort, uniq, wc), Umleitungen (> >> 2> <) und Pipes. bash verkettet Text, PowerShell Objekte."
+    },
+    {
+      "type": "code",
+      "content": "# PowerShell: CSV wird zu Objekten\nImport-Csv noten.csv -Delimiter ';' |\n  Where-Object klasse -eq '3AHIF'\n\n# 3 Prozesse mit der meisten CPU-Zeit\nGet-Process |\n  Sort-Object CPU -Descending |\n  Select-Object -First 3"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Befehl für die Datei noten.csv aus der Lektion aus?",
+      "code": "wc -l < noten.csv",
+      "options": [
+        "3",
+        "5",
+        "6",
+        "2"
+      ],
+      "correctIndex": 2,
+      "explanation": "wc -l zählt alle Zeilen – also auch die Kopfzeile: 1 + 5 Datenzeilen = 6."
+    },
+    {
+      "question": "Du bist in /home/anna/projekt/src. Wohin führt „cd ../../bilder“?",
+      "options": [
+        "/home/anna/projekt/bilder",
+        "/home/anna/bilder",
+        "/home/bilder",
+        "/bilder"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zweimal .. führt von src über projekt nach /home/anna, dann weiter nach bilder."
+    },
+    {
+      "question": "Was steht nach diesen Befehlen in log.txt?",
+      "code": "echo a > log.txt\necho b >> log.txt",
+      "options": [
+        "nur b",
+        "nur a",
+        "b, darunter a",
+        "a, darunter b"
+      ],
+      "correctIndex": 3,
+      "explanation": "> legt die Datei neu an bzw. überschreibt sie, >> hängt an. Also zuerst a, dann b in der zweiten Zeile."
+    },
+    {
+      "question": "Was gibt dieser Befehl aus?",
+      "code": "tail -n +2 noten.csv \\\n  | sort -t';' -k3 -nr \\\n  | head -n 1",
+      "options": [
+        "David;3AHIF;5",
+        "Anna;3AHIF;1",
+        "Eva;3BHIF;1",
+        "name;klasse;note"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nach Spalte 3 numerisch absteigend sortiert (-nr) steht die Note 5 oben; head -n 1 liefert nur diese Zeile."
+    }
+  ]
+}

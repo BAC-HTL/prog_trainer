@@ -1,0 +1,119 @@
+{
+  "id": "dbi-j3-ermodell_pruefung",
+  "title": "Abschlussprüfung: Datenbankentwurf & ER-Modell",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Im ER-Modell wird „Adresse“ mit den Teilen Straße, PLZ und Ort modelliert. Wie heißt diese Attributart und wie wird sie in Tabellen umgesetzt?",
+      "options": [
+        "mehrwertig – eigene Tabelle",
+        "zusammengesetzt – je Teil eine Spalte",
+        "abgeleitet – wird nicht gespeichert",
+        "Schlüsselattribut – PRIMARY KEY"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein zusammengesetztes Attribut besteht aus Teilen. In der Tabelle wird jeder Teil zu einer eigenen Spalte (strasse, plz, ort)."
+    },
+    {
+      "question": "Welche Aussage über das ER-Modell stimmt?",
+      "options": [
+        "Es ist an ein bestimmtes DBMS gebunden.",
+        "Es beschreibt die physische Speicherung auf der Festplatte.",
+        "Es ersetzt die Tabellen in der Datenbank.",
+        "Es ist ein konzeptuelles Modell, das unabhängig vom DBMS ist."
+      ],
+      "correctIndex": 3,
+      "explanation": "Das ER-Modell beschreibt die Daten auf konzeptueller Ebene. Erst bei der Überführung in Tabellen entscheidet man sich für ein relationales Schema und ein konkretes DBMS."
+    },
+    {
+      "question": "Ein Raum hat die Nummer 12 – aber Raum 12 gibt es in Gebäude A und in Gebäude B. Wie modellierst du RAUM am besten?",
+      "options": [
+        "als schwachen Entitätstyp mit Eigentümer GEBÄUDE, Schlüssel = Gebäude + Nummer",
+        "als normalen Entitätstyp mit Schlüssel Nummer",
+        "als mehrwertiges Attribut von SCHÜLER",
+        "als abgeleitetes Attribut von GEBÄUDE"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Raumnummer ist nur innerhalb eines Gebäudes eindeutig, also ein partieller Schlüssel. RAUM ist schwach, eindeutig erst zusammen mit dem Gebäude."
+    },
+    {
+      "question": "Was bedeutet diese Krähenfuß-Darstellung?",
+      "code": "SCHÜLER o|──────o| SPIND",
+      "options": [
+        "Jeder Schüler hat genau einen Spind, jeder Spind gehört genau einem Schüler.",
+        "Ein Schüler hat viele Spinde.",
+        "Ein Spind gehört mindestens einem Schüler.",
+        "Ein Schüler hat 0 oder 1 Spind, ein Spind gehört 0 oder 1 Schüler."
+      ],
+      "correctIndex": 3,
+      "explanation": "o| an beiden Enden heißt: Minimum 0, Maximum 1 – auf beiden Seiten optional. Das ist eine 1:1-Beziehung mit optionaler Teilnahme."
+    },
+    {
+      "question": "Eine Lehrkraft unterrichtet viele Klassen, eine Klasse wird von vielen Lehrkräften unterrichtet. Pro Kombination soll der Gegenstand gespeichert werden. Wie sieht die Umsetzung aus?",
+      "options": [
+        "Spalte gegenstand in lehrer und FK klasse in lehrer",
+        "FK lehrer in klasse mit UNIQUE",
+        "Zwischentabelle unterricht mit FKs auf lehrer und klasse sowie Spalte gegenstand",
+        "Gegenstand als mehrwertiges Attribut in klasse"
+      ],
+      "correctIndex": 2,
+      "explanation": "m:n wird zur Zwischentabelle. Das Beziehungsattribut (Gegenstand) gehört in diese Tabelle, weil es eine bestimmte Lehrer-Klassen-Kombination beschreibt."
+    },
+    {
+      "question": "Bei einer 1:1-Beziehung LEHRER (0..1) – KLASSE (1..1) „ist KV von“: Wo platzierst du den Fremdschlüssel am besten?",
+      "options": [
+        "in lehrer, ohne UNIQUE",
+        "in klasse, mit UNIQUE und NOT NULL",
+        "in einer Zwischentabelle",
+        "in beiden Tabellen gegenseitig"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jede Klasse muss einen KV haben (Pflicht), nicht jede Lehrkraft ist KV. Steht der FK in klasse, gibt es keine NULL-Werte. UNIQUE verhindert, dass eine Lehrkraft zwei Klassen führt."
+    },
+    {
+      "question": "Welchen Primärschlüssel bekommt die Tabelle für die schwache Entität EXEMPLAR (Eigentümer BUCH mit Schlüssel isbn, partieller Schlüssel nr)?",
+      "options": [
+        "(isbn, nr)",
+        "nr",
+        "isbn",
+        "eine neue Spalte titel"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Primärschlüssel einer schwachen Entität besteht aus dem Fremdschlüssel zum Eigentümer und dem partiellen Schlüssel."
+    },
+    {
+      "question": "Was gibt die Abfrage aus (Fremdschlüssel eingeschaltet)?",
+      "code": "-- exemplar.isbn REFERENCES\n--   buch(isbn) ON DELETE CASCADE\nINSERT INTO buch\n  VALUES ('978-2', 'XML');\nINSERT INTO exemplar\n  VALUES ('978-2', 1, 'neu');\nDELETE FROM buch\n  WHERE isbn = '978-2';\nSELECT COUNT(*) FROM exemplar\n  WHERE isbn = '978-2';",
+      "options": [
+        "1",
+        "0",
+        "FOREIGN KEY constraint failed",
+        "2"
+      ],
+      "correctIndex": 1,
+      "explanation": "Durch ON DELETE CASCADE werden beim Löschen des Buchs auch seine Exemplare gelöscht. Es bleiben 0 Exemplare."
+    },
+    {
+      "question": "Warum ist es schlecht, in der Tabelle ausleihe zusätzlich den Buchtitel zu speichern?",
+      "options": [
+        "Weil SQL keine Texte in Zwischentabellen erlaubt.",
+        "Weil Zwischentabellen höchstens zwei Spalten haben dürfen.",
+        "Weil der Titel ein Schlüsselattribut ist.",
+        "Weil der Titel dann redundant ist und bei Änderungen an vielen Stellen angepasst werden müsste."
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Titel steht schon in buch. Eine Kopie in jeder Ausleihe ist Redundanz und führt zu Änderungsanomalien, wenn der Titel korrigiert wird."
+    },
+    {
+      "question": "Ein Schüler kann Tutor mehrerer anderer Schüler sein, jeder Schüler hat höchstens einen Tutor. Was für eine Beziehung ist das und wie setzt du sie um?",
+      "options": [
+        "rekursive 1:n-Beziehung – Spalte tutor_id in schueler, die auf schueler verweist",
+        "m:n-Beziehung – Zwischentabelle",
+        "schwache Entität – zusammengesetzter Schlüssel",
+        "1:1-Beziehung – UNIQUE auf sch_id"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Beziehung verbindet SCHÜLER mit sich selbst (rekursiv) und ist 1:n. Der Fremdschlüssel tutor_id kommt auf die n-Seite – das ist wieder die Tabelle schueler."
+    }
+  ]
+}

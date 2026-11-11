@@ -1,0 +1,96 @@
+{
+  "id": "pos-j3-csharp-generics_02_generische_typen",
+  "title": "Generische Klassen und Methoden",
+  "summary": "Mit Typparametern wie T schreibst du Klassen und Methoden einmal und verwendest sie typsicher für viele Datentypen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Stell dir vor, du brauchst einen Stapel für int, einen für string und einen für Schüler-Objekte. Drei fast gleiche Klassen zu schreiben wäre mühsam. Mit object ginge es zwar in einer Klasse, aber dann musst du überall casten und Fehler zeigen sich erst zur Laufzeit. Generics lösen das: Du schreibst die Klasse einmal mit einem Typparameter T, und der Compiler prüft trotzdem alle Typen."
+    },
+    {
+      "type": "text",
+      "content": "Du verwendest Generics längst: List<int>, Dictionary<string, int> oder Stack<T> sind generische Typen aus .NET. In spitzen Klammern steht das Typargument. Eine eigene generische Klasse deklarierst du genauso – T ist nur ein Platzhalter-Name, üblich sind T, TKey, TValue usw."
+    },
+    {
+      "type": "code",
+      "content": "class Stapel<T>\n{\n    private readonly List<T> _daten\n        = new();\n    public void Push(T wert)\n        => _daten.Add(wert);\n    public T Pop()\n    {\n        T w = _daten[^1];\n        _daten.RemoveAt(_daten.Count - 1);\n        return w;\n    }\n    public int Anzahl => _daten.Count;\n}\n\nvar s = new Stapel<int>();\ns.Push(1);\ns.Push(2);\nConsole.WriteLine(s.Pop());   // 2\nConsole.WriteLine(s.Anzahl);  // 1"
+    },
+    {
+      "type": "text",
+      "content": "Der Gewinn ist Typsicherheit: new Stapel<int>() akzeptiert nur int. s.Push(\"Hallo\") ergibt sofort einen Compilerfehler (CS1503) statt eines Absturzes beim Kunden. Eine Klasse darf auch mehrere Typparameter haben, z. B. Paar<T1, T2>. Wichtig: Stapel<int> und Stapel<string> sind zwei verschiedene Typen."
+    },
+    {
+      "type": "text",
+      "content": "Auch einzelne Methoden können generisch sein. Den Typparameter schreibst du nach dem Methodennamen. Beim Aufruf erkennt der Compiler T meist selbst aus den Argumenten (Typinferenz), du musst ihn also selten angeben. default(T) bzw. default liefert den Standardwert eines Typs: 0 für int, null für Referenztypen."
+    },
+    {
+      "type": "code",
+      "content": "static void Tausche<T>(ref T a,\n                       ref T b)\n{\n    T tmp = a;\n    a = b;\n    b = tmp;\n}\n\nint x = 1, y = 2;\nTausche(ref x, ref y); // T = int\nConsole.WriteLine($\"{x} {y}\"); // 2 1"
+    },
+    {
+      "type": "text",
+      "content": "Problem: Innerhalb einer generischen Methode weiß der Compiler über T nichts. Schreibst du if (w > max), meldet er CS0019 („Operator '>' cannot be applied to operands of type 'T' and 'T'“). Die Lösung sind Constraints (Einschränkungen) mit where: where T : IComparable<T> garantiert, dass jedes T eine Methode CompareTo besitzt. Ergebnis > 0 heißt „größer“, 0 „gleich“, < 0 „kleiner“."
+    },
+    {
+      "type": "code",
+      "content": "static T Groesstes<T>(T[] werte)\n    where T : IComparable<T>\n{\n    T max = werte[0];\n    foreach (T w in werte)\n        if (w.CompareTo(max) > 0)\n            max = w;\n    return max;\n}\n\nConsole.WriteLine(\n    Groesstes(new[] { 3, 9, 4 }));\n// 9\nConsole.WriteLine(Groesstes(\n    new[] { \"Birne\", \"Apfel\" }));\n// Birne (alphabetisch größer)"
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigsten Constraints:\n• where T : class – T muss ein Referenztyp sein\n• where T : struct – T muss ein Werttyp sein (int, double, …)\n• where T : new() – T braucht einen parameterlosen Konstruktor, dann darfst du new T() schreiben\n• where T : IHatId – T muss dieses Interface implementieren\n• where T : Fahrzeug – T muss Fahrzeug oder eine Unterklasse sein\nMehrere kombinierst du mit Beistrichen, z. B. where T : class, IHatId, new(). new() muss dabei an letzter Stelle stehen."
+    },
+    {
+      "type": "code",
+      "content": "interface IHatId { int Id { get; set; } }\n\nclass Lager<T> where T : class, IHatId\n{\n    private readonly List<T> _items = new();\n    private int _naechste = 1;\n    public void Add(T item)\n    {\n        item.Id = _naechste++; // IHatId!\n        _items.Add(item);\n    }\n    public T? Suche(int id) =>\n        _items.Find(i => i.Id == id);\n}"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static void Tausche<T>(ref T a,\n                       ref T b)\n{\n    T tmp = a; a = b; b = tmp;\n}\nint x = 1, y = 2;\nTausche(ref x, ref y);\nConsole.WriteLine($\"{x} {y}\");",
+      "options": [
+        "1 2",
+        "2 1",
+        "Compilerfehler",
+        "1 1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Tausche<T> wird mit T = int aufgerufen (Typinferenz). Über ref werden die Originalvariablen vertauscht, also x = 2 und y = 1."
+    },
+    {
+      "question": "Finde den Fehler: Warum kompiliert diese Methode nicht?",
+      "code": "static T Groesstes<T>(T[] werte)\n{\n    T max = werte[0];\n    foreach (T w in werte)\n        if (w > max) max = w;\n    return max;\n}",
+      "options": [
+        "Generische Methoden dürfen kein Array als Parameter haben",
+        "foreach funktioniert nicht mit T",
+        "Ohne Constraint ist für T kein >-Operator bekannt (CS0019)",
+        "Der Rückgabetyp T ist nicht erlaubt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Compiler kennt T nicht und weiß daher nicht, ob > existiert. Mit where T : IComparable<T> und w.CompareTo(max) > 0 funktioniert es."
+    },
+    {
+      "question": "Welcher Constraint ist nötig, damit du in einer generischen Methode new T() schreiben darfst?",
+      "options": [
+        "where T : new()",
+        "where T : class",
+        "where T : struct",
+        "where T : object"
+      ],
+      "correctIndex": 0,
+      "explanation": "new() verlangt einen öffentlichen parameterlosen Konstruktor – nur dann erlaubt der Compiler new T(). class allein reicht nicht, denn eine Klasse muss keinen solchen Konstruktor haben."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "static T? Erstes<T>(List<T> l) =>\n    l.Count > 0 ? l[0] : default;\n\nvar leer = new List<int>();\nConsole.WriteLine(Erstes(leer));",
+      "options": [
+        "null",
+        "Exception",
+        "\"\"",
+        "0"
+      ],
+      "correctIndex": 3,
+      "explanation": "default liefert für einen Werttyp wie int den Wert 0 (für Referenztypen wäre es null). Die Liste ist leer, also wird default zurückgegeben."
+    }
+  ]
+}

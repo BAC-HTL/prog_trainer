@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j3-semistrukturiert_03_schema_verarbeitung",
+  "title": "Grammatiken und Verarbeitung: DTD, XML Schema, JSON Schema, XPath",
+  "summary": "Mit DTD, XML Schema und JSON Schema legst du fest, wie gültige Dokumente aussehen, und mit XPath und Python liest du gezielt Daten aus.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wenn zwei Systeme Daten austauschen – z. B. die Schulverwaltung und die Bibliothek –, reicht Wohlgeformtheit nicht. Beide Seiten müssen sich einigen: Welche Elemente gibt es, in welcher Reihenfolge, was ist Pflicht, welche Datentypen? Diese Vereinbarung heißt Grammatik oder Schema. Ein Dokument, das sie einhält, ist gültig. Für XML gibt es DTD und XML Schema (XSD), für JSON das JSON Schema."
+    },
+    {
+      "type": "code",
+      "content": "<!ELEMENT klasse (schueler+)>\n<!ATTLIST klasse\n  bez CDATA #REQUIRED>\n<!ELEMENT schueler\n  (vorname, note*)>\n<!ATTLIST schueler\n  id CDATA #REQUIRED>\n<!ELEMENT vorname (#PCDATA)>\n<!ELEMENT note (#PCDATA)>\n<!ATTLIST note\n  fach CDATA #REQUIRED>"
+    },
+    {
+      "type": "text",
+      "content": "Die DTD (Document Type Definition) beschreibt Elemente und Attribute. (vorname, note*) heißt: zuerst genau ein vorname, dann beliebig viele note – die Reihenfolge zählt. Häufigkeiten: ohne Zeichen genau 1, ? 0 oder 1, * 0 bis n, + 1 bis n. #PCDATA steht für Text, #REQUIRED für ein Pflichtattribut. Schwäche: Die DTD kennt keine Datentypen – <note>sehr gut</note> wäre gültig."
+    },
+    {
+      "type": "code",
+      "content": "<xs:element name=\"schueler\">\n <xs:complexType>\n  <xs:sequence>\n   <xs:element name=\"vorname\"\n     type=\"xs:string\"/>\n   <xs:element name=\"note\"\n     type=\"xs:integer\"\n     minOccurs=\"0\"\n     maxOccurs=\"unbounded\"/>\n  </xs:sequence>\n  <xs:attribute name=\"id\"\n    type=\"xs:integer\"\n    use=\"required\"/>\n </xs:complexType>\n</xs:element>"
+    },
+    {
+      "type": "text",
+      "content": "XML Schema (XSD) ist selbst ein XML-Dokument (Namespace-Präfix xs) und deutlich mächtiger: Es kennt Datentypen wie xs:integer, xs:decimal, xs:date oder xs:boolean, genaue Häufigkeiten mit minOccurs/maxOccurs und eigene Typen. Gegen dieses Schema ist <note>sehr gut</note> ungültig. Für JSON leistet JSON Schema dasselbe – es ist selbst ein JSON-Dokument:"
+    },
+    {
+      "type": "code",
+      "content": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"vorname\": {\"type\": \"string\"},\n    \"note\": {\"type\": \"integer\",\n             \"minimum\": 1,\n             \"maximum\": 5}\n  },\n  \"required\": [\"vorname\", \"note\"]\n}\n\n{\"vorname\": \"Anna\", \"note\": 1}  ✓\n{\"vorname\": \"Anna\", \"note\": 6}  ✗\n{\"vorname\": \"Anna\"}             ✗\n{\"vorname\": \"Anna\",\n \"note\": \"1\"}                   ✗"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: Zusätzliche Eigenschaften, die nicht in properties stehen, sind in JSON Schema standardmäßig erlaubt. Willst du sie verbieten, ergänzt du \"additionalProperties\": false. In Python prüfst du Dokumente z. B. mit dem Paket jsonschema (pip install jsonschema), XML-Schemas mit dem Paket lxml. Zum gezielten Lesen von XML gibt es XPath, eine Sprache für Pfade im XML-Baum:\n• / Kind, // beliebig tief\n• @attr Attribut\n• [ … ] Bedingung, [1] erstes Element (XPath zählt ab 1!)\n• text() Textinhalt"
+    },
+    {
+      "type": "code",
+      "content": "XPath auf die Klassenliste\n(Anna: DBI 1, POS 2;\n Ben: DBI 3, POS 4)\n\n/klasse/@bez\n  → 3AHIF\n/klasse/schueler/vorname/text()\n  → Anna, Ben\n//note[@fach='DBI']/text()\n  → 1, 3\n//schueler[1]/vorname/text()\n  → Anna\n//schueler[note > 2]/vorname\n  → <vorname>Ben</vorname>\ncount(//note)\n  → 4"
+    },
+    {
+      "type": "code",
+      "content": "import xml.etree.ElementTree as ET\n\nroot = ET.parse(\"klasse.xml\").getroot()\nprint(root.get(\"bez\"))  # 3AHIF\n\nfor s in root.findall(\"schueler\"):\n    noten = [int(n.text) for n\n             in s.findall(\"note\")]\n    print(s.find(\"vorname\").text,\n          sum(noten) / len(noten))\n# Anna 1.5\n# Ben 3.5\n\ndbi = root.findall(\n    \".//note[@fach='DBI']\")\nprint([n.text for n in dbi])\n# ['1', '3']"
+    },
+    {
+      "type": "text",
+      "content": "ElementTree unterstützt nur einen Teil von XPath (z. B. findall mit Pfaden, // als .//, [@attr='wert'], [1]); volles XPath bietet lxml. XML oder JSON? XML: Attribute, Namespaces, ausgereifte Grammatiken (XSD), gut für Dokumente und Standards wie SVG oder Office-Dateien. JSON: kürzer, direkt auf Objekte und Listen abbildbar, Standard bei Web-APIs. Zusammenfassung: Grammatiken (DTD, XSD, JSON Schema) legen fest, was gültig ist; XPath und Pythons xml.etree bzw. json lesen die Daten aus."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Laut DTD gilt <!ELEMENT schueler (vorname, note*)>. Welches Element ist gültig?",
+      "options": [
+        "<schueler><note>1</note><vorname>Anna</vorname></schueler>",
+        "<schueler><vorname>Anna</vorname></schueler>",
+        "<schueler><note>1</note></schueler>",
+        "<schueler><vorname>Anna</vorname><vorname>Ann</vorname></schueler>"
+      ],
+      "correctIndex": 1,
+      "explanation": "vorname ist genau einmal Pflicht und muss zuerst kommen, note* erlaubt auch 0 Noten. Falsche Reihenfolge, fehlender oder doppelter vorname sind ungültig."
+    },
+    {
+      "question": "Was liefert der XPath-Ausdruck auf der Klassenliste (Anna: DBI 1, POS 2; Ben: DBI 3, POS 4)?",
+      "code": "count(//note)",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "10"
+      ],
+      "correctIndex": 2,
+      "explanation": "count zählt alle note-Elemente im ganzen Dokument: Anna hat 2, Ben hat 2 – zusammen 4."
+    },
+    {
+      "question": "Ist das Dokument gültig gegenüber dem JSON Schema aus der Lektion (note: integer, 1–5, vorname und note Pflicht)?",
+      "code": "{\"vorname\": \"Ben\", \"note\": \"2\"}",
+      "options": [
+        "Ja, \"2\" wird automatisch in eine Zahl umgewandelt.",
+        "Nein, \"2\" ist ein String und kein integer.",
+        "Nein, weil die Eigenschaft klasse fehlt.",
+        "Ja, weil JSON Schema keine Datentypen prüft."
+      ],
+      "correctIndex": 1,
+      "explanation": "JSON Schema prüft den Typ streng: \"2\" ist ein string. Zusätzliche Eigenschaften wären dagegen erlaubt, weil additionalProperties nicht auf false gesetzt ist."
+    },
+    {
+      "question": "Welche Aussage über DTD und XML Schema stimmt?",
+      "options": [
+        "Nur XML Schema kann prüfen, ob eine Note eine ganze Zahl ist.",
+        "Nur die DTD ist selbst ein XML-Dokument.",
+        "Die DTD kennt Datentypen wie integer und date.",
+        "XML Schema kann keine Häufigkeiten festlegen."
+      ],
+      "correctIndex": 0,
+      "explanation": "Die DTD kennt nur Text (#PCDATA). XML Schema ist selbst XML, bietet Datentypen wie xs:integer und Häufigkeiten über minOccurs/maxOccurs."
+    }
+  ]
+}

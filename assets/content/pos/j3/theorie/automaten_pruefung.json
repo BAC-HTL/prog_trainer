@@ -1,0 +1,122 @@
+{
+  "id": "pos-j3-theorie-automaten_pruefung",
+  "title": "Abschlussprüfung: Formale Sprachen & Automaten",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welcher reguläre Ausdruck beschreibt dieselbe Sprache wie diese Grammatik?",
+      "code": "S → aS | bB\nB → bB | ε",
+      "options": [
+        "a*b+",
+        "(ab)*",
+        "a+b*",
+        "a*b*"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit S → aS entstehen beliebig viele a, dann muss mit S → bB mindestens ein b folgen, danach beliebig viele weitere b. Das ist a*b+ (z. B. b, ab, aabbb)."
+    },
+    {
+      "question": "Zu welchem Typ der Chomsky-Hierarchie gehört die Grammatik S → aSb | ε mindestens, und welcher Automat erkennt ihre Sprache?",
+      "options": [
+        "Typ 3, endlicher Automat",
+        "Typ 2, Kellerautomat",
+        "Typ 1, endlicher Automat",
+        "Typ 0, nur eine Turingmaschine"
+      ],
+      "correctIndex": 1,
+      "explanation": "Links steht nur ein Nichtterminal, rechts beliebiges – das ist kontextfrei (Typ 2). aⁿbⁿ ist nicht regulär, ein Kellerautomat kann aber mit seinem Stapel mitzählen."
+    },
+    {
+      "question": "Welche Aussage über die Chomsky-Hierarchie stimmt?",
+      "options": [
+        "Jede kontextfreie Sprache ist regulär",
+        "Typ-0-Grammatiken sind die strengsten",
+        "Jede reguläre Sprache ist auch kontextfrei",
+        "Reguläre Grammatiken dürfen beliebige rechte Seiten haben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Typen sind ineinander enthalten: Typ 3 ⊂ Typ 2 ⊂ Typ 1 ⊂ Typ 0. Typ 3 hat die strengsten Regeln."
+    },
+    {
+      "question": "Dieser DEA berechnet den Rest einer Binärzahl bei Division durch 3. In welchem Zustand endet er bei der Eingabe 1011?",
+      "code": "  δ    │ 0  │ 1\n→*r0   │ r0 │ r1\n  r1   │ r2 │ r0\n  r2   │ r1 │ r2",
+      "options": [
+        "r0",
+        "r1",
+        "r2",
+        "Im Fehlerzustand"
+      ],
+      "correctIndex": 2,
+      "explanation": "r0 -1-> r1 -0-> r2 -1-> r2 -1-> r2. Kontrolle: 1011₂ = 11, und 11 mod 3 = 2."
+    },
+    {
+      "question": "Der DEA aus der Potenzmengenkonstruktion für (a|b)*ab startet in {p0}. In welchem Zustand ist er nach der Eingabe „abb“?",
+      "code": "  δ         │  a       │  b\n→ {p0}      │ {p0,p1}  │ {p0}\n  {p0,p1}   │ {p0,p1}  │ {p0,p2}\n* {p0,p2}   │ {p0,p1}  │ {p0}",
+      "options": [
+        "{p0,p1}",
+        "{p0,p2}",
+        "{p0}",
+        "{}"
+      ],
+      "correctIndex": 2,
+      "explanation": "{p0} -a-> {p0,p1} -b-> {p0,p2} -b-> {p0}. „abb“ endet nicht auf „ab“, daher kein Endzustand."
+    },
+    {
+      "question": "Welches Wort kann aus dieser Grammatik NICHT abgeleitet werden?",
+      "code": "S → 0S | 1A | ε\nA → 0A | 1S",
+      "options": [
+        "ε",
+        "11",
+        "0101",
+        "10"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Grammatik entspricht dem DEA für eine gerade Anzahl Einsen: Mit S ist man bei gerader, mit A bei ungerader Anzahl. Enden darf man nur in S (S → ε). „10“ hat eine Eins."
+    },
+    {
+      "question": "Wie viele Zustände braucht ein DEA über {a} mindestens, der genau die Wörter akzeptiert, deren Länge durch 3 teilbar ist?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Automat muss sich den Rest der Länge mod 3 merken: 0, 1 oder 2. Mit weniger Zuständen könnte er z. B. „a“ und „aaa“ nicht unterscheiden."
+    },
+    {
+      "question": "Was gibt dieser Code aus? (delta wie in der Lektion: START, VZ, ZAHL; Endzustand ZAHL)",
+      "code": "print(akzeptiert(\"\"),\n      akzeptiert(\"007\"))",
+      "options": [
+        "True False",
+        "False True",
+        "True True",
+        "False False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim leeren Wort läuft die Schleife nicht, der Zustand bleibt START – kein Endzustand, also False. „007“ führt über START -> ZAHL -> ZAHL -> ZAHL, also True."
+    },
+    {
+      "question": "Wie wächst die Laufzeit einer Tabellen-Implementierung eines DEA mit der Länge n des Eingabeworts?",
+      "options": [
+        "Linear, ein Tabellenzugriff pro Zeichen",
+        "Quadratisch, weil jeder Zustand mit jedem verglichen wird",
+        "Exponentiell, wegen der Potenzmengenkonstruktion",
+        "Konstant, unabhängig von n"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein DEA liest jedes Zeichen genau einmal und macht dabei genau einen Übergang – O(n). Die 2ⁿ der Potenzmengenkonstruktion betreffen die Zustandsanzahl, nicht die Laufzeit."
+    },
+    {
+      "question": "Welche Aussage über NEA, DEA und reguläre Ausdrücke ist richtig?",
+      "options": [
+        "Ein NEA kann Sprachen erkennen, die kein DEA erkennt",
+        "Zu jedem regulären Ausdruck gibt es einen DEA, der dieselbe Sprache erkennt",
+        "Ein DEA kann prüfen, ob Klammern korrekt verschachtelt sind",
+        "Ein NEA darf keine Endzustände haben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Reguläre Ausdrücke, NEAs, DEAs und reguläre Grammatiken beschreiben genau dieselbe Sprachklasse. Verschachtelte Klammern sind kontextfrei, aber nicht regulär."
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "id": "syp-j3-qualitaet_02_qualitaetssicherung_reviews",
+  "title": "Qualitätssicherung: Reviews, Analyse, Tests",
+  "summary": "Konstruktive und analytische Qualitätssicherung mit Reviews, statischer Analyse, Tests und der Definition of Done.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Qualitätssicherung (QS) teilt man in zwei Gruppen: Konstruktive QS verhindert Fehler von vornherein, etwa durch Coding-Richtlinien, Vorlagen, ein passendes Vorgehensmodell oder Schulungen. Analytische QS findet Fehler in vorhandenen Ergebnissen. Sie ist entweder statisch – ohne das Programm auszuführen (Reviews, statische Analyse) – oder dynamisch, also durch Ausführen (Tests). Grundregel: Je früher ein Fehler gefunden wird, desto billiger ist er zu beheben."
+    },
+    {
+      "type": "text",
+      "content": "Reviews sind manuelle Prüfungen durch andere Personen – nicht nur von Code, sondern auch von Lastenheft, Pflichtenheft oder Entwurf. Es gibt verschiedene Formalitätsstufen: Beim informellen Review schaut eine Kollegin kurz drüber. Beim Walkthrough führt der Autor die anderen durch sein Ergebnis. Das technische Review prüft ein Ergebnis gegen Vorgaben. Die Inspektion ist am formalsten: mit Moderator, festgelegten Rollen, Checklisten, Protokoll und Auswertung der gefundenen Fehler."
+    },
+    {
+      "type": "text",
+      "content": "In der Praxis ist das Code-Review über einen Pull Request (bzw. Merge Request) üblich: Bevor eine Änderung in den main-Branch kommt, prüft mindestens eine andere Person den Code. Achte auf Korrektheit und Randfälle, Lesbarkeit und Namen, vorhandene Tests und Sicherheit. Regeln für gutes Feedback: den Code kritisieren, nicht die Person; konkret sein; Fragen stellen statt Befehle erteilen; Pull Requests klein halten. Im folgenden Beispiel fragt die Reviewerin: „Was passiert bei einer leeren Liste?“"
+    },
+    {
+      "type": "code",
+      "content": "def schnitt(noten):\n    return sum(noten) / len(noten)\n\nprint(schnitt([1, 2, 3]))  # 2.0\nprint(schnitt([]))\n# ZeroDivisionError:\n#   division by zero"
+    },
+    {
+      "type": "text",
+      "content": "Bei der statischen Analyse prüfen Werkzeuge (Linter) den Quellcode automatisch, ohne ihn auszuführen. Sie finden unbenutzte Importe, Tippfehler in Variablennamen, Stilverstöße, verdächtige Konstrukte oder zu komplexe Funktionen. Beispiele: pyflakes, flake8 oder pylint für Python, die Roslyn-Analyzer in C# (in Compiler und IDE eingebaut) oder plattformübergreifend SonarQube. Meist laufen sie automatisch in der CI-Pipeline bei jedem Push. Hier die Datei noten.py und die Ausgabe von pyflakes:"
+    },
+    {
+      "type": "code",
+      "content": "import os\n\ndef schnitt(noten):\n    summe = 0\n    for n in noten:\n        summe += n\n    return summe / len(note)\n\n$ python3 -m pyflakes noten.py\nnoten.py:1:1: 'os' imported but unused\nnoten.py:7:24: undefined name 'note'"
+    },
+    {
+      "type": "text",
+      "content": "Tests sind die dynamische Prüfung: Unit-, Integrations-, System- und Abnahmetests kennst du aus dem V-Modell. Testfälle leitest du aus den Anforderungen und Akzeptanzkriterien ab. Besonders ergiebig sind Grenzwerte: Fehler passieren oft genau an der Grenze. Anforderung: „Ab einem Einkaufswert von 100 € gibt es 10 % Rabatt.“ Der folgende Test (pytest) mit genau 100 € deckt auf, dass im Code > statt >= steht:"
+    },
+    {
+      "type": "code",
+      "content": "def rabatt(betrag):\n    if betrag > 100:\n        return betrag * 0.9\n    return betrag\n\ndef test_genau_100():\n    assert rabatt(100) == 90\n\n$ pytest -q\nFAILED test_rabatt.py::test_genau_100\n  - assert 100 == 90"
+    },
+    {
+      "type": "text",
+      "content": "Die Definition of Done (DoD) bündelt die Qualitätsregeln eines Teams in einer gemeinsamen Checkliste, die für jeden Backlog-Eintrag gilt. Ein Beispiel aus einem Diplomarbeitsteam: Code ist reviewt und gemergt, alle Tests sind grün, neue Logik hat Unit-Tests, der Linter meldet keine Warnungen, die Doku ist aktualisiert. Erst dann gilt etwas als fertig. So wird konstruktive und analytische QS zur Gewohnheit statt zur Aufgabe in der letzten Woche."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Konstruktive QS vermeidet Fehler, analytische QS findet sie – statisch mit Reviews und statischer Analyse, dynamisch mit Tests. Code-Reviews über Pull Requests und Linter in der CI-Pipeline sind Standard. Teste besonders Grenzwerte. Die Definition of Done legt fest, wann eine Arbeit wirklich fertig ist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Meldung gibt pyflakes für diese Datei aus?",
+      "code": "import math\n\ndef flaeche(r):\n    return 3.14 * r * r",
+      "options": [
+        "undefined name 'r'",
+        "'math' imported but unused",
+        "ZeroDivisionError",
+        "Keine Meldung – der Code ist fehlerfrei"
+      ],
+      "correctIndex": 1,
+      "explanation": "math wird importiert, aber nie verwendet. pyflakes meldet: f.py:1:1: 'math' imported but unused. r ist als Parameter definiert."
+    },
+    {
+      "question": "Das Team legt eine Coding-Richtlinie für Namen und Formatierung fest. Welche Art von Qualitätssicherung ist das?",
+      "options": [
+        "Konstruktive QS",
+        "Dynamische QS",
+        "Analytische QS",
+        "Abnahmetest"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eine Richtlinie soll Fehler und Unklarheiten von vornherein verhindern – das ist konstruktive Qualitätssicherung."
+    },
+    {
+      "question": "Anforderung: „Ab 100 € gibt es 10 % Rabatt.“ Welcher Testaufruf deckt den Fehler in diesem Code auf?",
+      "code": "def rabatt(betrag):\n    if betrag > 100:\n        return betrag * 0.9\n    return betrag",
+      "options": [
+        "rabatt(50)",
+        "rabatt(200)",
+        "rabatt(100)",
+        "rabatt(0)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Laut Anforderung muss rabatt(100) den Wert 90 liefern, der Code gibt aber 100 zurück, weil > statt >= verwendet wird. Die anderen Werte liegen nicht an der Grenze und liefern korrekte Ergebnisse."
+    },
+    {
+      "question": "Welche Review-Art ist am formalsten?",
+      "options": [
+        "Informelles Review",
+        "Walkthrough",
+        "Pair Programming",
+        "Inspektion"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Inspektion hat einen Moderator, feste Rollen, Checklisten, ein Protokoll und eine Auswertung der Fehler."
+    }
+  ]
+}

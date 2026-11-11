@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-python-gui_01_gui_grundlagen",
+  "title": "GUI-Grundlagen mit tkinter",
+  "summary": "Fenster, Widgets und Callbacks: Wie ein ereignisgesteuertes Programm mit grafischer Oberfläche aufgebaut ist.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher liefen deine Programme von oben nach unten: input(), rechnen, print(). Ein Programm mit grafischer Benutzeroberfläche (GUI, Graphical User Interface) funktioniert anders: Es baut ein Fenster auf und wartet dann in einer Ereignisschleife (Event Loop) auf Ereignisse – Klicks, Tastendrücke, Mausbewegungen. Tritt ein Ereignis ein, ruft es die Funktion auf, die du dafür hinterlegt hast. Man nennt das ereignisgesteuerte Programmierung."
+    },
+    {
+      "type": "text",
+      "content": "Python bringt dafür das Modul tkinter mit. Es ist bei der Windows-Installation von Python dabei; unter Linux musst du eventuell das Paket python3-tk nachinstallieren. Das Grundgerüst ist immer gleich: Hauptfenster mit tk.Tk() erzeugen, Widgets hineinsetzen, mit mainloop() die Ereignisschleife starten. mainloop() kehrt erst zurück, wenn das Fenster geschlossen wird – Code danach läuft also erst am Ende."
+    },
+    {
+      "type": "code",
+      "content": "import tkinter as tk\n\nfenster = tk.Tk()\nfenster.title(\"Mein erstes Fenster\")\n# Breite x Höhe in Pixeln\nfenster.geometry(\"300x150\")\n\n# Ereignisschleife starten\nfenster.mainloop()"
+    },
+    {
+      "type": "text",
+      "content": "Die Bausteine einer GUI heißen Widgets: Label (Text anzeigen), Button (Schaltfläche), Entry (einzeilige Eingabe), Text (mehrzeilig), Checkbutton, Radiobutton, Listbox und viele mehr. Jedes Widget bekommt als erstes Argument sein Elternelement, meist das Fenster. Typischer Fehler: Ein Widget zu erzeugen reicht nicht – erst ein Geometriemanager wie pack() macht es sichtbar."
+    },
+    {
+      "type": "code",
+      "content": "import tkinter as tk\n\nfenster = tk.Tk()\nfenster.title(\"Begrüßung\")\nlabel = tk.Label(fenster,\n                 text=\"Wie heißt du?\")\nlabel.pack()\neingabe = tk.Entry(fenster)\neingabe.pack()\n\ndef gruessen():\n    name = eingabe.get()\n    label.config(text=f\"Servus, {name}!\")\n\nknopf = tk.Button(fenster, text=\"OK\",\n                  command=gruessen)\nknopf.pack()\nfenster.mainloop()"
+    },
+    {
+      "type": "text",
+      "content": "Mit command= übergibst du dem Button eine Funktion, die bei jedem Klick aufgerufen wird – einen Callback. Wichtig: den Funktionsnamen ohne Klammern übergeben! Mit Klammern wird die Funktion sofort beim Erzeugen des Buttons einmal ausgeführt, und command bekommt deren Rückgabewert None. Der Button tut dann beim Klicken gar nichts."
+    },
+    {
+      "type": "code",
+      "content": "# FALSCH: gruessen() läuft sofort,\n# command bekommt None\nknopf = tk.Button(fenster, text=\"OK\",\n                  command=gruessen())\n\n# RICHTIG: Funktion selbst übergeben\nknopf = tk.Button(fenster, text=\"OK\",\n                  command=gruessen)"
+    },
+    {
+      "type": "text",
+      "content": "Entry.get() liefert immer einen String – für Rechnungen musst du mit int() oder float() umwandeln. Mit config(text=...) änderst du die Beschriftung eines Widgets, mit cget(\"text\") liest du sie. Größere Oberflächen schreibt man am besten als Klasse: Die Widgets werden Attribute, die Callbacks Methoden. So brauchst du keine globalen Variablen."
+    },
+    {
+      "type": "code",
+      "content": "import tkinter as tk\n\nclass ZaehlerApp:\n    def __init__(self, fenster):\n        self.wert = 0\n        self.anzeige = tk.Label(fenster,\n                                text=\"0\")\n        self.anzeige.pack()\n        self.knopf = tk.Button(fenster,\n            text=\"+1\", command=self.plus)\n        self.knopf.pack()\n\n    def plus(self):\n        self.wert += 1\n        self.anzeige.config(\n            text=str(self.wert))\n\nfenster = tk.Tk()\napp = ZaehlerApp(fenster)\nfenster.mainloop()"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: GUI-Programme sind ereignisgesteuert – mainloop() wartet auf Ereignisse und ruft deine Callbacks auf. Widgets erzeugst du mit dem Elternelement als erstem Argument und machst sie mit einem Geometriemanager sichtbar. command=funktion ohne Klammern, Entry.get() liefert Strings, config() ändert Widgets. Für größere Oberflächen lohnt sich eine Klasse."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was steht im Label, nachdem der Button dreimal geklickt wurde?",
+      "code": "class ZaehlerApp:\n    def __init__(self, f):\n        self.wert = 0\n        self.l = tk.Label(f, text=\"0\")\n        self.l.pack()\n        tk.Button(f, text=\"+1\",\n            command=self.plus).pack()\n\n    def plus(self):\n        self.wert += 1\n        self.l.config(text=str(self.wert))",
+      "options": [
+        "0",
+        "1",
+        "3",
+        "Das Programm stürzt ab"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jeder Klick ruft plus() auf, das wert erhöht und die Anzeige mit config() aktualisiert. Nach drei Klicks steht dort 3."
+    },
+    {
+      "question": "Finde den Fehler: Beim Start erscheint sofort „Gespeichert!“ in der Konsole, beim Klicken passiert nichts. Warum?",
+      "code": "def speichern():\n    print(\"Gespeichert!\")\n\nb = tk.Button(fenster, text=\"Speichern\",\n              command=speichern())\nb.pack()",
+      "options": [
+        "Ein Button braucht immer ein Label daneben",
+        "print() funktioniert in GUI-Programmen nicht",
+        "pack() muss vor dem Erzeugen des Buttons aufgerufen werden",
+        "speichern() wird mit Klammern übergeben, also sofort ausgeführt – command bekommt None"
+      ],
+      "correctIndex": 3,
+      "explanation": "command=speichern() ruft die Funktion beim Erzeugen auf und übergibt ihren Rückgabewert None. Richtig ist command=speichern."
+    },
+    {
+      "question": "Welchen Datentyp liefert eingabe.get() bei einem Entry, in das jemand 42 eingetippt hat?",
+      "options": [
+        "str",
+        "int",
+        "float",
+        "Das hängt davon ab, was eingetippt wurde"
+      ],
+      "correctIndex": 0,
+      "explanation": "Entry.get() liefert immer den Text als String, hier \"42\". Zum Rechnen musst du ihn selbst mit int() umwandeln."
+    },
+    {
+      "question": "Was macht fenster.mainloop()?",
+      "options": [
+        "Es zeichnet das Fenster einmal und beendet dann das Programm",
+        "Es startet die Ereignisschleife, die auf Ereignisse wartet und Callbacks aufruft, bis das Fenster geschlossen wird",
+        "Es wiederholt das ganze Programm in einer Endlosschleife",
+        "Es erzeugt das Hauptfenster"
+      ],
+      "correctIndex": 1,
+      "explanation": "mainloop() verarbeitet Ereignisse wie Klicks und Tastendrücke und kehrt erst zurück, wenn das Fenster geschlossen wird. Das Fenster selbst wird mit tk.Tk() erzeugt."
+    }
+  ]
+}

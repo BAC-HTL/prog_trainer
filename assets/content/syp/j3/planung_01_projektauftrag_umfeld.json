@@ -1,0 +1,94 @@
+{
+  "id": "syp-j3-planung_01_projektauftrag_umfeld",
+  "title": "Projektauftrag und Projektumfeld",
+  "summary": "Wie ein Projekt mit Projektauftrag, SMART-Zielen und Stakeholderanalyse sauber startet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ab jetzt begleitet dich ein Beispiel durch das ganze Modul: Euer Diplomarbeitsteam entwickelt für eine Bäckerei eine Bestell-App. Bevor die erste Codezeile entsteht, muss klar sein, was genau gebaut wird, bis wann und mit welchen Mitteln. Das regelt der Projektauftrag."
+    },
+    {
+      "type": "text",
+      "content": "Der Projektauftrag ist eine schriftliche Vereinbarung zwischen Auftraggeber und Projektleitung. Beide unterschreiben ihn. Damit ist das Projekt offiziell gestartet, und jeder kann später nachlesen, was vereinbart war."
+    },
+    {
+      "type": "code",
+      "content": "PROJEKTAUFTRAG\nProjekt:  Bestell-App Bäckerei\nStart:    01.10.  Ende: 31.03.\nAuftraggeber: Bäckerei Huber\nProjektleitung: Sara K.\nTeam:     Jonas, Emre, Lea\nZiele:\n- Kund:innen bestellen per App\n- Bestellungen erscheinen in\n  einer Liste für die Filiale\nNicht-Ziele:\n- keine Online-Bezahlung\nBudget:   Serverkosten 1 Jahr\nPhasen:   Analyse, Umsetzung,\n          Test, Übergabe\nUnterschriften: AG, PL"
+    },
+    {
+      "type": "text",
+      "content": "Gute Projektziele sind SMART: spezifisch (konkret), messbar (überprüfbar), attraktiv bzw. akzeptiert (von allen getragen), realistisch (erreichbar) und terminiert (mit Datum). „Die App soll schnell sein“ ist nicht SMART. Besser: „Bis 31.03. können Kund:innen ihre Bestellung in höchstens drei Schritten abschicken.“"
+    },
+    {
+      "type": "text",
+      "content": "Genauso wichtig sind Nicht-Ziele: Sie sagen, was ausdrücklich nicht zum Projekt gehört (z. B. keine Online-Bezahlung). Das schützt vor dem schleichenden Wachsen des Umfangs, wenn der Kunde später „nur noch schnell“ etwas möchte. Typischer Fehler: Ziele mit Maßnahmen verwechseln – „Datenbank programmieren“ ist eine Aufgabe, kein Ziel."
+    },
+    {
+      "type": "text",
+      "content": "Kein Projekt läuft im luftleeren Raum. In der Projektumfeldanalyse sammelst du alle Personen und Gruppen, die das Projekt beeinflussen oder davon betroffen sind – die Stakeholder. Es gibt interne (Team, Betreuer:in, Direktion) und externe (Kunde, Stammkund:innen, Webhoster). Zusätzlich gibt es sachliche Einflüsse wie Gesetze (Datenschutz-Grundverordnung) oder vorgegebene Technologien."
+    },
+    {
+      "type": "text",
+      "content": "Jeden Stakeholder bewertest du: Wie groß ist sein Einfluss auf das Projekt? Wie groß ist sein Interesse daran? Ist er eher positiv oder negativ eingestellt? Daraus leitest du Maßnahmen ab. Ein einfaches Raster ist die Einfluss-Interesse-Matrix."
+    },
+    {
+      "type": "code",
+      "content": "Einfluss\n  hoch | zufrieden-  | eng\n       | stellen     | einbinden\n  -----+-------------+----------\n gering| beobachten  | informieren\n       +-------------+----------\n         gering        hoch\n                     Interesse"
+    },
+    {
+      "type": "code",
+      "content": "# (Einfluss, Interesse): 1 bis 3\nstakeholder = {\n    \"Bäckerei-Chefin\": (3, 3),\n    \"Direktion\": (3, 1),\n    \"Stammkund:innen\": (1, 3),\n    \"Webhoster\": (1, 1),\n}\n\nfor name, (einfl, inter) in \\\n        stakeholder.items():\n    if einfl >= 2 and inter >= 2:\n        s = \"eng einbinden\"\n    elif einfl >= 2:\n        s = \"zufriedenstellen\"\n    elif inter >= 2:\n        s = \"informieren\"\n    else:\n        s = \"beobachten\"\n    print(f\"{name}: {s}\")\n\n# Ausgabe:\n# Bäckerei-Chefin: eng einbinden\n# Direktion: zufriedenstellen\n# Stammkund:innen: informieren\n# Webhoster: beobachten"
+    },
+    {
+      "type": "text",
+      "content": "Den Abschluss des Projektstarts bildet meist ein Kick-off-Meeting: Alle Beteiligten lernen sich kennen, Ziele und Rollen werden vorgestellt, die nächsten Schritte vereinbart. Zusammenfassung: Projektauftrag mit SMART-Zielen und Nicht-Zielen, Stakeholder erkennen und bewerten, Maßnahmen ableiten, Kick-off."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Ziel ist SMART formuliert?",
+      "options": [
+        "Die App soll benutzerfreundlich sein",
+        "Wir programmieren die Datenbank",
+        "Bis 15.02. zeigt die App alle Bestellungen eines Tages in einer Liste an",
+        "Die App soll möglichst viele Funktionen haben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Ziel ist konkret, messbar (alle Bestellungen eines Tages, in einer Liste) und terminiert. „Benutzerfreundlich“ ist nicht messbar, „Datenbank programmieren“ ist eine Aufgabe."
+    },
+    {
+      "question": "Was ergibt das Programm für einen Stakeholder mit den Werten (3, 1)?",
+      "code": "einfl, inter = 3, 1\nif einfl >= 2 and inter >= 2:\n    s = \"eng einbinden\"\nelif einfl >= 2:\n    s = \"zufriedenstellen\"\nelif inter >= 2:\n    s = \"informieren\"\nelse:\n    s = \"beobachten\"\nprint(s)",
+      "options": [
+        "zufriedenstellen",
+        "eng einbinden",
+        "informieren",
+        "beobachten"
+      ],
+      "correctIndex": 0,
+      "explanation": "Einfluss 3 ≥ 2, aber Interesse 1 < 2. Die erste Bedingung ist falsch, die zweite (einfl >= 2) wahr – also „zufriedenstellen“."
+    },
+    {
+      "question": "Wozu dienen Nicht-Ziele im Projektauftrag?",
+      "options": [
+        "Sie listen die Fehler des letzten Projekts auf",
+        "Sie grenzen ab, was ausdrücklich nicht zum Projekt gehört",
+        "Sie ersetzen die Projektziele",
+        "Sie beschreiben, welche Ziele ausfallen dürfen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nicht-Ziele schaffen Klarheit über den Umfang und schützen davor, dass das Projekt ungeplant wächst."
+    },
+    {
+      "question": "Welche Gruppe ist ein externer Stakeholder der Bäckerei-App?",
+      "options": [
+        "Die Projektleiterin",
+        "Die betreuende Lehrkraft",
+        "Das Entwicklungsteam",
+        "Die Stammkund:innen der Bäckerei"
+      ],
+      "correctIndex": 3,
+      "explanation": "Stammkund:innen gehören nicht zur Schule bzw. zur Projektorganisation, sind aber vom Ergebnis betroffen – sie sind externe Stakeholder."
+    }
+  ]
+}

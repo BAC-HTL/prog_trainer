@@ -1,0 +1,119 @@
+{
+  "id": "pos-j3-python-compiler_pruefung",
+  "title": "Abschlussprüfung: Compiler & Parser",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "In welcher Reihenfolge arbeiten die Analysephasen eines Compilers?",
+      "options": [
+        "Parser → Lexer → semantische Analyse",
+        "Lexer → Parser → semantische Analyse",
+        "Semantische Analyse → Lexer → Parser",
+        "Codeerzeugung → Parser → Lexer"
+      ],
+      "correctIndex": 1,
+      "explanation": "Erst zerlegt der Lexer den Text in Tokens, dann baut der Parser den Syntaxbaum, danach prüft die semantische Analyse Typen und Namen."
+    },
+    {
+      "question": "Python meldet bei „1x = 5“ den Fehler „invalid decimal literal“. In welcher Phase wird dieser Fehler erkannt?",
+      "options": [
+        "Bei der lexikalischen Analyse – 1x ist kein gültiges Token",
+        "Bei der Codeerzeugung",
+        "Bei der Optimierung",
+        "Erst zur Laufzeit beim Zuweisen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Schon beim Zerlegen in Tokens stellt sich heraus, dass „1x“ weder eine gültige Zahl noch ein gültiger Bezeichner ist (Bezeichner dürfen nicht mit einer Ziffer beginnen)."
+    },
+    {
+      "question": "Welche Aufgabe hat die Symboltabelle?",
+      "options": [
+        "Sie speichert die Tokens in Eingabereihenfolge",
+        "Sie enthält die Zeichencodes aller Buchstaben",
+        "Sie speichert Informationen zu Bezeichnern wie Typ und Gültigkeitsbereich und wird von mehreren Phasen genutzt",
+        "Sie ersetzt den Syntaxbaum"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Symboltabelle verwaltet Bezeichner und ihre Eigenschaften. Lexer, Parser, semantische Analyse und Codeerzeugung greifen darauf zu."
+    },
+    {
+      "question": "Was liefert rechne(\"(8-2)/(1+2)*3\") mit dem Parser aus der Lektion?",
+      "options": [
+        "0.666…",
+        "18.0",
+        "2.0",
+        "6.0"
+      ],
+      "correctIndex": 3,
+      "explanation": "Klammern zuerst: 6 / 3 = 2.0, dann * 3 = 6.0. term arbeitet / und * von links nach rechts ab. Da / in Python immer eine Kommazahl liefert, ist das Ergebnis 6.0."
+    },
+    {
+      "question": "Welches Wort wird von dieser EBNF-Regel beschrieben?",
+      "code": "s = \"a\" { \"a\" } \"b\" ;",
+      "options": [
+        "ba",
+        "aab",
+        "abb",
+        "a"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Regel verlangt mindestens ein a (\"a\" { \"a\" }) und danach genau ein b. Nur aab erfüllt das: ba beginnt mit b, abb hat zwei b, a hat kein b."
+    },
+    {
+      "question": "Wie wird eine EBNF-Wiederholung { … } in einem rekursiven Abstiegsparser typischerweise umgesetzt?",
+      "options": [
+        "Als while-Schleife",
+        "Als eigener Lexer",
+        "Als try/except-Block",
+        "Als globale Variable"
+      ],
+      "correctIndex": 0,
+      "explanation": "Solange das nächste Token zum Anfang der Wiederholung passt (z. B. + oder -), wird die Schleife erneut durchlaufen."
+    },
+    {
+      "question": "Ein Schüler vertauscht in seiner Grammatik + / - und * / /: ausdruck = term {(\"*\"|\"/\") term}; term = faktor {(\"+\"|\"-\") faktor}. Was ergibt dann 2 + 3 * 4?",
+      "options": [
+        "14",
+        "20",
+        "24",
+        "SyntaxError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jetzt bindet + stärker als *: term berechnet zuerst 2 + 3 = 5, dann ausdruck 5 * 4 = 20. Die Ebenen in der Grammatik legen den Vorrang fest."
+    },
+    {
+      "question": "Eine Hashtabelle mit Verkettung hat 10 Buckets und enthält 25 Einträge. Wie groß ist der Belegungsfaktor?",
+      "options": [
+        "0,4",
+        "25",
+        "2,5",
+        "10"
+      ],
+      "correctIndex": 2,
+      "explanation": "α = Einträge / Buckets = 25 / 10 = 2,5. Bei Verkettung kann α größer als 1 sein; bei offener Adressierung ist das unmöglich, weil jeder Platz nur einen Eintrag fasst."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def h(s, m):\n    return sum(ord(z) for z in s) % m\n\nprint(h(\"rot\", 11) == h(\"tor\", 11))",
+      "options": [
+        "True",
+        "False",
+        "TypeError",
+        "None"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Summen-Hashfunktion addiert nur die Zeichencodes. „rot“ und „tor“ bestehen aus denselben Buchstaben, haben also dieselbe Summe – eine Kollision, egal wie groß die Tabelle ist."
+    },
+    {
+      "question": "Warum muss man beim Löschen aus einer Hashtabelle mit linearem Sondieren aufpassen?",
+      "options": [
+        "Weil Python das Löschen aus Listen verbietet",
+        "Weil ein einfach geleerter Platz die Suchkette unterbricht und spätere Einträge nicht mehr gefunden werden",
+        "Weil sich dabei die Hashfunktion ändert",
+        "Weil gelöschte Einträge automatisch an den Anfang wandern"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Suche stoppt beim ersten leeren Platz. Lag ein gesuchter Eintrag wegen einer Kollision hinter dem gelöschten Platz, wäre er unauffindbar. Darum markiert man gelöschte Plätze mit einem Platzhalter („Grabstein“)."
+    }
+  ]
+}

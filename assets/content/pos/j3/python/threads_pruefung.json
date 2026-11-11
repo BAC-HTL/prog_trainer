@@ -1,0 +1,122 @@
+{
+  "id": "pos-j3-python-threads_pruefung",
+  "title": "Abschlussprüfung: Threads & Race Conditions",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was unterscheidet Threads eines Prozesses von getrennten Prozessen?",
+      "options": [
+        "Threads haben jeweils eigenen, getrennten Speicher",
+        "Threads gibt es nur in Python",
+        "Threads können nur nacheinander laufen",
+        "Threads eines Prozesses teilen sich denselben Speicher"
+      ],
+      "correctIndex": 3,
+      "explanation": "Alle Threads eines Prozesses greifen auf denselben Speicher zu. Das macht Datenaustausch einfach, aber auch Race Conditions möglich."
+    },
+    {
+      "question": "Welche Zeile startet einen Thread korrekt, der verdopple(4) ausführt?",
+      "options": [
+        "threading.Thread(target=verdopple, args=(4,)).start()",
+        "threading.Thread(target=verdopple(4)).start()",
+        "threading.Thread(target=verdopple, args=4).start()",
+        "threading.Thread(verdopple, 4).run()"
+      ],
+      "correctIndex": 0,
+      "explanation": "target bekommt die Funktion selbst, args ein Tupel mit den Argumenten – bei einem Argument mit Beistrich: (4,)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import threading\n\nergebnisse = []\n\ndef arbeit(n):\n    ergebnisse.append(n * n)\n\nts = [threading.Thread(target=arbeit, args=(i,))\n      for i in range(3)]\nfor t in ts: t.start()\nfor t in ts: t.join()\nprint(len(ergebnisse))",
+      "options": [
+        "0",
+        "3",
+        "Das ist nicht vorhersagbar",
+        "1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder der drei Threads hängt genau ein Element an. Da das Hauptprogramm mit join() auf alle wartet, hat die Liste danach sicher 3 Elemente. append ist eine einzelne Operation; hier gibt es kein Lesen-Ändern-Schreiben über mehrere Schritte."
+    },
+    {
+      "question": "Was passiert in diesem Programm?",
+      "code": "import threading, time\n\nt = threading.Thread(\n    target=lambda: time.sleep(3))\nt.start()\nprint(\"fertig\")",
+      "options": [
+        "\"fertig\" wird nach ca. 3 Sekunden ausgegeben",
+        "\"fertig\" wird sofort ausgegeben, und das Programm endet nach ca. 3 Sekunden",
+        "\"fertig\" wird sofort ausgegeben, und das Programm endet sofort",
+        "RuntimeError, weil join fehlt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne join wartet das Hauptprogramm nicht und gibt sofort „fertig“ aus. Da der Thread kein Daemon ist, endet der Prozess aber erst, wenn er nach etwa 3 Sekunden fertig ist."
+    },
+    {
+      "question": "In welchem Zustand ist ein Thread, der gerade in time.sleep(2) steht?",
+      "options": [
+        "neu",
+        "beendet",
+        "wartend/blockiert",
+        "Daemon"
+      ],
+      "correctIndex": 2,
+      "explanation": "Während sleep, Datei- oder Netzwerkzugriffen, join oder beim Warten auf ein Lock ist der Thread blockiert. Danach wird er wieder lauffähig."
+    },
+    {
+      "question": "Welcher Aufruf liefert für einen Thread t, der schon gestartet, aber noch nicht fertig ist, True?",
+      "options": [
+        "t.join()",
+        "t.daemon",
+        "t.start()",
+        "t.is_alive()"
+      ],
+      "correctIndex": 3,
+      "explanation": "is_alive() liefert True zwischen start() und dem Ende der Thread-Funktion. join() liefert immer None."
+    },
+    {
+      "question": "Warum ist die Ausgabe ohne Lock nicht vorhersagbar?",
+      "code": "def plus():\n    global n\n    for _ in range(100):\n        alt = n\n        time.sleep(0)\n        n = alt + 1\n# 4 Threads starten und joinen",
+      "options": [
+        "Weil time.sleep zufällig lange schläft",
+        "Weil Python Zahlen in Threads anders speichert",
+        "Weil mehrere Threads den alten Wert lesen, bevor einer den neuen geschrieben hat",
+        "Weil range in Threads nicht funktioniert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zwischen Lesen und Schreiben wird der Thread unterbrochen. Andere Threads lesen inzwischen denselben alten Wert, ihre Updates überschreiben sich gegenseitig (Lost Update). Wie viele verloren gehen, hängt von der Thread-Reihenfolge ab."
+    },
+    {
+      "question": "Wo muss in diesem Code das Lock stehen, damit kein Update verloren geht?",
+      "code": "for _ in range(10):\n    alt = stand\n    time.sleep(0.001)\n    stand = alt + 1",
+      "options": [
+        "Nur um die Zeile stand = alt + 1",
+        "Nur um die Zeile alt = stand",
+        "Um alle drei Zeilen: lesen, warten, schreiben",
+        "Zwingend um die ganze for-Schleife"
+      ],
+      "correctIndex": 2,
+      "explanation": "Lesen und Schreiben müssen gemeinsam geschützt werden, sonst kann ein anderer Thread dazwischen den alten Wert lesen. Die ganze Schleife zu sperren funktioniert zwar auch, ist aber nicht zwingend und lässt die Threads komplett nacheinander laufen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import threading, time\n\nn = 0\nlock = threading.Lock()\n\ndef plus():\n    global n\n    for _ in range(100):\n        with lock:\n            alt = n\n            time.sleep(0)\n            n = alt + 1\n\nts = [threading.Thread(target=plus)\n      for _ in range(4)]\nfor t in ts: t.start()\nfor t in ts: t.join()\nprint(n)",
+      "options": [
+        "400",
+        "Ein zufälliger Wert unter 400",
+        "100",
+        "0"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das gemeinsame Lock schützt den kritischen Abschnitt. Jede der 4 × 100 Erhöhungen wird vollständig ausgeführt, bevor der nächste Thread lesen darf: 400."
+    },
+    {
+      "question": "Welche Maßnahme hilft gegen Deadlocks?",
+      "options": [
+        "Möglichst viele Locks verwenden",
+        "Locks in allen Threads immer in derselben Reihenfolge anfordern",
+        "Alle Threads als Daemon starten",
+        "join() weglassen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Deadlock entsteht, wenn Threads Locks in unterschiedlicher Reihenfolge anfordern und aufeinander warten. Eine feste Reihenfolge verhindert diesen Kreis."
+    }
+  ]
+}

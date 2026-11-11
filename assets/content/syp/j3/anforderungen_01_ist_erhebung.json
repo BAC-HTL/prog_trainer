@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-anforderungen_01_ist_erhebung",
+  "title": "Ist-Erhebung: Wie arbeitet der Kunde heute?",
+  "summary": "Mit Interview, Fragebogen, Beobachtung und Dokumentenanalyse den Ist-Zustand erheben.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bevor du Anforderungen formulierst, musst du verstehen, wie heute gearbeitet wird: Welche Abläufe gibt es, wer ist beteiligt, welche Daten werden verwendet, und wo liegen die Probleme? Das ist die Ist-Erhebung. Erst daraus entsteht das Soll-Konzept. Beispiel Diplomarbeit: Ein Fußballverein verwaltet Trainingsanmeldungen über eine WhatsApp-Gruppe und eine Excel-Liste, die der Trainer jede Woche händisch abgleicht."
+    },
+    {
+      "type": "text",
+      "content": "Zuerst bestimmst du die Stakeholder: alle, die vom System betroffen sind oder Einfluss darauf haben – beim Verein etwa Obmann, Trainer:innen, Spieler:innen, Eltern und Kassier. Typischer Fehler: Man redet nur mit dem Auftraggeber (dem Obmann), aber nie mit den Leuten, die die App täglich verwenden werden."
+    },
+    {
+      "type": "text",
+      "content": "Das Interview ist ein persönliches Gespräch, meist mit einem vorbereiteten Leitfaden. Vorteile: Du kannst nachfragen, erfährst Details, Ausnahmen und Probleme. Nachteile: Es ist zeitaufwändig, und die Antworten sind subjektiv. Tipps: offene Fragen stellen („Wie läuft …?“ statt „Ist … gut?“), Protokoll führen, bei Tonaufnahmen vorher um Zustimmung fragen und das Protokoll danach bestätigen lassen."
+    },
+    {
+      "type": "code",
+      "content": "Interview: Trainer U14, 20 min\n1. Wie meldest du die Kinder\n   heute zum Training an?\n2. Was ärgert dich dabei am\n   meisten?\n3. Was passiert, wenn ein\n   Training ausfällt?\n4. Welche Geräte verwendest du?\n5. Woran würdest du merken,\n   dass die neue App hilft?"
+    },
+    {
+      "type": "text",
+      "content": "Der Fragebogen eignet sich, wenn du viele Personen erreichen willst, z. B. alle 120 Vereinsmitglieder per Online-Formular. Die Antworten sind standardisiert und gut auswertbar, auf Wunsch auch anonym. Nachteile: Rückfragen sind nicht möglich, vorgegebene Antworten lenken, und der Rücklauf ist oft gering. Darum den Fragebogen vorher mit zwei, drei Testpersonen ausprobieren."
+    },
+    {
+      "type": "text",
+      "content": "Bei der Beobachtung schaust du zu, wie die Arbeit tatsächlich abläuft – etwa wie der Kassier die Mitgliedsbeiträge einhebt. So entdeckst du Abläufe, die im Gespräch niemand erwähnt, weil sie selbstverständlich wirken, z. B. ein Zettel neben dem Bildschirm, auf dem Ausnahmen notiert werden. Nachteile: zeitaufwändig, und beobachtete Personen verhalten sich oft anders als sonst."
+    },
+    {
+      "type": "text",
+      "content": "Bei der Dokumentenanalyse untersuchst du vorhandene Unterlagen: Excel-Listen, Formulare, Statuten, Datenschutzvorgaben oder eine alte Software. Daraus erkennst du Datenstrukturen (welche Spalten, welche Werte) und Regeln. Sie ist günstig und ein guter Einstieg, aber Dokumente können veraltet oder unvollständig sein."
+    },
+    {
+      "type": "code",
+      "content": "Methode     viele  Tiefe   Aufwand\n            Pers.?\nInterview   nein   hoch    hoch\nFragebogen  ja     gering  mittel\nBeobachtung nein   hoch    hoch\nDok.-Anal.  –      mittel  gering"
+    },
+    {
+      "type": "text",
+      "content": "Meist kombiniert man die Methoden: zuerst die Dokumentenanalyse für das Vorwissen, dann Interviews mit Schlüsselpersonen, bei komplexen Abläufen eine Beobachtung und bei vielen Betroffenen ein Fragebogen zur Bestätigung. Das Ergebnis hältst du in einer Ist-Analyse fest: Abläufe, Beteiligte, Schwachstellen und ein Mengengerüst (wie viele Benutzer, Datensätze, Zugriffe)."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Die Ist-Erhebung klärt den heutigen Zustand, bevor Anforderungen entstehen. Interview = Tiefe und Rückfragen, Fragebogen = viele Personen, Beobachtung = tatsächliche Abläufe, Dokumentenanalyse = vorhandene Daten und Regeln. Vergiss keine Stakeholder."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ihr wollt für eine Mensa-App die Meinung aller 300 Schüler:innen eurer Schule einholen. Welche Methode passt am besten?",
+      "options": [
+        "Interview",
+        "Beobachtung",
+        "Fragebogen",
+        "Dokumentenanalyse"
+      ],
+      "correctIndex": 2,
+      "explanation": "Für viele Personen ist ein (Online-)Fragebogen am effizientesten: standardisiert und gut auswertbar."
+    },
+    {
+      "question": "Das Sekretariat sagt: „Der Ablauf ist ganz einfach.“ Tatsächlich verwenden alle einen Zettel-Trick, den niemand erwähnt. Welche Methode deckt so etwas am ehesten auf?",
+      "options": [
+        "Beobachtung",
+        "Fragebogen",
+        "Dokumentenanalyse",
+        "Planning Poker"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei der Beobachtung siehst du, wie wirklich gearbeitet wird – auch Abläufe, die den Beteiligten so selbstverständlich sind, dass sie sie nicht erwähnen."
+    },
+    {
+      "question": "Ein Team befragt für die Vereins-App nur den Obmann. Nach dem ersten Test beschweren sich die Trainer:innen, dass Wichtiges fehlt. Welcher Fehler wurde gemacht?",
+      "options": [
+        "Es wurde kein Fragebogen verwendet",
+        "Das Interview war zu kurz",
+        "Die Excel-Liste wurde nicht analysiert",
+        "Wichtige Stakeholder wurden nicht einbezogen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Trainer:innen sind Hauptbenutzer:innen. Wer nur mit dem Auftraggeber spricht, übersieht die Bedürfnisse der tatsächlichen Anwender:innen."
+    },
+    {
+      "question": "Welcher Vorteil spricht für ein Interview gegenüber einem Fragebogen?",
+      "options": [
+        "Es erreicht mehr Personen in kurzer Zeit",
+        "Man kann direkt nachfragen und Details klären",
+        "Die Antworten sind immer objektiv",
+        "Es ist anonym"
+      ],
+      "correctIndex": 1,
+      "explanation": "Im Interview kann man nachhaken und auf Antworten eingehen. Dafür ist es aufwändig und subjektiv."
+    }
+  ]
+}

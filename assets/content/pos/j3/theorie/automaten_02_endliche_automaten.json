@@ -1,0 +1,94 @@
+{
+  "id": "pos-j3-theorie-automaten_02_endliche_automaten",
+  "title": "Endliche Automaten (DEA und NEA)",
+  "summary": "Wie ein endlicher Automat Zeichen für Zeichen entscheidet, ob ein Wort zu einer Sprache gehört.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein endlicher Automat liest ein Wort Zeichen für Zeichen und wechselt dabei zwischen endlich vielen Zuständen. Ist er nach dem letzten Zeichen in einem Endzustand, wird das Wort akzeptiert. Endliche Automaten erkennen genau die regulären Sprachen (Typ 3). Ein deterministischer endlicher Automat (DEA) ist ein 5-Tupel (Q, Σ, δ, q0, F): Q ist die Menge der Zustände, Σ das Alphabet, δ die Übergangsfunktion, q0 der Startzustand und F die Menge der Endzustände. Deterministisch heißt: Für jeden Zustand und jedes Zeichen gibt es genau einen Folgezustand."
+    },
+    {
+      "type": "code",
+      "content": "DEA: gerade Anzahl Einsen\n\n      0              0\n     ┌─┐            ┌─┐\n     │ ▼     1      │ ▼\n -> ((q0)) ──────▶ (q1)\n           ◀──────\n              1\n\n((q0)) = Endzustand, -> = Start"
+    },
+    {
+      "type": "text",
+      "content": "Dasselbe als Zustandstabelle: Jede Zeile ist ein Zustand, jede Spalte ein Zeichen, in der Zelle steht der Folgezustand. → markiert den Startzustand, * die Endzustände. Die Tabelle ist kompakter als das Diagramm und lässt sich direkt programmieren."
+    },
+    {
+      "type": "code",
+      "content": "  δ    │  0  │  1\n───────┼─────┼─────\n→*q0   │ q0  │ q1\n  q1   │ q1  │ q0\n\nEingabe 1011:\nq0 -1-> q1 -0-> q1 -1-> q0 -1-> q1\nq1 ist kein Endzustand → abgelehnt"
+    },
+    {
+      "type": "text",
+      "content": "Fehlt in einem Diagramm ein Übergang, ergänzt man gedanklich einen Fehlerzustand (Senke): Wer dort landet, kommt nie mehr heraus und wird abgelehnt. Typischer Fehler beim Zeichnen: Endzustände nicht markieren oder für ein Zeichen zwei Pfeile aus demselben Zustand zeichnen – dann ist der Automat kein DEA mehr."
+    },
+    {
+      "type": "text",
+      "content": "Ein nichtdeterministischer endlicher Automat (NEA) darf für ein Zeichen mehrere oder keine Folgezustände haben. Er akzeptiert ein Wort, wenn es mindestens einen Weg in einen Endzustand gibt. NEAs sind oft viel leichter zu entwerfen. Beispiel: alle Wörter über {a, b}, die auf „ab“ enden – die Regex (a|b)*ab."
+    },
+    {
+      "type": "code",
+      "content": "NEA für (a|b)*ab\n\n  a,b\n  ┌─┐\n  ▼ │  a        b\n->(p0) ────▶ (p1) ────▶ ((p2))\n\n  δ   │   a      │  b\n──────┼──────────┼──────\n→ p0  │ {p0,p1}  │ {p0}\n  p1  │ {}       │ {p2}\n* p2  │ {}       │ {}"
+    },
+    {
+      "type": "text",
+      "content": "Jeder NEA lässt sich mit der Potenzmengenkonstruktion in einen gleichwertigen DEA umwandeln: Jeder DEA-Zustand ist eine Menge von NEA-Zuständen. Man startet bei {p0} und berechnet nur die erreichbaren Mengen. Im schlimmsten Fall entstehen 2ⁿ Zustände, hier sind es nur drei. NEA und DEA sind also gleich mächtig."
+    },
+    {
+      "type": "code",
+      "content": "  δ         │  a       │  b\n────────────┼──────────┼─────────\n→ {p0}      │ {p0,p1}  │ {p0}\n  {p0,p1}   │ {p0,p1}  │ {p0,p2}\n* {p0,p2}   │ {p0,p1}  │ {p0}\n\nEndzustand: jede Menge, die p2\nenthält"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: DEA – pro Zustand und Zeichen genau ein Übergang; NEA – beliebig viele. Beide erkennen genau die regulären Sprachen. Regex-Bibliotheken übersetzen deine Muster intern in solche Automaten. Und die reguläre Grammatik S → 0S | 1A | ε, A → 0A | 1S beschreibt genau den Einsen-DEA: Jedes Nichtterminal ist ein Zustand."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welchem Zustand endet der Einsen-DEA (Start q0) bei der Eingabe 0110?",
+      "code": "  δ    │  0  │  1\n→*q0   │ q0  │ q1\n  q1   │ q1  │ q0",
+      "options": [
+        "q1, das Wort wird abgelehnt",
+        "q0, das Wort wird akzeptiert",
+        "q1, das Wort wird akzeptiert",
+        "Im Fehlerzustand"
+      ],
+      "correctIndex": 1,
+      "explanation": "q0 -0-> q0 -1-> q1 -1-> q0 -0-> q0. 0110 enthält zwei Einsen, der Automat endet im Endzustand q0."
+    },
+    {
+      "question": "Welche Eigenschaft unterscheidet einen DEA von einem NEA?",
+      "options": [
+        "Ein DEA hat immer weniger Zustände",
+        "Ein DEA hat genau einen Endzustand",
+        "Ein DEA hat pro Zustand und Zeichen genau einen Folgezustand",
+        "Ein DEA kann mehr Sprachen erkennen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Deterministisch bedeutet: Der nächste Zustand ist immer eindeutig. Mächtiger ist der DEA nicht – NEA und DEA erkennen dieselben Sprachen."
+    },
+    {
+      "question": "Wann akzeptiert ein NEA ein Wort?",
+      "options": [
+        "Wenn es mindestens einen Weg in einen Endzustand gibt",
+        "Wenn alle möglichen Wege in einem Endzustand enden",
+        "Wenn er nie in einen leeren Zustand kommt",
+        "Wenn das Wort kürzer als die Zustandsanzahl ist"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein NEA „rät“ richtig: Es reicht ein einziger Pfad, der nach dem letzten Zeichen in einem Endzustand endet."
+    },
+    {
+      "question": "Wie viele Zustände kann der DEA, den die Potenzmengenkonstruktion aus einem NEA mit 4 Zuständen erzeugt, höchstens haben?",
+      "options": [
+        "4",
+        "8",
+        "12",
+        "16"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jeder DEA-Zustand ist eine Teilmenge der 4 NEA-Zustände. Es gibt 2⁴ = 16 Teilmengen (inklusive der leeren Menge)."
+    }
+  ]
+}

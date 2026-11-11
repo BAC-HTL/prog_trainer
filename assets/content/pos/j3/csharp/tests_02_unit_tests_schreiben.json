@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-tests_02_unit_tests_schreiben",
+  "title": "Unit-Tests mit xUnit",
+  "summary": "Mit [Fact], [Theory], [InlineData] und Assert schreibst du automatische Tests, die bei jedem dotnet test laufen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "xUnit ist ein verbreitetes Test-Framework für .NET (Alternativen: NUnit, MSTest). Tests liegen in einem eigenen Projekt, das das zu testende Projekt referenziert. Die Vorlage dotnet new xunit bringt die nötigen NuGet-Pakete schon mit: xunit, xunit.runner.visualstudio und Microsoft.NET.Test.Sdk. Ausgeführt werden die Tests mit dotnet test oder im Test-Explorer von Visual Studio/Rider."
+    },
+    {
+      "type": "code",
+      "content": "dotnet new console -n Kino\ndotnet new xunit -n Kino.Tests\ndotnet add Kino.Tests reference Kino\ndotnet test"
+    },
+    {
+      "type": "text",
+      "content": "Das zu testende Beispiel ist die Eintrittspreis-Methode aus der letzten Lektion. Sie wirft bei negativem Alter eine Exception, sonst liefert sie 0, 4 oder 8 €."
+    },
+    {
+      "type": "code",
+      "content": "public static class Eintritt\n{\n    public static decimal Preis(int alter)\n    {\n        if (alter < 0)\n            throw new\n              ArgumentOutOfRangeException(\n                nameof(alter));\n        if (alter <= 5) return 0m;\n        if (alter <= 17) return 4m;\n        return 8m;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Eine Testmethode ist eine public void-Methode mit dem Attribut [Fact] in einer public Klasse. Bewährt hat sich das AAA-Muster: Arrange (vorbereiten), Act (ausführen), Assert (prüfen). Assert.Equal(erwartet, tatsächlich) – die Reihenfolge ist wichtig, sonst ist die Fehlermeldung verdreht. Ein guter Testname sagt, was unter welcher Bedingung herauskommen soll."
+    },
+    {
+      "type": "code",
+      "content": "using Xunit;\n\npublic class EintrittTests\n{\n    [Fact]\n    public void Preis_Alter5_IstGratis()\n    {\n        // Arrange\n        int alter = 5;\n        // Act\n        decimal p = Eintritt.Preis(alter);\n        // Assert\n        Assert.Equal(0m, p);\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Für viele ähnliche Testfälle – etwa alle Grenzwerte – nimmst du [Theory] mit mehreren [InlineData]. Jede InlineData-Zeile ist ein eigener Testfall; ihre Werte werden der Reihe nach den Parametern übergeben. Achtung: Attribut-Argumente dürfen in C# keine decimal-Werte sein, deshalb steht hier int und wird umgewandelt."
+    },
+    {
+      "type": "code",
+      "content": "[Theory]\n[InlineData(0, 0)]\n[InlineData(5, 0)]\n[InlineData(6, 4)]\n[InlineData(17, 4)]\n[InlineData(18, 8)]\npublic void Preis_Grenzwerte(\n    int alter, int erwartet)\n{\n    Assert.Equal((decimal)erwartet,\n        Eintritt.Preis(alter));\n}"
+    },
+    {
+      "type": "text",
+      "content": "Weitere wichtige Asserts: Assert.True/False(bedingung), Assert.Null/NotNull, Assert.Contains(element, liste) und Assert.Throws<T>(() => …). Throws erwartet genau diesen Exception-Typ (für Untertypen gibt es Assert.ThrowsAny<T>) und liefert die Exception zurück, damit du z. B. die Message prüfen kannst. Für double gibt es Assert.Equal(erwartet, ist, stellen), weil Kommazahlen selten exakt gleich sind. xUnit erzeugt für jeden Test ein neues Objekt der Testklasse – der Konstruktor ist also dein Setup, und Tests beeinflussen einander nicht."
+    },
+    {
+      "type": "code",
+      "content": "[Fact]\npublic void Preis_Negativ_Wirft()\n{\n    Assert.Throws<\n        ArgumentOutOfRangeException>(\n        () => Eintritt.Preis(-1));\n}\n\n[Fact]\npublic void Schnitt_1_2_2()\n{\n    double s = new[] { 1, 2, 2 }\n        .Average();\n    Assert.Equal(1.67, s, 2);\n}"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Reihenfolge der Argumente ist bei Assert.Equal richtig?",
+      "options": [
+        "Assert.Equal(tatsächlich, erwartet)",
+        "Assert.Equal(erwartet, tatsächlich)",
+        "Die Reihenfolge ist egal, auch für die Fehlermeldung",
+        "Assert.Equal(nachricht, erwartet, tatsächlich)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zuerst der erwartete, dann der tatsächliche Wert. Vertauscht schlägt der Test zwar gleich fehl, die Meldung „Expected/Actual“ führt dich aber in die Irre."
+    },
+    {
+      "question": "Wie viele Testfälle führt xUnit hier aus?",
+      "code": "[Theory]\n[InlineData(2024, true)]\n[InlineData(2023, false)]\n[InlineData(1900, false)]\n[InlineData(2000, true)]\npublic void Schaltjahr(int j, bool e)\n{\n    Assert.Equal(e,\n        Jahr.IstSchaltjahr(j));\n}",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jede [InlineData]-Zeile einer [Theory] ist ein eigener Testfall – also 4."
+    },
+    {
+      "question": "Finde den Fehler: Warum kompiliert dieser Test nicht?",
+      "code": "[Theory]\n[InlineData(2.5m)]\npublic void Test(decimal preis)\n{\n    Assert.True(preis > 0);\n}",
+      "options": [
+        "[InlineData] darf nur bei [Fact] stehen",
+        "decimal-Werte (2.5m) sind als Attribut-Argument nicht erlaubt",
+        "Theory-Methoden dürfen keine Parameter haben",
+        "Assert.Equal kann keine decimal-Werte vergleichen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Attribut-Argumente müssen Konstanten bestimmter Typen sein (z. B. int, double, string, bool) – decimal gehört nicht dazu. Lösung: int/double oder string übergeben und im Test umwandeln."
+    },
+    {
+      "question": "Eine Methode wirft eine ArgumentOutOfRangeException (Unterklasse von ArgumentException). Der Test lautet Assert.Throws<ArgumentException>(() => …). Was passiert?",
+      "options": [
+        "Der Test ist grün, weil es eine Unterklasse ist",
+        "Der Test kompiliert nicht",
+        "Der Test schlägt fehl, weil Throws den exakten Typ erwartet",
+        "Der Test wird übersprungen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Assert.Throws<T> prüft auf genau den Typ T. Für „T oder Unterklasse“ gibt es Assert.ThrowsAny<T>."
+    }
+  ]
+}

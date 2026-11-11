@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-threads_03_race_conditions",
+  "title": "Race Conditions und lock",
+  "summary": "Wenn Threads gemeinsame Daten ändern, gehen Werte verloren – und wie du das mit lock und Interlocked verhinderst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Race Condition (Wettlaufsituation) entsteht, wenn mehrere Threads gleichzeitig auf gemeinsame Daten zugreifen, mindestens einer davon schreibt und das Ergebnis davon abhängt, welcher Thread „gewinnt“. Solche Fehler sind tückisch: Das Programm funktioniert oft, liefert aber hin und wieder falsche Ergebnisse – je nach Zufall des Schedulings."
+    },
+    {
+      "type": "text",
+      "content": "Das klassische Beispiel: Zwei Threads erhöhen je 10 Millionen Mal einen gemeinsamen Zähler. Erwartet wären 20 000 000. Tatsächlich kommt meist weniger heraus, und bei jedem Lauf etwas anderes. Grund: zaehler++ ist nicht atomar, sondern besteht aus drei Schritten – Wert lesen, um 1 erhöhen, zurückschreiben."
+    },
+    {
+      "type": "code",
+      "content": "int zaehler = 0;\nvoid Zaehle()\n{\n    for (int i = 0; i < 10_000_000; i++)\n        zaehler++;\n}\nvar a = new Thread(Zaehle);\nvar b = new Thread(Zaehle);\na.Start(); b.Start();\na.Join(); b.Join();\nConsole.WriteLine(zaehler);\n// z. B. 15903337 (statt 20000000)"
+    },
+    {
+      "type": "code",
+      "content": "Thread A        Thread B      zaehler\nliest 5                          5\n                liest 5          5\nschreibt 6                       6\n                schreibt 6       6\n→ eine Erhöhung ist verloren!"
+    },
+    {
+      "type": "text",
+      "content": "Noch deutlicher – und praktisch immer reproduzierbar – wird es, wenn zwischen Prüfen und Ändern Zeit vergeht („check-then-act“). Im Schulkino ist noch genau ein Platz frei. Zwei Kassen buchen gleichzeitig: Beide sehen frei > 0, beide buchen. Ergebnis: −1 freie Plätze, der Saal ist überbucht."
+    },
+    {
+      "type": "code",
+      "content": "int frei = 1, buchungen = 0;\nvoid Buchen()\n{\n    if (frei > 0)\n    {\n        Thread.Sleep(10); // Zahlung\n        frei--;\n        buchungen++;\n    }\n}\nvar k1 = new Thread(Buchen);\nvar k2 = new Thread(Buchen);\nk1.Start(); k2.Start();\nk1.Join(); k2.Join();\nConsole.WriteLine(\n    $\"frei {frei}, Buchungen {buchungen}\");\n// frei -1, Buchungen 2"
+    },
+    {
+      "type": "text",
+      "content": "Die Lösung: Der Abschnitt, der die gemeinsamen Daten prüft und ändert (kritischer Abschnitt), darf immer nur von einem Thread gleichzeitig betreten werden – wechselseitiger Ausschluss. In C# erledigt das lock. Als Sperre dient ein eigenes, privates Objekt. Wer das lock nicht bekommt, wartet (Zustand WaitSleepJoin). Achtung: lock braucht einen Referenztyp – lock (zaehler) mit einem int ergibt den Compilerfehler CS0185."
+    },
+    {
+      "type": "code",
+      "content": "object sperre = new();\nvoid Buchen()\n{\n    lock (sperre)\n    {\n        if (frei > 0)\n        {\n            Thread.Sleep(10);\n            frei--;\n            buchungen++;\n        }\n    }\n}\n// frei 0, Buchungen 1"
+    },
+    {
+      "type": "text",
+      "content": "Für einfache Zähler gibt es eine schnellere Alternative ohne lock: Die Klasse Interlocked führt Operationen wie Increment, Decrement oder Add atomar aus – also unteilbar in einem Schritt. Mit Interlocked.Increment(ref zaehler) kommt im Zähler-Beispiel zuverlässig 20 000 000 heraus. Für mehrere zusammenhängende Schritte (wie Prüfen und Buchen) brauchst du aber weiterhin lock."
+    },
+    {
+      "type": "text",
+      "content": "Zu viel Sperren hat auch Nachteile: Locks kosten Zeit, und wenn Thread A Sperre 1 hält und auf Sperre 2 wartet, während Thread B Sperre 2 hält und auf Sperre 1 wartet, warten beide ewig – ein Deadlock. Faustregeln: kritische Abschnitte kurz halten, mehrere Sperren immer in derselben Reihenfolge holen, gemeinsame Daten möglichst vermeiden. Zusammenfassung: Gemeinsame Daten + mindestens ein Schreiber = Race-Gefahr. Schützen mit lock oder Interlocked."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Warum ist zaehler++ nicht thread-sicher?",
+      "options": [
+        "Weil int in C# nur 16 Bit hat",
+        "Weil ++ nur im Hauptthread erlaubt ist",
+        "Weil der Compiler ++ bei Threads weglässt",
+        "Weil es aus Lesen, Erhöhen und Zurückschreiben besteht und dazwischen ein anderer Thread schreiben kann"
+      ],
+      "correctIndex": 3,
+      "explanation": "zaehler++ ist ein Read-Modify-Write in mehreren Schritten. Lesen zwei Threads denselben alten Wert, geht eine Erhöhung verloren (Lost Update)."
+    },
+    {
+      "question": "Finde den Fehler: Warum kompiliert dieser Code nicht?",
+      "code": "int zaehler = 0;\nlock (zaehler)\n{\n    zaehler++;\n}",
+      "options": [
+        "lock braucht einen Referenztyp – int ist ein Werttyp (CS0185)",
+        "In einem lock-Block darf kein ++ stehen",
+        "lock funktioniert nur in Klassen, nicht in Top-Level-Code",
+        "Es fehlt ein Thread.Sleep"
+      ],
+      "correctIndex": 0,
+      "explanation": "lock sperrt über ein Objekt (Referenztyp). Mit einem int meldet der Compiler CS0185. Richtig: ein eigenes Sperrobjekt, z. B. object sperre = new();."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "int z = 0;\nvoid Zaehle()\n{\n    for (int i = 0; i < 10_000_000; i++)\n        Interlocked.Increment(ref z);\n}\nvar a = new Thread(Zaehle);\nvar b = new Thread(Zaehle);\na.Start(); b.Start();\na.Join(); b.Join();\nConsole.WriteLine(z);",
+      "options": [
+        "Eine Zahl kleiner als 20000000",
+        "Bei jedem Lauf etwas anderes",
+        "20000000",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Interlocked.Increment erhöht atomar. Keine Erhöhung geht verloren, das Ergebnis ist bei jedem Lauf 20000000."
+    },
+    {
+      "question": "Thread A hält Sperre X und wartet auf Sperre Y. Thread B hält Y und wartet auf X. Wie heißt diese Situation?",
+      "options": [
+        "Race Condition",
+        "Deadlock",
+        "Lost Update",
+        "Starvation durch Sleep"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beide Threads warten zyklisch aufeinander und kommen nie weiter – ein Deadlock. Vermeiden kannst du ihn, indem alle Threads Sperren in derselben Reihenfolge anfordern."
+    }
+  ]
+}

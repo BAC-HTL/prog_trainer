@@ -1,0 +1,93 @@
+{
+  "id": "syp-j3-qualitaet_03_dokumentation_wartung",
+  "title": "Produktdokumentation und Wartung",
+  "summary": "Benutzer-, Entwickler- und Betriebsdokumentation, Arten der Wartung und technische Schulden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Dokumentation richtet sich immer an eine Zielgruppe. Man unterscheidet Benutzerdokumentation (für die Anwender:innen), Entwicklerdokumentation (für alle, die die Software weiterentwickeln) und Betriebsdokumentation (für die Administration). Bei der Diplomarbeit ist das entscheidend: Nach der Matura seid ihr weg – der Verein muss die App trotzdem nutzen, betreiben und vielleicht weiterentwickeln lassen können."
+    },
+    {
+      "type": "text",
+      "content": "Die Benutzerdokumentation erklärt, wie man das Produkt verwendet: Schritt-für-Schritt-Anleitungen mit Screenshots, Kurzanleitung, FAQ oder eine Hilfe direkt in der App. Sie ist aufgabenorientiert („Wie sage ich ein Training ab?“) statt nach Menüpunkten sortiert und verwendet die Sprache der Benutzer:innen – keine Fachbegriffe wie „API“ oder „Token“."
+    },
+    {
+      "type": "text",
+      "content": "Die Entwicklerdokumentation beschreibt den Aufbau: Architektur mit Komponenten und Diagrammen, Datenmodell, Schnittstellen (z. B. die REST-API), Anleitung zum Einrichten und Bauen, Code-Kommentare und Doc-Kommentare (Docstrings in Python, XML-Kommentare in C#) sowie wichtige Entscheidungen – vor allem, warum etwas so gelöst wurde. Ein guter Einstieg ist die README-Datei im Repository:"
+    },
+    {
+      "type": "code",
+      "content": "# Vereins-App\n## Überblick und Architektur\n## Voraussetzungen\n## Installation und Build\n## Tests ausführen\n## Projektstruktur\n## Deployment\n## Kontakt und Lizenz"
+    },
+    {
+      "type": "text",
+      "content": "Die Betriebsdokumentation richtet sich an die Administration: Installation und Deployment auf dem Server, Konfiguration, Backup und Wiederherstellung, Überwachung (Monitoring), Benutzerverwaltung und ein Notfallplan. Zugangsdaten gehören nie im Klartext in die Doku, sondern in einen Passwortmanager. Typischer Fehler bei allen Dokuarten: Sie wird erst in der letzten Woche geschrieben und ist dann lückenhaft. Besser: laufend schreiben und wie Code im Repository versionieren."
+    },
+    {
+      "type": "text",
+      "content": "Mit der Auslieferung beginnt die Wartung – oft der längste und teuerste Abschnitt im Leben einer Software. Man unterscheidet vier Arten: Korrektive Wartung behebt Fehler. Adaptive Wartung passt die Software an eine geänderte Umgebung an (neue Betriebssystemversion, neue gesetzliche Vorgaben, neue Schnittstelle). Perfektive Wartung verbessert die Software, etwa Leistung oder neue Wünsche der Benutzer:innen. Präventive Wartung beugt künftigen Problemen vor, z. B. durch Refactoring oder das Aktualisieren von Bibliotheken."
+    },
+    {
+      "type": "code",
+      "content": "Meldung                Art\nAbsturz bei leerer     korrektiv\n  Liste\nNeue Android-Version   adaptiv\n  verlangt Anpassung\nKunde will PDF-Export  perfektiv\nVeraltete Bibliothek   präventiv\n  vor Support-Ende\n  ersetzen"
+    },
+    {
+      "type": "text",
+      "content": "Technische Schulden ist eine Metapher von Ward Cunningham: Eine schnelle, unsaubere Lösung spart jetzt Zeit, kostet aber später „Zinsen“ – jede weitere Änderung wird mühsamer und fehleranfälliger. Ursachen sind etwa Zeitdruck vor einer Abgabe, fehlende Tests, Copy-Paste-Code, veraltete Abhängigkeiten oder fehlende Doku. Schulden bewusst aufzunehmen kann sinnvoll sein (z. B. ein schneller Prototyp für eine Präsentation) – dann aber dokumentiert und mit dem Plan, sie zurückzuzahlen."
+    },
+    {
+      "type": "text",
+      "content": "Schulden abbauen: sichtbar machen (eigene Einträge im Backlog, Warnungen der statischen Analyse), regelmäßig Zeit dafür einplanen, Refactoring mit Tests absichern, damit nichts kaputtgeht, und die Pfadfinderregel befolgen: „Hinterlasse den Code sauberer, als du ihn vorgefunden hast.“"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Benutzerdoku erklärt die Bedienung, Entwicklerdoku den Aufbau, Betriebsdoku Installation, Backup und Betrieb. Wartung ist korrektiv (Fehler), adaptiv (Umgebung), perfektiv (Verbesserung) oder präventiv (Vorbeugung). Technische Schulden sparen kurzfristig Zeit und kosten langfristig Aufwand – sie müssen sichtbar gemacht und abgebaut werden."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Die Administratorin des Vereins will wissen, wie sie nach einem Festplattenausfall die Datenbank aus dem Backup wiederherstellt. Wo sollte das stehen?",
+      "options": [
+        "In der Benutzerdokumentation",
+        "In den Code-Kommentaren",
+        "In der Betriebsdokumentation",
+        "Im Lastenheft"
+      ],
+      "correctIndex": 2,
+      "explanation": "Backup, Wiederherstellung und Server-Betrieb sind Inhalte der Betriebsdokumentation für die Administration."
+    },
+    {
+      "question": "Eine neue Android-Version verlangt geänderte Berechtigungen, sonst startet die App nicht mehr. Welche Art von Wartung ist die nötige Anpassung?",
+      "options": [
+        "Korrektiv",
+        "Adaptiv",
+        "Perfektiv",
+        "Präventiv"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Software selbst war nicht fehlerhaft, aber die Umgebung hat sich geändert. Die Anpassung daran ist adaptive Wartung."
+    },
+    {
+      "question": "Das Team baut eine unübersichtliche Funktion um, ohne dass sich das Verhalten ändert, damit künftige Fehler unwahrscheinlicher werden. Welche Wartungsart ist das?",
+      "options": [
+        "Korrektiv",
+        "Adaptiv",
+        "Perfektiv",
+        "Präventiv"
+      ],
+      "correctIndex": 3,
+      "explanation": "Vorbeugendes Refactoring ohne neue Funktion und ohne konkreten Fehler zählt zur präventiven Wartung."
+    },
+    {
+      "question": "Was bedeuten die „Zinsen“ bei technischen Schulden?",
+      "options": [
+        "Jede spätere Änderung kostet mehr Aufwand",
+        "Der Kunde muss für Bugfixes extra bezahlen",
+        "Die Lizenzkosten für Bibliotheken steigen",
+        "Das Team bekommt weniger Story Points pro Sprint"
+      ],
+      "correctIndex": 0,
+      "explanation": "Unsaubere Lösungen machen künftige Änderungen mühsamer und fehleranfälliger. Dieser Mehraufwand sind die „Zinsen“."
+    }
+  ]
+}

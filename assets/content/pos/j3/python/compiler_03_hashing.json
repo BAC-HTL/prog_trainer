@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-python-compiler_03_hashing",
+  "title": "Hashing und Symboltabellen",
+  "summary": "Wie Hashfunktionen und Hashtabellen funktionieren, wie man Kollisionen behandelt und warum Compiler und Python-dicts darauf aufbauen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Compiler muss bei jedem Bezeichner blitzschnell nachschlagen: Ist summe deklariert? Welchen Typ hat sie? Diese Informationen stehen in der Symboltabelle. Würde man sie als Liste speichern, müsste man bei jeder Suche alle Einträge durchgehen (lineare Suche). Eine Hashtabelle findet einen Eintrag im Durchschnitt in konstanter Zeit – egal, wie viele Einträge es gibt. Die Idee: Eine Hashfunktion berechnet aus dem Schlüssel direkt einen Index im Array (Bucket). Eine gute Hashfunktion ist deterministisch (gleicher Schlüssel → gleicher Index), schnell und verteilt die Schlüssel möglichst gleichmäßig. Ein sehr einfaches Beispiel: Zeichencodes aufsummieren und Modulo Tabellengröße rechnen."
+    },
+    {
+      "type": "code",
+      "content": "def h(schluessel, groesse):\n    summe = 0\n    for z in schluessel:\n        summe += ord(z)  # Zeichencode\n    return summe % groesse\n\nfor name in [\"Anna\", \"Ben\",\n             \"Nina\", \"Max\"]:\n    print(name, h(name, 7))\n# Anna 4\n# Ben 4\n# Nina 5\n# Max 0"
+    },
+    {
+      "type": "text",
+      "content": "Anna und Ben landen beide auf Index 4 – eine Kollision. Kollisionen sind unvermeidbar, denn es gibt viel mehr mögliche Schlüssel als Plätze in der Tabelle (Schubfachprinzip). Unsere Summen-Hashfunktion ist zudem schwach: Anagramme wie „tor“, „rot“ und „ort“ haben immer denselben Hashwert. Echte Hashfunktionen berücksichtigen auch die Position der Zeichen."
+    },
+    {
+      "type": "text",
+      "content": "Lösung 1 – Verkettung (Chaining): Jeder Bucket ist eine Liste von (Schlüssel, Wert)-Paaren. Kollidierende Einträge werden einfach in dieselbe Liste gehängt. Beim Suchen berechnest du den Index und gehst nur diese kurze Liste durch."
+    },
+    {
+      "type": "code",
+      "content": "def h(schluessel, groesse):\n    summe = 0\n    for z in schluessel:\n        summe += ord(z)  # Zeichencode\n    return summe % groesse\n\nclass HashTabelle:\n    def __init__(self, groesse=7):\n        self.buckets = [[] for _ in\n                        range(groesse)]\n\n    def put(self, key, wert):\n        i = h(key, len(self.buckets))\n        bucket = self.buckets[i]\n        for j, (k, _) in enumerate(bucket):\n            if k == key:   # überschreiben\n                bucket[j] = (key, wert)\n                return\n        bucket.append((key, wert))\n\n    def get(self, key):\n        i = h(key, len(self.buckets))\n        for k, w in self.buckets[i]:\n            if k == key:\n                return w\n        raise KeyError(key)\n\nt = HashTabelle()\nt.put(\"Anna\", 1)\nt.put(\"Ben\", 2)\nprint(t.buckets[4])\n# [('Anna', 1), ('Ben', 2)]\nprint(t.get(\"Ben\"))   # 2"
+    },
+    {
+      "type": "text",
+      "content": "Lösung 2 – offene Adressierung: Alle Einträge liegen direkt im Array. Ist der berechnete Platz belegt, sucht man nach einer festen Regel weiter, beim linearen Sondieren einfach im nächsten Platz (i + 1) % größe. Beim Suchen geht man dieselbe Folge ab, bis man den Schlüssel oder einen leeren Platz findet. Achtung beim Löschen: Einfach None hineinschreiben würde die Suchkette unterbrechen – man markiert gelöschte Plätze daher mit einem Platzhalter („Grabstein“)."
+    },
+    {
+      "type": "code",
+      "content": "# h(x) = x % 10, lineares Sondieren\nslots = [None] * 10\nfor x in [12, 22, 5, 32]:\n    i = x % 10\n    while slots[i] is not None:\n        i = (i + 1) % 10\n    slots[i] = x\nprint(slots)\n# [None, None, 12, 22, 32, 5,\n#  None, None, None, None]"
+    },
+    {
+      "type": "text",
+      "content": "Der Belegungsfaktor α = Anzahl Einträge / Anzahl Plätze bestimmt die Geschwindigkeit: Je voller die Tabelle, desto mehr Kollisionen. Darum wird eine Hashtabelle ab einer gewissen Füllung vergrößert und alle Einträge werden neu verteilt (Rehashing). Pythons dict ist eine Hashtabelle, die genau das automatisch erledigt; CPython verwendet dabei offene Adressierung. Schlüssel müssen hashbar sein – unveränderliche Typen wie str, int oder tuple. Eine Liste kann sich ändern und damit ihren Hashwert, deshalb ist sie als Schlüssel verboten."
+    },
+    {
+      "type": "code",
+      "content": "print(hash(42))      # 42\nd = {(1, 2): \"ok\"}\nprint(d[(1, 2)])     # ok\ntry:\n    d = {[1, 2]: \"x\"}\nexcept TypeError as e:\n    print(e)  # unhashable type: 'list'\n\n# Mini-Symboltabelle eines Compilers\nsymbole = {}\nsymbole[\"summe\"] = (\"int\", 3)\nsymbole[\"name\"] = (\"string\", 4)\nprint(symbole.get(\"summe\"))  # ('int', 3)\nprint(\"zaehler\" in symbole)  # False"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Hashfunktion bildet Schlüssel auf Array-Indizes ab. Kollisionen löst man durch Verkettung (Listen pro Bucket) oder offene Adressierung (weitersuchen im Array, z. B. linear). Ein niedriger Belegungsfaktor hält Hashtabellen schnell. Compiler nutzen Hashtabellen für die Symboltabelle, Python für dict und set. Übrigens: hash() von Strings liefert in jedem Programmlauf andere Werte (Hash-Randomisierung als Schutz vor Angriffen) – verlasse dich nie auf konkrete Hashwerte von Strings."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Mit h(x) = x % 7 und linearem Sondieren werden 3, 10, 17, 4 (in dieser Reihenfolge) in eine leere Tabelle mit 7 Plätzen eingefügt. Auf welchem Index landet die 4?",
+      "options": [
+        "4",
+        "5",
+        "6",
+        "3"
+      ],
+      "correctIndex": 2,
+      "explanation": "3, 10 und 17 haben alle den Hashwert 3. Sie belegen die Plätze 3, 4 und 5. Die 4 hat Hashwert 4 – belegt –, 5 ebenfalls, also landet sie auf Index 6."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def h(s, m):\n    return sum(ord(z) for z in s) % m\n\n# ord('B')=66, ord('e')=101,\n# ord('n')=110\nprint(h(\"Ben\", 7))",
+      "options": [
+        "4",
+        "1",
+        "0",
+        "3"
+      ],
+      "correctIndex": 0,
+      "explanation": "B: 66 + 101 + 110 = 277, 277 % 7 = 4. Die Hashfunktion addiert die Zeichencodes und rechnet Modulo 7."
+    },
+    {
+      "question": "Finde den Fehler: Warum stürzt dieser Code ab?",
+      "code": "plaetze = {}\nplaetze[[2, 3]] = \"Fenster\"",
+      "options": [
+        "Ein dict darf nur Strings als Schlüssel haben",
+        "Tupel müssen in eckigen Klammern stehen",
+        "Eine Liste ist veränderlich und daher nicht hashbar – sie kann kein Schlüssel sein (TypeError)",
+        "Der Wert \"Fenster\" ist zu lang"
+      ],
+      "correctIndex": 2,
+      "explanation": "dict-Schlüssel müssen hashbar sein. Listen sind veränderlich, Python verweigert sie mit „TypeError: unhashable type: 'list'“. Ein Tupel (2, 3) würde funktionieren."
+    },
+    {
+      "question": "Was versteht man unter Verkettung (Chaining) bei Hashtabellen?",
+      "options": [
+        "Bei einer Kollision wird im nächsten freien Platz des Arrays weitergesucht",
+        "Jeder Bucket enthält eine Liste, in der alle Einträge mit demselben Hashwert gespeichert werden",
+        "Alle Schlüssel werden vor dem Einfügen sortiert",
+        "Die Tabelle wird bei jeder Kollision verdoppelt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei der Verkettung hängen kollidierende Einträge in derselben Liste. Weitersuchen im Array ist offene Adressierung."
+    }
+  ]
+}

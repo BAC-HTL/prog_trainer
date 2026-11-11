@@ -1,0 +1,118 @@
+{
+  "id": "tinf-j3-speicher_pruefung",
+  "title": "Abschlussprüfung: Speicher-, Geräte- & Dateiverwaltung",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Eine Schleife greift immer wieder auf dieselbe Variable zu. Welches Prinzip nutzt der Cache hier aus?",
+      "options": [
+        "Räumliche Lokalität",
+        "Zeitliche Lokalität",
+        "Interne Fragmentierung",
+        "Belady-Anomalie"
+      ],
+      "correctIndex": 1,
+      "explanation": "Was gerade benutzt wurde, wird bald wieder benutzt – das ist zeitliche Lokalität. Räumliche Lokalität betrifft benachbarte Adressen."
+    },
+    {
+      "question": "Seitengröße 1 KiB (1024 Byte). In welcher Seite und mit welchem Offset liegt die Adresse 5000?",
+      "options": [
+        "Seite 5, Offset 0",
+        "Seite 4, Offset 1000",
+        "Seite 4, Offset 904",
+        "Seite 3, Offset 904"
+      ],
+      "correctIndex": 2,
+      "explanation": "5000 // 1024 = 4, 5000 − 4 · 1024 = 5000 − 4096 = 904."
+    },
+    {
+      "question": "Seitengröße 4096 Byte, Seite 2 liegt in Rahmen 6. Welche physische Adresse gehört zur logischen Adresse 9000?",
+      "options": [
+        "25384",
+        "9000",
+        "24576",
+        "33576"
+      ],
+      "correctIndex": 0,
+      "explanation": "9000 = 2 · 4096 + 808, also Seite 2, Offset 808. Physisch: 6 · 4096 + 808 = 24576 + 808 = 25384."
+    },
+    {
+      "question": "Bei Paging bleibt in der letzten Seite eines Prozesses ein Teil ungenutzt. Wie nennt man das?",
+      "options": [
+        "Externe Fragmentierung",
+        "Thrashing",
+        "Seitenfehler",
+        "Interne Fragmentierung"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Verschnitt liegt innerhalb eines zugeteilten Rahmens – daher intern. Externe Fragmentierung (zu kleine Lücken zwischen Bereichen) verhindert Paging."
+    },
+    {
+      "question": "Wie viele Seitenfehler entstehen mit LRU und 3 anfangs leeren Rahmen?",
+      "code": "Referenzfolge: 4 2 1 4 3 4 2",
+      "options": [
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "correctIndex": 1,
+      "explanation": "4, 2, 1 sind Fehler. 4 ist ein Treffer und wird frisch. Bei 3 ist 2 am längsten unbenutzt → raus (F). 4 ist Treffer. Bei 2 ist 1 am längsten unbenutzt → raus (F). Zusammen 5."
+    },
+    {
+      "question": "Mit FIFO und 3 Rahmen gibt es für eine Folge 9 Seitenfehler, mit 4 Rahmen 10. Wie heißt dieser Effekt?",
+      "options": [
+        "Thrashing",
+        "Belady-Anomalie",
+        "Lokalitätsprinzip",
+        "Race Condition"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Belady-Anomalie tritt bei FIFO auf: Mehr Rahmen können mehr Seitenfehler bedeuten. Bei LRU kann das nicht passieren."
+    },
+    {
+      "question": "Warum ist die optimale Seitenersetzung in der Praxis nicht umsetzbar?",
+      "options": [
+        "Sie braucht zu viel RAM",
+        "Sie funktioniert nur mit FAT32",
+        "Sie müsste wissen, welche Seiten künftig wann gebraucht werden",
+        "Sie verursacht immer Thrashing"
+      ],
+      "correctIndex": 2,
+      "explanation": "Optimal ersetzt die Seite, die am längsten nicht mehr gebraucht wird. Die künftigen Zugriffe kennt das BS aber nicht – darum dient das Verfahren nur als Vergleichsmaßstab."
+    },
+    {
+      "question": "Ein USB-Stick soll an Windows, macOS, Linux und einem älteren Autoradio funktionieren. Welches Dateisystem ist dafür am ehesten gedacht – und mit welchem Nachteil?",
+      "options": [
+        "NTFS – keine Rechte",
+        "ext4 – kein Journal",
+        "FAT32 – Dateien höchstens 4 GiB − 1 Byte, keine Rechte",
+        "FAT32 – nur unter Linux lesbar"
+      ],
+      "correctIndex": 2,
+      "explanation": "FAT32 ist sehr kompatibel, bietet aber weder Zugriffsrechte noch Journaling und begrenzt die Dateigröße."
+    },
+    {
+      "question": "Was ist der Unterschied zwischen einem harten und einem symbolischen Link unter ext4?",
+      "options": [
+        "Ein harter Link ist ein weiterer Name für denselben Inode, ein symbolischer Link speichert nur den Pfad zum Ziel",
+        "Ein harter Link speichert den Pfad, ein symbolischer Link ist ein weiterer Name für denselben Inode",
+        "Beide sind Kopien der Datei",
+        "Symbolische Links gibt es nur unter Windows"
+      ],
+      "correctIndex": 0,
+      "explanation": "Darum funktioniert ein harter Link auch nach dem Löschen des Originalnamens weiter, ein symbolischer Link zeigt dann ins Leere."
+    },
+    {
+      "question": "Wie erfährt die CPU, dass die SSD die angeforderten Daten fertig in den RAM übertragen hat, ohne ständig nachzufragen?",
+      "options": [
+        "Durch Polling",
+        "Durch einen Seitenfehler",
+        "Durch das Journal",
+        "Durch einen Interrupt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der DMA-Controller überträgt die Daten selbstständig und meldet das Ende per Interrupt. Polling wäre das ständige Nachfragen, das so vermieden wird."
+    }
+  ]
+}

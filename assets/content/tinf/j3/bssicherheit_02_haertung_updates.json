@@ -1,0 +1,94 @@
+{
+  "id": "tinf-j3-bssicherheit_02_haertung_updates",
+  "title": "Härtung: Updates, Rechte, Firewall",
+  "summary": "Wie du ein Betriebssystem mit Updates, Least Privilege, Firewall, abgeschalteten Diensten und Verschlüsselung härtest – und Sicherheitskonzepte bewertest.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Härtung (Hardening) heißt: die Angriffsfläche eines Systems so klein wie möglich machen. Keine einzelne Maßnahme ist perfekt, deshalb kombiniert man mehrere Schichten (Defense in Depth): Fällt eine Schutzschicht, hält die nächste.\n\nDie erste Schicht sind Updates (Patch-Management): Sicherheitsupdates zeitnah einspielen – am Client am besten automatisch. Auf Servern plant man Wartungsfenster und testet wichtige Updates vorher, damit kein Dienst ausfällt. Nicht vergessen: Auch Anwendungen, Treiber und Firmware brauchen Updates, und manche Updates wirken erst nach einem Neustart."
+    },
+    {
+      "type": "code",
+      "content": "# Debian/Ubuntu: Paketliste\n# holen, dann aktualisieren\nsudo apt update\nsudo apt upgrade\n\n# Windows: Einstellungen →\n# Windows Update"
+    },
+    {
+      "type": "text",
+      "content": "Least Privilege (Prinzip der minimalen Rechte): Jeder Benutzer und jeder Dienst bekommt nur die Rechte, die er wirklich braucht.\n• Im Alltag ein normales Konto, Adminrechte nur bei Bedarf (sudo unter Linux, Benutzerkontensteuerung/UAC unter Windows)\n• Dienste mit eigenem Dienstkonto statt als root\n• Rechte über Gruppen vergeben, nicht einzeln\n• Konten von Personen, die gegangen sind, sperren"
+    },
+    {
+      "type": "code",
+      "content": "$ chmod 640 config.txt\n$ ls -l config.txt\n-rw-r----- 1 anna anna 42 config.txt\n\n# Besitzer: lesen+schreiben (6)\n# Gruppe:   nur lesen       (4)\n# Andere:   nichts          (0)"
+    },
+    {
+      "type": "text",
+      "content": "Firewall: Sie filtert Netzwerkverkehr nach Regeln (Port, Protokoll, Adresse). Bewährte Grundregel: eingehend alles verbieten, was nicht ausdrücklich erlaubt ist (Default Deny). Unter Windows übernimmt das die Windows Defender Firewall, unter Linux z. B. ufw als einfache Oberfläche für nftables/iptables."
+    },
+    {
+      "type": "code",
+      "content": "sudo ufw default deny incoming\nsudo ufw default allow outgoing\nsudo ufw allow 22/tcp   # SSH\nsudo ufw enable\nsudo ufw status"
+    },
+    {
+      "type": "text",
+      "content": "Unnötige Dienste deaktivieren: Was nicht läuft, kann nicht angegriffen werden. Unter Linux zeigt systemctl die laufenden Dienste; mit disable --now wird ein Dienst sofort gestoppt und startet auch beim nächsten Boot nicht mehr. Unter Windows geht das in der Dienste-Konsole (services.msc). Vorher klären, ob wirklich niemand den Dienst braucht!"
+    },
+    {
+      "type": "code",
+      "content": "# laufende Dienste anzeigen\nsystemctl list-units \\\n  --type=service --state=running\n\n# Druckdienst stoppen und\n# Autostart abschalten\nsudo systemctl disable --now cups"
+    },
+    {
+      "type": "text",
+      "content": "Verschlüsselung: Festplattenverschlüsselung (BitLocker unter Windows, LUKS unter Linux) schützt die Daten, wenn ein Gerät gestohlen wird – nicht aber im laufenden, entsperrten Betrieb. Bei der Übertragung verschlüsselte Protokolle verwenden: SSH statt Telnet, HTTPS statt HTTP, SFTP statt FTP."
+    },
+    {
+      "type": "text",
+      "content": "Ein Sicherheitskonzept bewerten – Leitfragen:\n• Sind alle drei Schutzziele berücksichtigt?\n• Wurden Risiken nach Eintrittswahrscheinlichkeit × Schaden priorisiert?\n• Gibt es mehrere Schutzschichten statt einer einzigen?\n• Gibt es getestete Backups (Wiederherstellung ausprobiert)?\n• Ist es benutzbar? Zu strenge Regeln werden umgangen (Passwort auf dem Post-it).\n• Wird es dokumentiert und regelmäßig überprüft?\n\nZusammenfassung: Updates, Least Privilege, Firewall, möglichst wenige Dienste und Verschlüsselung bilden zusammen die Härtung – ein gutes Konzept kombiniert sie und wird laufend überprüft."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Rechte hat die Datei nach diesem Befehl?",
+      "code": "chmod 640 noten.txt",
+      "options": [
+        "rw-r-----",
+        "rwxr-x---",
+        "rw-r--r--",
+        "r--rw----"
+      ],
+      "correctIndex": 0,
+      "explanation": "6 = rw-, 4 = r--, 0 = ---. Der Besitzer darf lesen und schreiben, die Gruppe nur lesen, alle anderen nichts."
+    },
+    {
+      "question": "Ein Server soll nur per SSH (Port 22) und HTTPS (Port 443) erreichbar sein. Welche Firewall-Strategie passt?",
+      "options": [
+        "Alles erlauben und bekannte Angriffsports sperren",
+        "Keine Firewall – SSH ist ohnehin verschlüsselt",
+        "Ausgehend alles verbieten, eingehend alles erlauben",
+        "Eingehend alles verbieten, nur 22 und 443 erlauben"
+      ],
+      "correctIndex": 3,
+      "explanation": "Default Deny: Eingehend wird alles blockiert, was nicht ausdrücklich erlaubt ist. So bleibt auch ein vergessener Dienst unerreichbar."
+    },
+    {
+      "question": "Ein Laptop mit BitLocker-Verschlüsselung wird im eingeschalteten, entsperrten Zustand kurz unbeaufsichtigt gelassen. Was gilt?",
+      "options": [
+        "Die Daten sind durch BitLocker vollständig geschützt",
+        "BitLocker schützt vor allem bei Diebstahl des ausgeschalteten Geräts, nicht im entsperrten Betrieb",
+        "BitLocker sperrt den Bildschirm automatisch sofort",
+        "BitLocker verschlüsselt nur Netzwerkverkehr"
+      ],
+      "correctIndex": 1,
+      "explanation": "Im entsperrten Betrieb sind die Daten für den angemeldeten Benutzer – und jeden am Gerät – lesbar. Daher zusätzlich Bildschirm sperren (Windows+L)."
+    },
+    {
+      "question": "Was bewirkt „sudo systemctl disable --now cups“?",
+      "options": [
+        "Der Dienst wird nur bis zum nächsten Neustart gestoppt",
+        "Der Dienst wird deinstalliert",
+        "Der Dienst wird sofort gestoppt und startet beim Booten nicht mehr automatisch",
+        "Der Dienst wird nur beim nächsten Boot nicht gestartet, läuft aber jetzt weiter"
+      ],
+      "correctIndex": 2,
+      "explanation": "disable verhindert den automatischen Start, --now stoppt den Dienst zusätzlich sofort. Deinstalliert wird nichts."
+    }
+  ]
+}
