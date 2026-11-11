@@ -108,28 +108,28 @@ Die Inhalte folgen dem Lehrplan der **Höheren Lehranstalt für Informatik** (HT
 
 | Fach | Modul | Sem. | Stand |
 |---|---|---|---|
-| POS | Programmiersprachen & Paradigmen | 7 | ○ |
-| POS | Mehrwertige Logik & Fuzzy-Sets | 7 | ○ |
-| POS | Design Patterns | 7 | ○ |
-| POS | Thread-Synchronisation | 7 | ○ |
-| POS | Build-Management & Dokumentation | 7 | ○ |
-| POS | Komplexität & Optimierung | 8 | ○ |
-| POS | Grundzüge der Numerik | 8 | ○ |
-| POS | Zuverlässige Systeme & Integrationstests | 8 | ○ |
-| POS | Parallele Programmierung & Reflection | 8 | ○ |
-| DBI | Konzeptuelle Modelle & Normalformen | 7 | ○ |
-| DBI | Transaktionen & Recovery | 8 | ○ |
-| DBI | Mehrbenutzerbetrieb & Concurrency Control | 8 | ○ |
-| DBI | Zugriffskontrolle & Kryptologie | 8 | ○ |
-| NVS | Security Policies & Sicherheitslösungen | 7 | ○ |
-| NVS | Verteilte Systeme & Socket-API | 7 | ○ |
-| NVS | Verfügbarkeit & Lastverteilung | 8 | ○ |
-| NVS | Mobile Apps & Interprozesskommunikation | 8 | ○ |
-| SYP | IT-Markt & Prozessmodelle | 7 | ○ |
-| SYP | IT-Architekturen & Frameworks | 7 | ○ |
-| SYP | Requirements Engineering & Testmanagement | 7 | ○ |
-| SYP | IT-Governance & IT-Service-Management | 8 | ○ |
-| SYP | IT-Controlling & Compliance | 8 | ○ |
+| POS | Programmiersprachen & Paradigmen | 7 | ✅ |
+| POS | Mehrwertige Logik & Fuzzy-Sets | 7 | ✅ |
+| POS | Design Patterns | 7 | ✅ Python, C# |
+| POS | Thread-Synchronisation | 7 | ✅ Python, C# |
+| POS | Build-Management & Dokumentation | 7 | ✅ Python, C# |
+| POS | Komplexität & Optimierung | 8 | ✅ |
+| POS | Grundzüge der Numerik | 8 | ✅ |
+| POS | Zuverlässige Systeme & Integrationstests | 8 | ✅ |
+| POS | Parallele Programmierung & Reflection | 8 | ✅ Python, C# |
+| DBI | Konzeptuelle Modelle & Normalformen | 7 | ✅ |
+| DBI | Transaktionen & Recovery | 8 | ✅ |
+| DBI | Mehrbenutzerbetrieb & Concurrency Control | 8 | ✅ |
+| DBI | Zugriffskontrolle & Kryptologie | 8 | ✅ |
+| NVS | Security Policies & Sicherheitslösungen | 7 | ✅ |
+| NVS | Verteilte Systeme & Socket-API | 7 | ✅ |
+| NVS | Verfügbarkeit & Lastverteilung | 8 | ✅ |
+| NVS | Mobile Apps & Interprozesskommunikation | 8 | ✅ |
+| SYP | IT-Markt & Prozessmodelle | 7 | ✅ |
+| SYP | IT-Architekturen & Frameworks | 7 | ✅ |
+| SYP | Requirements Engineering & Testmanagement | 7 | ✅ |
+| SYP | IT-Governance & IT-Service-Management | 8 | ✅ |
+| SYP | IT-Controlling & Compliance | 8 | ✅ |
 
 ### 5. Jahrgang
 

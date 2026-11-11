@@ -1,0 +1,117 @@
+{
+ "id": "syp-j4-controlling_pruefung",
+ "title": "Abschlussprüfung: IT-Controlling & Compliance",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "Warum vergleicht man IT-Lösungen über die TCO und nicht nur über den Kaufpreis?",
+   "options": [
+    "Weil der Kaufpreis immer der größte Kostenanteil ist",
+    "Weil laufende und indirekte Kosten über die Nutzungsdauer oft deutlich höher sind",
+    "Weil die TCO gesetzlich vorgeschrieben ist",
+    "Weil die TCO den Nutzen schon enthält"
+   ],
+   "correctIndex": 1,
+   "explanation": "Betrieb, Support, Schulung und Ausfälle machen oft den größeren Teil aus. Die TCO enthält nur Kosten, keinen Nutzen."
+  },
+  {
+   "question": "Investition 24 000 €, Einsparung 10 000 €/Jahr, laufende Mehrkosten 2 000 €/Jahr. Amortisationsdauer?",
+   "options": [
+    "2,4 Jahre",
+    "3 Jahre",
+    "2 Jahre",
+    "12 Jahre"
+   ],
+   "correctIndex": 1,
+   "explanation": "Rückfluss = 10 000 − 2 000 = 8 000 €/Jahr. 24 000 / 8 000 = 3 Jahre."
+  },
+  {
+   "question": "Investition 20 000 €, Rückflüsse 5 000 €, 8 000 €, 10 000 € in den Jahren 1–3. Nach wie vielen Jahren ist die Investition amortisiert?",
+   "options": [
+    "2,7 Jahre",
+    "2,5 Jahre",
+    "3 Jahre",
+    "2,3 Jahre"
+   ],
+   "correctIndex": 0,
+   "explanation": "Nach 2 Jahren: 13 000 €. Es fehlen 7 000 € von 10 000 € im dritten Jahr: 2 + 0,7 = 2,7 Jahre."
+  },
+  {
+   "question": "Was ist ein Nachteil der statischen Amortisationsrechnung?",
+   "options": [
+    "Sie ist zu kompliziert",
+    "Sie braucht keine Zahlen",
+    "Sie berücksichtigt nur indirekte Kosten",
+    "Sie ignoriert den Zeitwert des Geldes und was nach der Amortisation passiert"
+   ],
+   "correctIndex": 3,
+   "explanation": "Statische Verfahren rechnen ohne Zinsen und betrachten nur den Zeitpunkt der Amortisation."
+  },
+  {
+   "question": "Ein RZ hat einen PUE von 1,25 und die IT-Geräte verbrauchen 2 000 000 kWh. Wie hoch ist der Gesamtverbrauch?",
+   "options": [
+    "1 600 000 kWh",
+    "2 250 000 kWh",
+    "2 500 000 kWh",
+    "3 250 000 kWh"
+   ],
+   "correctIndex": 2,
+   "explanation": "Gesamt = PUE · IT-Energie = 1,25 · 2 000 000 = 2 500 000 kWh."
+  },
+  {
+   "question": "Welche Maßnahme gehört zu „Green in IT“?",
+   "options": [
+    "Virtualisierung: wenige gut ausgelastete Hosts statt vieler kaum genutzter Server",
+    "Online-Formulare statt Papier in der Verwaltung",
+    "Homeoffice spart Pendelwege",
+    "Videokonferenz statt Flugreise"
+   ],
+   "correctIndex": 0,
+   "explanation": "Konsolidierung macht die IT selbst sparsamer. Die anderen Beispiele sparen mit Hilfe der IT anderswo (Green by IT)."
+  },
+  {
+   "question": "Ein Unternehmen speichert Kundendaten bei einem Cloud-Anbieter. Was verlangt die DSGVO dafür?",
+   "options": [
+    "Nichts, die Cloud ist Sache des Anbieters",
+    "Eine ISO-9001-Zertifizierung",
+    "Einen Vertrag zur Auftragsverarbeitung mit dem Anbieter",
+    "Die Löschung aller Daten nach 72 Stunden"
+   ],
+   "correctIndex": 2,
+   "explanation": "Art. 28 DSGVO verlangt einen Auftragsverarbeitungsvertrag; die Verantwortung bleibt beim Unternehmen."
+  },
+  {
+   "question": "Das SAM zeigt 85 gekaufte Lizenzen und 100 Installationen. Was gilt?",
+   "options": [
+    "15 Installationen sind unterlizenziert – ein Compliance-Verstoß",
+    "15 Lizenzen sind überzählig",
+    "Alles in Ordnung, Abweichungen unter 20 % sind erlaubt",
+    "Das betrifft nur die Green IT"
+   ],
+   "correctIndex": 0,
+   "explanation": "Es gibt 15 Installationen ohne Lizenz. Jede Installation braucht eine passende Lizenz."
+  },
+  {
+   "question": "Wofür steht „Hypercare“ in der Rollout-Planung?",
+   "options": [
+    "Ein Virenscanner",
+    "Die Rückkehr zum alten System",
+    "Ein Gütesiegel für Hardware",
+    "Eine Phase verstärkter Unterstützung direkt nach der Umstellung"
+   ],
+   "correctIndex": 3,
+   "explanation": "Nach dem Go-live treten die meisten Fragen und Probleme auf, daher gibt es befristet mehr Support."
+  },
+  {
+   "question": "Was gehört in einen Rollout-Plan, damit man bei schweren Fehlern sicher zurückkann?",
+   "options": [
+    "Ein Glossar",
+    "Ein Rollback-Plan",
+    "Ein PUE-Wert",
+    "Ein Kano-Diagramm"
+   ],
+   "correctIndex": 1,
+   "explanation": "Der Rollback-Plan beschreibt, wie man auf den alten Stand zurückkehrt, wenn Go/No-Go-Kriterien verfehlt werden."
+  }
+ ]
+}

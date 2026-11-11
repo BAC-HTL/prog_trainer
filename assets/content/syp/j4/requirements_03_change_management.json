@@ -1,0 +1,89 @@
+{
+ "id": "syp-j4-requirements_03_change_management",
+ "title": "Change Management",
+ "summary": "Änderungswünsche kontrolliert bewerten, entscheiden und umsetzen – und Menschen durch Veränderungen begleiten.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Kaum ein Projekt endet mit genau den Anforderungen, mit denen es begonnen hat. Neue Ideen, Gesetzesänderungen oder Fehler im Pflichtenheft führen zu Änderungswünschen. Werden die einfach „nebenbei“ umgesetzt, wächst der Umfang ständig, ohne dass Zeit und Budget angepasst werden – das nennt man Scope Creep. Change Management sorgt dafür, dass Änderungen bewusst und nachvollziehbar passieren."
+  },
+  {
+   "type": "code",
+   "content": "Change-Request-Prozess\n\n1. Antrag (Change Request) stellen\n2. Erfassen, ID vergeben\n3. Auswirkungsanalyse:\n   Aufwand, Termin, Kosten, Risiko\n4. Entscheidung (z. B. CCB)\n   genehmigt / abgelehnt / später\n5. Planen und umsetzen\n6. Testen, Doku + Baseline anpassen\n7. Abschließen und informieren"
+  },
+  {
+   "type": "text",
+   "content": "Die Auswirkungsanalyse (Impact Analysis) nutzt die Traceability: Welche Anforderungen, Bausteine und Testfälle sind betroffen? Entschieden wird je nach Größe von der Projektleitung oder einem Change Control Board (CCB) mit Vertreter:innen von Auftraggeber und Auftragnehmer. Wichtig: Genehmigt ist eine Änderung erst, wenn sie entschieden und dokumentiert ist – nicht, wenn jemand am Gang „passt schon“ sagt."
+  },
+  {
+   "type": "code",
+   "content": "Change Request CR-04: PDF-Export\nAufwand:   40 h\nBaseline:  400 h Gesamtaufwand\n           -> +10 % Aufwand\nKapazität: 3 Personen x 20 h/Woche\n           = 60 h/Woche\nTermin:    40 / 60 ≈ 0,7 Wochen\n           später fertig\nKosten:    40 h x 70 €/h = 2 800 €"
+  },
+  {
+   "type": "text",
+   "content": "Mit diesen Zahlen kann der Auftraggeber entscheiden: Mehrkosten und späterer Termin akzeptieren, im Tausch eine andere Anforderung streichen (z. B. ein Could have) oder die Änderung auf ein späteres Release verschieben. Je später im Projekt eine Änderung kommt, desto teurer wird sie meist, weil schon mehr Entwurf, Code und Tests daran hängen."
+  },
+  {
+   "type": "text",
+   "content": "In agilen Projekten sind Änderungen ausdrücklich willkommen, aber auch dort kontrolliert: Neue Wünsche kommen ins Product Backlog, der Product Owner priorisiert sie, und während eines Sprints bleibt das Sprintziel stabil. Das ist ebenfalls Change Management – nur mit kürzeren Zyklen statt eines formalen Antrags."
+  },
+  {
+   "type": "text",
+   "content": "Change Management hat noch eine zweite Bedeutung: die Begleitung der Menschen bei organisatorischen Veränderungen, etwa der Einführung eines neuen ERP-Systems. Widerstand ist normal – aus Angst vor Neuem, Mehraufwand oder Kontrollverlust. Ein bekanntes Modell ist das 3-Phasen-Modell von Kurt Lewin: Auftauen (Unfreeze: Notwendigkeit erklären), Verändern (Change: neue Abläufe einführen, schulen), Einfrieren (Refreeze: Neues festigen)."
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: Betroffene erst am Tag der Umstellung informieren, nur die Technik planen und Schulung vergessen, oder Widerstand als Sturheit abtun statt die Gründe zu hören. Gute Praxis: früh und ehrlich kommunizieren, Key-User aus den Fachabteilungen einbinden und Erfolge sichtbar machen."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Änderungen laufen über einen Change Request mit Auswirkungsanalyse (Aufwand, Termin, Kosten, Risiko) und dokumentierter Entscheidung, z. B. im CCB, danach werden Baseline, Tests und Doku angepasst. Unkontrollierte Änderungen führen zu Scope Creep. Organisatorisches Change Management begleitet die Betroffenen, etwa nach Lewin: Unfreeze, Change, Refreeze."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Ein Change Request braucht 30 h. Das Team hat 4 Personen mit je 15 h pro Woche. Um wie viel verschiebt sich das Ende ungefähr, wenn sonst nichts gestrichen wird?",
+   "options": [
+    "2 Wochen",
+    "0,5 Wochen",
+    "4 Wochen",
+    "7,5 Wochen"
+   ],
+   "correctIndex": 1,
+   "explanation": "Kapazität = 4 · 15 h = 60 h/Woche. 30 h / 60 h = 0,5 Wochen."
+  },
+  {
+   "question": "Was bezeichnet „Scope Creep“?",
+   "options": [
+    "Das schleichende, unkontrollierte Wachsen des Projektumfangs",
+    "Ein Werkzeug zur Testautomatisierung",
+    "Die Abnahme unter Vorbehalt",
+    "Das Einfrieren der Anforderungen"
+   ],
+   "correctIndex": 0,
+   "explanation": "Scope Creep entsteht, wenn Änderungen ohne Bewertung und Anpassung von Zeit und Budget umgesetzt werden."
+  },
+  {
+   "question": "Welche Phase fehlt im Lewin-Modell: Unfreeze → ? → Refreeze",
+   "options": [
+    "Release",
+    "Review",
+    "Change",
+    "Control"
+   ],
+   "correctIndex": 2,
+   "explanation": "Lewins Modell: Auftauen (Unfreeze), Verändern (Change), Einfrieren (Refreeze)."
+  },
+  {
+   "question": "Eine Entwicklerin setzt einen Kundenwunsch aus einem Telefonat sofort um, ohne ihn zu erfassen. Was ist das Hauptproblem?",
+   "options": [
+    "Telefonate sind verboten",
+    "Kundenwünsche sind immer falsch",
+    "Der Code wird dadurch langsamer",
+    "Auswirkungen auf Zeit, Kosten und Tests werden nicht bewertet und die Änderung ist nicht nachvollziehbar"
+   ],
+   "correctIndex": 3,
+   "explanation": "Ohne Change Request fehlen Auswirkungsanalyse, Entscheidung und Dokumentation – Baseline, Tests und Planung stimmen nicht mehr."
+  }
+ ]
+}

@@ -57,12 +57,12 @@ void main() {
       }
     });
 
-    test('Jeder HTL-Jahrgang hat Module, 1.–3. Jahrgang sind verfügbar', () {
+    test('Jeder HTL-Jahrgang hat Module, 1.–4. Jahrgang sind verfügbar', () {
       for (final s in curriculum.stages) {
         expect(curriculum.modules.where((m) => m.stage == s.id), isNotEmpty,
             reason: s.title);
       }
-      for (final stage in ['j1', 'j2', 'j3']) {
+      for (final stage in ['j1', 'j2', 'j3', 'j4']) {
         for (final m in curriculum.modules.where((m) => m.stage == stage)) {
           final contents = [...m.variants.values, if (m.neutral != null) m.neutral!];
           expect(contents.every((c) => c.isAvailable), isTrue,

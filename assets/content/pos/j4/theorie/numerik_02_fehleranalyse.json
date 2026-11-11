@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-theorie-numerik_02_fehleranalyse",
+  "title": "Rundungsfehler, Auslöschung und Toleranzvergleich",
+  "summary": "Woher numerische Fehler kommen, wie Auslöschung Ergebnisse ruiniert und wie man Gleitkommazahlen richtig vergleicht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Numerische Ergebnisse haben drei Fehlerquellen: Datenfehler (ungenaue Messwerte), Rundungsfehler (begrenzte Stellenzahl der Gleitkommazahlen) und Verfahrensfehler (ein Näherungsverfahren bricht nach endlich vielen Schritten ab). Für einen Näherungswert x̃ des exakten Werts x gilt:\n• absoluter Fehler: |x̃ − x|\n• relativer Fehler: |x̃ − x| / |x|\nDer relative Fehler ist meist aussagekräftiger: 1 mm Abweichung ist bei einer Brücke egal, bei einem Chip katastrophal."
+    },
+    {
+      "type": "code",
+      "content": "import math\n# π ≈ 3,14\nabs(3.14 - math.pi)\n# 0.0015926…  (absolut)\nabs(3.14 - math.pi) / math.pi\n# 0.000507…   (relativ ≈ 0,05 %)\n\n# π ≈ 22/7\nabs(22/7 - math.pi) / math.pi\n# 0.000402…   (etwas besser)"
+    },
+    {
+      "type": "text",
+      "content": "Rundungsfehler können sich aufsummieren, und die Reihenfolge der Operationen spielt eine Rolle – das Assoziativgesetz gilt für Gleitkommazahlen nicht! Addiert man eine kleine zu einer sehr großen Zahl, geht die kleine ganz verloren (Absorption). Abhilfe: kleine Zahlen zuerst addieren oder math.fsum verwenden, das exakt gerundet summiert. (Neuere Python-Versionen rechnen auch in sum kompensiert, eine Schleife mit += aber nicht.)"
+    },
+    {
+      "type": "code",
+      "content": "print(1e20 + 1 - 1e20)   # 0.0\nprint(1e20 - 1e20 + 1)   # 1.0\n\ns = 0.0\nfor i in range(10):\n    s += 0.1\nprint(s)  # 0.9999999999999999\nprint(math.fsum([0.1]*10))  # 1.0"
+    },
+    {
+      "type": "text",
+      "content": "Auslöschung (Cancellation) entsteht beim Subtrahieren zweier fast gleich großer Zahlen. Die übereinstimmenden führenden Stellen heben sich auf, übrig bleiben die hinteren Stellen – und genau die enthalten die Rundungsfehler. Der absolute Fehler bleibt klein, der relative Fehler des Ergebnisses wird aber riesig. Die Subtraktion selbst ist exakt, sie macht nur die vorhandenen Fehler sichtbar."
+    },
+    {
+      "type": "code",
+      "content": "a = 1.0000001   # gespeichert:\n# 1.00000010000000005839…\nprint(a - 1.0)\n# 1.0000000005838672e-07\n# rel. Fehler ≈ 6·10⁻⁹ statt 10⁻¹⁶\n\nx = 1e-8\nprint((1 - math.cos(x)) / x**2)\n# 0.0  (richtig wäre ≈ 0,5)\nprint(2 * math.sin(x/2)**2 / x**2)\n# 0.5  (umgeformt, keine Auslöschung)"
+    },
+    {
+      "type": "text",
+      "content": "Gegenmittel ist fast immer eine mathematisch gleichwertige Umformung, die die kritische Subtraktion vermeidet. Klassisches Beispiel ist die pq-Formel für x² + px + q = 0 mit p = −10⁸ und q = 1. Die große Lösung ist kein Problem, bei der kleinen werden aber zwei fast gleiche Zahlen subtrahiert. Besser: die kleine Lösung mit dem Satz von Vieta (x₁ · x₂ = q) berechnen."
+    },
+    {
+      "type": "code",
+      "content": "p, q = -1e8, 1.0\nw = math.sqrt(p*p/4 - q)\nx1 = -p/2 + w      # 100000000.0\nx2_naiv = -p/2 - w\n# 7.450580596923828e-09\nx2_vieta = q / x1\n# 1e-08  (korrekt)\n# naiv: 25 % relativer Fehler!"
+    },
+    {
+      "type": "text",
+      "content": "Weil fast jedes Ergebnis Rundungsfehler enthält, vergleicht man Gleitkommazahlen nie mit ==, sondern mit einer Toleranz. Eine feste absolute Toleranz (z. B. 1e-9) passt aber nicht für alle Größenordnungen – bei 10¹⁰ ist schon der Abstand zur Nachbarzahl größer als 10⁻⁹. Besser ist eine relative Toleranz; in Python math.isclose (Standard rel_tol=1e-09). Achtung: Beim Vergleich mit 0 hilft eine relative Toleranz nicht, dafür braucht man abs_tol. In C# gibt es keine fertige Methode – man schreibt sie selbst."
+    },
+    {
+      "type": "code",
+      "content": "math.isclose(0.1 + 0.2, 0.3)  # True\nmath.isclose(1e-12, 0.0)       # False\nmath.isclose(1e-12, 0.0,\n             abs_tol=1e-9)     # True\n\n// C#\nstatic bool Nahe(double a, double b,\n    double rel = 1e-9, double abs = 0)\n  => Math.Abs(a - b) <= Math.Max(\n     rel * Math.Max(Math.Abs(a),\n                    Math.Abs(b)), abs);"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Messwert von 2,02 m soll exakt 2,00 m sein. Wie groß ist der relative Fehler?",
+      "options": [
+        "0,02 m",
+        "2 %",
+        "1 %",
+        "0,1 %"
+      ],
+      "correctIndex": 2,
+      "explanation": "Absoluter Fehler: |2,02 − 2,00| = 0,02 m. Relativer Fehler: 0,02 / 2,00 = 0,01 = 1 %."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "print(1e20 + 1 - 1e20)",
+      "options": [
+        "1.0",
+        "0.0",
+        "1e20",
+        "-1.0"
+      ],
+      "correctIndex": 1,
+      "explanation": "1e20 + 1 wird wieder auf 1e20 gerundet (die 1 geht verloren). Danach ergibt 1e20 − 1e20 = 0.0. In anderer Reihenfolge käme 1.0 heraus."
+    },
+    {
+      "question": "Bei welcher Berechnung droht Auslöschung?",
+      "options": [
+        "1e10 * 1e-10",
+        "0.5 + 0.25",
+        "sqrt(x*x + 1) - x für sehr großes x",
+        "1.0 / 3.0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Für großes x ist sqrt(x² + 1) fast gleich x – die Subtraktion zweier fast gleicher Zahlen führt zu Auslöschung. Umgeformt: 1 / (sqrt(x² + 1) + x)."
+    },
+    {
+      "question": "Welche Bedingung prüft am sinnvollsten, ob ein berechnetes Ergebnis ergebnis „gleich“ 0.3 ist?",
+      "options": [
+        "ergebnis == 0.3",
+        "round(ergebnis) == 0.3",
+        "ergebnis is 0.3",
+        "math.isclose(ergebnis, 0.3)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Gleitkomma-Ergebnisse enthalten Rundungsfehler, daher vergleicht man mit Toleranz. round(ergebnis) liefert eine ganze Zahl, is vergleicht Objektidentität."
+    }
+  ]
+}

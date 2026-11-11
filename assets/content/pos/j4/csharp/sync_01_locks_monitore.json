@@ -1,0 +1,90 @@
+{
+  "id": "pos-j4-csharp-sync_01_locks_monitore",
+  "title": "Locks und Monitore",
+  "summary": "Was hinter lock steckt und wie Threads mit Monitor.Wait und Monitor.Pulse aufeinander warten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Aus dem 3. Jahrgang kennst du lock: Ein kritischer Abschnitt wird gegen gleichzeitigen Zugriff geschützt, damit keine Race Condition entsteht. Jetzt schauen wir hinein. Ein Monitor ist ein Synchronisationskonzept, das zwei Dinge kombiniert: gegenseitigen Ausschluss (immer nur ein Thread im Abschnitt) und Warten auf eine Bedingung. In .NET stellt die statische Klasse Monitor beides bereit."
+    },
+    {
+      "type": "text",
+      "content": "lock ist nur eine Abkürzung. Der Compiler macht daraus Monitor.Enter und Monitor.Exit, eingepackt in try/finally. Das finally sorgt dafür, dass die Sperre auch bei einer Exception wieder freigegeben wird – sonst würden alle anderen Threads ewig warten."
+    },
+    {
+      "type": "code",
+      "content": "// lock (sperre) { konto += 10; }\n// entspricht ungefähr:\nbool genommen = false;\ntry\n{\n    Monitor.Enter(sperre,\n                  ref genommen);\n    konto += 10;\n}\nfinally\n{\n    if (genommen)\n        Monitor.Exit(sperre);\n}"
+    },
+    {
+      "type": "text",
+      "content": "Regeln für das Sperrobjekt: Verwende ein privates, nur dafür angelegtes Objekt (private readonly object sperre = new();). Sperre nicht auf this, typeof(…) oder einen string – auf diese Objekte kann auch fremder Code sperren, und Strings mit gleichem Inhalt können dasselbe Objekt sein. Werttypen wie int gehen gar nicht: lock (zahl) ist ein Kompilierfehler. Gut zu wissen: Ein Monitor ist wiedereintrittsfähig (reentrant) – derselbe Thread darf eine Sperre, die er schon hält, nochmals betreten."
+    },
+    {
+      "type": "text",
+      "content": "Oft reicht Ausschluss nicht: Ein Thread muss warten, bis ein anderer etwas erledigt hat. Beispiel aus der Schulkantine: Ein Ablagefach fasst genau ein Tablett. Die Küche (Erzeuger) darf erst ablegen, wenn das Fach leer ist; der Schüler (Verbraucher) kann erst holen, wenn etwas drin ist. Dafür gibt es Monitor.Wait und Monitor.Pulse bzw. PulseAll."
+    },
+    {
+      "type": "code",
+      "content": "class Ablagefach\n{\n  private readonly object sperre\n      = new();\n  private int? wert; // null = leer\n\n  public void Ablegen(int w)\n  {\n    lock (sperre)\n    {\n      while (wert != null)\n        Monitor.Wait(sperre);\n      wert = w;\n      Monitor.PulseAll(sperre);\n    }\n  }\n  public int Holen()\n  {\n    lock (sperre)\n    {\n      while (wert == null)\n        Monitor.Wait(sperre);\n      int w = wert.Value;\n      wert = null;\n      Monitor.PulseAll(sperre);\n      return w;\n    }\n  }\n}"
+    },
+    {
+      "type": "text",
+      "content": "So funktioniert es: Monitor.Wait gibt die Sperre frei und legt den Thread schlafen. Pulse weckt einen wartenden Thread, PulseAll alle. Ein geweckter Thread muss die Sperre erst wieder bekommen, bevor Wait zurückkehrt. Startet man einen Erzeuger, der 1, 2, 3 ablegt, und einen Verbraucher, der dreimal holt, erhält der Verbraucher garantiert 1, 2, 3 – egal welcher Thread zuerst startet."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: 1) Wait oder Pulse ohne lock aufrufen – das wirft eine SynchronizationLockException, weil man die Sperre halten muss. 2) if statt while vor Wait: Nach dem Aufwachen kann die Bedingung schon wieder falsch sein (ein anderer Thread war schneller, oder es gab ein Aufwachen ohne passenden Grund). Deshalb prüft man die Bedingung immer in einer while-Schleife. 3) Pulse vergessen – dann wartet der andere Thread für immer."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: lock = Monitor.Enter/Exit mit try/finally. Sperre auf ein privates Objekt. Monitor.Wait gibt die Sperre frei und wartet, Pulse/PulseAll wecken Wartende. Wait/Pulse nur innerhalb von lock und Bedingungen immer mit while prüfen. In der Praxis greifst du oft zu fertigen Klassen (z. B. BlockingCollection, siehe Lektion 3) – aber die bauen genau auf diesen Ideen auf."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was passiert bei Monitor.Wait(sperre)?",
+      "options": [
+        "Der Thread wartet und hält die Sperre weiter",
+        "Der Thread gibt die Sperre frei und schläft, bis er geweckt wird",
+        "Der Thread wird beendet",
+        "Alle anderen Threads werden geweckt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Wait gibt die Sperre frei, damit ein anderer Thread den Zustand ändern kann. Nach einem Pulse bewirbt sich der Thread wieder um die Sperre und läuft danach weiter."
+    },
+    {
+      "question": "Was passiert bei diesem Code (sperre ist ein object, kein lock aktiv)?",
+      "code": "object sperre = new();\nMonitor.Pulse(sperre);",
+      "options": [
+        "Nichts, Pulse ohne Wartende wird ignoriert",
+        "Kompilierfehler",
+        "SynchronizationLockException",
+        "Deadlock"
+      ],
+      "correctIndex": 2,
+      "explanation": "Wait, Pulse und PulseAll dürfen nur aufgerufen werden, wenn der Thread die Sperre hält. Sonst wirft .NET eine SynchronizationLockException."
+    },
+    {
+      "question": "Warum steht vor Monitor.Wait eine while- statt einer if-Abfrage?",
+      "options": [
+        "while ist schneller als if",
+        "Nach dem Aufwachen kann die Bedingung schon wieder falsch sein und muss neu geprüft werden",
+        "Mit if ist Wait ein Kompilierfehler",
+        "while gibt die Sperre automatisch frei"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zwischen Pulse und dem Wiedererhalten der Sperre kann ein anderer Thread den Zustand ändern. Nur die erneute Prüfung in while ist sicher."
+    },
+    {
+      "question": "Welches Sperrobjekt ist am besten geeignet?",
+      "options": [
+        "this",
+        "\"sperre\" (ein string)",
+        "private readonly object sperre = new();",
+        "typeof(Konto)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein privates, nur dafür angelegtes Objekt kann kein fremder Code sperren. this, Strings und Type-Objekte sind von außen erreichbar."
+    }
+  ]
+}

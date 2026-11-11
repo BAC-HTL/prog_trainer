@@ -1,0 +1,93 @@
+{
+  "id": "pos-j4-csharp-sync_03_producer_consumer",
+  "title": "Erzeuger-Verbraucher-Muster",
+  "summary": "Threads entkoppeln über eine threadsichere Warteschlange: BlockingCollection und Channel.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Beim Erzeuger-Verbraucher-Muster (Producer-Consumer) erzeugen ein oder mehrere Threads Arbeitsaufträge und legen sie in eine Warteschlange; andere Threads holen sie heraus und bearbeiten sie. Beispiel: Alle Klassen schicken Druckaufträge, ein Druckserver arbeitet sie der Reihe nach ab. Erzeuger und Verbraucher müssen sich nicht kennen und dürfen unterschiedlich schnell sein."
+    },
+    {
+      "type": "code",
+      "content": "Erzeuger ─┐\nErzeuger ─┼─▶ [ Queue ] ─▶ Verbraucher\nErzeuger ─┘     (FIFO)"
+    },
+    {
+      "type": "text",
+      "content": "Die Warteschlange muss drei Dinge können: threadsicher sein, Verbraucher warten lassen, wenn sie leer ist, und Erzeuger bremsen, wenn sie voll ist (begrenzte Kapazität, damit der Speicher nicht überläuft). Das könntest du mit Monitor.Wait/Pulse aus Lektion 1 selbst bauen – .NET liefert es aber fertig: BlockingCollection<T> aus System.Collections.Concurrent."
+    },
+    {
+      "type": "code",
+      "content": "using System.Collections.Concurrent;\n\nvar auftraege =\n  new BlockingCollection<string>(\n      boundedCapacity: 2);\n\nvar drucker = Task.Run(() =>\n{\n  foreach (var a in auftraege\n      .GetConsumingEnumerable())\n  {\n    Thread.Sleep(50);\n    Console.WriteLine($\"Druck: {a}\");\n  }\n  Console.WriteLine(\"Drucker aus\");\n});\n\nfor (int i = 1; i <= 4; i++)\n  auftraege.Add($\"Blatt {i}\");\nauftraege.CompleteAdding();\ndrucker.Wait();"
+    },
+    {
+      "type": "text",
+      "content": "Add blockiert, solange schon 2 Aufträge warten. GetConsumingEnumerable liefert Element für Element und blockiert, solange die Sammlung leer ist. Mit CompleteAdding signalisiert der Erzeuger „es kommt nichts mehr“: Ist die Sammlung dann leer, endet die foreach-Schleife, und es wird „Drucker aus“ ausgegeben. Die Druckreihenfolge ist garantiert Blatt 1 bis 4, weil die Standard-Sammlung eine FIFO-Queue ist. Wann genau welche Zeile kommt, hängt vom Timing ab."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: CompleteAdding vergessen – dann wartet der Verbraucher ewig auf weitere Elemente und drucker.Wait() hängt. Nach CompleteAdding noch Add aufrufen – das wirft eine InvalidOperationException. Statt einer gewöhnlichen List<T> mit eigenem lock und Thread.Sleep-Polling („ist schon was da?“) solltest du immer eine blockierende Sammlung verwenden: Polling verschwendet CPU-Zeit oder reagiert verzögert."
+    },
+    {
+      "type": "text",
+      "content": "Mehrere Verbraucher sind kein Problem: Starte z. B. drei Tasks, die alle über GetConsumingEnumerable derselben Sammlung laufen. Jedes Element wird genau einmal von genau einem Verbraucher geholt. Erzeugt der Erzeuger die Zahlen 1 bis 100, ergibt die gemeinsam (mit Interlocked.Add) gebildete Summe immer 5050."
+    },
+    {
+      "type": "text",
+      "content": "Die moderne, asynchrone Variante ist Channel<T> aus System.Threading.Channels. Statt Threads zu blockieren, wartet sie mit await – ideal für Server und GUI-Programme, die keine Threads blockieren sollen. Writer und Reader sind getrennt, Complete() entspricht CompleteAdding()."
+    },
+    {
+      "type": "code",
+      "content": "using System.Threading.Channels;\n\nvar kanal =\n    Channel.CreateBounded<int>(10);\nvar leser = Task.Run(async () =>\n{\n    int s = 0;\n    await foreach (var x in\n        kanal.Reader.ReadAllAsync())\n        s += x;\n    return s;\n});\nfor (int i = 1; i <= 10; i++)\n    await kanal.Writer.WriteAsync(i);\nkanal.Writer.Complete();\nConsole.WriteLine(await leser); // 55"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Producer-Consumer entkoppelt Erzeuger und Verbraucher über eine threadsichere Queue. BlockingCollection<T> blockiert bei leer bzw. voll (boundedCapacity), GetConsumingEnumerable plus CompleteAdding sorgt für ein sauberes Ende. Channel<T> ist die async-Variante mit WriteAsync, ReadAllAsync und Complete."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was passiert, wenn der Erzeuger CompleteAdding() vergisst?",
+      "options": [
+        "Der Verbraucher bearbeitet nur das erste Element",
+        "Der Verbraucher wartet nach dem letzten Element ewig weiter",
+        "Es wird eine InvalidOperationException geworfen",
+        "Die Elemente werden doppelt verarbeitet"
+      ],
+      "correctIndex": 1,
+      "explanation": "GetConsumingEnumerable endet erst, wenn die Sammlung als vollständig markiert und leer ist. Ohne CompleteAdding wartet die Schleife auf weitere Elemente."
+    },
+    {
+      "question": "Eine BlockingCollection hat boundedCapacity: 3 und enthält 3 Elemente. Was macht Add?",
+      "options": [
+        "Es wirft eine Exception",
+        "Es überschreibt das älteste Element",
+        "Es blockiert, bis ein Verbraucher ein Element entnommen hat",
+        "Es vergrößert die Kapazität automatisch"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei begrenzter Kapazität bremst Add den Erzeuger, bis wieder Platz ist – so läuft der Speicher nicht über."
+    },
+    {
+      "question": "Drei Verbraucher lesen über GetConsumingEnumerable aus derselben Sammlung, der Erzeuger fügt die Zahlen 1 bis 10 hinzu. Jeder Verbraucher addiert mit Interlocked.Add in eine gemeinsame Summe. Welcher Wert steht am Ende darin?",
+      "options": [
+        "165",
+        "10",
+        "Hängt vom Timing ab",
+        "55"
+      ],
+      "correctIndex": 3,
+      "explanation": "Jedes Element wird genau einmal von genau einem Verbraucher geholt. Die Summe ist daher immer 1 + 2 + … + 10 = 55; nur die Aufteilung auf die Verbraucher hängt vom Timing ab."
+    },
+    {
+      "question": "Wofür verwendest du Channel<T> statt BlockingCollection<T>?",
+      "options": [
+        "Wenn du mit async/await arbeitest und keine Threads blockieren willst",
+        "Wenn die Reihenfolge egal ist",
+        "Wenn nur ein Thread im Programm läuft",
+        "Wenn du eine LIFO-Reihenfolge brauchst"
+      ],
+      "correctIndex": 0,
+      "explanation": "Channel<T> ist für asynchronen Code gebaut: WriteAsync und ReadAllAsync warten mit await, statt einen Thread zu blockieren."
+    }
+  ]
+}

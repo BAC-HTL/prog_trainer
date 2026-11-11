@@ -1,0 +1,118 @@
+{
+  "id": "pos-j4-python-build_pruefung",
+  "title": "Abschlussprüfung: Build-Management & Dokumentation",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was steht im Abschnitt [build-system] von pyproject.toml?",
+      "options": [
+        "Die Liste der Laufzeitabhängigkeiten des Pakets",
+        "Name und Version des Projekts",
+        "Welches Build-Backend verwendet wird (build-backend) und was es zum Bauen braucht (requires)",
+        "Die Konsolenbefehle des Pakets"
+      ],
+      "correctIndex": 2,
+      "explanation": "[build-system] beschreibt nur das Bauen. Metadaten, Abhängigkeiten und Skripte stehen unter [project]."
+    },
+    {
+      "question": "Worin unterscheiden sich sdist und Wheel?",
+      "options": [
+        "Das sdist enthält den Quellcode zum Bauen, das Wheel ist ein fertiges Installationsformat, das pip direkt entpacken kann.",
+        "Das Wheel enthält nur die Dokumentation.",
+        "Das sdist funktioniert nur unter Linux.",
+        "Es gibt keinen Unterschied, nur die Endung ist anders."
+      ],
+      "correctIndex": 0,
+      "explanation": "Aus einem sdist muss bei der Installation erst gebaut werden; ein Wheel ist bereits gebaut und wird nur noch installiert."
+    },
+    {
+      "question": "Wozu dient das src-Layout (Code unter src/paketname/)?",
+      "options": [
+        "Es macht das Paket schneller.",
+        "Es ist für Wheels technisch vorgeschrieben.",
+        "Es verhindert, dass pyproject.toml gelesen wird.",
+        "Tests importieren das installierte Paket statt versehentlich den lokalen Ordner – Fehler beim Paketieren fallen so auf."
+      ],
+      "correctIndex": 3,
+      "explanation": "Liegt das Paket direkt im Projektordner, kann import es auch ohne Installation finden. Fehlt dann etwas im Wheel, merkt man es zu spät."
+    },
+    {
+      "question": "Welche Version erfüllt die Angabe paket ~= 1.4.2?",
+      "options": [
+        "1.4.1",
+        "1.5.0",
+        "1.4.9",
+        "2.0.0"
+      ],
+      "correctIndex": 2,
+      "explanation": "~= 1.4.2 bedeutet >= 1.4.2 und == 1.4.*. 1.4.9 passt, 1.5.0 und 2.0.0 nicht, 1.4.1 ist zu alt."
+    },
+    {
+      "question": "Du schreibst eine Bibliothek, die andere Projekte verwenden. Wie gibst du ihre Abhängigkeiten in pyproject.toml am besten an?",
+      "options": [
+        "Mit exakten Versionen (==), damit nichts schiefgeht",
+        "Mit Bereichen wie >=2,<3 – exakte Versionen gehören ins Lockfile einer Anwendung",
+        "Gar nicht, pip findet sie automatisch",
+        "Nur als Kommentar in der README"
+      ],
+      "correctIndex": 1,
+      "explanation": "Exakte Pins in Bibliotheken führen zu Versionskonflikten bei den Nutzern. Bereiche beschreiben, womit der Code funktioniert."
+    },
+    {
+      "question": "Was ist das Problem, wenn du pip freeze > requirements.txt ohne aktive venv ausführst?",
+      "options": [
+        "Es landen alle global installierten Pakete in der Liste, auch solche, die das Projekt gar nicht braucht.",
+        "pip freeze funktioniert nur ohne venv.",
+        "Die Datei enthält dann keine Versionsnummern.",
+        "requirements.txt wird automatisch gelöscht."
+      ],
+      "correctIndex": 0,
+      "explanation": "pip freeze listet alles, was in der aktuellen Umgebung installiert ist. Nur in einer projekteigenen venv entspricht das den Projektabhängigkeiten."
+    },
+    {
+      "question": "Mit welchem Befehl legst du im Projektordner eine virtuelle Umgebung an?",
+      "options": [
+        "pip install venv",
+        "python -m venv .venv",
+        "python -m build .venv",
+        "pip freeze .venv"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Modul venv der Standardbibliothek erzeugt die Umgebung im angegebenen Ordner."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Klasse:\n    \"\"\"Eine Schulklasse.\"\"\"\n\n    def __init__(self, name):\n        \"\"\"Legt die Klasse an.\"\"\"\n        self.name = name\n\nprint(Klasse(\"4AHIF\").__doc__)",
+      "options": [
+        "Eine Schulklasse.",
+        "Legt die Klasse an.",
+        "None",
+        "4AHIF"
+      ],
+      "correctIndex": 0,
+      "explanation": "__doc__ eines Objekts liefert den Docstring seiner Klasse. Der Docstring von __init__ gehört zur Methode, nicht zur Klasse."
+    },
+    {
+      "question": "Was prüft python -m doctest noten.py?",
+      "options": [
+        "Ob jede Funktion einen Docstring hat",
+        "Ob die Docstrings dem Google-Stil entsprechen",
+        "Ob die >>>-Beispiele in den Docstrings genau die angegebene Ausgabe liefern",
+        "Ob noten.py als Wheel gebaut werden kann"
+      ],
+      "correctIndex": 2,
+      "explanation": "doctest führt die Beispiele aus und vergleicht die tatsächliche mit der erwarteten Ausgabe."
+    },
+    {
+      "question": "Welche Aufgabe hat die Sphinx-Erweiterung autodoc?",
+      "options": [
+        "Sie übersetzt Markdown in reStructuredText.",
+        "Sie installiert fehlende Abhängigkeiten.",
+        "Sie führt alle Unit-Tests aus.",
+        "Sie liest Docstrings aus dem Code und baut sie in die generierte Dokumentation ein."
+      ],
+      "correctIndex": 3,
+      "explanation": "Mit autodoc muss die API-Doku nicht doppelt geschrieben werden – sie kommt direkt aus den Docstrings."
+    }
+  ]
+}

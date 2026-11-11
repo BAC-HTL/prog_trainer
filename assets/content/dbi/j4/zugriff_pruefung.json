@@ -1,0 +1,117 @@
+{
+  "id": "dbi-j4-zugriff_pruefung",
+  "title": "Abschlussprüfung: Zugriffskontrolle & Kryptologie",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was ist in PostgreSQL der Unterschied zwischen CREATE ROLE kv LOGIN und CREATE ROLE kv?",
+      "options": [
+        "Mit LOGIN darf sich die Rolle anmelden (Benutzer), ohne LOGIN dient sie zum Bündeln von Rechten.",
+        "Keiner",
+        "Ohne LOGIN ist die Rolle Superuser.",
+        "Mit LOGIN bekommt die Rolle automatisch alle Rechte."
+      ],
+      "correctIndex": 0,
+      "explanation": "In PostgreSQL sind Benutzer und Gruppen beides Rollen. Das Attribut LOGIN entscheidet, ob man sich damit anmelden kann."
+    },
+    {
+      "question": "Die Rolle lehrkraft hat SELECT (sch_nr, name) ON schueler. huber ist Mitglied. Was liefert SELECT name, svnr FROM schueler als huber?",
+      "options": [
+        "Nur die Spalte name",
+        "name und svnr",
+        "ERROR: permission denied for table schueler",
+        "name und NULL für svnr"
+      ],
+      "correctIndex": 2,
+      "explanation": "Spaltenrechte gelten pro Spalte. Fehlt das Recht auf eine einzige abgefragte Spalte, schlägt die ganze Abfrage fehl."
+    },
+    {
+      "question": "Welcher Befehl erlaubt maier, das Leserecht auf noten an andere weiterzugeben?",
+      "options": [
+        "GRANT SELECT ON noten TO maier WITH GRANT OPTION;",
+        "GRANT SELECT ON noten TO maier;",
+        "GRANT maier TO noten;",
+        "ALTER ROLE maier SUPERUSER;"
+      ],
+      "correctIndex": 0,
+      "explanation": "WITH GRANT OPTION erlaubt dem Empfänger, das Recht weiterzuvergeben. Superuser wäre viel zu viel."
+    },
+    {
+      "question": "Eine Elternvertretung soll nur Klassenschnitte sehen, keine Einzelnoten. Wie setzt du das um?",
+      "options": [
+        "SELECT auf noten vergeben und hoffen, dass niemand nachschaut",
+        "Spaltenrecht SELECT (note) vergeben",
+        "Eine View mit AVG(note) GROUP BY klasse anlegen und nur SELECT auf die View vergeben",
+        "Die Tabelle noten verschlüsseln"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die View liefert nur die aggregierten Werte. Auf die Basistabelle bekommt die Rolle kein Recht."
+    },
+    {
+      "question": "Welche Aussage über Authentifizierung und Autorisierung stimmt?",
+      "options": [
+        "Autorisierung prüft das Passwort.",
+        "GRANT ist ein Authentifizierungsbefehl.",
+        "Beide Begriffe bedeuten dasselbe.",
+        "Authentifizierung stellt die Identität fest, Autorisierung legt fest, was diese Identität darf."
+      ],
+      "correctIndex": 3,
+      "explanation": "Erst „Wer bist du?“ (Authentifizierung), dann „Was darfst du?“ (Autorisierung, z. B. mit GRANT)."
+    },
+    {
+      "question": "Welche Speicherung eines Passworts ist am sichersten?",
+      "options": [
+        "Klartext in einer Spalte mit Zugriffsrechten",
+        "scrypt mit zufälligem Salt pro Benutzer:in",
+        "SHA-256 ohne Salt",
+        "AES-verschlüsselt mit einem Schlüssel im Programmcode"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein langsames Passwort-Hashverfahren mit individuellem Salt ist nicht umkehrbar und macht Wörterbuch- und Rainbow-Table-Angriffe teuer."
+    },
+    {
+      "question": "Warum wird das Salt im Klartext neben dem Hash gespeichert?",
+      "options": [
+        "Das ist ein Fehler; das Salt muss geheim bleiben.",
+        "Damit das Passwort wiederhergestellt werden kann.",
+        "Es wird beim Login gebraucht, um den Hash neu zu berechnen; seine Aufgabe ist Einzigartigkeit, nicht Geheimhaltung.",
+        "Weil scrypt sonst schneller wäre."
+      ],
+      "correctIndex": 2,
+      "explanation": "Ohne das Salt könnte man den Vergleichshash nicht berechnen. Es verhindert gleiche Hashes für gleiche Passwörter und vorberechnete Tabellen."
+    },
+    {
+      "question": "Welche pg_hba.conf-Methode sollte auf einem Schulserver, der aus dem Netz erreichbar ist, nie verwendet werden?",
+      "options": [
+        "trust",
+        "peer (für lokale Verbindungen)",
+        "scram-sha-256",
+        "hostssl mit scram-sha-256"
+      ],
+      "correctIndex": 0,
+      "explanation": "trust lässt jede Verbindung ohne Passwort zu. Auf einem erreichbaren Server ist das eine offene Tür."
+    },
+    {
+      "question": "Welches Verfahren ist symmetrisch?",
+      "options": [
+        "RSA",
+        "scrypt",
+        "SHA-256",
+        "AES"
+      ],
+      "correctIndex": 3,
+      "explanation": "AES verwendet denselben Schlüssel zum Ver- und Entschlüsseln. RSA ist asymmetrisch; SHA-256 und scrypt sind Hash- bzw. Schlüsselableitungsverfahren, keine Verschlüsselung."
+    },
+    {
+      "question": "Ein Client verbindet sich mit sslmode=require. Was ist im Vergleich zu verify-full nicht gewährleistet?",
+      "options": [
+        "Dass die Verbindung verschlüsselt ist",
+        "Dass der Server wirklich der erwartete Server ist (Zertifikat und Name werden nicht geprüft)",
+        "Dass das Passwort gehasht gespeichert ist",
+        "Dass die Daten at rest verschlüsselt sind"
+      ],
+      "correctIndex": 1,
+      "explanation": "require verschlüsselt, prüft aber das Serverzertifikat nicht. Ein Angreifer in der Mitte könnte sich als Server ausgeben. verify-full prüft Zertifikat und Hostnamen."
+    }
+  ]
+}

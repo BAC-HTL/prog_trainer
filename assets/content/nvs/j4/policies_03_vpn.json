@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j4-policies_03_vpn",
+  "title": "VPN: Site-to-Site und Remote Access",
+  "summary": "Wie VPNs Netze und Geräte sicher über das Internet verbinden und wie sich IPsec, WireGuard und OpenVPN unterscheiden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein VPN (Virtual Private Network) baut einen verschlüsselten Tunnel durch ein unsicheres Netz, meist das Internet. Die Pakete des privaten Netzes werden in neue Pakete verpackt (Kapselung), verschlüsselt und auf der Gegenseite wieder ausgepackt. So erreichst du interne Adressen wie 10.10.200.10, als wärst du vor Ort – und niemand dazwischen kann mitlesen oder unbemerkt verändern."
+    },
+    {
+      "type": "text",
+      "content": "Site-to-Site-VPN verbindet ganze Netze dauerhaft, z. B. die Außenstelle einer Schule mit dem Hauptstandort. Die Tunnel enden auf den Firewalls/Routern beider Standorte; die Endgeräte merken nichts davon. Remote-Access-VPN verbindet einzelne Geräte mit dem Firmennetz, etwa den Laptop einer Lehrkraft im Homeoffice. Dafür läuft auf dem Gerät ein VPN-Client."
+    },
+    {
+      "type": "code",
+      "content": "Site-to-Site:\n[LAN A]-[FW A]==Tunnel==[FW B]-[LAN B]\n\nRemote Access:\n[Laptop+Client]==Tunnel==[VPN-GW]-[LAN]\n\n== verschlüsselt über das Internet"
+    },
+    {
+      "type": "text",
+      "content": "IPsec ist ein Standard auf Schicht 3 und wird vor allem für Site-to-Site eingesetzt; praktisch jede Firewall beherrscht es. IKE (Internet Key Exchange, UDP-Port 500, bei NAT 4500) handelt Schlüssel und Verfahren aus. ESP (IP-Protokoll 50) verschlüsselt und schützt die Daten. Im Tunnelmodus wird das ganze ursprüngliche IP-Paket verpackt – das ist der übliche Modus für VPN-Gateways. IPsec ist mächtig, aber die Konfiguration hat viele Parameter, die auf beiden Seiten exakt zusammenpassen müssen."
+    },
+    {
+      "type": "text",
+      "content": "OpenVPN baut seinen Tunnel mit TLS auf, arbeitet im Userspace und läuft über UDP oder TCP (Standardport 1194). Weil es auch über TCP-Port 443 laufen kann, kommt es durch viele restriktive Netze. Authentifiziert wird meist mit Zertifikaten. WireGuard ist deutlich neuer und schlanker: Es verwendet nur UDP, eine feste Auswahl moderner Kryptoverfahren und Schlüsselpaare wie bei SSH. Weniger Code bedeutet weniger Angriffsfläche und eine einfachere Konfiguration."
+    },
+    {
+      "type": "code",
+      "content": "# WireGuard-Client (Remote Access)\n[Interface]\nPrivateKey = <privater Schlüssel>\nAddress = 10.99.0.2/32\n\n[Peer]\nPublicKey = <Schlüssel d. Servers>\nEndpoint = vpn.example.org:51820\nAllowedIPs = 10.10.0.0/16\nPersistentKeepalive = 25"
+    },
+    {
+      "type": "text",
+      "content": "AllowedIPs legt fest, welche Zieladressen durch den Tunnel gehen. 10.10.0.0/16 heißt Split Tunneling: Nur Schulnetz-Verkehr läuft über das VPN, alles andere geht direkt ins Internet. Mit 0.0.0.0/0 (Full Tunnel) läuft der gesamte Verkehr über das Schulnetz – sicherer zu kontrollieren, aber mehr Last am Gateway. Die Entscheidung lässt sich wie eine Routing-Tabelle nachrechnen:"
+    },
+    {
+      "type": "code",
+      "content": "import ipaddress as ip\n\nallowed = [ip.ip_network(\"10.10.0.0/16\")]\n\ndef weg(ziel):\n    a = ip.ip_address(ziel)\n    if any(a in n for n in allowed):\n        return \"Tunnel\"\n    return \"direkt\"\n\nfor z in [\"10.10.200.10\", \"10.11.0.5\",\n          \"142.250.1.1\"]:\n    print(z, \"->\", weg(z))\n\n# Ausgabe:\n# 10.10.200.10 -> Tunnel\n# 10.11.0.5 -> direkt\n# 142.250.1.1 -> direkt"
+    },
+    {
+      "type": "text",
+      "content": "Damit ein VPN funktioniert, muss die Firewall am Gateway die passenden Pakete durchlassen: für IPsec UDP 500 und 4500 sowie ESP, für WireGuard den konfigurierten UDP-Port (oft 51820), für OpenVPN UDP oder TCP 1194. Typische Fehler: überlappende Adressbereiche auf beiden Seiten (zu Hause und in der Schule 192.168.1.0/24 – das Routing ist dann nicht eindeutig), vergessene Firewallregeln für das Tunnelnetz und gemeinsam genutzte Zugangsdaten statt eigener Schlüssel pro Person."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Site-to-Site verbindet Netze (Tunnel zwischen Gateways), Remote Access verbindet einzelne Geräte (Client am Gerät). IPsec ist der verbreitete Standard auf Schicht 3, OpenVPN nutzt TLS und ist flexibel bei den Ports, WireGuard ist schlank und nutzt nur UDP. Die Security Policy legt fest, wer VPN-Zugang bekommt, wie authentifiziert wird (am besten mit zweitem Faktor) und ob Split oder Full Tunnel verwendet wird."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Client hat AllowedIPs = 10.10.0.0/16. Welches Ziel wird durch den Tunnel geschickt?",
+      "options": [
+        "10.11.3.4",
+        "192.168.1.10",
+        "10.10.255.20",
+        "8.8.8.8"
+      ],
+      "correctIndex": 2,
+      "explanation": "10.10.0.0/16 umfasst 10.10.0.0 bis 10.10.255.255. Nur 10.10.255.20 liegt darin; alle anderen Ziele gehen bei Split Tunneling direkt ins Internet."
+    },
+    {
+      "question": "Zwei Standorte einer Schule sollen dauerhaft verbunden werden, ohne dass auf den PCs Software installiert wird. Welche Lösung passt?",
+      "options": [
+        "Site-to-Site-VPN zwischen den beiden Firewalls",
+        "Remote-Access-VPN auf jedem PC",
+        "DNAT für jeden PC",
+        "Eine WAF an jedem Standort"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei Site-to-Site enden die Tunnel auf den Gateways; die Endgeräte brauchen keine VPN-Software."
+    },
+    {
+      "question": "Welche Aussage über WireGuard stimmt?",
+      "options": [
+        "Es verwendet ausschließlich TCP-Port 443.",
+        "Es ist Teil von IPsec und nutzt IKE.",
+        "Es baut seinen Tunnel mit TLS-Zertifikaten auf.",
+        "Es arbeitet nur mit UDP und verwendet Schlüsselpaare."
+      ],
+      "correctIndex": 3,
+      "explanation": "WireGuard nutzt nur UDP und authentifiziert Peers über öffentliche/private Schlüssel. TLS verwendet OpenVPN, IKE gehört zu IPsec."
+    },
+    {
+      "question": "Ein IPsec-Tunnel baut sich auf, es kommen aber keine Nutzdaten durch. Die Firewall erlaubt nur UDP 500 und 4500, es ist kein NAT im Spiel. Was fehlt wahrscheinlich?",
+      "options": [
+        "TCP-Port 1194",
+        "IP-Protokoll 50 (ESP)",
+        "UDP-Port 51820",
+        "TCP-Port 22"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne NAT werden die Nutzdaten direkt als ESP (IP-Protokoll 50) übertragen. IKE (UDP 500) handelt nur die Schlüssel aus; 1194 gehört zu OpenVPN, 51820 typischerweise zu WireGuard."
+    }
+  ]
+}

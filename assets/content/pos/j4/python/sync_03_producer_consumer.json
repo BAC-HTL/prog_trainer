@@ -1,0 +1,91 @@
+{
+  "id": "pos-j4-python-sync_03_producer_consumer",
+  "title": "Producer-Consumer mit queue.Queue",
+  "summary": "Erzeuger und Verbraucher über eine thread-sichere Warteschlange entkoppeln – mit Begrenzung, Endesignal und join.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Beim Erzeuger-Verbraucher-Problem (Producer-Consumer) erzeugen Threads Daten, die andere Threads verarbeiten – unterschiedlich schnell. Beispiel: Lehrkräfte schicken Druckaufträge, der Schuldrucker arbeitet sie ab. Dazwischen liegt ein begrenzter Puffer: Ist er voll, wartet der Erzeuger; ist er leer, wartet der Verbraucher. Das könntest du mit einer Condition selbst bauen. Python bringt aber queue.Queue mit, die intern genau so arbeitet (Lock plus Bedingungsvariablen) und thread-sicher ist."
+    },
+    {
+      "type": "code",
+      "content": "import queue\n\nq = queue.Queue(maxsize=2)\nq.put(\"A\")\nq.put(\"B\")\nprint(q.qsize(), q.full())  # 2 True\nprint(q.get())              # A\nq.put(\"C\")                  # Platz frei\ntry:\n    q.put(\"D\", timeout=0.5)\nexcept queue.Full:\n    print(\"voll!\")          # voll!"
+    },
+    {
+      "type": "text",
+      "content": "Die Queue arbeitet nach FIFO. put() blockiert, solange die Queue voll ist, get() blockiert, solange sie leer ist. Mit timeout=… wird nach der Wartezeit queue.Full bzw. queue.Empty ausgelöst, put_nowait() und get_nowait() warten gar nicht. maxsize=0 (Standard) bedeutet unbegrenzt – dann blockiert put() nie, aber der Speicher kann volllaufen, wenn der Verbraucher zu langsam ist."
+    },
+    {
+      "type": "code",
+      "content": "import queue, threading, time\n\nauftraege = queue.Queue(maxsize=3)\nENDE = None\n\ndef lehrer():\n    for i in range(1, 6):\n        auftraege.put(f\"Blatt {i}\")\n    auftraege.put(ENDE)\n\ndef drucker():\n    while True:\n        a = auftraege.get()\n        if a is ENDE:\n            break\n        time.sleep(0.1)   # drucken\n        print(\"gedruckt:\", a)\n\np = threading.Thread(target=lehrer)\nc = threading.Thread(target=drucker)\np.start(); c.start()\np.join(); c.join()\nprint(\"alles gedruckt\")\n# gedruckt: Blatt 1 … Blatt 5\n# alles gedruckt"
+    },
+    {
+      "type": "text",
+      "content": "Woher weiß der Verbraucher, dass nichts mehr kommt? Der Erzeuger legt am Ende ein besonderes Endesignal (Sentinel, „Giftpille“) wie None in die Queue. Typischer Fehler: Bei drei Verbrauchern nur ein None schicken. Einer beendet sich, die anderen zwei warten für immer in get() – und das Programm endet nie. Regel: ein Sentinel pro Verbraucher."
+    },
+    {
+      "type": "code",
+      "content": "import queue, threading\n\nq = queue.Queue()\nergebnis = []\nlock = threading.Lock()\n\ndef arbeiter():\n    while True:\n        zahl = q.get()\n        if zahl is None:\n            q.task_done()\n            break\n        with lock:\n            ergebnis.append(zahl * zahl)\n        q.task_done()\n\nts = [threading.Thread(target=arbeiter)\n      for _ in range(3)]\nfor t in ts:\n    t.start()\nfor z in range(1, 11):\n    q.put(z)\nfor _ in ts:\n    q.put(None)    # je Arbeiter eins\nq.join()\nprint(sum(ergebnis))   # 385"
+    },
+    {
+      "type": "text",
+      "content": "q.join() wartet, bis für jedes put() ein task_done() aufgerufen wurde – also bis alle Aufträge erledigt sind, nicht nur abgeholt. Das ist etwas anderes als Thread.join(), das auf das Ende eines Threads wartet. Typischer Fehler: task_done() vergessen, etwa im Zweig für den Sentinel oder wenn eine Exception auftritt. Dann hängt q.join() für immer. Tipp: task_done() in einem finally-Block aufrufen."
+    },
+    {
+      "type": "text",
+      "content": "Vorteile des Musters: Erzeuger und Verbraucher kennen sich nicht (lose Kopplung), du kannst die Zahl der Verbraucher je nach Last anpassen, und es gibt weniger gemeinsam genutzte Daten, die du selbst sperren musst. Weitere Varianten: queue.LifoQueue (Stapel), queue.PriorityQueue (kleinster Wert zuerst) und multiprocessing.Queue für Prozesse statt Threads."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: queue.Queue ist ein thread-sicherer FIFO-Puffer. put() wartet bei voller, get() bei leerer Queue; timeout führt zu queue.Full bzw. queue.Empty. Mit maxsize begrenzt du den Speicher. Ende über einen Sentinel pro Verbraucher signalisieren. q.join() wartet, bis jedes Element mit task_done() bestätigt wurde."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import queue\nq = queue.Queue()\nfor x in [1, 2, 3]:\n    q.put(x)\nq.get()\nq.get()\nprint(q.get(), q.qsize())",
+      "options": [
+        "1 2",
+        "3 0",
+        "1 0",
+        "3 1"
+      ],
+      "correctIndex": 1,
+      "explanation": "FIFO: Die ersten beiden get() holen 1 und 2, das dritte holt 3. Danach ist die Queue leer, qsize() liefert 0."
+    },
+    {
+      "question": "Vier Verbraucher-Threads lesen aus einer Queue. Der Erzeuger legt am Ende genau ein None hinein. Was passiert?",
+      "options": [
+        "Alle vier Verbraucher beenden sich, weil None für alle gilt.",
+        "Python löst queue.Empty in allen vier Threads aus.",
+        "Ein Verbraucher beendet sich, die anderen drei warten für immer in get().",
+        "Die Queue verdoppelt das None automatisch."
+      ],
+      "correctIndex": 2,
+      "explanation": "Jedes get() entnimmt ein Element. Nur ein Verbraucher bekommt das None. Die übrigen blockieren in get(), das Programm endet nicht. Pro Verbraucher ist ein Sentinel nötig."
+    },
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "import queue\nq = queue.Queue(maxsize=1)\nq.put(\"x\")\nq.put(\"y\", timeout=0.3)",
+      "options": [
+        "Nach 0,3 Sekunden wird queue.Full ausgelöst.",
+        "\"y\" überschreibt \"x\".",
+        "Die Queue wird automatisch vergrößert.",
+        "Das Programm hängt für immer."
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Queue fasst nur ein Element. put() wartet höchstens 0,3 s auf freien Platz und löst dann queue.Full aus."
+    },
+    {
+      "question": "Alle Arbeiter-Threads sind fertig, trotzdem kehrt q.join() nie zurück. Was ist die wahrscheinlichste Ursache?",
+      "options": [
+        "Die Queue wurde mit maxsize erzeugt.",
+        "Es wurde get_nowait() statt get() verwendet.",
+        "Die Threads wurden nicht als Daemon gestartet.",
+        "Für mindestens ein entnommenes Element wurde task_done() nicht aufgerufen."
+      ],
+      "correctIndex": 3,
+      "explanation": "q.join() wartet, bis der Zähler offener Aufgaben 0 ist. Er sinkt nur durch task_done() – fehlt ein Aufruf, wartet join ewig."
+    }
+  ]
+}

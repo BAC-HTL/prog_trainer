@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j4-transaktionen_02_recovery_logs",
+  "title": "Logs, Write-Ahead-Logging und Recovery",
+  "summary": "Du verstehst, wie ein DBMS mit Log-Datei, Write-Ahead-Regel, Checkpoints sowie REDO und UNDO nach einem Absturz Atomarität und Dauerhaftigkeit garantiert.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein DBMS arbeitet nicht direkt auf der Festplatte: Es lädt Datenseiten in einen Puffer im Arbeitsspeicher, ändert sie dort und schreibt sie irgendwann später zurück. Das ist schnell – aber bei einem Absturz ist der RAM-Inhalt weg. Wie kann COMMIT dann Dauerhaftigkeit versprechen, und wie werden halbfertige Transaktionen rückgängig gemacht?"
+    },
+    {
+      "type": "text",
+      "content": "Man unterscheidet drei Fehlerarten:\n• Transaktionsfehler: Eine Transaktion scheitert (Constraint-Verletzung, ROLLBACK, Deadlock). Lösung: ihre Änderungen zurücknehmen.\n• Systemfehler: Absturz, Stromausfall – RAM verloren, Platte intakt. Lösung: Recovery beim Neustart aus dem Log.\n• Medienfehler: Die Platte selbst ist kaputt. Lösung: Datensicherung plus archivierte Logs (nächste Lektion)."
+    },
+    {
+      "type": "code",
+      "content": "Log (sequenziell, nur anhängen)\nLSN TA  Objekt   alt   neu\n--- --  -------  ---   ---\n 1  T1  BEGIN\n 2  T1  kassa    300   100\n 3  T2  BEGIN\n 4  T2  ball      50    30\n 5  T1  ausflug    0   200\n 6  T1  COMMIT\n 7  T3  BEGIN\n 8  T3  kassa    100    90\n    ### Absturz ###"
+    },
+    {
+      "type": "text",
+      "content": "Das Log (Protokoll, Journal) hält jede Änderung mit fortlaufender Nummer (LSN, Log Sequence Number), Transaktion, Objekt, altem Wert (für UNDO) und neuem Wert (für REDO) fest. Weil es nur hinten angehängt wird, ist Schreiben sehr schnell – viel schneller als verstreute Datenseiten zu aktualisieren."
+    },
+    {
+      "type": "text",
+      "content": "Write-Ahead-Logging (WAL) bedeutet zwei Regeln:\n1. Bevor eine geänderte Datenseite auf die Platte geschrieben wird, müssen die zugehörigen Log-Einträge auf der Platte sein (sonst ließe sich die Änderung nicht rückgängig machen).\n2. Ein COMMIT gilt erst als erfolgreich, wenn alle Log-Einträge der Transaktion inklusive COMMIT-Eintrag dauerhaft gespeichert sind. Die Datenseiten selbst dürfen später folgen."
+    },
+    {
+      "type": "text",
+      "content": "Beim Neustart nach einem Systemfehler liest das DBMS das Log. REDO: Änderungen aller Transaktionen mit COMMIT-Eintrag werden (vorwärts) wiederholt – vielleicht waren sie noch nicht auf der Platte. UNDO: Änderungen aller Transaktionen ohne COMMIT werden (rückwärts) zurückgenommen – vielleicht waren sie schon auf der Platte. Im Beispiel: T1 wird wiederholt, T2 und T3 werden rückgängig gemacht."
+    },
+    {
+      "type": "code",
+      "content": "log = [\n  (\"T1\", \"kassa\",   300, 100),\n  (\"T2\", \"ball\",     50,  30),\n  (\"T1\", \"ausflug\",   0, 200),\n  (\"T1\", \"COMMIT\"),\n  (\"T3\", \"kassa\",   100,  90),\n]  # <- Absturz\nplatte = {\"kassa\": 90, \"ausflug\": 0,\n          \"ball\": 30}\n\nfertig = {e[0] for e in log\n          if e[1] == \"COMMIT\"}\n# REDO: vorwärts, nur committete TAs\nfor e in log:\n    if len(e) == 4 and e[0] in fertig:\n        platte[e[1]] = e[3]\n# UNDO: rückwärts, alle anderen\nfor e in reversed(log):\n    if len(e) == 4 and e[0] not in fertig:\n        platte[e[1]] = e[2]\nprint(platte)\n\n# Ausgabe:\n# {'kassa': 100, 'ausflug': 200,\n#  'ball': 50}"
+    },
+    {
+      "type": "text",
+      "content": "Damit das Log nicht ewig wächst und die Recovery nicht beim Urknall beginnt, gibt es Checkpoints: Das DBMS schreibt regelmäßig alle geänderten Seiten aus dem Puffer auf die Platte und vermerkt das im Log. Die Recovery muss dann nur ab dem letzten Checkpoint arbeiten. Echte Systeme (z. B. das ARIES-Verfahren) sind raffinierter, folgen aber diesem Prinzip; PostgreSQL schreibt sein WAL in das Verzeichnis pg_wal."
+    },
+    {
+      "type": "code",
+      "content": "import sqlite3, os\ncon = sqlite3.connect(\"schule.db\")\nprint(con.execute(\n  \"PRAGMA journal_mode=WAL\").fetchone())\ncon.execute(\"CREATE TABLE t(x)\")\ncon.execute(\"INSERT INTO t VALUES (1)\")\ncon.commit()\nprint(sorted(f for f in os.listdir()\n  if f.startswith(\"schule\")))\n\n# Ausgabe:\n# ('wal',)\n# ['schule.db', 'schule.db-shm',\n#  'schule.db-wal']"
+    },
+    {
+      "type": "text",
+      "content": "Auch SQLite kann im WAL-Modus arbeiten: Änderungen landen zuerst in der Datei -wal und werden beim Checkpoint in die Datenbankdatei übertragen. Typische Fehler: die -wal-Datei beim Kopieren einer laufenden Datenbank vergessen (dann fehlen committete Daten) oder Einstellungen wie fsync in PostgreSQL abschalten, um schneller zu sein – dann ist Durability nicht mehr garantiert.\n\nZusammenfassung: Log zuerst (WAL), COMMIT erst nach dauerhaftem Log, nach Absturz REDO für committete und UNDO für offene Transaktionen, Checkpoints begrenzen den Aufwand."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Log vor einem Absturz: T1 BEGIN, T1 x 5→7, T2 BEGIN, T2 y 1→2, T2 COMMIT, T1 x 7→9. Was muss die Recovery tun?",
+      "options": [
+        "T1 wiederholen, T2 zurücknehmen",
+        "Beide zurücknehmen",
+        "Beide wiederholen (x = 9)",
+        "T2 wiederholen, T1 zurücknehmen (x = 5)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur T2 hat einen COMMIT-Eintrag und wird per REDO wiederholt (y = 2). T1 ist offen; per UNDO wird x rückwärts auf 7 und dann auf 5 zurückgesetzt."
+    },
+    {
+      "question": "Was besagt die Write-Ahead-Regel?",
+      "options": [
+        "Datenseiten werden vor dem Log geschrieben.",
+        "Log-Einträge einer Änderung kommen auf die Platte, bevor die geänderte Datenseite dorthin geschrieben wird.",
+        "Jede Transaktion wird vor dem Start komplett ins Log geschrieben.",
+        "Das Log wird nur beim Checkpoint geschrieben."
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur so lässt sich eine Änderung, die schon auf der Platte steht, mit dem alten Wert aus dem Log rückgängig machen."
+    },
+    {
+      "question": "Warum braucht ein Log-Eintrag den alten Wert?",
+      "options": [
+        "Für das REDO committeter Transaktionen",
+        "Für den Checkpoint",
+        "Für das UNDO nicht abgeschlossener Transaktionen",
+        "Für die Berechnung der LSN"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mit dem alten Wert setzt UNDO Änderungen offener Transaktionen zurück. REDO braucht den neuen Wert."
+    },
+    {
+      "question": "Wozu dienen Checkpoints?",
+      "options": [
+        "Sie begrenzen, ab wo das Log bei der Recovery gelesen werden muss.",
+        "Sie verhindern Deadlocks.",
+        "Sie ersetzen das COMMIT.",
+        "Sie verschlüsseln das Log."
+      ],
+      "correctIndex": 0,
+      "explanation": "Beim Checkpoint werden geänderte Seiten auf die Platte geschrieben. Die REDO-Phase kann deshalb beim letzten Checkpoint beginnen statt am Anfang des Logs."
+    }
+  ]
+}

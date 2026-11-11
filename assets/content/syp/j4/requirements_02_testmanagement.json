@@ -1,0 +1,89 @@
+{
+ "id": "syp-j4-requirements_02_testmanagement",
+ "title": "Testmanagement und Abnahme",
+ "summary": "Tests mit einem Testkonzept planen, Testfälle dokumentieren, Fortschritt messen und die Abnahme durchführen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Testen kennst du aus dem 3. Jahrgang: Teststufen im V-Modell, Äquivalenzklassen und Grenzwerte. Testmanagement organisiert das Testen als Ganzes: planen, Ressourcen einteilen, Testfälle verwalten, Fortschritt und Fehler überwachen und entscheiden, wann genug getestet ist. Die internationale Normenreihe ISO/IEC/IEEE 29119 beschreibt dazu Prozesse und Dokumente."
+  },
+  {
+   "type": "text",
+   "content": "Das Testkonzept (Testplan) legt fest:\n• Testobjekte und was nicht getestet wird\n• Teststufen und Testarten (funktional, Last, Sicherheit …)\n• Testumgebung und Testdaten\n• Rollen (Testmanager:in, Tester:innen) und Zeitplan\n• Testende- und Abbruchkriterien\n• Risiken und Umgang mit Fehlern"
+  },
+  {
+   "type": "code",
+   "content": "Testfall TF-17\nAnforderung: A-05 (Login-Sperre)\nVorbedingung: Benutzer max existiert\nSchritte:\n 1. 3x falsches Passwort eingeben\n 2. richtiges Passwort eingeben\nErwartet: Meldung „Konto für\n 5 Minuten gesperrt“, kein Login\nTatsächlich: ______\nStatus: bestanden / fehlgeschlagen"
+  },
+  {
+   "type": "text",
+   "content": "Ein guter Testfall ist reproduzierbar: Jemand anderer muss ihn ohne Rückfrage genauso durchführen können. Er verweist auf die Anforderung (Traceability!) und enthält das erwartete Ergebnis, bevor getestet wird. Typischer Fehler: „Login testen – passt“. Ohne Vorbedingung, Eingaben und erwartetes Ergebnis lässt sich nichts nachvollziehen oder wiederholen."
+  },
+  {
+   "type": "code",
+   "content": "Testfortschritt\ngeplant:        120 Testfälle\ndurchgeführt:    96\nbestanden:       84\nfehlgeschlagen:  12\n\nDurchführungsgrad = 96 / 120 = 80 %\nBestehensquote    = 84 / 96  = 87,5 %"
+  },
+  {
+   "type": "text",
+   "content": "Fehler (Abweichungen) werden in einem Fehlermanagement-Tool erfasst: Beschreibung, Schritte zum Reproduzieren, Schweregrad, Priorität und Status (neu, in Arbeit, behoben, nachgetestet, geschlossen). Nach jeder Korrektur folgt ein Fehlernachtest; Regressionstests prüfen, ob die Änderung anderswo etwas kaputt gemacht hat."
+  },
+  {
+   "type": "text",
+   "content": "Testendekriterien beantworten die Frage „Wann sind wir fertig?“, z. B.: alle Testfälle der Must-Anforderungen durchgeführt und bestanden, keine offenen Fehler der Klassen „kritisch“ oder „schwer“, mindestens 95 % aller Testfälle durchgeführt. Sie stehen schon im Testkonzept, damit nicht unter Zeitdruck spontan „fertig“ erklärt wird."
+  },
+  {
+   "type": "text",
+   "content": "Die Abnahme ist der formale Schritt, mit dem der Auftraggeber das Ergebnis als vertragsgemäß anerkennt. Grundlage sind die vereinbarten Abnahmekriterien aus dem Pflichtenheft. Die Abnahmetests führt der Auftraggeber oder führen beide gemeinsam durch. Ergebnis ist ein Abnahmeprotokoll mit gefundenen Mängeln nach Klassen: abnahmeverhindernd, schwer, leicht. Mit leichten Mängeln ist eine Abnahme unter Vorbehalt üblich – die Mängel werden dann bis zu einem Termin behoben."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Das Testkonzept plant Umfang, Umgebung, Rollen und Testendekriterien. Testfälle sind reproduzierbar, auf Anforderungen verlinkt und enthalten das erwartete Ergebnis. Kennzahlen wie Durchführungsgrad und Bestehensquote zeigen den Fortschritt. Die Abnahme durch den Auftraggeber endet mit einem Protokoll und klassifizierten Mängeln."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Geplant sind 80 Testfälle, 60 wurden durchgeführt, davon 54 bestanden. Wie hoch ist die Bestehensquote der durchgeführten Tests?",
+   "options": [
+    "67,5 %",
+    "75 %",
+    "90 %",
+    "54 %"
+   ],
+   "correctIndex": 2,
+   "explanation": "Bestehensquote = 54 / 60 = 90 %. 75 % ist der Durchführungsgrad (60 / 80), 67,5 % wären 54 / 80."
+  },
+  {
+   "question": "Was fehlt einem Testfall „Suche testen – funktioniert“ vor allem?",
+   "options": [
+    "Ein Name der testenden Person",
+    "Vorbedingungen, konkrete Eingaben und das erwartete Ergebnis",
+    "Eine Farbe",
+    "Die Programmiersprache"
+   ],
+   "correctIndex": 1,
+   "explanation": "Ohne Eingaben und erwartetes Ergebnis ist der Test weder nachvollziehbar noch wiederholbar."
+  },
+  {
+   "question": "Wo werden Testendekriterien festgelegt?",
+   "options": [
+    "Im Testkonzept, vor Beginn der Tests",
+    "Im Abnahmeprotokoll, nach der Abnahme",
+    "Gar nicht, man testet bis das Budget aus ist",
+    "Im Glossar"
+   ],
+   "correctIndex": 0,
+   "explanation": "Testendekriterien gehören ins Testkonzept, damit „fertig“ nicht erst unter Zeitdruck definiert wird."
+  },
+  {
+   "question": "Bei der Abnahme werden nur zwei leichte Mängel (Tippfehler in Meldungen) gefunden. Was ist üblich?",
+   "options": [
+    "Abnahme verweigern und neues Projekt starten",
+    "Mängel ignorieren, ohne sie zu dokumentieren",
+    "Nur mündlich abnehmen",
+    "Abnahme unter Vorbehalt mit Frist zur Behebung"
+   ],
+   "correctIndex": 3,
+   "explanation": "Leichte Mängel verhindern die Abnahme nicht. Sie werden im Protokoll festgehalten und bis zu einem vereinbarten Termin behoben."
+  }
+ ]
+}

@@ -1,0 +1,117 @@
+{
+  "id": "dbi-j4-normalformen_pruefung",
+  "title": "Abschlussprüfung: Konzeptuelle Modelle & Normalformen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Das Sekretariat sagt: „Ein Kind kann während des Schuljahres die Klasse wechseln, wir brauchen dann aber auch die alte Klasse fürs Zeugnis.“ Was folgt daraus für das Modell?",
+      "options": [
+        "sch_nr → klasse gilt weiterhin uneingeschränkt; nur die Spalte klasse wird überschrieben.",
+        "Die Klassenzugehörigkeit braucht einen Zeitbezug, z. B. eine Tabelle (sch_nr, klasse, von, bis).",
+        "Die Regel ist zu ungenau und wird ignoriert.",
+        "klasse muss Primärschlüssel von schueler werden."
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Business Rule verlangt Historie. Mit einer eigenen Zuordnungstabelle samt Zeitraum bleibt die alte Klasse erhalten; ein Überschreiben würde Information vernichten."
+    },
+    {
+      "question": "Welche Business Rule kann ein CHECK-Constraint allein durchsetzen?",
+      "options": [
+        "Pro Klasse höchstens 36 Schüler:innen",
+        "Der KV muss eine Lehrkraft der Schule sein",
+        "Das Austrittsdatum liegt nicht vor dem Eintrittsdatum",
+        "Jede Lehrkraft hat höchstens 24 Wochenstunden"
+      ],
+      "correctIndex": 2,
+      "explanation": "CHECK sieht nur die Werte der aktuellen Zeile – austritt >= eintritt ist so eine Bedingung. Zählen über mehrere Zeilen braucht einen Trigger, der Verweis auf eine andere Tabelle einen Fremdschlüssel."
+    },
+    {
+      "question": "Gegeben A → B, C → A, B → D. Was ist {C}⁺?",
+      "options": [
+        "{A, B, C, D}",
+        "{C, A, B}",
+        "{A, B, D}",
+        "{C, A}"
+      ],
+      "correctIndex": 0,
+      "explanation": "Start {C}; C → A gibt A, A → B gibt B, B → D gibt D. Also {A, B, C, D}."
+    },
+    {
+      "question": "R(A, B, C, D) mit A → B, B → A, A C → D. Welche Schlüsselkandidaten hat R?",
+      "options": [
+        "nur {A, C}",
+        "{C} und {A}",
+        "nur {A, B, C}",
+        "{A, C} und {B, C}"
+      ],
+      "correctIndex": 3,
+      "explanation": "C steht auf keiner rechten Seite, muss also überall dabei sein. {A, C}⁺ = alles. Wegen B → A ist auch {B, C}⁺ = alles. Beide sind minimal."
+    },
+    {
+      "question": "Stundenplan(raum, tag, std, lehrer, klasse): Ein Raum ist pro Tag und Stunde nur einmal belegt, eine Klasse und eine Lehrkraft sind zur selben Zeit nur in einem Raum. Wie viele Schlüsselkandidaten gibt es?",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "{raum, tag, std}, {klasse, tag, std} und {lehrer, tag, std} bestimmen jeweils alle anderen Attribute und sind minimal – drei Schlüsselkandidaten."
+    },
+    {
+      "question": "Was ist der Unterschied zwischen Superschlüssel und Schlüsselkandidat?",
+      "options": [
+        "Es gibt keinen.",
+        "Ein Schlüsselkandidat ist ein minimaler Superschlüssel.",
+        "Ein Superschlüssel besteht immer aus einem Attribut.",
+        "Ein Superschlüssel ist der gewählte Primärschlüssel."
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder Superschlüssel bestimmt alle Attribute. Lässt sich kein Attribut mehr weglassen, ist er minimal und damit Schlüsselkandidat."
+    },
+    {
+      "question": "pruefung(sch_nr, fach, datum, raum, note) mit Schlüssel {sch_nr, fach} und FAs sch_nr, fach → datum, note und datum → raum (an einem Tag finden alle Prüfungen im selben Raum statt). Welche Normalform wird verletzt?",
+      "options": [
+        "3NF (transitive Abhängigkeit)",
+        "2NF",
+        "1NF",
+        "Keine"
+      ],
+      "correctIndex": 0,
+      "explanation": "raum hängt über datum transitiv vom Schlüssel ab; datum ist kein Schlüsselattribut. Partielle Abhängigkeiten gibt es nicht, also 2NF ja, 3NF nein."
+    },
+    {
+      "question": "Wann ist die Zerlegung von R(A, B, C) in R1(A, B) und R2(B, C) sicher verlustfrei?",
+      "options": [
+        "Immer",
+        "Wenn A → C gilt",
+        "Wenn B → A oder B → C gilt",
+        "Wenn R1 und R2 gleich viele Zeilen haben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Verlustfrei ist die Zerlegung, wenn das gemeinsame Attribut B eine der Teilrelationen bestimmt (Schlüssel in R1 oder R2 ist). Sonst kann der Join zusätzliche, falsche Zeilen erzeugen."
+    },
+    {
+      "question": "Welche Aussage über BCNF und 3NF stimmt?",
+      "options": [
+        "Jede Relation in BCNF ist auch in 3NF, aber eine BCNF-Zerlegung erhält nicht immer alle FAs.",
+        "Jede Relation in 3NF ist auch in BCNF.",
+        "BCNF erlaubt transitive Abhängigkeiten.",
+        "BCNF ist schwächer als 2NF."
+      ],
+      "correctIndex": 0,
+      "explanation": "BCNF ist strenger als 3NF. Die Kehrseite zeigt das Beispiel unterricht: Nach der Zerlegung lässt sich schueler, fach → lehrer nicht mehr in einer Tabelle prüfen."
+    },
+    {
+      "question": "Die Schulverwaltung zeigt auf jeder Seite den Notenschnitt aller Klassen an; das Berechnen dauert zu lange. Welche Denormalisierung ist vertretbar?",
+      "options": [
+        "Notenspalten note1 bis note20 in schueler anlegen",
+        "Den Fremdschlüssel von note auf schueler entfernen",
+        "Eine Spalte schnitt in klasse, die per Trigger oder geplanter Neuberechnung aktuell gehalten wird",
+        "Alle Tabellen in eine große Tabelle zusammenführen und Constraints löschen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine gezielt redundante, abgeleitete Spalte mit klar geregelter Aktualisierung ist bewusste Denormalisierung. Die anderen Varianten zerstören 1NF oder Integrität ohne Not."
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "id": "pos-j4-python-patterns_03_struktur_verhaltensmuster",
+  "title": "Struktur- und Verhaltensmuster",
+  "summary": "Adapter, Decorator, Observer und Strategy: Objekte verbinden, erweitern, benachrichtigen und austauschbar machen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Strukturmuster beschreiben, wie Klassen und Objekte zu größeren Einheiten zusammengesetzt werden (z. B. Adapter, Decorator). Verhaltensmuster regeln die Zusammenarbeit und Aufgabenverteilung zwischen Objekten (z. B. Observer, Strategy). Alle vier Muster dieser Lektion setzen auf Komposition: Ein Objekt hält ein anderes und delegiert Arbeit an es."
+    },
+    {
+      "type": "text",
+      "content": "Adapter: Du willst eine vorhandene Klasse verwenden, deren Schnittstelle nicht passt – etwa einen alten Temperatursensor aus einer fremden Bibliothek, der Fahrenheit liefert, während dein Programm celsius() erwartet. Statt die fremde Klasse zu ändern, schreibst du eine Hülle, die übersetzt. Wie ein Reisestecker: Der Strom bleibt gleich, nur die Form wird angepasst."
+    },
+    {
+      "type": "code",
+      "content": "class AltSensor:   # fremde Bibliothek\n    def lies_fahrenheit(self):\n        return 77.0\n\nclass SensorAdapter:\n    def __init__(self, alt):\n        self.alt = alt\n    def celsius(self):\n        f = self.alt.lies_fahrenheit()\n        return (f - 32) * 5 / 9\n\ndef anzeigen(sensor):\n    print(f\"{sensor.celsius():.1f} °C\")\n\nanzeigen(SensorAdapter(AltSensor()))\n# 25.0 °C"
+    },
+    {
+      "type": "text",
+      "content": "Decorator: Ein Objekt wird von einem anderen mit derselben Schnittstelle umhüllt, das zusätzliches Verhalten ergänzt. Die Hüllen lassen sich zur Laufzeit beliebig stapeln – statt für jede Kombination (KaffeeMitMilchUndSirup …) eine eigene Unterklasse zu schreiben. Pythons @-Dekoratoren für Funktionen beruhen auf derselben Idee des Umhüllens, sind aber ein Sprachmerkmal und nicht dasselbe wie das GoF-Muster für Objekte."
+    },
+    {
+      "type": "code",
+      "content": "class Kaffee:\n    def preis(self):\n        return 2.50\n    def text(self):\n        return \"Kaffee\"\n\nclass Extra:\n    def __init__(self, inner):\n        self.inner = inner\n\nclass Milch(Extra):\n    def preis(self):\n        return self.inner.preis() + 0.40\n    def text(self):\n        return self.inner.text() + \" + Milch\"\n\nclass Sirup(Extra):\n    def preis(self):\n        return self.inner.preis() + 0.60\n    def text(self):\n        return self.inner.text() + \" + Sirup\"\n\nk = Sirup(Milch(Milch(Kaffee())))\nprint(k.text())\nprint(f\"{k.preis():.2f} €\")\n# Kaffee + Milch + Milch + Sirup\n# 3.90 €"
+    },
+    {
+      "type": "text",
+      "content": "Observer (Beobachter): Ein Subjekt verwaltet eine Liste von Beobachtern und benachrichtigt alle, sobald sich etwas ändert. Das Subjekt muss nicht wissen, wer zuhört – neue Beobachter melden sich einfach an. Du kennst das Prinzip von GUI-Events: Ein Button ruft alle registrierten Callbacks auf. Typischer Fehler: Beobachter werden nie abgemeldet, bekommen weiter Nachrichten und bleiben im Speicher."
+    },
+    {
+      "type": "code",
+      "content": "class Notenbuch:\n    def __init__(self):\n        self.beobachter = []\n    def anmelden(self, f):\n        self.beobachter.append(f)\n    def eintragen(self, name, note):\n        for f in self.beobachter:\n            f(name, note)\n\ndef eltern_app(name, note):\n    print(f\"Push: {name} hat eine {note}\")\n\ndef warnung(name, note):\n    if note == 5:\n        print(f\"Frühwarnung für {name}!\")\n\nnb = Notenbuch()\nnb.anmelden(eltern_app)\nnb.anmelden(warnung)\nnb.eintragen(\"Ana\", 2)\nnb.eintragen(\"Ben\", 5)\n# Push: Ana hat eine 2\n# Push: Ben hat eine 5\n# Frühwarnung für Ben!"
+    },
+    {
+      "type": "text",
+      "content": "Strategy: Eine Familie austauschbarer Algorithmen wird hinter einer gemeinsamen Schnittstelle versteckt. Das Objekt, das sie verwendet (Kontext), ruft nur die Strategie auf und kann sie zur Laufzeit wechseln. In Python sind Funktionen Objekte, daher genügt oft eine Funktion als Strategie. sorted(liste, key=len) ist genau so ein Fall: Die Sortierlogik bleibt gleich, nur das Vergleichskriterium wird übergeben."
+    },
+    {
+      "type": "code",
+      "content": "def standard(kg):\n    return 4.90\n\ndef express(kg):\n    return 9.90 + 0.5 * kg\n\ndef abholung(kg):\n    return 0.0\n\nclass Bestellung:\n    def __init__(self, kg, versand):\n        self.kg = kg\n        self.versand = versand\n    def kosten(self):\n        return self.versand(self.kg)\n\nb = Bestellung(4, express)\nprint(b.kosten())   # 11.9\nb.versand = abholung\nprint(b.kosten())   # 0.0"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Adapter passt eine fremde Schnittstelle an die erwartete an. Decorator behält die Schnittstelle bei und ergänzt Verhalten, stapelbar zur Laufzeit. Observer benachrichtigt beliebig viele angemeldete Beobachter über Änderungen (lose Kopplung). Strategy macht einen Algorithmus austauschbar und ersetzt if/elif-Ketten – ganz im Sinne des Open/Closed Principle. Merkhilfe: Adapter ändert die Form, Decorator ergänzt Verhalten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus (Klassen wie in der Lektion)?",
+      "code": "class Kaffee:\n    def preis(self):\n        return 2.50\n\nclass Extra:\n    def __init__(self, inner):\n        self.inner = inner\n\nclass Milch(Extra):\n    def preis(self):\n        return self.inner.preis() + 0.40\n\nclass Sirup(Extra):\n    def preis(self):\n        return self.inner.preis() + 0.60\n\nk = Milch(Sirup(Kaffee()))\nprint(f\"{k.preis():.2f}\")",
+      "options": [
+        "3.50",
+        "2.90",
+        "3.10",
+        "3.90"
+      ],
+      "correctIndex": 0,
+      "explanation": "Kaffee 2,50 + Sirup 0,60 + Milch 0,40 = 3,50. Die Reihenfolge der Hüllen ändert am Preis nichts, nur am Text."
+    },
+    {
+      "question": "Eine fremde Bibliothek bietet die Methode lies_csv(pfad), dein Programm erwartet aber Objekte mit der Methode laden(). Welches Muster passt?",
+      "options": [
+        "Singleton",
+        "Observer",
+        "Adapter",
+        "Builder"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Adapter übersetzt eine vorhandene, unpassende Schnittstelle (lies_csv) in die erwartete (laden), ohne die fremde Klasse zu ändern."
+    },
+    {
+      "question": "Welche Zeile gibt dieser Code als erste aus (Klasse Notenbuch und Funktionen wie in der Lektion)?",
+      "code": "class Notenbuch:\n    def __init__(self):\n        self.beobachter = []\n    def anmelden(self, f):\n        self.beobachter.append(f)\n    def eintragen(self, name, note):\n        for f in self.beobachter:\n            f(name, note)\n\ndef eltern_app(name, note):\n    print(f\"Push: {name} hat eine {note}\")\n\ndef warnung(name, note):\n    if note == 5:\n        print(f\"Frühwarnung für {name}!\")\n\nnb = Notenbuch()\nnb.anmelden(warnung)\nnb.anmelden(eltern_app)\nnb.eintragen(\"Cem\", 5)",
+      "options": [
+        "Push: Cem hat eine 5",
+        "Frühwarnung für Cem!",
+        "Nichts, weil keine Beobachter angemeldet sind",
+        "Beide Zeilen gleichzeitig in einer Zeile"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Beobachter werden in der Reihenfolge der Anmeldung benachrichtigt. warnung wurde zuerst angemeldet, darum erscheint zuerst die Frühwarnung."
+    },
+    {
+      "question": "sorted(namen, key=len) sortiert nach der Länge der Namen. Welches Muster steckt hinter dem Parameter key?",
+      "options": [
+        "Adapter",
+        "Decorator",
+        "Observer",
+        "Strategy"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Sortieralgorithmus bleibt gleich, das Vergleichskriterium wird als austauschbare Funktion übergeben – das ist das Strategy-Muster."
+    }
+  ]
+}

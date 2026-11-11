@@ -1,0 +1,95 @@
+{
+  "id": "pos-j4-theorie-komplexitaet_02_laufzeitanalyse",
+  "title": "Laufzeiten bestimmen und messen",
+  "summary": "Die Laufzeit von Schleifen und rekursiven Funktionen abschätzen und mit Messungen überprüfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Grundregeln für Schleifen:\n• Anweisungen hintereinander: Laufzeiten addieren, der größte Term bleibt.\n• Schleife: Anzahl der Durchläufe · Aufwand pro Durchlauf.\n• Verschachtelte Schleifen: Durchläufe multiplizieren.\nZähle immer, wie oft die innerste Anweisung ausgeführt wird."
+    },
+    {
+      "type": "code",
+      "content": "for i in range(n):        # n mal\n    for j in range(5):    # 5 mal\n        s += 1\nfor k in range(n):        # n mal\n    s += 1\n# 5n + n = 6n → Θ(n)\n\nfor i in range(n):\n    for j in range(i):    # i mal\n        s += 1\n# 0 + 1 + … + (n−1) = n(n−1)/2\n# n = 100 → 4950 → Θ(n²)"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Bei der inneren Schleife range(i) „nur die Hälfte“ zu sehen und auf O(n log n) zu tippen. n(n−1)/2 = ½n² − ½n ist immer noch quadratisch – der Faktor ½ fällt weg. Ebenso wichtig: eine innere Schleife mit konstanter Länge (range(5)) macht aus Θ(n) kein Θ(n²)."
+    },
+    {
+      "type": "code",
+      "content": "while n > 1:          # halbiert n\n    n //= 2\n    s += 1\n# n = 1024 → 10 Durchläufe\n# → Θ(log n)\n\nfor i in range(n):\n    j = 1\n    while j < n:      # log₂ n mal\n        j *= 2\n# n = 1024 → 10240 → Θ(n log n)"
+    },
+    {
+      "type": "text",
+      "content": "Rekursion: Man stellt eine Rekursionsgleichung T(n) auf. Binäre Suche: T(n) = T(n/2) + c → Θ(log n). Mergesort: T(n) = 2·T(n/2) + c·n → Θ(n log n), denn es gibt log₂ n Ebenen, auf jeder wird insgesamt n Arbeit erledigt. Die naive Fibonacci-Funktion ruft sich zweimal selbst auf, ohne n zu halbieren: T(n) = T(n−1) + T(n−2) + c – das wächst exponentiell (etwa 1,6ⁿ)."
+    },
+    {
+      "type": "code",
+      "content": "aufrufe = 0\ndef fib(n):\n    global aufrufe\n    aufrufe += 1\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\n#  n │ aufrufe\n# 10 │     177\n# 20 │   21891\n# 30 │ 2692537"
+    },
+    {
+      "type": "text",
+      "content": "Empirisch messen: Theorie und Praxis sollten zusammenpassen. Mit dem Verdopplungstest misst du die Zeit für n, 2n, 4n und vergleichst das Verhältnis: ≈ 2 → linear, ≈ 4 → quadratisch, ≈ 8 → kubisch. Verwende timeit und den kleinsten von mehreren Messwerten (min von repeat) – einzelne Messungen schwanken durch andere Prozesse, Caches und Garbage Collection."
+    },
+    {
+      "type": "code",
+      "content": "import timeit\n\ndef quadratisch(n):\n    s = 0\n    for i in range(n):\n        for j in range(n):\n            s += 1\n    return s\n\nfor n in [500, 1000, 2000]:\n    t = min(timeit.repeat(\n        lambda: quadratisch(n),\n        number=3, repeat=5)) / 3\n    print(n, f\"{t*1000:.1f} ms\")"
+    },
+    {
+      "type": "code",
+      "content": "Beispielausgabe (Werte schwanken je\nnach Rechner):\n500   5.0 ms\n1000 21.7 ms   (≈ ×4)\n2000 80.4 ms   (≈ ×4)\n→ passt zu Θ(n²)"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Verschachtelte Schleifen multiplizieren, aufeinanderfolgende addieren, halbieren ergibt log n. Bei Rekursion zählt, wie viele Aufrufe entstehen und wie stark n schrumpft. Miss mit timeit und Verdopplungstest – und miss bei hinreichend großem n, bei winzigen Eingaben dominieren konstante Kosten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie oft wird s += 1 für n = 10 ausgeführt?",
+      "code": "s = 0\nfor i in range(n):\n    for j in range(i, n):\n        s += 1",
+      "options": [
+        "100",
+        "45",
+        "50",
+        "55"
+      ],
+      "correctIndex": 3,
+      "explanation": "Für i = 0 läuft j 10-mal, für i = 1 9-mal … für i = 9 einmal: 10 + 9 + … + 1 = 55 = n(n+1)/2. Laufzeit Θ(n²)."
+    },
+    {
+      "question": "Welche Laufzeit hat dieser Code?",
+      "code": "i = 1\nwhile i < n:\n    i *= 3",
+      "options": [
+        "Θ(log n)",
+        "Θ(n)",
+        "Θ(n / 3)",
+        "Θ(1)"
+      ],
+      "correctIndex": 0,
+      "explanation": "i wächst exponentiell (1, 3, 9, 27 …), nach k Schritten ist i = 3ᵏ. Die Schleife endet nach etwa log₃ n Schritten → Θ(log n)."
+    },
+    {
+      "question": "Welche Laufzeit ergibt die Rekursionsgleichung T(n) = 2·T(n/2) + c·n?",
+      "options": [
+        "Θ(n)",
+        "Θ(n²)",
+        "Θ(n log n)",
+        "Θ(2ⁿ)"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das ist die Gleichung von Mergesort: log₂ n Ebenen mit jeweils Θ(n) Arbeit → Θ(n log n)."
+    },
+    {
+      "question": "Messung: n = 1000 → 0,2 s, n = 2000 → 1,6 s, n = 4000 → 12,8 s. Welche Laufzeit ist am wahrscheinlichsten?",
+      "options": [
+        "Θ(n²)",
+        "Θ(n³)",
+        "Θ(n log n)",
+        "Θ(2ⁿ)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei jeder Verdopplung von n verachtfacht sich die Zeit: 2³ = 8 → kubisch."
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-concurrency_03_isolationslevel",
+  "title": "Isolationslevel in der Praxis",
+  "summary": "Du wählst mit SET TRANSACTION ein passendes Isolationslevel, kennst die erlaubten Anomalien laut SQL-Standard und siehst in PostgreSQL, wie REPEATABLE READ und SERIALIZABLE Konflikte melden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Volle Serialisierbarkeit kostet Leistung: mehr Warten, mehr Abbrüche. Deshalb definiert der SQL-Standard vier Isolationslevel. Je niedriger das Level, desto mehr Anomalien sind erlaubt – und desto mehr Parallelität ist möglich. Du wählst pro Transaktion, wie viel Schutz du brauchst."
+    },
+    {
+      "type": "code",
+      "content": "Level           Dirty NonRep Phantom\n--------------- ----- ------ -------\nREAD UNCOMMITTED  ja    ja     ja\nREAD COMMITTED    -     ja     ja\nREPEATABLE READ   -     -      ja\nSERIALIZABLE      -     -      -\n\nja = laut Standard möglich"
+    },
+    {
+      "type": "code",
+      "content": "BEGIN ISOLATION LEVEL\n  REPEATABLE READ;\n-- oder:\nBEGIN;\nSET TRANSACTION ISOLATION LEVEL\n  SERIALIZABLE;\n\nSHOW transaction_isolation;"
+    },
+    {
+      "type": "text",
+      "content": "Der Standard legt nur fest, was mindestens verhindert werden muss – ein DBMS darf mehr tun. PostgreSQL arbeitet mit MVCC (Multi-Version Concurrency Control): Jede Transaktion sieht einen Schnappschuss (Snapshot) der Daten, Leser blockieren Schreiber nicht und umgekehrt. Standard ist READ COMMITTED; READ UNCOMMITTED verhält sich dort wie READ COMMITTED. Bei MySQL/MariaDB mit InnoDB ist REPEATABLE READ der Standard."
+    },
+    {
+      "type": "text",
+      "content": "READ COMMITTED: Jede einzelne Abfrage sieht alles, was vor ihrem Start committet wurde. Deshalb gibt es Non-Repeatable Reads und Phantome. REPEATABLE READ: Die ganze Transaktion sieht den Snapshot vom Zeitpunkt ihrer ersten Abfrage. In PostgreSQL verhindert das auch Phantome (Zählung blieb im Test bei 4, obwohl B eine Zeile eingefügt hatte)."
+    },
+    {
+      "type": "code",
+      "content": "-- beide REPEATABLE READ, stand=100\nA: SELECT stand → 100\nB: SELECT stand → 100\nA: UPDATE stand = stand - 30\nA: COMMIT\nB: SELECT stand → 100 (Snapshot)\nB: UPDATE stand = stand - 50\nERROR:  could not serialize access\n  due to concurrent update\n-- Endstand 70, B muss neu starten"
+    },
+    {
+      "type": "text",
+      "content": "Statt einen Lost Update zuzulassen, bricht PostgreSQL B ab (SQLSTATE 40001). Das ist kein Bug, sondern gewollt: Die Anwendung muss die Transaktion einfach komplett wiederholen. Noch ein Schritt weiter geht SERIALIZABLE: Es erkennt auch Write Skew – zwei Transaktionen lesen dieselben Daten, ändern aber verschiedene Zeilen, sodass gemeinsam eine Regel verletzt wird."
+    },
+    {
+      "type": "code",
+      "content": "-- Regel: mind. 1 Lehrkraft hat\n--        Gangaufsicht (2 haben sie)\nA: SELECT count(*) ... → 2\nB: SELECT count(*) ... → 2\nA: UPDATE ... dienst=false\n     WHERE lehrer='Huber'\nB: UPDATE ... dienst=false\n     WHERE lehrer='Maier'\nA: COMMIT\nB: COMMIT\n\nREPEATABLE READ: beide ok → 0 (!)\nSERIALIZABLE:    B → ERROR: could\n  not serialize access due to\n  read/write dependencies among\n  transactions          → 1"
+    },
+    {
+      "type": "text",
+      "content": "Welches Level wählen? READ COMMITTED reicht für die meisten einfachen Abfragen und Änderungen, die in SQL rechnen (stand = stand - 30). REPEATABLE READ eignet sich für konsistente Berichte über mehrere Abfragen (z. B. Zeugnisliste). SERIALIZABLE nimmst du, wenn Regeln über mehrere Zeilen gelten und du nicht selbst sperren willst. Typischer Fehler: höheres Level einstellen, aber Fehler 40001 nicht mit Wiederholung behandeln."
+    },
+    {
+      "type": "text",
+      "content": "SQLite erlaubt immer nur einen Schreiber gleichzeitig und ist damit faktisch serialisierbar – für Mehrbenutzer-Server mit vielen gleichzeitigen Schreibzugriffen ist es nicht gedacht.\n\nZusammenfassung: Vier Levels von READ UNCOMMITTED bis SERIALIZABLE erlauben schrittweise weniger Anomalien. PostgreSQL nutzt Snapshots (MVCC); auf höheren Levels meldet es Konflikte mit einem Serialisierungsfehler, und die Anwendung wiederholt die Transaktion."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches ist das niedrigste Level, das laut SQL-Standard Non-Repeatable Reads verhindert?",
+      "options": [
+        "READ UNCOMMITTED",
+        "READ COMMITTED",
+        "REPEATABLE READ",
+        "SERIALIZABLE"
+      ],
+      "correctIndex": 2,
+      "explanation": "READ COMMITTED verhindert nur Dirty Reads. Erst REPEATABLE READ garantiert, dass eine gelesene Zeile in der Transaktion gleich bleibt."
+    },
+    {
+      "question": "A und B laufen in PostgreSQL mit READ COMMITTED (stand anfangs 100). Was liest B beim zweiten SELECT?",
+      "code": "B: BEGIN;\nB: SELECT stand → 100\nA: UPDATE konto\n     SET stand = 70;\nA: COMMIT;\nB: SELECT stand → ?",
+      "options": [
+        "100",
+        "B wartet, bis A fertig ist",
+        "Fehler: could not serialize access",
+        "70"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei READ COMMITTED sieht jede Abfrage den zum Startzeitpunkt der Abfrage committeten Stand – also 70. Mit REPEATABLE READ wären es 100."
+    },
+    {
+      "question": "Wie soll eine Anwendung reagieren, wenn eine SERIALIZABLE-Transaktion mit SQLSTATE 40001 (could not serialize access) abbricht?",
+      "options": [
+        "Den Fehler ignorieren und COMMIT senden",
+        "Die Transaktion zurückrollen und komplett neu ausführen",
+        "Auf READ UNCOMMITTED umstellen",
+        "Den Datenbankserver neu starten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Serialisierungsfehler sind im Design vorgesehen. Die richtige Reaktion ist, die ganze Transaktion zu wiederholen; beim nächsten Versuch sieht sie den neuen Stand."
+    },
+    {
+      "question": "Zwei Transaktionen prüfen, dass mindestens eine Lehrkraft Aufsicht hat, und nehmen sich danach jeweils selbst aus dem Dienst. Welches Level verhindert in PostgreSQL, dass am Ende niemand Aufsicht hat?",
+      "options": [
+        "READ COMMITTED",
+        "REPEATABLE READ",
+        "SERIALIZABLE",
+        "Keines – das geht nur mit einem Trigger"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das ist Write Skew: verschiedene Zeilen werden geändert, daher gibt es keinen direkten Schreibkonflikt. Erst SERIALIZABLE erkennt die Lese-Schreib-Abhängigkeit und bricht eine Transaktion ab."
+    }
+  ]
+}

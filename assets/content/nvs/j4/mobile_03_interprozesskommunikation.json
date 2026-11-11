@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j4-mobile_03_interprozesskommunikation",
+  "title": "Interprozesskommunikation (IPC)",
+  "summary": "Wie Prozesse über Pipes, Sockets, Shared Memory und Message Queues Daten austauschen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Jeder Prozess hat seinen eigenen, geschützten Adressraum – ein Prozess kann nicht einfach die Variablen eines anderen lesen. Das ist gut für Stabilität und Sicherheit, aber oft müssen Prozesse zusammenarbeiten: Ein Browser trennt Tabs in eigene Prozesse, eine App startet einen Hintergrunddienst, ein Webserver übergibt Anfragen an Worker-Prozesse. Die Mechanismen dafür heißen Interprozesskommunikation (IPC)."
+    },
+    {
+      "type": "text",
+      "content": "Eine Pipe ist ein Datenkanal zwischen zwei Prozessen: Was einer hineinschreibt, liest der andere in derselben Reihenfolge heraus. In der Shell verbindet | die Standardausgabe eines Programms mit der Standardeingabe des nächsten. Anonyme Pipes gibt es nur zwischen verwandten Prozessen (z. B. Eltern und Kind); benannte Pipes (FIFOs) haben einen Namen im Dateisystem und können auch von fremden Prozessen geöffnet werden."
+    },
+    {
+      "type": "code",
+      "content": "$ printf \"Maier\\nAhmed\\nHuber\\n\" \\\n    | sort | head -n 2\nAhmed\nHuber\n\n# drei Prozesse, zwei Pipes"
+    },
+    {
+      "type": "text",
+      "content": "Python bietet mit multiprocessing.Pipe() eine Pipe zwischen Python-Prozessen. Sie liefert zwei Verbindungsenden; mit send() und recv() werden ganze Python-Objekte übertragen (intern serialisiert). Der Wert None dient hier als vereinbartes Ende-Signal – ein kleines Protokoll, wie bei den Sockets. Wichtig: Der Startcode gehört unter if __name__ == \"__main__\":, sonst würden Kindprozesse auf manchen Systemen das Programm erneut starten."
+    },
+    {
+      "type": "code",
+      "content": "from multiprocessing import Pipe, Process\n\ndef worker(conn):\n    while True:\n        x = conn.recv()\n        if x is None:          # Ende\n            break\n        conn.send(x * x)\n    conn.close()\n\nif __name__ == \"__main__\":\n    eltern, kind = Pipe()\n    p = Process(target=worker,\n                args=(kind,))\n    p.start()\n    for zahl in [2, 3, 10]:\n        eltern.send(zahl)\n        print(zahl, \"->\", eltern.recv())\n    eltern.send(None)\n    p.join()\n    print(\"Exitcode:\", p.exitcode)\n\n# Ausgabe:\n# 2 -> 4\n# 3 -> 9\n# 10 -> 100\n# Exitcode: 0"
+    },
+    {
+      "type": "text",
+      "content": "Sockets kennst du schon: Sie funktionieren auch zwischen Prozessen am selben Rechner, über 127.0.0.1 oder – unter Linux/macOS – als Unix Domain Sockets mit einem Dateipfad statt Port. Ihr großer Vorteil: Derselbe Code funktioniert später auch über das Netz. Viele Datenbanken und Dienste bieten lokal einen Unix-Socket an."
+    },
+    {
+      "type": "text",
+      "content": "Shared Memory ist der schnellste Weg: Mehrere Prozesse blenden denselben Speicherbereich ein, Daten werden gar nicht kopiert. Dafür muss man sich selbst um die Synchronisation kümmern, sonst gibt es Race Conditions – z += 1 besteht aus Lesen, Rechnen und Schreiben, und zwei Prozesse können sich dazwischen in die Quere kommen. Im Beispiel erhöhen vier Prozesse einen gemeinsamen Zähler:"
+    },
+    {
+      "type": "code",
+      "content": "from multiprocessing import Process, Value\n\ndef zaehle(z):\n    for _ in range(10_000):\n        with z.get_lock():\n            z.value += 1\n\nif __name__ == \"__main__\":\n    z = Value(\"i\", 0)   # Shared Memory\n    ps = [Process(target=zaehle,\n                  args=(z,)) for _ in range(4)]\n    for p in ps:\n        p.start()\n    for p in ps:\n        p.join()\n    print(z.value)\n\n# Ausgabe: 40000\n# ohne Lock z. B. 11871 oder 23745"
+    },
+    {
+      "type": "text",
+      "content": "Message Queues (Nachrichtenwarteschlangen) entkoppeln Sender und Empfänger: Der Sender legt Nachrichten ab und arbeitet weiter, der Empfänger holt sie ab, wenn er Zeit hat. Lokal gibt es das z. B. als multiprocessing.Queue oder POSIX-Message-Queues, über das Netz als Message Broker (siehe verteilte Systeme). Auf Mobilgeräten stellt das Betriebssystem eigene Mechanismen bereit, z. B. Intents und Binder unter Android. Flutter-Apps sprechen über Platform Channels mit nativem Android-/iOS-Code – ebenfalls nach dem Prinzip „Nachricht senden, Antwort empfangen“."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Pipes sind einfache, geordnete Byte- oder Objektströme (anonym oder benannt). Sockets funktionieren lokal und über das Netz. Shared Memory ist am schnellsten, braucht aber Locks. Message Queues entkoppeln Sender und Empfänger zeitlich. Typischer Fehler: Shared Memory ohne Synchronisation – das Ergebnis ist dann zufällig falsch."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt diese Shell-Zeile aus?",
+      "code": "printf \"3\\n1\\n2\\n\" | sort | head -n 1",
+      "options": [
+        "3",
+        "1",
+        "2",
+        "1 2 3"
+      ],
+      "correctIndex": 1,
+      "explanation": "sort sortiert zu 1, 2, 3, head -n 1 gibt nur die erste Zeile aus: 1. Die Daten fließen über zwei Pipes durch drei Prozesse."
+    },
+    {
+      "question": "Welcher IPC-Mechanismus ist am schnellsten, erfordert aber eigene Synchronisation?",
+      "options": [
+        "Benannte Pipe",
+        "TCP-Socket über 127.0.0.1",
+        "Shared Memory",
+        "Message Queue"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei Shared Memory greifen Prozesse direkt auf denselben Speicher zu – ohne Kopieren, aber auch ohne automatischen Schutz vor gleichzeitigen Änderungen."
+    },
+    {
+      "question": "Im Pipe-Beispiel sendet die Hauptschleife [4, 5] statt [2, 3, 10]. Was wird ausgegeben (ohne die Exitcode-Zeile)?",
+      "options": [
+        "4 -> 8 und 5 -> 10",
+        "4 -> 4 und 5 -> 5",
+        "Nichts, weil None fehlt",
+        "4 -> 16 und 5 -> 25"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Worker quadriert jede empfangene Zahl: 4·4 = 16, 5·5 = 25. Das None-Signal wird danach unverändert gesendet."
+    },
+    {
+      "question": "Warum liefert der Shared-Memory-Zähler ohne Lock weniger als 40000?",
+      "options": [
+        "Weil z.value += 1 nicht atomar ist und sich Prozesse gegenseitig Updates überschreiben",
+        "Weil Value nur Zahlen bis 20000 speichert",
+        "Weil Kindprozesse nicht auf Shared Memory zugreifen dürfen",
+        "Weil join() Werte löscht"
+      ],
+      "correctIndex": 0,
+      "explanation": "Lesen, Addieren und Zurückschreiben sind getrennte Schritte. Lesen zwei Prozesse gleichzeitig denselben Wert, geht eine Erhöhung verloren (Race Condition)."
+    }
+  ]
+}

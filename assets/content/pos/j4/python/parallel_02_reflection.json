@@ -1,0 +1,95 @@
+{
+  "id": "pos-j4-python-parallel_02_reflection",
+  "title": "Reflection: Programme untersuchen sich selbst",
+  "summary": "Mit type, getattr und inspect zur Laufzeit Typen, Attribute und Methoden erkunden und dynamisch aufrufen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Reflection bedeutet: Ein Programm untersucht und verändert zur Laufzeit seine eigene Struktur – welchen Typ ein Objekt hat, welche Attribute und Methoden es gibt, welche Parameter eine Funktion erwartet – und ruft Methoden über ihren Namen auf. Das nutzen Test-Frameworks (pytest findet alle Funktionen test_…), Plugin-Systeme, Serialisierer und ORMs. In C# entspricht das dem Namensraum System.Reflection."
+    },
+    {
+      "type": "code",
+      "content": "class Schueler:\n    schule = \"HTL\"\n\n    def __init__(self, name, klasse):\n        self.name = name\n        self.klasse = klasse\n\n    def gruss(self):\n        return f\"Hallo, {self.name}!\"\n\ns = Schueler(\"Ana\", \"4AHIF\")\nprint(type(s).__name__)   # Schueler\nprint(isinstance(s, Schueler))  # True\nprint(vars(s))\n# {'name': 'Ana', 'klasse': '4AHIF'}\nprint([a for a in dir(s)\n       if not a.startswith(\"_\")])\n# ['gruss', 'klasse', 'name', 'schule']"
+    },
+    {
+      "type": "text",
+      "content": "vars() zeigt nur die Attribute des Objekts selbst, dir() auch die der Klasse (schule, gruss) und alle geerbten. Mit getattr(obj, \"name\") liest du ein Attribut, dessen Name erst zur Laufzeit als String feststeht; mit Standardwert getattr(obj, \"x\", None) gibt es keinen AttributeError. setattr, hasattr und delattr funktionieren entsprechend. Methoden sind ebenfalls Attribute – so baust du einen Befehls-Dispatcher ohne lange if/elif-Kette."
+    },
+    {
+      "type": "code",
+      "content": "class Befehle:\n    def cmd_hallo(self):\n        return \"Hallo!\"\n\n    def cmd_zeit(self):\n        return \"08:00\"\n\nb = Befehle()\nfor ein in [\"hallo\", \"zeit\", \"rm\"]:\n    f = getattr(b, \"cmd_\" + ein, None)\n    if callable(f):\n        print(f())\n    else:\n        print(\"unbekannt:\", ein)\n# Hallo!\n# 08:00\n# unbekannt: rm"
+    },
+    {
+      "type": "text",
+      "content": "Das Modul inspect liefert genauere Informationen: getmembers() listet alle Mitglieder (alphabetisch sortiert), mit Filtern wie inspect.isfunction; signature() zeigt die Parameter einer Funktion; getdoc() den Docstring, getsource() sogar den Quellcode. Damit lässt sich ein Mini-Test-Runner bauen, der wie pytest alle test_-Funktionen eines Moduls findet und ausführt."
+    },
+    {
+      "type": "code",
+      "content": "import inspect, sys\n\ndef test_plus():\n    assert 1 + 1 == 2\n\ndef test_minus():\n    assert 3 - 1 == 1\n\ndef hilfe(name, laut=False):\n    pass\n\nmodul = sys.modules[__name__]\nfor name, f in inspect.getmembers(\n        modul, inspect.isfunction):\n    if name.startswith(\"test_\"):\n        try:\n            f()\n            print(\"OK  \", name)\n        except AssertionError:\n            print(\"FAIL\", name)\nprint(inspect.signature(hilfe))\n# FAIL test_minus\n# OK   test_plus\n# (name, laut=False)"
+    },
+    {
+      "type": "text",
+      "content": "Auch Klassen sind Objekte, ihr Typ ist type. Mit der Drei-Argument-Form type(name, basisklassen, attribute) erzeugst du sogar zur Laufzeit neue Klassen – das machen Frameworks im Hintergrund, etwa um aus einer Tabellenbeschreibung eine Klasse zu erzeugen."
+    },
+    {
+      "type": "code",
+      "content": "def gruss(self):\n    return f\"Ich bin {self.name}\"\n\nLehrer = type(\"Lehrer\", (object,),\n              {\"schule\": \"HTL\",\n               \"gruss\": gruss})\n\nl = Lehrer()\nl.name = \"Mag. Huber\"\nprint(l.gruss())     # Ich bin Mag. Huber\nprint(type(Lehrer))  # <class 'type'>"
+    },
+    {
+      "type": "text",
+      "content": "Reflection ist mächtig, hat aber ihren Preis: Fehler zeigen sich erst zur Laufzeit, die IDE erkennt Namen in Strings beim Umbenennen nicht, Kapselung wird umgangen, und es ist langsamer als direkter Zugriff. Gefährlich wird es mit Benutzereingaben: getattr(obj, eingabe)() erlaubt den Aufruf jeder beliebigen Methode. Darum wie oben mit einem Präfix (cmd_) oder einer Liste erlaubter Namen einschränken – und niemals eval() auf Eingaben anwenden. Typischer Fehler: getattr ohne Standardwert für einen fehlenden Namen löst AttributeError aus."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: type() und isinstance() bestimmen Typen, vars() und dir() listen Attribute, getattr/setattr/hasattr greifen über Namen zu. inspect liefert Mitglieder (getmembers), Signaturen (signature) und Docstrings. type(name, basen, dict) erzeugt Klassen dynamisch. Reflection gezielt einsetzen – für Frameworks, Plugins und Tests, nicht als Ersatz für normalen Code."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class A:\n    x = 1\n    def f(self):\n        return 2\n\na = A()\nprint(getattr(a, \"y\", 3), hasattr(a, \"f\"))",
+      "options": [
+        "3 True",
+        "None True",
+        "AttributeError",
+        "3 False"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Attribut y gibt es nicht, darum liefert getattr den Standardwert 3. Die Methode f ist ein Attribut der Klasse, hasattr liefert True."
+    },
+    {
+      "question": "Im Mini-Test-Runner der Lektion: Warum erscheint FAIL test_minus vor OK test_plus, obwohl test_plus zuerst definiert wurde?",
+      "options": [
+        "Weil fehlgeschlagene Tests immer zuerst gemeldet werden",
+        "Weil Funktionen in umgekehrter Reihenfolge gespeichert werden",
+        "Weil inspect.getmembers die Mitglieder alphabetisch nach Namen sortiert",
+        "Weil assert die Reihenfolge umdreht"
+      ],
+      "correctIndex": 2,
+      "explanation": "getmembers liefert eine nach Namen sortierte Liste: test_minus kommt alphabetisch vor test_plus."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Punkt = type(\"Punkt\", (), {\"x\": 0})\nprint(Punkt.__name__, Punkt().x)",
+      "options": [
+        "type 0",
+        "Punkt None",
+        "Einen TypeError",
+        "Punkt 0"
+      ],
+      "correctIndex": 3,
+      "explanation": "type mit drei Argumenten erzeugt eine neue Klasse namens Punkt mit dem Klassenattribut x = 0."
+    },
+    {
+      "question": "Ein Server führt getattr(dienst, befehl)() mit dem Befehl aus einer Netzwerk-Anfrage aus. Was ist das Problem?",
+      "options": [
+        "getattr funktioniert nur mit Klassen, nicht mit Objekten.",
+        "Ein Angreifer kann beliebige Methoden aufrufen, auch interne – die Namen müssen eingeschränkt werden.",
+        "Der Aufruf ist langsamer als eval().",
+        "Es gibt kein Problem, getattr prüft Berechtigungen automatisch."
+      ],
+      "correctIndex": 1,
+      "explanation": "Reflection mit ungeprüften Eingaben öffnet alle Methoden. Abhilfe: Präfix wie cmd_ oder eine Liste erlaubter Befehle."
+    }
+  ]
+}

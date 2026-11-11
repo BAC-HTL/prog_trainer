@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j4-zugriff_01_benutzer_rechte_rollen",
+  "title": "Benutzer, Rechte und Rollen",
+  "summary": "Du legst in PostgreSQL Benutzer und Rollen an, vergibst und entziehst Rechte mit GRANT und REVOKE und schränkst den Zugriff mit Views ein.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Schuldatenbank enthält Noten, Adressen und Sozialversicherungsnummern. Nicht jede:r darf alles sehen: Lehrkräfte lesen Schülerdaten, nur das Sekretariat ändert Adressen, die Webapp der Projektwoche darf nur in ihre eigenen Tabellen schreiben. Ein DBMS regelt das über Benutzer, Rechte (Privilegien) und Rollen. SQLite hat übrigens keine Benutzerverwaltung – dort schützt nur das Dateisystem."
+    },
+    {
+      "type": "text",
+      "content": "In PostgreSQL ist alles eine Rolle. Eine Rolle mit dem Attribut LOGIN ist ein Benutzer, der sich anmelden darf; eine Rolle ohne LOGIN fasst Rechte zusammen, wie eine Gruppe. Rechte bekommt eine Rolle mit GRANT, entzogen werden sie mit REVOKE. Wichtige Tabellenrechte: SELECT, INSERT, UPDATE, DELETE, dazu z. B. EXECUTE für Funktionen."
+    },
+    {
+      "type": "code",
+      "content": "CREATE ROLE lehrkraft;\nGRANT SELECT ON schueler\n  TO lehrkraft;\n\nCREATE ROLE huber LOGIN\n  PASSWORD 'Geheim!23';\nGRANT lehrkraft TO huber;\n\n-- als huber:\nSELECT name FROM schueler;\n-- Anna, Ben\nUPDATE schueler SET name = 'X'\n  WHERE sch_nr = 1;\n-- ERROR:  permission denied\n--   for table schueler"
+    },
+    {
+      "type": "text",
+      "content": "Vergib Rechte an Rollen, nicht an einzelne Personen. Kommt eine neue Lehrkraft dazu, reicht ein GRANT lehrkraft TO …; wechselt jemand die Aufgabe, entziehst du eine Rolle statt dutzender Einzelrechte. Dahinter steht das Prinzip der minimalen Rechte (Least Privilege): Jede:r bekommt genau die Rechte, die für die Aufgabe nötig sind – nicht mehr."
+    },
+    {
+      "type": "code",
+      "content": "REVOKE SELECT ON schueler\n  FROM lehrkraft;\n-- huber: permission denied\n\n-- nur bestimmte Spalten:\nGRANT SELECT (sch_nr, name)\n  ON schueler TO lehrkraft;\nSELECT name FROM schueler; -- ok\nSELECT svnr FROM schueler;\n-- ERROR:  permission denied\n--   for table schueler"
+    },
+    {
+      "type": "text",
+      "content": "Rechte lassen sich bis auf Spalten genau vergeben. Mit WITH GRANT OPTION darf der Empfänger ein Recht selbst weitergeben (GRANT UPDATE ON schueler TO huber WITH GRANT OPTION) – sparsam einsetzen. Der Besitzer (Owner) eines Objekts hat immer alle Rechte darauf. In psql zeigt \\dp schueler die vergebenen Rechte, z. B. huber=w*/postgres: w = UPDATE, * = mit Grant Option, vergeben von postgres."
+    },
+    {
+      "type": "text",
+      "content": "Zeilenweise Einschränkungen erreichst du mit Views. Der Klassenvorstand der 4AHIF soll nur seine Klasse sehen, und zwar ohne Sozialversicherungsnummer. Du gibst ihm Rechte auf die View, nicht auf die Tabelle. Die View läuft mit den Rechten ihres Besitzers und liefert nur die erlaubten Zeilen und Spalten."
+    },
+    {
+      "type": "code",
+      "content": "CREATE VIEW schueler_4ahif AS\n  SELECT sch_nr, name\n  FROM schueler\n  WHERE klasse = '4AHIF';\n\nCREATE ROLE kv_4ahif;\nGRANT SELECT ON schueler_4ahif\n  TO kv_4ahif;\nGRANT kv_4ahif TO maier;\n\n-- als maier:\nSELECT * FROM schueler_4ahif;\n-- 1 | Anna\nSELECT * FROM schueler;\n-- ERROR:  permission denied"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Die Anwendung verbindet sich als Superuser (postgres) – eine SQL-Injection hat dann vollen Zugriff auf alles. Rechte an PUBLIC (= alle Rollen) vergeben, ohne es zu merken. Und Rechte nur in der App prüfen: Wer direkt mit psql verbindet, umgeht sie. Lege für jede Anwendung einen eigenen Benutzer mit minimalen Rechten an."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Rollen mit LOGIN sind Benutzer, Rollen ohne LOGIN bündeln Rechte. GRANT vergibt, REVOKE entzieht Rechte auf Tabellen, Spalten, Views und Routinen. Views schränken Zeilen und Spalten ein. Leitlinie ist Least Privilege – und niemals Anwendungen als Superuser."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Die Rolle sekretariat soll Adressen ändern, aber keine Schüler:innen löschen dürfen. Welcher Befehl passt?",
+      "options": [
+        "GRANT SELECT, UPDATE ON schueler TO sekretariat;",
+        "GRANT ALL ON schueler TO sekretariat;",
+        "GRANT DELETE ON schueler TO sekretariat;",
+        "GRANT sekretariat TO schueler;"
+      ],
+      "correctIndex": 0,
+      "explanation": "SELECT zum Finden und UPDATE zum Ändern reichen. ALL würde auch DELETE erlauben und widerspricht dem Prinzip der minimalen Rechte."
+    },
+    {
+      "question": "huber ist Mitglied der Rolle lehrkraft, die SELECT auf schueler hat. Dann wird REVOKE SELECT ON schueler FROM lehrkraft ausgeführt. Was passiert bei SELECT name FROM schueler als huber (ohne weitere Einzelrechte)?",
+      "options": [
+        "Die Namen werden angezeigt.",
+        "Die Abfrage liefert 0 Zeilen.",
+        "huber wird automatisch aus der Rolle entfernt.",
+        "ERROR: permission denied for table schueler"
+      ],
+      "correctIndex": 3,
+      "explanation": "huber hatte das Recht nur über die Rolle. Wird es der Rolle entzogen, fehlt es auch huber – mit einer Fehlermeldung, nicht mit leerem Ergebnis."
+    },
+    {
+      "question": "Wie gibst du einer Rolle Zugriff nur auf die Schüler:innen einer bestimmten Klasse?",
+      "options": [
+        "GRANT SELECT ON schueler WHERE klasse = '4AHIF'",
+        "Eine View mit WHERE klasse = '4AHIF' anlegen und SELECT auf die View vergeben",
+        "GRANT SELECT (klasse) ON schueler",
+        "Das ist in SQL nicht möglich."
+      ],
+      "correctIndex": 1,
+      "explanation": "GRANT kennt keine WHERE-Klausel. Die View filtert die Zeilen, und die Rolle bekommt nur Rechte auf die View."
+    },
+    {
+      "question": "Warum soll sich eine Webapp nicht als Superuser mit der Datenbank verbinden?",
+      "options": [
+        "Weil eine Sicherheitslücke in der App (z. B. SQL-Injection) dann uneingeschränkten Zugriff auf alle Daten gibt",
+        "Weil Superuser langsamer sind",
+        "Weil Superuser keine Transaktionen verwenden können",
+        "Weil sich Superuser nur lokal anmelden können"
+      ],
+      "correctIndex": 0,
+      "explanation": "Least Privilege begrenzt den Schaden: Mit einem eigenen Benutzer mit minimalen Rechten kann ein Angreifer nur das, was die App darf."
+    }
+  ]
+}

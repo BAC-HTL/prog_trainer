@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-theorie-paradigmen_02_imperativ_funktional",
+  "title": "Imperativ vs. funktional",
+  "summary": "Wie sich „Schritt für Schritt Zustand ändern“ von „Werte durch reine Funktionen berechnen“ unterscheidet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Programmierparadigma ist ein grundlegender Denkstil beim Programmieren. Imperativ heißt: Du beschreibst WIE etwas passiert – als Folge von Befehlen, die Variablen (den Zustand) Schritt für Schritt verändern. Funktional heißt: Du beschreibst WAS berechnet wird – als Verkettung von Funktionen, die aus Eingaben neue Werte erzeugen, ohne bestehende Daten zu verändern. Deklarativ ist der Oberbegriff für „was statt wie“; funktionale und logische Programmierung (und SQL) gehören dazu."
+    },
+    {
+      "type": "text",
+      "content": "Beispiel: Die Summe der Quadrate aller Noten bis 4. Imperativ mit Schleife und veränderlicher Variable summe, funktional mit filter/map bzw. einem Generator-Ausdruck – ganz ohne Zuweisung in einer Schleife. Beide liefern 4 + 1 + 16 + 9 = 30."
+    },
+    {
+      "type": "code",
+      "content": "noten = [2, 1, 4, 5, 3]\n\n# imperativ\nsumme = 0\nfor n in noten:\n    if n <= 4:\n        summe += n * n\nprint(summe)            # 30\n\n# funktional\nprint(sum(n * n for n in noten\n          if n <= 4))   # 30\n\n// C# mit LINQ\nnoten.Where(n => n <= 4)\n     .Select(n => n * n)\n     .Sum();            // 30"
+    },
+    {
+      "type": "text",
+      "content": "Eine reine Funktion (pure function) erfüllt zwei Bedingungen:\n• Gleiche Argumente → immer gleiches Ergebnis.\n• Keine Seiteneffekte: Sie verändert nichts außerhalb (keine globalen Variablen, keine übergebenen Listen, keine Ausgabe, keine Datei).\nDann kann man jeden Aufruf durch sein Ergebnis ersetzen – das nennt man referenzielle Transparenz."
+    },
+    {
+      "type": "code",
+      "content": "zaehler = 0\ndef erhoehe(x):        # unrein\n    global zaehler\n    zaehler += 1\n    return x + zaehler\n\nprint(erhoehe(10), erhoehe(10))\n# 11 12  ← gleiche Eingabe,\n#           anderes Ergebnis!\n\ndef plus_mwst(preis):  # rein\n    return preis * 1.2"
+    },
+    {
+      "type": "text",
+      "content": "Ein häufiger versteckter Seiteneffekt: Eine Funktion verändert eine übergebene Liste. Der Aufrufer merkt das oft nicht. Die reine Variante baut stattdessen eine neue Liste und lässt das Original unangetastet."
+    },
+    {
+      "type": "code",
+      "content": "def fuege_an(liste, x):\n    liste.append(x)       # ändert Original\n    return liste\n\na = [1, 2]\nb = fuege_an(a, 3)\nprint(a, b)  # [1, 2, 3] [1, 2, 3]\n\ndef fuege_an_rein(liste, x):\n    return liste + [x]    # neue Liste\n\na = [1, 2]\nb = fuege_an_rein(a, 3)\nprint(a, b)  # [1, 2] [1, 2, 3]"
+    },
+    {
+      "type": "text",
+      "content": "Unveränderlichkeit (Immutability): Ein unveränderliches Objekt kann nach dem Erzeugen nicht mehr geändert werden – stattdessen erzeugt man eine geänderte Kopie. In Python sind str, tuple und frozen-Dataclasses unveränderlich, in C# z. B. string und record (mit with-Ausdruck). Vorteile: kein Ärger mit geteilten Referenzen und keine Race Conditions, weil niemand etwas überschreiben kann."
+    },
+    {
+      "type": "code",
+      "content": "from dataclasses import dataclass, replace\n\n@dataclass(frozen=True)\nclass Punkt:\n    x: int\n    y: int\n\np = Punkt(1, 2)\n# p.x = 5 → FrozenInstanceError\nq = replace(p, x=5)\nprint(p, q)\n# Punkt(x=1, y=2) Punkt(x=5, y=2)\n\n// C#: record Punkt(int X, int Y);\n// var q = p with { X = 5 };"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Imperativ = Befehle und veränderlicher Zustand, funktional = reine Funktionen, unveränderliche Daten, Rekursion und Funktionen höherer Ordnung statt Schleifen mit Zuweisungen. Reine Sprachen wie Haskell erzwingen das; Python und C# sind Multi-Paradigmen-Sprachen und erlauben beide Stile. In der Praxis kapselt man Seiteneffekte (Ein-/Ausgabe, Datenbank) am Rand und hält die eigentliche Logik rein – sie ist dann leicht testbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Funktion ist rein?",
+      "options": [
+        "def f(x): print(x); return x",
+        "def f(x): return x * x + 1",
+        "def f(lst): lst.sort(); return lst",
+        "def f(x): return x + random.random()"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur x * x + 1 hängt ausschließlich vom Argument ab und hat keinen Seiteneffekt. print ist eine Ausgabe, sort verändert die übergebene Liste, random liefert bei gleicher Eingabe verschiedene Ergebnisse."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def f(lst):\n    lst.append(0)\n    return len(lst)\n\na = [1, 2]\nf(a)\nprint(f(a), a)",
+      "options": [
+        "3 [1, 2]",
+        "3 [1, 2, 0]",
+        "4 [1, 2, 0, 0]",
+        "4 [1, 2]"
+      ],
+      "correctIndex": 2,
+      "explanation": "f verändert die übergebene Liste (Seiteneffekt). Nach dem ersten Aufruf ist a = [1, 2, 0], der zweite hängt noch eine 0 an und liefert 4."
+    },
+    {
+      "question": "Was bedeutet referenzielle Transparenz?",
+      "options": [
+        "Jeder Ausdruck darf globale Variablen lesen",
+        "Objekte sind nach dem Erzeugen unveränderlich",
+        "Funktionen werden als Argumente übergeben",
+        "Ein Aufruf kann durch sein Ergebnis ersetzt werden, ohne das Programmverhalten zu ändern"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei reinen Funktionen ist das Ergebnis nur von den Argumenten abhängig – deshalb kann man f(3) überall durch seinen Wert ersetzen."
+    },
+    {
+      "question": "Was passiert bei p.x = 5, wenn Punkt mit @dataclass(frozen=True) definiert ist?",
+      "options": [
+        "Es wird eine FrozenInstanceError ausgelöst",
+        "p.x wird auf 5 gesetzt",
+        "Es wird automatisch eine Kopie mit x = 5 erzeugt",
+        "Der Wert wird ignoriert, p.x bleibt gleich"
+      ],
+      "correctIndex": 0,
+      "explanation": "Frozen-Dataclasses sind unveränderlich. Für eine geänderte Version verwendet man dataclasses.replace(p, x=5)."
+    }
+  ]
+}

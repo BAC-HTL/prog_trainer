@@ -1032,7 +1032,13 @@
     "theorie",
     "programmieren"
    ],
-   "semester": 7
+   "semester": 7,
+   "lessons": [
+    "pos/j4/theorie/paradigmen_01_typsysteme.json",
+    "pos/j4/theorie/paradigmen_02_imperativ_funktional.json",
+    "pos/j4/theorie/paradigmen_03_oo_logisch.json"
+   ],
+   "exam": "pos/j4/theorie/paradigmen_pruefung.json"
   },
   {
    "id": "pos-j4-fuzzy",
@@ -1043,7 +1049,13 @@
    "topics": [
     "theorie"
    ],
-   "semester": 7
+   "semester": 7,
+   "lessons": [
+    "pos/j4/theorie/fuzzy_01_dreiwertige_logik.json",
+    "pos/j4/theorie/fuzzy_02_fuzzy_mengen.json",
+    "pos/j4/theorie/fuzzy_03_fuzzy_regelung.json"
+   ],
+   "exam": "pos/j4/theorie/fuzzy_pruefung.json"
   },
   {
    "id": "pos-j4-patterns",
@@ -1055,7 +1067,27 @@
     "oop",
     "software-engineering"
    ],
-   "semester": 7
+   "semester": 7,
+   "variants": {
+    "python": {
+     "id": "pos-j4-patterns-python",
+     "lessons": [
+      "pos/j4/python/patterns_01_entwurfsprinzipien.json",
+      "pos/j4/python/patterns_02_erzeugungsmuster.json",
+      "pos/j4/python/patterns_03_struktur_verhaltensmuster.json"
+     ],
+     "exam": "pos/j4/python/patterns_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j4-patterns-csharp",
+     "lessons": [
+      "pos/j4/csharp/patterns_01_entwurfsprinzipien.json",
+      "pos/j4/csharp/patterns_02_erzeugungsmuster.json",
+      "pos/j4/csharp/patterns_03_struktur_verhaltensmuster.json"
+     ],
+     "exam": "pos/j4/csharp/patterns_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j4-synchronisation",
@@ -1066,7 +1098,27 @@
    "topics": [
     "programmieren"
    ],
-   "semester": 7
+   "semester": 7,
+   "variants": {
+    "python": {
+     "id": "pos-j4-synchronisation-python",
+     "lessons": [
+      "pos/j4/python/sync_01_locks_monitore.json",
+      "pos/j4/python/sync_02_deadlocks.json",
+      "pos/j4/python/sync_03_producer_consumer.json"
+     ],
+     "exam": "pos/j4/python/sync_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j4-synchronisation-csharp",
+     "lessons": [
+      "pos/j4/csharp/sync_01_locks_monitore.json",
+      "pos/j4/csharp/sync_02_deadlocks.json",
+      "pos/j4/csharp/sync_03_producer_consumer.json"
+     ],
+     "exam": "pos/j4/csharp/sync_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j4-build",
@@ -1077,7 +1129,27 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 7
+   "semester": 7,
+   "variants": {
+    "python": {
+     "id": "pos-j4-build-python",
+     "lessons": [
+      "pos/j4/python/build_01_build_werkzeuge.json",
+      "pos/j4/python/build_02_abhaengigkeiten.json",
+      "pos/j4/python/build_03_dokumentation_generieren.json"
+     ],
+     "exam": "pos/j4/python/build_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j4-build-csharp",
+     "lessons": [
+      "pos/j4/csharp/build_01_build_werkzeuge.json",
+      "pos/j4/csharp/build_02_abhaengigkeiten.json",
+      "pos/j4/csharp/build_03_dokumentation_generieren.json"
+     ],
+     "exam": "pos/j4/csharp/build_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j4-komplexitaet",
@@ -1089,7 +1161,13 @@
     "algorithmen",
     "theorie"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "pos/j4/theorie/komplexitaet_01_o_notation.json",
+    "pos/j4/theorie/komplexitaet_02_laufzeitanalyse.json",
+    "pos/j4/theorie/komplexitaet_03_optimieren.json"
+   ],
+   "exam": "pos/j4/theorie/komplexitaet_pruefung.json"
   },
   {
    "id": "pos-j4-numerik",
@@ -1100,7 +1178,13 @@
    "topics": [
     "algorithmen"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "pos/j4/theorie/numerik_01_gleitkommazahlen.json",
+    "pos/j4/theorie/numerik_02_fehleranalyse.json",
+    "pos/j4/theorie/numerik_03_numerische_verfahren.json"
+   ],
+   "exam": "pos/j4/theorie/numerik_pruefung.json"
   },
   {
    "id": "pos-j4-zuverlaessig",
@@ -1111,7 +1195,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "pos/j4/theorie/zuverlaessig_01_issue_tracking.json",
+    "pos/j4/theorie/zuverlaessig_02_integrationstests.json",
+    "pos/j4/theorie/zuverlaessig_03_hilfesysteme_logging.json"
+   ],
+   "exam": "pos/j4/theorie/zuverlaessig_pruefung.json"
   },
   {
    "id": "pos-j4-parallel",
@@ -1122,7 +1212,27 @@
    "topics": [
     "programmieren"
    ],
-   "semester": 8
+   "semester": 8,
+   "variants": {
+    "python": {
+     "id": "pos-j4-parallel-python",
+     "lessons": [
+      "pos/j4/python/parallel_01_parallele_algorithmen.json",
+      "pos/j4/python/parallel_02_reflection.json",
+      "pos/j4/python/parallel_03_massendaten.json"
+     ],
+     "exam": "pos/j4/python/parallel_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j4-parallel-csharp",
+     "lessons": [
+      "pos/j4/csharp/parallel_01_parallele_algorithmen.json",
+      "pos/j4/csharp/parallel_02_reflection.json",
+      "pos/j4/csharp/parallel_03_massendaten.json"
+     ],
+     "exam": "pos/j4/csharp/parallel_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j5-architektur",
@@ -1375,7 +1485,13 @@
     "datenbanken",
     "theorie"
    ],
-   "semester": 7
+   "semester": 7,
+   "lessons": [
+    "dbi/j4/normalformen_01_business_rules.json",
+    "dbi/j4/normalformen_02_funktionale_abhaengigkeiten.json",
+    "dbi/j4/normalformen_03_normalisierung.json"
+   ],
+   "exam": "dbi/j4/normalformen_pruefung.json"
   },
   {
    "id": "dbi-j4-transaktionen",
@@ -1386,7 +1502,13 @@
    "topics": [
     "datenbanken"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "dbi/j4/transaktionen_01_acid.json",
+    "dbi/j4/transaktionen_02_recovery_logs.json",
+    "dbi/j4/transaktionen_03_datensicherung_verfuegbarkeit.json"
+   ],
+   "exam": "dbi/j4/transaktionen_pruefung.json"
   },
   {
    "id": "dbi-j4-concurrency",
@@ -1397,7 +1519,13 @@
    "topics": [
     "datenbanken"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "dbi/j4/concurrency_01_anomalien.json",
+    "dbi/j4/concurrency_02_serialisierbarkeit_sperren.json",
+    "dbi/j4/concurrency_03_isolationslevel.json"
+   ],
+   "exam": "dbi/j4/concurrency_pruefung.json"
   },
   {
    "id": "dbi-j4-zugriff",
@@ -1409,7 +1537,13 @@
     "datenbanken",
     "security"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "dbi/j4/zugriff_01_benutzer_rechte_rollen.json",
+    "dbi/j4/zugriff_02_authentifizierung.json",
+    "dbi/j4/zugriff_03_kryptologie_grundlagen.json"
+   ],
+   "exam": "dbi/j4/zugriff_pruefung.json"
   },
   {
    "id": "dbi-j5-indizes",
@@ -1605,7 +1739,13 @@
     "security",
     "netzwerke"
    ],
-   "semester": 7
+   "semester": 7,
+   "lessons": [
+    "nvs/j4/policies_01_security_policies.json",
+    "nvs/j4/policies_02_firewalls_vertieft.json",
+    "nvs/j4/policies_03_vpn.json"
+   ],
+   "exam": "nvs/j4/policies_pruefung.json"
   },
   {
    "id": "nvs-j4-sockets",
@@ -1617,7 +1757,13 @@
     "netzwerke",
     "programmieren"
    ],
-   "semester": 7
+   "semester": 7,
+   "lessons": [
+    "nvs/j4/sockets_01_verteilte_systeme.json",
+    "nvs/j4/sockets_02_tcp_sockets.json",
+    "nvs/j4/sockets_03_webapplikationen_architektur.json"
+   ],
+   "exam": "nvs/j4/sockets_pruefung.json"
   },
   {
    "id": "nvs-j4-lastverteilung",
@@ -1629,7 +1775,13 @@
     "netzwerke",
     "cloud"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "nvs/j4/last_01_verfuegbarkeit_redundanz.json",
+    "nvs/j4/last_02_load_balancing.json",
+    "nvs/j4/last_03_performanceanalyse.json"
+   ],
+   "exam": "nvs/j4/last_pruefung.json"
   },
   {
    "id": "nvs-j4-mobile",
@@ -1640,7 +1792,13 @@
    "topics": [
     "programmieren"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "nvs/j4/mobile_01_mobile_entwicklung.json",
+    "nvs/j4/mobile_02_synchronisation_offline.json",
+    "nvs/j4/mobile_03_interprozesskommunikation.json"
+   ],
+   "exam": "nvs/j4/mobile_pruefung.json"
   },
   {
    "id": "nvs-j5-soa",
@@ -1982,7 +2140,13 @@
    "topics": [
     "projektmanagement"
    ],
-   "semester": 7
+   "semester": 7,
+   "lessons": [
+    "syp/j4/prozesse_01_it_markt_ikt_systeme.json",
+    "syp/j4/prozesse_02_prozesse_modellieren.json",
+    "syp/j4/prozesse_03_prozesse_optimieren.json"
+   ],
+   "exam": "syp/j4/prozesse_pruefung.json"
   },
   {
    "id": "syp-j4-it-architektur",
@@ -1993,7 +2157,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 7
+   "semester": 7,
+   "lessons": [
+    "syp/j4/architektur_01_architekturmodelle.json",
+    "syp/j4/architektur_02_architektur_frameworks.json",
+    "syp/j4/architektur_03_architektur_dokumentieren.json"
+   ],
+   "exam": "syp/j4/architektur_pruefung.json"
   },
   {
    "id": "syp-j4-requirements",
@@ -2004,7 +2174,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 7
+   "semester": 7,
+   "lessons": [
+    "syp/j4/requirements_01_requirements_management.json",
+    "syp/j4/requirements_02_testmanagement.json",
+    "syp/j4/requirements_03_change_management.json"
+   ],
+   "exam": "syp/j4/requirements_pruefung.json"
   },
   {
    "id": "syp-j4-governance",
@@ -2015,7 +2191,13 @@
    "topics": [
     "projektmanagement"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "syp/j4/governance_01_ikt_strategie.json",
+    "syp/j4/governance_02_it_service_management_itil.json",
+    "syp/j4/governance_03_service_level.json"
+   ],
+   "exam": "syp/j4/governance_pruefung.json"
   },
   {
    "id": "syp-j4-controlling",
@@ -2027,7 +2209,13 @@
     "projektmanagement",
     "recht"
    ],
-   "semester": 8
+   "semester": 8,
+   "lessons": [
+    "syp/j4/controlling_01_it_controlling.json",
+    "syp/j4/controlling_02_green_it.json",
+    "syp/j4/controlling_03_compliance_rollout.json"
+   ],
+   "exam": "syp/j4/controlling_pruefung.json"
   },
   {
    "id": "syp-j5-systemkonzepte",

@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j4-last_03_performanceanalyse",
+  "title": "Performanceanalyse: Latenz, Durchsatz, Perzentile",
+  "summary": "Leistungskennzahlen richtig messen, Perzentile berechnen und Engpässe finden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "„Der Server ist langsam“ ist keine Messung. Für eine Performanceanalyse brauchst du Kennzahlen. Die zwei wichtigsten: Latenz (Antwortzeit) – wie lange dauert EINE Anfrage, z. B. 40 ms. Durchsatz – wie viele Anfragen (oder Bytes) schafft das System pro Zeiteinheit, z. B. 300 Anfragen/s oder 900 Mbit/s. Beide hängen zusammen, sind aber nicht dasselbe: Eine Autobahn mit vielen Spuren hat hohen Durchsatz, auch wenn jedes Auto gleich lange unterwegs ist."
+    },
+    {
+      "type": "text",
+      "content": "Bei der Latenz ist der Mittelwert oft irreführend, weil wenige sehr langsame Anfragen ihn stark verziehen – oder umgekehrt in der Masse untergehen. Deshalb verwendet man Perzentile: p95 = 95 ms bedeutet, 95 % der Anfragen dauerten höchstens 95 ms, 5 % länger. p50 ist der Median. Eine einfache Berechnung ist die Nearest-Rank-Methode: Werte sortieren, Rang = aufrunden(p/100 · n), den Wert an diesem Rang nehmen."
+    },
+    {
+      "type": "code",
+      "content": "import math\n\nms = [12, 15, 11, 14, 13, 250, 16, 12,\n      14, 13, 15, 12, 18, 14, 13, 95,\n      12, 17, 14, 13]\n\ndef perzentil(werte, p):   # Nearest Rank\n    s = sorted(werte)\n    rang = math.ceil(p / 100 * len(s))\n    return s[rang - 1]\n\nprint(\"Mittel:\", sum(ms) / len(ms))\nprint(\"p50:\", perzentil(ms, 50))\nprint(\"p90:\", perzentil(ms, 90))\nprint(\"p95:\", perzentil(ms, 95))\nprint(\"max:\", max(ms))\n\n# Ausgabe:\n# Mittel: 29.65\n# p50: 14\n# p90: 18\n# p95: 95\n# max: 250"
+    },
+    {
+      "type": "text",
+      "content": "Der Mittelwert (29,65 ms) beschreibt hier keine einzige echte Anfrage: Die meisten dauern 11–18 ms, zwei Ausreißer liegen bei 95 und 250 ms. Der Median (14 ms) zeigt das typische Erlebnis, p95 und Maximum zeigen die langsamen Fälle. Gerade die sind wichtig: Lädt eine Seite 20 Ressourcen und sind 5 % aller Anfragen langsam, ist mit 1 − 0,95²⁰ ≈ 64 % mindestens eine langsame dabei. SLAs geben deshalb oft Ziele wie „p99 unter 300 ms“ an. Hinweis: Es gibt mehrere Perzentil-Verfahren (z. B. mit Interpolation); bei großen Datenmengen sind die Unterschiede klein."
+    },
+    {
+      "type": "text",
+      "content": "Durchsatz berechnest du als Menge pro Zeit. Mit Little's Law verbindest du Durchsatz und Latenz: L = λ · W. Dabei ist λ die Ankunftsrate (Anfragen pro Sekunde), W die mittlere Verweildauer und L die mittlere Anzahl gleichzeitig bearbeiteter Anfragen. So schätzt du z. B., wie viele parallele Verbindungen oder Threads ein Server bewältigen muss."
+    },
+    {
+      "type": "code",
+      "content": "anfragen = 18000\ndauer_s = 60\nprint(\"Durchsatz:\", anfragen / dauer_s,\n      \"Anfragen/s\")\n\n# Little's Law: L = λ · W\nlam = anfragen / dauer_s   # pro s\nw = 0.040                  # 40 ms\nprint(\"gleichzeitig:\", lam * w)\n\n# Ausgabe:\n# Durchsatz: 300.0 Anfragen/s\n# gleichzeitig: 12.0"
+    },
+    {
+      "type": "text",
+      "content": "Gemessen wird auf mehreren Ebenen: im Netz mit ping (Round Trip Time) und iperf (Bandbreite), am Server mit Systemmonitoren für CPU, RAM, Festplatten-I/O und Netzwerk, in der Anwendung mit Zeitstempeln (in Python time.perf_counter()) und Logs. Lasttests (z. B. mit Werkzeugen wie JMeter oder Locust) erhöhen die Last schrittweise und zeichnen Latenz-Perzentile und Durchsatz auf."
+    },
+    {
+      "type": "code",
+      "content": "Last steigt ->\nDurchsatz  │   ____________ Sättigung\n           │  /\n           │ /\n           │/\n           └──────────────────\nLatenz     │               /\n           │              /\n           │_____________/\n           └──────────────────"
+    },
+    {
+      "type": "text",
+      "content": "Typisch: Bis zu einer Grenze steigt der Durchsatz mit der Last, die Latenz bleibt fast gleich. Ist eine Ressource ausgelastet (der Engpass, z. B. CPU bei 100 % oder die Datenbank), bleibt der Durchsatz stehen und die Latenz steigt stark, weil Anfragen warten. Typischer Fehler: an der falschen Stelle optimieren – mehr Webserver helfen nicht, wenn die Datenbank der Engpass ist. Zusammenfassung: Latenz und Durchsatz getrennt messen, Perzentile statt nur Mittelwert angeben, Engpass finden und gezielt beheben."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Antwortzeiten in ms: 20, 22, 25, 21, 30, 24, 23, 200, 26, 28. Wie groß ist p90 nach der Nearest-Rank-Methode?",
+      "options": [
+        "28",
+        "30",
+        "41,9",
+        "200"
+      ],
+      "correctIndex": 1,
+      "explanation": "Sortiert: 20, 21, 22, 23, 24, 25, 26, 28, 30, 200. Rang = aufrunden(0,9 · 10) = 9 → 30 ms. 41,9 ist der Mittelwert, 200 das Maximum."
+    },
+    {
+      "question": "Ein Server bekommt 500 Anfragen pro Sekunde, jede ist im Mittel 0,2 s in Bearbeitung. Wie viele Anfragen sind laut Little's Law gleichzeitig im System?",
+      "options": [
+        "2,5",
+        "25",
+        "100",
+        "2500"
+      ],
+      "correctIndex": 2,
+      "explanation": "L = λ · W = 500 /s · 0,2 s = 100 gleichzeitige Anfragen."
+    },
+    {
+      "question": "Was bedeutet die Angabe „p95 = 120 ms“?",
+      "options": [
+        "95 % der Anfragen dauerten höchstens 120 ms.",
+        "Die mittlere Antwortzeit ist 120 ms.",
+        "95 Anfragen dauerten genau 120 ms.",
+        "Die schnellste Anfrage dauerte 120 ms."
+      ],
+      "correctIndex": 0,
+      "explanation": "Das 95. Perzentil ist der Wert, den 95 % der Messungen nicht überschreiten. Über Mittelwert oder Minimum sagt er nichts aus."
+    },
+    {
+      "question": "Bei einem Lasttest bleibt der Durchsatz ab 400 Anfragen/s gleich, die Latenz steigt stark an. Die Webserver haben 30 % CPU-Last, die Datenbank 100 %. Was hilft am ehesten?",
+      "options": [
+        "Einen weiteren Webserver hinzufügen",
+        "Round Robin durch Least Connections ersetzen",
+        "Den Timeout im Client verlängern",
+        "Die Datenbank entlasten (Abfragen optimieren, Index, Caching)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Engpass ist die Datenbank. Mehr Webserver würden nur noch mehr Last auf die bereits ausgelastete Datenbank schicken."
+    }
+  ]
+}

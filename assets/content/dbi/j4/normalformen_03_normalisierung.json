@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-normalformen_03_normalisierung",
+  "title": "Normalisierung: 1NF bis BCNF",
+  "summary": "Du erkennst Anomalien, prüfst ein Schema mit Hilfe funktionaler Abhängigkeiten auf 1NF, 2NF, 3NF und BCNF, zerlegst es verlustfrei und weißt, wann Denormalisierung sinnvoll ist.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Tabelle noten aus der letzten Lektion (sch_nr, name, klasse, kv, fach, note; Schlüssel {sch_nr, fach}) speichert vieles mehrfach: Annas Klasse steht bei jeder ihrer Noten, der KV der 4AHIF bei jeder Note jeder Schülerin. Diese Redundanz führt zu Anomalien – Fehlern beim Ändern der Daten."
+    },
+    {
+      "type": "code",
+      "content": "Änderungsanomalie:\n  4AHIF bekommt neuen KV → viele\n  Zeilen ändern; eine vergessen =\n  widersprüchliche Daten.\nEinfügeanomalie:\n  Neue Klasse 1AHIF mit KV, aber\n  noch ohne Noten → kein Schlüssel\n  (sch_nr, fach) → nicht speicherbar.\nLöschanomalie:\n  Cems einzige Note wird gelöscht\n  → Info „4BHIF hat KV Wolf“ weg."
+    },
+    {
+      "type": "text",
+      "content": "1. Normalform (1NF): Alle Attributwerte sind atomar, es gibt keine Listen und keine Wiederholungsgruppen. Eine Spalte faecher mit dem Wert 'DBI, POS, AM' oder Spalten note1, note2, note3 verletzen die 1NF. Lösung: pro Wert eine eigene Zeile (oder eine eigene Tabelle). Atomar heißt dabei: atomar für die Anwendung – ein Datum muss man nicht in Tag, Monat und Jahr zerlegen."
+    },
+    {
+      "type": "text",
+      "content": "2. Normalform (2NF): 1NF und jedes Nicht-Primattribut hängt voll von jedem Schlüsselkandidaten ab, nicht nur von einem Teil davon. In noten gilt sch_nr → name, klasse – das sind partielle Abhängigkeiten vom Schlüssel {sch_nr, fach}. Ein Schema mit einem einattributigen Schlüssel ist (in 1NF) automatisch in 2NF."
+    },
+    {
+      "type": "text",
+      "content": "3. Normalform (3NF): 2NF und kein Nicht-Primattribut hängt transitiv von einem Schlüssel ab, d. h. über ein anderes Nicht-Schlüsselattribut. In schueler(sch_nr, name, klasse, kv) gilt sch_nr → klasse → kv. kv hängt also transitiv ab. Lösung: Was die rechte Seite der „störenden“ FA bestimmt, kommt in eine eigene Tabelle."
+    },
+    {
+      "type": "code",
+      "content": "Zerlegung in 3NF:\n\nschueler(sch_nr, name, klasse↗)\nklasse  (klasse, kv)\nnote    (sch_nr↗, fach, note)\n\n-- ↗ = Fremdschlüssel\n-- Join über sch_nr und klasse\n-- liefert genau die alte Tabelle\n-- (verlustfrei)."
+    },
+    {
+      "type": "text",
+      "content": "Eine Zerlegung muss verlustfrei sein: Der Join der Teiltabellen ergibt wieder genau die Ausgangsdaten – keine Zeilen fehlen, keine erfundenen kommen dazu. Das klappt, wenn das gemeinsame Attribut in einer der Teiltabellen Schlüssel ist (klasse in klasse, sch_nr in schueler). Zusätzlich wünscht man sich Abhängigkeitserhaltung: Jede FA lässt sich in einer einzelnen Teiltabelle prüfen."
+    },
+    {
+      "type": "text",
+      "content": "Boyce-Codd-Normalform (BCNF): Für jede nichttriviale FA X → Y ist X ein Superschlüssel. Strenger als 3NF, die ein Primattribut auf der rechten Seite noch erlaubt. Schulbeispiel unterricht(schueler, fach, lehrer) mit den Regeln „Jede Lehrkraft unterrichtet hier nur ein Fach“ (lehrer → fach) und „Pro Fach hat ein Kind genau eine Lehrkraft“ (schueler, fach → lehrer). Schlüsselkandidaten: {schueler, fach} und {schueler, lehrer}."
+    },
+    {
+      "type": "code",
+      "content": "unterricht(schueler, fach, lehrer)\n  lehrer → fach\n  lehrer ist kein Superschlüssel\n  fach ist Primattribut\n  ⇒ 3NF ja, BCNF nein\n\nBCNF-Zerlegung:\n  lehrt   (lehrer, fach)\n  besucht (schueler, lehrer)\n  ⚠ schueler, fach → lehrer lässt\n    sich nicht mehr in einer\n    Tabelle prüfen."
+    },
+    {
+      "type": "text",
+      "content": "Darum ist 3NF in der Praxis das übliche Ziel; BCNF strebt man an, wenn die Zerlegung keine Abhängigkeit verliert. Denormalisierung heißt, bewusst Redundanz zurückzuholen, etwa eine gespeicherte Spalte anzahl_schueler in klasse für schnelle Statistiken oder eine flache Tabelle für Auswertungen. Das ist erlaubt, wenn du es begründest (Messung zeigt: Join zu langsam) und die Konsistenz sicherst (Trigger, nächtliche Neuberechnung). Typischer Fehler: „aus Bequemlichkeit“ denormalisieren und die Anomalien vergessen.\n\nZusammenfassung: Redundanz verursacht Änderungs-, Einfüge- und Löschanomalien. 1NF: atomare Werte. 2NF: keine partielle Abhängigkeit von einem Schlüssel. 3NF: keine transitive Abhängigkeit. BCNF: Jede Determinante ist Superschlüssel. Zerlege verlustfrei, möglichst abhängigkeitserhaltend, und denormalisiere nur begründet."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Normalform verletzt die Tabelle zuerst?",
+      "code": "anmeldung(sch_nr, name, faecher)\n  1 | Anna | 'DBI, POS, AM'\n  2 | Ben  | 'DBI'",
+      "options": [
+        "1NF",
+        "2NF",
+        "3NF",
+        "Keine – sie ist in BCNF"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Spalte faecher enthält eine Liste von Werten und ist damit nicht atomar. Das verletzt bereits die 1NF."
+    },
+    {
+      "question": "R(sch_nr, fach, note, klasse) mit Schlüssel {sch_nr, fach} und den FAs sch_nr, fach → note sowie sch_nr → klasse. In welcher höchsten Normalform ist R?",
+      "options": [
+        "1NF",
+        "2NF",
+        "3NF",
+        "BCNF"
+      ],
+      "correctIndex": 0,
+      "explanation": "klasse hängt nur von sch_nr ab, also von einem Teil des Schlüssels – eine partielle Abhängigkeit. R ist daher in 1NF, aber nicht in 2NF."
+    },
+    {
+      "question": "In einer Tabelle schueler(sch_nr, name, klasse, kv) wird die letzte Schülerin der 4BHIF gelöscht. Danach weiß niemand mehr, wer KV der 4BHIF ist. Wie heißt dieses Problem?",
+      "options": [
+        "Einfügeanomalie",
+        "Phantom",
+        "Änderungsanomalie",
+        "Löschanomalie"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beim Löschen eines Datensatzes geht ungewollt eine andere Information verloren – eine Löschanomalie. Ursache ist die transitive Abhängigkeit sch_nr → klasse → kv."
+    },
+    {
+      "question": "Warum ist unterricht(schueler, fach, lehrer) mit lehrer → fach und schueler, fach → lehrer zwar in 3NF, aber nicht in BCNF?",
+      "options": [
+        "Weil fach kein atomarer Wert ist",
+        "Weil lehrer → fach gilt, lehrer aber kein Superschlüssel ist",
+        "Weil es zwei Schlüsselkandidaten gibt",
+        "Weil schueler von fach transitiv abhängt"
+      ],
+      "correctIndex": 1,
+      "explanation": "BCNF verlangt, dass jede Determinante Superschlüssel ist. lehrer ist das nicht. 3NF ist trotzdem erfüllt, weil fach ein Primattribut ist (Teil von {schueler, fach})."
+    }
+  ]
+}

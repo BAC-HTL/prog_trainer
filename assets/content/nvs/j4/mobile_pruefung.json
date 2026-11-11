@@ -1,0 +1,118 @@
+{
+  "id": "nvs-j4-mobile_pruefung",
+  "title": "Abschlussprüfung: Mobile Apps & Interprozesskommunikation",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Eine Firma braucht eine App mit aufwendiger Augmented Reality, die neueste iOS-Funktionen sofort nutzen soll. Welcher Ansatz passt am besten?",
+      "options": [
+        "Progressive Web App",
+        "Native App in Swift",
+        "Eine Webseite mit responsivem Design",
+        "Ein Shell-Skript"
+      ],
+      "correctIndex": 1,
+      "explanation": "Für maximale Leistung und sofortigen Zugriff auf neue Plattformfunktionen ist native Entwicklung am besten geeignet."
+    },
+    {
+      "question": "Welche Kombination aus Framework und Sprache ist richtig?",
+      "options": [
+        "Flutter – Kotlin",
+        "React Native – Swift",
+        "Flutter – Dart, .NET MAUI – C#",
+        ".NET MAUI – JavaScript"
+      ],
+      "correctIndex": 2,
+      "explanation": "Flutter verwendet Dart, React Native JavaScript/TypeScript und .NET MAUI C#."
+    },
+    {
+      "question": "Was bewirkt setState() in einem Flutter-StatefulWidget?",
+      "options": [
+        "Es speichert den Zustand dauerhaft am Gerät.",
+        "Es synchronisiert den Zustand mit dem Server.",
+        "Es beendet die App.",
+        "Es ändert den Zustand und lässt build() erneut ausführen, sodass die Anzeige aktualisiert wird."
+      ],
+      "correctIndex": 3,
+      "explanation": "setState() markiert das Widget als veraltet; Flutter ruft build() neu auf. Dauerhaft gespeichert wird dadurch nichts."
+    },
+    {
+      "question": "Server-Version eines Datensatzes ist 5. Gerät A sendet eine Änderung mit Basis-Version 5, danach Gerät B mit Basis-Version 5. Was passiert bei optimistischer Nebenläufigkeitskontrolle?",
+      "options": [
+        "A wird übernommen (Version 6), B bekommt 409 Konflikt.",
+        "Beide werden übernommen, B überschreibt A.",
+        "Beide bekommen 409 Konflikt.",
+        "B wird übernommen, A bekommt 409."
+      ],
+      "correctIndex": 0,
+      "explanation": "A passt zur aktuellen Version und erhöht sie auf 6. B basiert noch auf 5 und wird deshalb als Konflikt abgelehnt."
+    },
+    {
+      "question": "Drei-Wege-Merge: Basis {datum: 3.2., raum: E12}, Handy {datum: 5.2., raum: E12}, Laptop {datum: 3.2., raum: E14}. Ergebnis?",
+      "options": [
+        "{datum: 3.2., raum: E12}",
+        "{datum: 5.2., raum: E14}, kein Konflikt",
+        "Konflikt bei datum und raum",
+        "{datum: 5.2., raum: E12}"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Datum hat nur das Handy geändert, den Raum nur der Laptop. Beide Änderungen werden übernommen, es bleibt kein Konflikt."
+    },
+    {
+      "question": "Ein Gerät löscht offline einen Termin. Warum wird er lokal nur als gelöscht markiert (Tombstone) statt sofort entfernt?",
+      "options": [
+        "Damit der Löschvorgang beim nächsten Sync an Server und andere Geräte weitergegeben werden kann",
+        "Weil SQLite nicht löschen kann",
+        "Damit der Termin weiter angezeigt wird",
+        "Weil Löschen den Akku belastet"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein einfach entfernter Datensatz hinterlässt keine Spur; der nächste Pull würde ihn sogar zurückholen. Die Markierung wird synchronisiert und später endgültig bereinigt."
+    },
+    {
+      "question": "Zwei nicht verwandte Programme sollen am selben Linux-Rechner über einen Namen im Dateisystem Daten als geordneten Strom austauschen. Was passt?",
+      "options": [
+        "Anonyme Pipe",
+        "Shared Memory ohne Lock",
+        "Benannte Pipe (FIFO)",
+        "Ein Shell-Kommentar"
+      ],
+      "correctIndex": 2,
+      "explanation": "Anonyme Pipes gibt es nur zwischen verwandten Prozessen. Eine FIFO hat einen Pfad im Dateisystem und kann von beliebigen Prozessen geöffnet werden. (Ein Unix Domain Socket wäre ebenfalls möglich.)"
+    },
+    {
+      "question": "Was gibt das Programm aus?",
+      "code": "from multiprocessing import Pipe\na, b = Pipe()\na.send([1, 2])\nx = b.recv()\nx.append(3)\nb.send(len(x))\nprint(a.recv())",
+      "options": [
+        "2",
+        "[1, 2, 3]",
+        "Fehler: Pipe nur zwischen Prozessen",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Liste wird über die Pipe übertragen, empfangen, um 3 ergänzt; danach wird ihre Länge 3 zurückgeschickt und ausgegeben. Eine Pipe funktioniert auch innerhalb eines Prozesses."
+    },
+    {
+      "question": "Vier Prozesse erhöhen je 500-mal einen gemeinsamen Zähler mit Lock. Welcher Endwert ergibt sich?",
+      "options": [
+        "500",
+        "Zufällig zwischen 500 und 2000",
+        "2000",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mit Lock geht keine Erhöhung verloren: 4 · 500 = 2000. Ohne Lock wäre das Ergebnis zufällig und meist kleiner."
+    },
+    {
+      "question": "Welcher IPC-Mechanismus entkoppelt Sender und Empfänger zeitlich am besten?",
+      "options": [
+        "Shared Memory",
+        "Message Queue",
+        "Direkter Funktionsaufruf",
+        "Synchroner RPC-Aufruf"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine Message Queue speichert Nachrichten, bis der Empfänger sie abholt; der Sender muss nicht warten."
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "pos-j4-theorie-fuzzy_03_fuzzy_regelung",
+  "title": "Fuzzy-Regelung: Heizung und Lüfter",
+  "summary": "Wie ein Fuzzy-Regler mit WENN-DANN-Regeln aus Messwerten eine stufenlose Stellgröße berechnet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein einfacher Thermostat ist ein Zweipunktregler: unter 20 °C Heizung an, sonst aus. Das Ergebnis ist ein ständiges Ein-Aus-Pendeln. Ein Fuzzy-Regler arbeitet mit Regeln, wie sie ein Mensch formulieren würde („Wenn es kalt ist, heize stark“), und liefert eine stufenlose Stellgröße. Er läuft in drei Schritten ab:\n1. Fuzzifizierung: Messwert → Zugehörigkeitsgrade\n2. Inferenz: Regeln auswerten\n3. Defuzzifizierung: Fuzzy-Ergebnis → eine scharfe Zahl"
+    },
+    {
+      "type": "code",
+      "content": "Raumtemperatur (Eingang):\n kalt:     1 bis 16 °C, 0 ab 20 °C\n angenehm: Dreieck 17 – 21 – 25 °C\n warm:     0 bis 22 °C, 1 ab 26 °C\n\nRegelbasis:\n R1: WENN kalt     DANN Heizung 100 %\n R2: WENN angenehm DANN Heizung  50 %\n R3: WENN warm     DANN Heizung   0 %"
+    },
+    {
+      "type": "text",
+      "content": "Beispiel 19 °C. Fuzzifizierung: kalt = 0,25, angenehm = 0,5, warm = 0. Inferenz: Jede Regel „feuert“ mit dem Grad ihrer Bedingung, R1 mit 0,25, R2 mit 0,5, R3 mit 0. Hier sind die Ausgaben Singletons (feste Werte). Dann ist die Defuzzifizierung ein gewichteter Mittelwert – der Schwerpunkt der Singletons:"
+    },
+    {
+      "type": "code",
+      "content": "       Σ µi · yi\ny = ─────────────\n         Σ µi\n\n  = (0,25·100 + 0,5·50 + 0·0)\n    / (0,25 + 0,5 + 0)\n  = 50 / 0,75 ≈ 66,7 %"
+    },
+    {
+      "type": "code",
+      "content": "def heizung(t):\n    regeln = [(kalt(t), 100),\n              (angenehm(t), 50),\n              (warm(t), 0)]\n    z = sum(g * w for g, w in regeln)\n    n = sum(g for g, w in regeln)\n    return z / n\n\n# t:  15   18   19   21   23   24\n# %: 100 83.3 66.7  50 33.3 16.7"
+    },
+    {
+      "type": "text",
+      "content": "Regeln mit mehreren Bedingungen verknüpft man wie gelernt: UND = min, ODER = max, NICHT = 1 − µ. Beispiel Lüfter im Serverraum mit zwei Eingängen: warm (wie oben) und feucht (Luftfeuchte: 0 bis 50 %, steigt bis 70 % auf 1). Messwerte: 24 °C und 65 % → warm = 0,5, feucht = (65 − 50) / 20 = 0,75."
+    },
+    {
+      "type": "code",
+      "content": "R1: warm UND feucht → 100 %\n    min(0,5; 0,75)      = 0,5\nR2: warm UND NICHT feucht → 40 %\n    min(0,5; 1 − 0,75)  = 0,25\nR3: NICHT warm → 0 %\n    1 − 0,5             = 0,5\n\ny = (0,5·100 + 0,25·40 + 0,5·0)\n    / (0,5 + 0,25 + 0,5)\n  = 60 / 1,25 = 48 %"
+    },
+    {
+      "type": "text",
+      "content": "Beim klassischen Mamdani-Verfahren sind auch die Ausgaben Fuzzy-Mengen (z. B. niedrig, mittel, hoch). Jede Ausgabemenge wird in Höhe ihres Regelgrads abgeschnitten (min), alle werden mit max zu einer Fläche vereinigt, und die Schwerpunktmethode (Center of Gravity) berechnet deren x-Schwerpunkt. Per Hand ist das mühsam, numerisch aber eine einfache Schleife:"
+    },
+    {
+      "type": "code",
+      "content": "niedrig = lambda y: fallend(y, 0, 50)\nmittel = lambda y: dreieck(y, 25, 50, 75)\nhoch = lambda y: steigend(y, 50, 100)\n\ndef mamdani(t):\n    z = n = 0.0\n    for y in range(101):  # 0..100 %\n        mu = max(\n          min(kalt(t), hoch(y)),\n          min(angenehm(t), mittel(y)),\n          min(warm(t), niedrig(y)))\n        z += y * mu\n        n += mu\n    return z / n\n\nprint(round(mamdani(19)))  # 60"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Fuzzifizieren → Regeln mit min/max auswerten → defuzzifizieren (Schwerpunkt). Andere Defuzzifizierungsmethoden wie „Mittelwert der Maxima“ liefern andere Zahlen – die Methode gehört zum Reglerentwurf. Typische Fehler: Regelgrade addieren statt min/max zu nehmen, beim Mittelwert durch die Anzahl der Regeln statt durch die Summe der Grade teilen, oder Regeln vergessen, sodass bei manchen Messwerten keine Regel feuert (Division durch 0). Fuzzy-Regler findet man z. B. in Waschmaschinen, Klimaanlagen und Kamera-Autofokus."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Bei 18 °C ist kalt = 0,5 und angenehm = 0,25 (warm = 0). Welche Heizleistung liefert der Singleton-Regler (kalt → 100 %, angenehm → 50 %, warm → 0 %)?",
+      "options": [
+        "75 %",
+        "62,5 %",
+        "83,3 %",
+        "41,7 %"
+      ],
+      "correctIndex": 2,
+      "explanation": "(0,5 · 100 + 0,25 · 50) / (0,5 + 0,25) = 62,5 / 0,75 ≈ 83,3 %. 62,5 % entsteht, wenn man vergisst, durch die Summe der Grade zu teilen."
+    },
+    {
+      "question": "warm = 0,6 und feucht = 0,3. Mit welchem Grad feuert die Regel „WENN warm UND NICHT feucht“?",
+      "options": [
+        "0.6",
+        "0.3",
+        "0.7",
+        "0.42"
+      ],
+      "correctIndex": 0,
+      "explanation": "NICHT feucht = 1 − 0,3 = 0,7. UND ist das Minimum: min(0,6; 0,7) = 0,6."
+    },
+    {
+      "question": "Welche Reihenfolge beschreibt einen Fuzzy-Regler richtig?",
+      "options": [
+        "Defuzzifizierung → Inferenz → Fuzzifizierung",
+        "Inferenz → Fuzzifizierung → Defuzzifizierung",
+        "Fuzzifizierung → Defuzzifizierung → Inferenz",
+        "Fuzzifizierung → Inferenz → Defuzzifizierung"
+      ],
+      "correctIndex": 3,
+      "explanation": "Zuerst werden Messwerte in Zugehörigkeitsgrade übersetzt, dann die Regeln ausgewertet, am Ende wird daraus wieder eine scharfe Stellgröße berechnet."
+    },
+    {
+      "question": "Zwei Regeln feuern: Grad 0,2 mit Ausgabe 100 % und Grad 0,8 mit Ausgabe 0 %. Was ergibt die Schwerpunktmethode für Singletons?",
+      "options": [
+        "50 %",
+        "20 %",
+        "80 %",
+        "10 %"
+      ],
+      "correctIndex": 1,
+      "explanation": "(0,2 · 100 + 0,8 · 0) / (0,2 + 0,8) = 20 / 1 = 20 %."
+    }
+  ]
+}

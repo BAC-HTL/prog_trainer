@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j4-last_01_verfuegbarkeit_redundanz",
+  "title": "Verfügbarkeit & Redundanz",
+  "summary": "Verfügbarkeit in Prozent und Ausfallzeit berechnen und mit Redundanz Single Points of Failure beseitigen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Verfügbarkeit ist der Anteil der Zeit, in der ein System wie vorgesehen funktioniert – eines der drei Schutzziele. Sie wird in Prozent angegeben, oft in „Neunern“: 99,9 % heißt „drei Neuner“. Was harmlos klingt, macht einen großen Unterschied, sobald man die erlaubte Ausfallzeit pro Jahr ausrechnet (ein Jahr = 365 · 24 · 60 = 525 600 Minuten)."
+    },
+    {
+      "type": "code",
+      "content": "min_jahr = 365 * 24 * 60   # 525600\n\nfor a in [99.0, 99.9, 99.99, 99.999]:\n    aus = (1 - a / 100) * min_jahr\n    print(f\"{a}% -> {aus / 60:6.2f} h\"\n          f\" = {aus:7.1f} min/Jahr\")\n\n# Ausgabe:\n# 99.0% ->  87.60 h =  5256.0 min/Jahr\n# 99.9% ->   8.76 h =   525.6 min/Jahr\n# 99.99% ->   0.88 h =    52.6 min/Jahr\n# 99.999% ->   0.09 h =     5.3 min/Jahr"
+    },
+    {
+      "type": "text",
+      "content": "Jede zusätzliche Neun verkürzt die erlaubte Ausfallzeit auf ein Zehntel: von rund 3,7 Tagen (99 %) über 8,76 Stunden (99,9 %) bis zu gut 5 Minuten (99,999 %). Solche Werte stehen in einem SLA (Service Level Agreement), dem Vertrag zwischen Dienstleister und Kunde. Wichtig: Auch geplante Wartung zählt als Ausfall, wenn das SLA nichts anderes sagt."
+    },
+    {
+      "type": "text",
+      "content": "Aus Betriebsdaten berechnet man die Verfügbarkeit mit MTBF (Mean Time Between Failures, mittlere Betriebszeit zwischen Ausfällen) und MTTR (Mean Time To Repair, mittlere Reparaturzeit): A = MTBF / (MTBF + MTTR). Ein Server, der im Schnitt 1000 Stunden läuft und dann 4 Stunden zur Reparatur braucht, hat A = 1000 / 1004 ≈ 99,60 %. Man erhöht A also nicht nur durch bessere Hardware, sondern auch durch schnellere Reparatur (Ersatzteile, Monitoring, Backups)."
+    },
+    {
+      "type": "text",
+      "content": "Hängen mehrere Komponenten hintereinander (seriell) – Firewall, Webserver, Datenbank –, müssen ALLE funktionieren. Die Verfügbarkeiten werden multipliziert, das Ergebnis ist schlechter als das schwächste Glied. Laufen Komponenten parallel (redundant) und reicht eine davon, fällt das System nur aus, wenn alle gleichzeitig ausfallen: A = 1 − (1 − a₁) · (1 − a₂) · …"
+    },
+    {
+      "type": "code",
+      "content": "def seriell(*a):          # alle nötig\n    r = 1\n    for x in a:\n        r *= x\n    return r\n\ndef parallel(*a):         # einer reicht\n    r = 1\n    for x in a:\n        r *= (1 - x)\n    return 1 - r\n\nfw, web, db = 0.999, 0.99, 0.995\nprint(f\"{seriell(fw, web, db):.4%}\")\nweb2 = parallel(web, web)\nprint(f\"{web2:.4%}\")\nprint(f\"{seriell(fw, web2, db):.4%}\")\n\n# Ausgabe:\n# 98.4065%\n# 99.9900%\n# 99.3906%"
+    },
+    {
+      "type": "text",
+      "content": "Ein zweiter Webserver hebt die Gesamtverfügbarkeit von 98,41 % auf 99,39 %. Jetzt sind Firewall und Datenbank die Schwachstellen – jedes Bauteil, dessen Ausfall alles stilllegt, ist ein Single Point of Failure (SPOF). Typischer Fehler: zwei Server kaufen, aber beide hängen am selben Switch, an derselben Stromversorgung oder im selben Serverraum. Die Formel gilt nur, wenn die Ausfälle wirklich unabhängig voneinander sind."
+    },
+    {
+      "type": "text",
+      "content": "Redundanz gibt es in mehreren Formen. Aktiv/Passiv (Hot Standby): Ein System arbeitet, das zweite übernimmt bei Ausfall (Failover), z. B. Firewall-Cluster. Aktiv/Aktiv: Alle Systeme arbeiten gleichzeitig und teilen sich die Last – dafür braucht man einen Load Balancer (nächste Lektion). N+1: Für N benötigte Einheiten gibt es eine Reserve, z. B. Netzteile oder Server. Dazu kommen redundante Leitungen, RAID bei Festplatten und USV bei Strom."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Verfügbarkeit = Betriebszeit / Gesamtzeit = MTBF / (MTBF + MTTR). Ausfallzeit = (1 − A) · Zeitraum. Seriell multiplizieren sich die Verfügbarkeiten, parallel multiplizieren sich die Ausfallwahrscheinlichkeiten. Redundanz (Aktiv/Passiv, Aktiv/Aktiv, N+1) beseitigt SPOFs – aber nur, wenn die redundanten Teile unabhängig ausfallen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein SLA garantiert 99,95 % Verfügbarkeit pro Jahr (525 600 Minuten). Wie lange darf der Dienst höchstens ausfallen?",
+      "options": [
+        "26,3 Minuten",
+        "4,38 Stunden",
+        "8,76 Stunden",
+        "43,8 Stunden"
+      ],
+      "correctIndex": 1,
+      "explanation": "(1 − 0,9995) · 525 600 min = 0,0005 · 525 600 = 262,8 min ≈ 4,38 Stunden."
+    },
+    {
+      "question": "Zwei unabhängige Server mit je 95 % Verfügbarkeit laufen redundant; einer reicht. Wie hoch ist die Gesamtverfügbarkeit?",
+      "options": [
+        "90,25 %",
+        "95 %",
+        "97,5 %",
+        "99,75 %"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beide fallen gleichzeitig mit 0,05 · 0,05 = 0,0025 aus. A = 1 − 0,0025 = 99,75 %. 90,25 % wäre die serielle Schaltung (0,95 · 0,95)."
+    },
+    {
+      "question": "Ein System läuft im Mittel 1000 Stunden zwischen zwei Ausfällen, die Reparatur dauert im Mittel 4 Stunden. Wie hoch ist die Verfügbarkeit?",
+      "options": [
+        "ca. 99,60 %",
+        "99,96 %",
+        "96,0 %",
+        "99,40 %"
+      ],
+      "correctIndex": 0,
+      "explanation": "A = MTBF / (MTBF + MTTR) = 1000 / 1004 ≈ 0,9960 = 99,60 %."
+    },
+    {
+      "question": "Zwei redundante Webserver hängen am selben Switch und an derselben Steckdosenleiste. Was ist das Problem?",
+      "options": [
+        "Es gibt zu viele Server.",
+        "Aktiv/Aktiv ist ohne Load Balancer verboten.",
+        "Switch und Stromversorgung sind Single Points of Failure.",
+        "Die Verfügbarkeit sinkt unter die eines einzelnen Servers."
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Redundanz der Server hilft nichts, wenn eine gemeinsame Komponente beide gleichzeitig ausfallen lässt. Die Ausfälle sind dann nicht unabhängig."
+    }
+  ]
+}

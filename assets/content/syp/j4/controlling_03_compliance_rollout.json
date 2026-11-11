@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-controlling_03_compliance_rollout",
+ "title": "Compliance und Rollout-Planung",
+ "summary": "Gesetze, Normen und Lizenzen einhalten und die Einführung neuer Systeme planvoll ausrollen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Compliance heißt Regeltreue: Ein Unternehmen hält alle für es geltenden Regeln ein und kann das auch nachweisen. Quellen sind Gesetze (z. B. DSGVO, in Österreich ergänzt durch das Datenschutzgesetz DSG; Aufbewahrungspflichten aus dem Steuerrecht), Verträge (Lizenzbedingungen, SLAs), Normen und Standards sowie interne Richtlinien wie eine Passwort- oder Cloud-Richtlinie. Verstöße können Strafen, Schadenersatz und Imageschäden nach sich ziehen."
+  },
+  {
+   "type": "text",
+   "content": "Für die IT besonders wichtig ist die Lizenz-Compliance: Für jede Installation braucht es eine passende Lizenz nach den Lizenzbedingungen. Software Asset Management (SAM) gleicht Installationen und gekaufte Lizenzen laufend ab. Beispiel: 120 Installationen, 100 Lizenzen – 20 Installationen sind unterlizenziert, also 20 / 120 ≈ 16,7 %. Bei einem Lizenzaudit des Herstellers drohen Nachzahlungen."
+  },
+  {
+   "type": "text",
+   "content": "Der DSGVO-Bezug in Kürze (Details im Fach Recht):\n• Art. 5: Grundsätze wie Zweckbindung, Datenminimierung, Speicherbegrenzung, Rechenschaftspflicht\n• Art. 25: Datenschutz durch Technikgestaltung und datenschutzfreundliche Voreinstellungen\n• Art. 28: Vertrag mit Auftragsverarbeitern, z. B. Cloud-Anbietern\n• Art. 30: Verzeichnis von Verarbeitungstätigkeiten\n• Art. 32: technische und organisatorische Maßnahmen (TOM)\n• Art. 33: Datenpanne binnen 72 Stunden an die Aufsichtsbehörde (in Österreich die Datenschutzbehörde) melden"
+  },
+  {
+   "type": "code",
+   "content": "72-Stunden-Frist (Art. 33)\nPanne bekannt: Fr 16:00\n+ 72 h (Wochenende zählt mit!)\nFrist endet:  Mo 16:00\n\nMeldung möglichst sofort –\ndie Frist ist das Maximum."
+  },
+  {
+   "type": "code",
+   "content": "Wichtige Normen\nISO/IEC 27001  Informationssicher-\n               heits-Mgmt. (ISMS)\nISO 9001       Qualitätsmanagement\nISO/IEC 20000  IT-Service-Mgmt.\nISO 14001      Umweltmanagement\nISO 50001      Energiemanagement"
+  },
+  {
+   "type": "text",
+   "content": "Normen sind meist freiwillig, werden aber oft von Kunden oder in Ausschreibungen verlangt. Nach den Managementsystem-Normen oben kann sich eine Organisation von einer unabhängigen Stelle zertifizieren lassen. Die EU-Richtlinie NIS 2 verpflichtet zudem Einrichtungen in wichtigen Sektoren zu Maßnahmen für Cybersicherheit und zur Meldung erheblicher Sicherheitsvorfälle."
+  },
+  {
+   "type": "text",
+   "content": "Ein Rollout ist die Verteilung und Einführung eines neuen Systems bei den Anwender:innen, z. B. neue Laptops für alle Lehrkräfte. Strategien:\n• Big Bang: alle auf einmal – schnell, aber hohes Risiko\n• Stufenweise: nach Abteilung oder Standort – Erfahrungen fließen ein, dauert länger\n• Pilot zuerst: kleine Gruppe testet im Echtbetrieb\n• Parallelbetrieb: alt und neu gleichzeitig – sicher, aber doppelter Aufwand"
+  },
+  {
+   "type": "code",
+   "content": "Rollout: 240 Laptops\nPilot: 10 Geräte, 1 Woche\nKapazität: 4 Techniker:innen\n           x 6 Geräte/Tag\n         = 24 Geräte/Tag\nRest: 230 / 24 ≈ 9,6\n   -> 10 Arbeitstage\nPuffer, Schulung und Hypercare\nzusätzlich einplanen!"
+  },
+  {
+   "type": "text",
+   "content": "Ein Rollout-Plan enthält: Inventar und Ist-Aufnahme, Pilotgruppe, Zeitplan und Kapazitäten, Datenmigration, Schulung und Kommunikation an die Betroffenen, Go/No-Go-Kriterien, einen Rollback-Plan (zurück zum alten Stand, falls etwas schiefgeht) und Hypercare – eine Phase mit verstärktem Support direkt nach der Umstellung. Typischer Fehler: Rollout am Tag vor Schularbeiten oder ohne Rollback-Plan."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Compliance ist die nachweisbare Einhaltung von Gesetzen, Verträgen, Normen und internen Regeln, inklusive Lizenz-Compliance. DSGVO-Pflichten für die IT sind u. a. TOM, Verarbeitungsverzeichnis, Auftragsverarbeitungsverträge und die 72-Stunden-Meldung. Wichtige Normen: ISO/IEC 27001, ISO 9001, ISO/IEC 20000, ISO 14001, ISO 50001. Ein Rollout wird mit Strategie, Pilot, Kapazitätsplan, Schulung, Rollback und Hypercare geplant."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Eine Datenpanne wird am Mittwoch um 10:00 bekannt. Bis wann muss sie spätestens an die Datenschutzbehörde gemeldet werden?",
+   "options": [
+    "Samstag 10:00",
+    "Donnerstag 10:00",
+    "Montag 10:00",
+    "Mittwoch 18:00"
+   ],
+   "correctIndex": 0,
+   "explanation": "Art. 33 DSGVO: binnen 72 Stunden. Mittwoch 10:00 + 72 h = Samstag 10:00 – Wochenenden zählen mit."
+  },
+  {
+   "question": "Welche Norm beschreibt ein Informationssicherheits-Managementsystem (ISMS)?",
+   "options": [
+    "ISO 9001",
+    "ISO 14001",
+    "ISO/IEC 20000",
+    "ISO/IEC 27001"
+   ],
+   "correctIndex": 3,
+   "explanation": "ISO/IEC 27001 ist die Norm für ISMS. ISO 9001 ist Qualitäts-, ISO 14001 Umweltmanagement, ISO/IEC 20000 IT-Service-Management."
+  },
+  {
+   "question": "Rollout von 180 Geräten, 3 Techniker:innen schaffen je 5 Geräte pro Tag. Wie viele Arbeitstage braucht der Rollout ohne Puffer?",
+   "options": [
+    "36",
+    "12",
+    "15",
+    "60"
+   ],
+   "correctIndex": 1,
+   "explanation": "Kapazität = 3 · 5 = 15 Geräte/Tag. 180 / 15 = 12 Arbeitstage."
+  },
+  {
+   "question": "Welche Rollout-Strategie hat das höchste Risiko, wenn das neue System schwere Fehler hat?",
+   "options": [
+    "Pilot zuerst",
+    "Parallelbetrieb",
+    "Big Bang",
+    "Stufenweiser Rollout"
+   ],
+   "correctIndex": 2,
+   "explanation": "Beim Big Bang sind sofort alle betroffen. Pilot, stufenweise Einführung und Parallelbetrieb begrenzen das Risiko."
+  }
+ ]
+}

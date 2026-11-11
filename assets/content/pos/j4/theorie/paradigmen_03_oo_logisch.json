@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-theorie-paradigmen_03_oo_logisch",
+  "title": "Objektorientiert vs. logisch (Prolog)",
+  "summary": "Objekte mit Zustand und Verhalten im Vergleich zu Fakten, Regeln und Anfragen in der logischen Programmierung.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Objektorientierte Programmierung (OOP) kennst du schon: Ein Programm besteht aus Objekten, die Daten (Attribute) und Verhalten (Methoden) bündeln. Wichtige Prinzipien sind Kapselung, Vererbung und Polymorphie. OOP ist in C#, Java und Python meist mit imperativem Code in den Methoden kombiniert: Objekte haben einen veränderlichen Zustand."
+    },
+    {
+      "type": "code",
+      "content": "class Person:\n    def __init__(self, name):\n        self.name = name\n        self.kinder = []\n\n    def enkel(self):\n        return [e.name\n                for k in self.kinder\n                for e in k.kinder]\n\nanna, ben = Person(\"Anna\"), Person(\"Ben\")\ndavid = Person(\"David\")\nanna.kinder.append(ben)\nben.kinder.append(david)\nprint(anna.enkel())   # ['David']"
+    },
+    {
+      "type": "text",
+      "content": "Logische Programmierung ist deklarativ: Du beschreibst Wissen als Fakten und Regeln und stellst Anfragen. Wie die Antwort gefunden wird, entscheidet das System selbst. Bekannteste Sprache ist Prolog. Schreibweise: Konstanten (Atome) beginnen klein, Variablen groß. Jede Klausel endet mit einem Punkt, :- liest man als „wenn“, das Komma als „und“."
+    },
+    {
+      "type": "code",
+      "content": "% Fakten\nelternteil(anna, ben).\nelternteil(anna, clara).\nelternteil(ben, david).\n\n% Regel: X ist Großelternteil von Z,\n% wenn es ein Y gibt mit ...\ngrosselternteil(X, Z) :-\n    elternteil(X, Y),\n    elternteil(Y, Z)."
+    },
+    {
+      "type": "text",
+      "content": "Eine Anfrage beantwortet Prolog mit true/false oder mit Variablenbelegungen. Mit ; fordert man die nächste Lösung an. Intern sucht Prolog per Unifikation (Muster mit Fakten abgleichen) und Backtracking (bei Sackgassen zurückgehen und die nächste Möglichkeit probieren). Wichtig: false heißt nur „nicht beweisbar“ – was nicht in der Datenbasis steht, gilt als falsch (Closed-World-Annahme)."
+    },
+    {
+      "type": "code",
+      "content": "?- elternteil(anna, ben).\ntrue.\n\n?- elternteil(ben, anna).\nfalse.\n\n?- elternteil(anna, K).\nK = ben ;\nK = clara.\n\n?- grosselternteil(anna, W).\nW = david."
+    },
+    {
+      "type": "text",
+      "content": "Regeln dürfen rekursiv sein – so wie die Definition „Vorfahre“: Ein Elternteil ist ein Vorfahre, und ein Elternteil eines Vorfahren auch. Typischer Fehler bei geschwister: Ohne die Bedingung X \\= Y (X ist nicht unifizierbar mit Y) ist jede Person ihr eigenes Geschwister, z. B. geschwister(ben, ben)."
+    },
+    {
+      "type": "code",
+      "content": "vorfahre(X, Y) :- elternteil(X, Y).\nvorfahre(X, Y) :-\n    elternteil(X, Z),\n    vorfahre(Z, Y).\n\ngeschwister(X, Y) :-\n    elternteil(E, X),\n    elternteil(E, Y),\n    X \\= Y.\n\n?- vorfahre(V, david).\nV = ben ;\nV = anna.\n\n?- geschwister(ben, G).\nG = clara."
+    },
+    {
+      "type": "text",
+      "content": "Vergleich: In der OOP-Variante musstest du festlegen, wie man von einer Person zu den Enkeln navigiert – und für die Gegenrichtung („Wer sind Annas Großeltern?“) bräuchtest du eine neue Methode. In Prolog beantwortet dieselbe Regel grosselternteil beide Richtungen: grosselternteil(anna, W) und grosselternteil(G, david). Einsatzgebiete logischer Programmierung: Expertensysteme, Regelprüfung, Planungs- und Konfigurationsprobleme. Die Idee lebt auch in SQL und Datalog weiter."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung der Paradigmen:\n• imperativ – Befehle ändern Zustand\n• objektorientiert – Objekte mit Zustand und Methoden\n• funktional – reine Funktionen, unveränderliche Daten\n• logisch – Fakten, Regeln, Anfragen; das System sucht die Lösung\nModerne Sprachen sind meist Multi-Paradigmen-Sprachen – wähle den Stil, der zum Problem passt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Antwort liefert Prolog auf die Anfrage?",
+      "code": "elternteil(anna, ben).\nelternteil(anna, clara).\nelternteil(ben, david).\n\n?- elternteil(X, david).",
+      "options": [
+        "X = anna.",
+        "X = ben.",
+        "false.",
+        "X = ben ;\nX = anna."
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur der Fakt elternteil(ben, david) passt zum Muster elternteil(X, david), also wird X mit ben unifiziert."
+    },
+    {
+      "question": "Was ist in Prolog eine Variable?",
+      "options": [
+        "anna",
+        "elternteil",
+        "Kind",
+        "'Kind'"
+      ],
+      "correctIndex": 2,
+      "explanation": "Variablen beginnen in Prolog mit einem Großbuchstaben (oder _). anna und elternteil sind Atome, 'Kind' in Hochkommas ist ebenfalls ein Atom."
+    },
+    {
+      "question": "Die Datenbasis enthält nur elternteil(anna, ben). Was antwortet Prolog auf ?- elternteil(ben, anna).",
+      "options": [
+        "true.",
+        "Ein Fehler, weil ben unbekannt ist",
+        "X = anna.",
+        "false."
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Fakt ist nicht in der Datenbasis und lässt sich nicht ableiten. Nach der Closed-World-Annahme gilt er daher als falsch."
+    },
+    {
+      "question": "Welches Merkmal gehört zum logischen Paradigma?",
+      "options": [
+        "Man beschreibt Fakten und Regeln, das System findet Lösungen per Unifikation und Backtracking",
+        "Objekte kapseln Attribute und Methoden",
+        "Befehle verändern Variablen Schritt für Schritt",
+        "Funktionen haben keine Seiteneffekte und Daten sind unveränderlich"
+      ],
+      "correctIndex": 0,
+      "explanation": "Logische Programmierung ist deklarativ: Du sagst, was gilt, und stellst Anfragen. Die Suche nach der Lösung übernimmt Prolog."
+    }
+  ]
+}

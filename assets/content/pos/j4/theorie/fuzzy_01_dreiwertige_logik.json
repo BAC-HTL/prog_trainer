@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-theorie-fuzzy_01_dreiwertige_logik",
+  "title": "Dreiwertige Logik: Kleene und Łukasiewicz",
+  "summary": "Logik mit einem dritten Wahrheitswert „unbekannt“ – mit Wahrheitstabellen und dem Bezug zu NULL in SQL.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "In der Aussagenlogik ist jede Aussage entweder wahr oder falsch. In der Praxis fehlt aber oft Information: Ein Sensor liefert keinen Messwert, eine Note ist noch nicht eingetragen. Mehrwertige Logiken erlauben weitere Wahrheitswerte. Die einfachste ist die dreiwertige Logik mit\n• W = wahr (1)\n• U = unbekannt (½)\n• F = falsch (0)"
+    },
+    {
+      "type": "text",
+      "content": "In der (starken) Kleene-Logik K3 rechnest du mit den Zahlenwerten:\n• NICHT a = 1 − a\n• a UND b = min(a, b)\n• a ODER b = max(a, b)\nDie Idee: U heißt „wahr oder falsch, aber wir wissen es nicht“. Ist das Ergebnis in beiden Fällen gleich, steht es fest – F UND U ist sicher F, W ODER U sicher W."
+    },
+    {
+      "type": "code",
+      "content": "UND | F U W     ODER | F U W\n────┼──────     ─────┼──────\n F  | F F F      F   | F U W\n U  | F U U      U   | U U W\n W  | F U W      W   | W W W\n\nNICHT:  F → W,  U → U,  W → F"
+    },
+    {
+      "type": "text",
+      "content": "Bei der Implikation unterscheiden sich die beiden bekanntesten dreiwertigen Logiken. Kleene: a → b = max(1 − a, b), also wie ¬a ∨ b. Łukasiewicz (Ł3): a → b = min(1, 1 − a + b). NICHT, UND und ODER sind in Ł3 gleich wie in K3. Nachgerechnet für U → U: Kleene max(½, ½) = ½ = U, Łukasiewicz min(1, 1 − ½ + ½) = 1 = W."
+    },
+    {
+      "type": "code",
+      "content": "Kleene →        Łukasiewicz →\na\\b | F U W      a\\b | F U W\n────┼──────      ────┼──────\n F  | W W W       F  | W W W\n U  | U U W       U  | U W W\n W  | F U W       W  | F U W\n\nEinziger Unterschied: U → U"
+    },
+    {
+      "type": "text",
+      "content": "Folge: Manche Tautologien der zweiwertigen Logik gelten nicht mehr. a ∨ ¬a ergibt für a = U nur max(½, ½) = U – der Satz vom ausgeschlossenen Dritten fällt weg. In Kleene ist sogar a → a für U nur U. Łukasiewicz hat die Implikation gerade so gewählt, dass a → a immer W ist."
+    },
+    {
+      "type": "text",
+      "content": "SQL verwendet für NULL genau die Kleene-Logik: Jeder Vergleich mit NULL (auch NULL = NULL) liefert UNKNOWN. AND, OR und NOT verhalten sich wie in der Tabelle oben. WHERE übernimmt nur Zeilen, deren Bedingung TRUE ist – UNKNOWN fliegt genauso raus wie FALSE. (SQLite zeigt UNKNOWN als NULL, TRUE als 1 und FALSE als 0.)"
+    },
+    {
+      "type": "code",
+      "content": "SELECT NULL = NULL;    -- NULL\nSELECT NULL AND 0;     -- 0\nSELECT NULL AND 1;     -- NULL\nSELECT NULL OR 1;      -- 1\nSELECT NOT NULL;       -- NULL\nSELECT NULL IS NULL;   -- 1"
+    },
+    {
+      "type": "code",
+      "content": "-- schueler: Anna 1, Ben 5,\n--           Clara NULL, David 3\nSELECT name FROM schueler\nWHERE note <> 5;\n-- Anna, David  (Clara fehlt!)\n\nSELECT name FROM schueler\nWHERE note = NULL;\n-- keine Zeile! Richtig: IS NULL\n\nSELECT name FROM schueler\nWHERE note <> 5 OR note IS NULL;\n-- Anna, Clara, David"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Dreiwertige Logik kennt W, U, F (1, ½, 0). UND = min, ODER = max, NICHT = 1 − a. Kleene und Łukasiewicz unterscheiden sich nur bei U → U. Typische SQL-Fehler: = NULL statt IS NULL, und vergessen, dass Zeilen mit NULL bei <> oder NOT stillschweigend herausfallen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welchen Wert hat (U UND W) ODER F in der Kleene-Logik?",
+      "options": [
+        "W",
+        "F",
+        "Nicht definiert",
+        "U"
+      ],
+      "correctIndex": 3,
+      "explanation": "U UND W = min(½, 1) = ½ = U. Dann U ODER F = max(½, 0) = ½ = U."
+    },
+    {
+      "question": "Welchen Wert hat U → U in der Łukasiewicz-Logik?",
+      "options": [
+        "W",
+        "U",
+        "F",
+        "Je nach Belegung W oder F"
+      ],
+      "correctIndex": 0,
+      "explanation": "min(1, 1 − ½ + ½) = min(1, 1) = 1 = W. In der Kleene-Logik wäre es max(½, ½) = U."
+    },
+    {
+      "question": "Die Tabelle schueler enthält die Noten 1, 5, NULL und 3. Was liefert die Abfrage?",
+      "code": "SELECT COUNT(*) FROM schueler\nWHERE note <> 5;",
+      "options": [
+        "3",
+        "2",
+        "4",
+        "1"
+      ],
+      "correctIndex": 1,
+      "explanation": "1 <> 5 und 3 <> 5 sind TRUE, 5 <> 5 ist FALSE, NULL <> 5 ist UNKNOWN. WHERE übernimmt nur TRUE-Zeilen → 2."
+    },
+    {
+      "question": "Welcher SQL-Ausdruck ergibt UNKNOWN (NULL)?",
+      "options": [
+        "NULL OR TRUE",
+        "NULL AND FALSE",
+        "NULL = NULL",
+        "NULL IS NULL"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jeder Vergleich mit NULL liefert UNKNOWN, auch NULL = NULL. NULL OR TRUE ist TRUE, NULL AND FALSE ist FALSE, IS NULL liefert TRUE."
+    }
+  ]
+}

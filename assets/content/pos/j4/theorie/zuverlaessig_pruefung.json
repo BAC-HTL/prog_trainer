@@ -1,0 +1,118 @@
+{
+  "id": "pos-j4-theorie-zuverlaessig_pruefung",
+  "title": "Abschlussprüfung: Zuverlässige Systeme & Integrationstests",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was passiert bei der Triage eines neuen Issues?",
+      "options": [
+        "Der Fehler wird im Code behoben",
+        "Das Issue wird gesichtet: reproduzierbar? Duplikat? Wie wichtig? Wer ist zuständig?",
+        "Der Fix wird getestet und das Issue geschlossen",
+        "Das Issue wird an den Kunden zurückgeschickt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Triage ist die Sichtung und Einordnung neuer Issues – erst danach wird zugewiesen und bearbeitet."
+    },
+    {
+      "question": "Ein Absturz tritt nur in einer Exportfunktion auf, die fast niemand verwendet; es gibt einen einfachen Umweg. Wie ordnet man ihn typischerweise ein?",
+      "options": [
+        "Hoher Schweregrad, niedrigere Priorität",
+        "Niedriger Schweregrad, hohe Priorität",
+        "Niedriger Schweregrad, niedrige Priorität",
+        "Kein Bug, sondern ein Feature-Request"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Absturz ist technisch schwerwiegend (hoher Schweregrad). Weil kaum jemand betroffen ist und es einen Umweg gibt, ist er aber weniger dringend."
+    },
+    {
+      "question": "Du willst einen Bug melden und findest ein offenes Issue, das genau diesen Fehler beschreibt. Was ist richtig?",
+      "options": [
+        "Ein neues Issue mit gleichem Titel anlegen, damit es mehr Aufmerksamkeit bekommt",
+        "Das bestehende Issue schließen und neu anlegen",
+        "Im bestehenden Issue zusätzliche Informationen (z. B. deine Umgebung) als Kommentar ergänzen",
+        "Nichts tun und den Fehler ignorieren"
+      ],
+      "correctIndex": 2,
+      "explanation": "Duplikate zersplittern die Diskussion. Zusätzliche Details im bestehenden Issue helfen beim Reproduzieren."
+    },
+    {
+      "question": "Was gehört NICHT zwingend in einen guten Bug-Report?",
+      "options": [
+        "Schritte zum Reproduzieren",
+        "Erwartetes und tatsächliches Verhalten",
+        "Version und Umgebung",
+        "Ein fertiger Patch, der den Fehler behebt"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Lösungsvorschlag ist willkommen, aber nicht nötig. Entscheidend ist, dass der Fehler nachvollziehbar beschrieben wird."
+    },
+    {
+      "question": "Welcher Fehler wird typischerweise erst durch einen Integrationstest entdeckt?",
+      "options": [
+        "Ein falscher Spaltenname in einer SQL-Abfrage, während die Logik mit einem Fake-Repository getestet wurde",
+        "Eine falsche Rundung in einer reinen Rechenfunktion",
+        "Ein falscher Rückgabewert bei leerer Liste in einer reinen Funktion",
+        "Ein Tippfehler in einer Variablen, den schon der Unit-Test ausführt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit einem Fake wird das echte SQL nie ausgeführt. Erst im Zusammenspiel mit der echten Datenbank fällt der falsche Spaltenname auf."
+    },
+    {
+      "question": "Warum integriert man Komponenten besser inkrementell statt nach dem Big-Bang-Prinzip?",
+      "options": [
+        "Weil Big Bang nur in C# möglich ist",
+        "Weil inkrementelle Integration keine Tests braucht",
+        "Weil bei schrittweisem Zusammenfügen ein Fehler leichter einer Komponente zugeordnet werden kann",
+        "Weil Big Bang immer schneller fertig ist"
+      ],
+      "correctIndex": 2,
+      "explanation": "Fügt man alles auf einmal zusammen, ist bei einem Fehlschlag unklar, welche Schnittstelle schuld ist. Schrittweise Integration grenzt Fehler ein."
+    },
+    {
+      "question": "Zwei Integrationstests teilen sich eine Datenbankdatei. Test B schlägt nur fehl, wenn Test A vorher läuft. Was ist die beste Lösung?",
+      "options": [
+        "Die Tests immer in der Reihenfolge B, A ausführen",
+        "Test B löschen",
+        "Den Fehlschlag mit try/except abfangen",
+        "Jedem Test über eine Fixture eine eigene, frische Datenbank geben"
+      ],
+      "correctIndex": 3,
+      "explanation": "Tests dürfen nicht voneinander abhängen. Eine Fixture, die pro Test eine neue (z. B. In-Memory-)Datenbank liefert und danach aufräumt, löst das Problem."
+    },
+    {
+      "question": "Wie viele Zeilen gibt der Code aus?",
+      "code": "logging.basicConfig(level=logging.INFO)\nlog = logging.getLogger(\"x\")\nfor i in range(3):\n    log.debug(\"d %d\", i)\nlog.info(\"i\")\nlog.warning(\"w\")\nlog.critical(\"c\")",
+      "options": [
+        "6",
+        "3",
+        "1",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die drei debug-Meldungen liegen unter dem Schwellwert INFO. Ausgegeben werden info, warning und critical → 3 Zeilen."
+    },
+    {
+      "question": "Was unterscheidet log.exception(\"…\") im except-Block von log.error(\"…\")?",
+      "options": [
+        "log.exception bricht das Programm ab",
+        "log.exception loggt mit Level DEBUG",
+        "log.exception schreibt zusätzlich den Traceback der aktuellen Exception ins Log",
+        "Es gibt keinen Unterschied"
+      ],
+      "correctIndex": 2,
+      "explanation": "log.exception loggt mit Level ERROR und hängt den Traceback an – ideal, um die Fehlerursache später nachzuvollziehen."
+    },
+    {
+      "question": "Ein argparse-Programm hat das Pflichtargument datei. Was passiert beim Aufruf ohne Argumente?",
+      "options": [
+        "argparse zeigt die Usage-Zeile und eine Fehlermeldung und beendet das Programm mit Exit-Code 2",
+        "args.datei ist None und das Programm läuft weiter",
+        "Python wirft einen SyntaxError",
+        "Die vollständige Hilfe wird angezeigt und mit Exit-Code 0 beendet"
+      ],
+      "correctIndex": 0,
+      "explanation": "argparse meldet „the following arguments are required: datei“, zeigt die Usage-Zeile und beendet mit Exit-Code 2. Die ausführliche Hilfe kommt nur mit -h/--help."
+    }
+  ]
+}

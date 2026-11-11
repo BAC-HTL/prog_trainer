@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j4-sockets_03_webapplikationen_architektur",
+  "title": "Architektur von Webapplikationen & REST",
+  "summary": "Wie Webanwendungen in Schichten aufgebaut sind und wie eine REST-Schnittstelle über HTTP funktioniert.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Webapplikation ist ein verteiltes Client/Server-System: Der Browser (oder eine App) ist der Client, dahinter stehen Webserver, Applikationslogik und Datenbank. Damit das wartbar bleibt, teilt man die Software in Schichten, die jeweils nur mit der Nachbarschicht reden."
+    },
+    {
+      "type": "code",
+      "content": "Präsentation   Browser, App (HTML,\n               CSS, JS, Flutter)\n      │  HTTP(S) + JSON\nLogik          Applikationsserver\n               (Regeln, Berechtigung)\n      │  SQL\nDaten          Datenbankserver"
+    },
+    {
+      "type": "text",
+      "content": "Diese 3-Schichten-Architektur hat Vorteile: Die Datenbank ist nie direkt aus dem Internet erreichbar (passt zur Zonenplanung mit DMZ), jede Schicht kann einzeln skaliert oder ausgetauscht werden, und mehrere Clients – Webseite und Handy-App – nutzen dieselbe Logik. Typischer Fehler: Geschäftsregeln nur im Client prüfen (z. B. „Note zwischen 1 und 5“). Der Client kann manipuliert werden – die Logikschicht muss alles noch einmal prüfen."
+    },
+    {
+      "type": "text",
+      "content": "Zwischen Client und Logik liegt heute meist eine REST-Schnittstelle. REST (Representational State Transfer) ist ein Architekturstil auf Basis von HTTP: Alles ist eine Ressource mit eigener URI, z. B. /api/schueler/7. Die HTTP-Methode sagt, was passieren soll. Der Server ist zustandslos: Jede Anfrage enthält alle nötigen Infos (z. B. ein Token zur Anmeldung), der Server merkt sich zwischen Anfragen keine Sitzung. Das erleichtert Lastverteilung auf mehrere Server."
+    },
+    {
+      "type": "code",
+      "content": "Methode  URI               Bedeutung\n-------  ----------------  ---------\nGET      /api/schueler     alle\nGET      /api/schueler/7   einen\nPOST     /api/schueler     anlegen\nPUT      /api/schueler/7   ersetzen\nDELETE   /api/schueler/7   löschen"
+    },
+    {
+      "type": "text",
+      "content": "Antworten tragen einen Statuscode: 200 OK, 201 Created (nach POST), 204 No Content, 400 Bad Request (ungültige Eingabe), 401 Unauthorized (nicht angemeldet), 403 Forbidden (keine Berechtigung), 404 Not Found, 500 Internal Server Error. GET, PUT und DELETE sind idempotent: Mehrfach ausgeführt ergeben sie denselben Zustand. POST ist es nicht – zweimal POST legt zwei Datensätze an. Das ist wichtig, wenn ein Client nach einem Timeout eine Anfrage wiederholt. Ein minimaler REST-Server lässt sich mit Pythons Standardbibliothek bauen (in echten Projekten nimmt man ein Framework wie Flask, FastAPI oder ASP.NET Core). Er liefert für /api/schueler/7 JSON, sonst 404:"
+    },
+    {
+      "type": "code",
+      "content": "import json\nfrom http.server import (\n    BaseHTTPRequestHandler, HTTPServer)\n\nschueler = {7: {\"id\": 7, \"name\": \"Lea\"}}\n\nclass Api(BaseHTTPRequestHandler):\n    def do_GET(self):\n        teile = self.path.strip(\"/\").split(\"/\")\n        if (len(teile) == 3\n                and teile[:2] == [\"api\", \"schueler\"]\n                and teile[2].isdigit()\n                and int(teile[2]) in schueler):\n            self.antwort(200,\n                schueler[int(teile[2])])\n        else:\n            self.antwort(404,\n                {\"fehler\": \"nicht gefunden\"})\n\n    def antwort(self, status, obj):\n        body = json.dumps(obj).encode()\n        self.send_response(status)\n        self.send_header(\"Content-Type\",\n                         \"application/json\")\n        self.send_header(\"Content-Length\",\n                         str(len(body)))\n        self.end_headers()\n        self.wfile.write(body)\n\nHTTPServer((\"127.0.0.1\", 8080),\n           Api).serve_forever()"
+    },
+    {
+      "type": "text",
+      "content": "HTTP ist selbst nur ein Textprotokoll über einen TCP-Socket – genau wie dein Protokoll aus der letzten Lektion, mit Zeilen und einer Leerzeile zwischen Header und Body. Das kannst du mit einem rohen Socket zeigen:"
+    },
+    {
+      "type": "code",
+      "content": "import socket\nreq = (\"GET /api/schueler/7 HTTP/1.1\\r\\n\"\n       \"Host: localhost\\r\\n\"\n       \"Connection: close\\r\\n\\r\\n\")\nwith socket.create_connection(\n        (\"127.0.0.1\", 8080)) as c:\n    c.sendall(req.encode())\n    print(c.makefile(\"rb\").read().decode())\n\n# Ausgabe (gekürzt):\n# HTTP/1.0 200 OK\n# Content-Type: application/json\n# Content-Length: 24\n#\n# {\"id\": 7, \"name\": \"Lea\"}"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Webapplikationen trennen Darstellung, Logik und Daten in Schichten; Prüfungen gehören auf den Server. REST bildet Ressourcen auf URIs ab, nutzt HTTP-Methoden und Statuscodes, ist zustandslos und überträgt meist JSON. Darunter liegt immer ein TCP-Socket."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Client hat nach einem Timeout keine Antwort erhalten und wiederholt die Anfrage. Bei welcher Anfrage kann dadurch ein doppelter Datensatz entstehen?",
+      "options": [
+        "GET /api/schueler/7",
+        "PUT /api/schueler/7",
+        "POST /api/schueler",
+        "DELETE /api/schueler/7"
+      ],
+      "correctIndex": 2,
+      "explanation": "POST ist nicht idempotent: Jede Ausführung legt eine neue Ressource an. GET, PUT und DELETE führen mehrfach ausgeführt zum selben Zustand."
+    },
+    {
+      "question": "Welchen Statuscode liefert der Beispielserver für GET /api/schueler/abc?",
+      "options": [
+        "404",
+        "200",
+        "400",
+        "500"
+      ],
+      "correctIndex": 0,
+      "explanation": "\"abc\".isdigit() ist False, also landet die Anfrage im else-Zweig und der Server antwortet mit 404 und {\"fehler\": \"nicht gefunden\"}."
+    },
+    {
+      "question": "Warum prüft die Logikschicht eine Note (1–5), obwohl die App das schon tut?",
+      "options": [
+        "Weil HTTP Zahlen verfälscht",
+        "Weil der Client manipuliert oder umgangen werden kann",
+        "Weil die Datenbank keine Zahlen speichert",
+        "Das ist unnötig und doppelte Arbeit"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder kann HTTP-Anfragen direkt (z. B. mit einem Socket oder curl) schicken. Nur Prüfungen auf dem Server sind verlässlich."
+    },
+    {
+      "question": "Was bedeutet „zustandslos“ bei REST?",
+      "options": [
+        "Der Server speichert keine Daten in einer Datenbank.",
+        "Es gibt keine Statuscodes.",
+        "Jede Ressource darf nur gelesen werden.",
+        "Jede Anfrage enthält alle nötigen Informationen; der Server merkt sich keine Sitzung zwischen Anfragen."
+      ],
+      "correctIndex": 3,
+      "explanation": "Zustandslos bezieht sich auf die Kommunikation: Kein Sitzungszustand am Server zwischen Anfragen. Daten in der Datenbank (Ressourcenzustand) gibt es natürlich trotzdem."
+    }
+  ]
+}

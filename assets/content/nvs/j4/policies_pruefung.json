@@ -1,0 +1,118 @@
+{
+  "id": "nvs-j4-policies_pruefung",
+  "title": "Abschlussprüfung: Security Policies & Sicherheitslösungen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Auf einem virtuellen Host laufen drei VMs mit Verfügbarkeits-Schutzbedarf normal, normal und hoch. Fällt der Host aus, fallen alle VMs aus. Welche Aussage ist richtig?",
+      "options": [
+        "Der Host hat Schutzbedarf normal, weil die Mehrheit normal ist.",
+        "Der Host hat mindestens Schutzbedarf hoch (Maximumprinzip).",
+        "Der Host hat keinen eigenen Schutzbedarf.",
+        "Der Schutzbedarf des Hosts ist immer sehr hoch."
+      ],
+      "correctIndex": 1,
+      "explanation": "Nach dem Maximumprinzip erbt der Host den höchsten Bedarf seiner VMs, also hoch. Durch Kumulation kann er sogar noch höher werden – aber nie niedriger."
+    },
+    {
+      "question": "Welche Aufgabe hat die Sicherheitsleitlinie im Unterschied zu einer themenspezifischen Richtlinie?",
+      "options": [
+        "Sie enthält die genauen Firewall-Regeln.",
+        "Sie listet alle Benutzerkonten auf.",
+        "Sie legt Ziele und Verantwortung fest und wird von der Leitung getragen.",
+        "Sie ersetzt die Schutzbedarfsfeststellung."
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Leitlinie ist das übergeordnete, kurze Dokument der Leitung. Konkrete Regeln stehen in den darunterliegenden Richtlinien und in der technischen Dokumentation."
+    },
+    {
+      "question": "Eine Firewall hat policy drop in der forward-Kette und nur diese Regel. Was passiert, wenn ein LAN-PC eine Webseite aufruft?",
+      "code": "iifname \"lan\" oifname \"wan\" accept",
+      "options": [
+        "Die Anfrage geht hinaus, die Antwort wird aber verworfen.",
+        "Alles funktioniert.",
+        "Schon die Anfrage wird verworfen.",
+        "Die Antwort kommt, aber nur über DNAT."
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Antwort kommt über wan herein und will ins lan – dafür gibt es keine Regel, also greift policy drop. Es fehlt ct state established,related accept."
+    },
+    {
+      "question": "Welche NAT-Art ermöglicht, dass 200 Schul-PCs mit privaten Adressen über eine einzige öffentliche IP ins Internet kommen?",
+      "options": [
+        "DNAT",
+        "Source-NAT (z. B. Masquerade)",
+        "Port Forwarding",
+        "Split Tunneling"
+      ],
+      "correctIndex": 1,
+      "explanation": "SNAT/Masquerade ersetzt die private Quelladresse durch die öffentliche Adresse der Firewall; über die Ports werden die Verbindungen unterschieden."
+    },
+    {
+      "question": "Ein Paket aus dem Internet ist an 203.0.113.5:443 adressiert. Die Firewall macht DNAT auf 10.10.200.10. Welche Zieladresse sieht die forward-Kette?",
+      "options": [
+        "203.0.113.5",
+        "Die Adresse des Absenders",
+        "10.10.200.10",
+        "0.0.0.0"
+      ],
+      "correctIndex": 2,
+      "explanation": "DNAT passiert im prerouting-Hook, also vor der forward-Kette. Deshalb filtert die forward-Regel auf die bereits übersetzte Adresse 10.10.200.10."
+    },
+    {
+      "question": "Was unterscheidet eine Next-Generation Firewall von einem klassischen Paketfilter?",
+      "options": [
+        "Sie erkennt Anwendungen auch unabhängig vom Port und hat oft ein IPS integriert.",
+        "Sie arbeitet nur auf Schicht 2.",
+        "Sie braucht keine Regeln mehr.",
+        "Sie kann kein NAT."
+      ],
+      "correctIndex": 0,
+      "explanation": "NGFWs analysieren Verkehr bis zur Anwendungsebene, ordnen ihn Anwendungen und Benutzer:innen zu und bringen oft Intrusion Prevention mit."
+    },
+    {
+      "question": "Ein Laptop im Homeoffice nutzt 192.168.1.0/24, das Schulnetz hinter dem VPN ebenfalls 192.168.1.0/24. Was ist das wahrscheinlichste Problem?",
+      "options": [
+        "Die Verschlüsselung ist zu schwach.",
+        "Der VPN-Client braucht TCP statt UDP.",
+        "Die WAF blockiert den Zugriff.",
+        "Die Adressbereiche überlappen, das Routing ist nicht eindeutig."
+      ],
+      "correctIndex": 3,
+      "explanation": "Liegt dasselbe Netz lokal und hinter dem Tunnel, weiß der Laptop nicht, wohin er Pakete schicken soll. Deshalb wählt man für Firmen-/Schulnetze unübliche private Bereiche."
+    },
+    {
+      "question": "Welche Kombination ist korrekt zugeordnet?",
+      "options": [
+        "IPsec – TLS, TCP 1194",
+        "OpenVPN – IKE, ESP",
+        "IPsec – IKE (UDP 500/4500) und ESP",
+        "WireGuard – nur TCP"
+      ],
+      "correctIndex": 2,
+      "explanation": "IPsec nutzt IKE zur Schlüsselaushandlung und ESP für die Daten. OpenVPN basiert auf TLS (Standardport 1194), WireGuard nutzt ausschließlich UDP."
+    },
+    {
+      "question": "Wie viele der folgenden Ziele gehen bei AllowedIPs = 10.10.32.0/22 durch den Tunnel? 10.10.32.1, 10.10.35.200, 10.10.36.1, 10.10.31.255",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "10.10.32.0/22 reicht von 10.10.32.0 bis 10.10.35.255. Nur 10.10.32.1 und 10.10.35.200 liegen darin."
+    },
+    {
+      "question": "Eine Lehrkraft soll von zu Hause auf die Notenverwaltung (Schutzbedarf hoch) zugreifen. Welche Lösung passt am besten zur Security Policy?",
+      "options": [
+        "DNAT von Port 443 aus dem Internet direkt auf den Server",
+        "Remote-Access-VPN mit persönlichem Schlüssel und zweitem Faktor",
+        "Ein gemeinsames VPN-Passwort für alle Lehrkräfte",
+        "Den Server in die DMZ verschieben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei hohem Schutzbedarf soll der Dienst nicht direkt aus dem Internet erreichbar sein. Ein VPN mit persönlichen Zugangsdaten und 2FA erlaubt Zugriff nur für Berechtigte und ist pro Person nachvollziehbar."
+    }
+  ]
+}

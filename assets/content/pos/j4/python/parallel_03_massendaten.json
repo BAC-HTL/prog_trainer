@@ -1,0 +1,96 @@
+{
+  "id": "pos-j4-python-parallel_03_massendaten",
+  "title": "Massendaten mit Generatoren und Chunking",
+  "summary": "Große Datenmengen speicherschonend verarbeiten: Daten streamen mit Generatoren und in Blöcken an Datenbank oder Prozesse übergeben.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Logfile mit 20 GB oder die Messdaten eines Jahres passen nicht in den Arbeitsspeicher. Wer sie mit readlines() oder in eine Liste lädt, bekommt einen MemoryError oder einen Rechner, der nur noch auslagert. Die Lösung heißt Streaming: Datensatz für Datensatz verarbeiten und nur behalten, was du wirklich brauchst. In Python leisten das Generatoren – sie berechnen Werte erst dann, wenn sie angefordert werden (lazy evaluation)."
+    },
+    {
+      "type": "code",
+      "content": "import sys\n\nliste = [x * x for x in range(1_000_000)]\ngen = (x * x for x in range(1_000_000))\nprint(sys.getsizeof(liste))\n# rund 8 000 000 Bytes\nprint(sys.getsizeof(gen))\n# nur ca. 200 Bytes\nprint(sum(gen))   # 333332833333500000"
+    },
+    {
+      "type": "text",
+      "content": "Eine Funktion mit yield ist eine Generatorfunktion. Beim Aufruf läuft noch kein Code, sie liefert ein Generator-Objekt. Erst wenn jemand den nächsten Wert anfordert (for, next, sum …), läuft sie bis zum nächsten yield, gibt den Wert ab und pausiert dort mit ihrem gesamten Zustand. Ein geöffnetes Datei-Objekt ist selbst schon ein Iterator über die Zeilen – for zeile in f liest also zeilenweise."
+    },
+    {
+      "type": "code",
+      "content": "def lies(pfad):\n    with open(pfad, encoding=\"utf-8\") as f:\n        for zeile in f:\n            yield zeile.rstrip(\"\\n\")\n\ndef nur_fehler(zeilen):\n    for z in zeilen:\n        if \" ERROR \" in z:\n            yield z\n\n# Testdatei erzeugen\nwith open(\"server.log\", \"w\",\n          encoding=\"utf-8\") as f:\n    for i in range(100_000):\n        s = \"ERROR\" if i % 1000 == 0 else \"INFO\"\n        f.write(f\"{i} {s} Anfrage\\n\")\n\nfehler = nur_fehler(lies(\"server.log\"))\nprint(next(fehler))   # 0 ERROR Anfrage\nprint(sum(1 for _ in fehler))   # 99"
+    },
+    {
+      "type": "text",
+      "content": "Die Generatoren bilden eine Pipeline: lies → nur_fehler → Auswertung. Solange niemand Werte anfordert, passiert nichts; danach ist zu jedem Zeitpunkt nur eine einzige Zeile im Speicher – egal wie groß die Datei ist. Beachte im Beispiel: next() hat den ersten Fehler schon entnommen, darum zählt sum nur noch 99. Typischer Fehler: Ein Generator ist nach einem Durchlauf erschöpft. Ein zweiter Durchlauf liefert nichts – ohne Fehlermeldung."
+    },
+    {
+      "type": "code",
+      "content": "gen = (n for n in [1, 2, 3])\nprint(sum(gen))   # 6\nprint(sum(gen))   # 0 – schon leer!"
+    },
+    {
+      "type": "text",
+      "content": "Oft ist Einzelverarbeitung zu langsam: 1 Million einzelne INSERTs in eine Datenbank, eine Million Mini-Aufgaben an einen Prozesspool. Dann teilst du den Datenstrom in Blöcke (Chunking): Jeder Block ist groß genug, um den Overhead pro Aufruf zu verteilen, und klein genug für den Speicher. itertools.islice holt die nächsten n Elemente aus einem Iterator; ab Python 3.12 gibt es dafür auch itertools.batched."
+    },
+    {
+      "type": "code",
+      "content": "from itertools import islice\nimport sqlite3\n\ndef in_bloecken(daten, groesse):\n    it = iter(daten)\n    while True:\n        block = list(islice(it, groesse))\n        if not block:\n            return\n        yield block\n\nfor b in in_bloecken(range(7), 3):\n    print(b)\n# [0, 1, 2]\n# [3, 4, 5]\n# [6]\n\ncon = sqlite3.connect(\":memory:\")\ncon.execute(\"CREATE TABLE m (wert INT)\")\nwerte = ((i,) for i in range(1_000_000))\nfor b in in_bloecken(werte, 10_000):\n    con.executemany(\n        \"INSERT INTO m VALUES (?)\", b)\ncon.commit()\nprint(con.execute(\n    \"SELECT COUNT(*) FROM m\").fetchone()[0])\n# 1000000"
+    },
+    {
+      "type": "text",
+      "content": "Blöcke lassen sich auch parallel verarbeiten: Jeder Block geht an einen Prozess (ProcessPoolExecutor.map), jeder liefert ein Teilergebnis, das Hauptprogramm fasst zusammen – das Map-Reduce-Prinzip. Für CSV-Dateien liest das Modul csv zeilenweise, pandas.read_csv(…, chunksize=…) blockweise. Kennzahlen wie Summe, Anzahl, Minimum und Maximum lassen sich laufend mitrechnen, ohne die Daten zu speichern; für den exakten Median dagegen braucht man alle Werte."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Massendaten streamen statt komplett laden. Generatoren (yield, Generator-Ausdrücke) liefern Werte erst bei Bedarf und lassen sich zu Pipelines verketten. Ein Generator ist nach einem Durchlauf erschöpft. Chunking mit islice (oder itertools.batched) bündelt Daten für executemany oder Prozesspools – das reduziert Overhead bei konstantem Speicherbedarf."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "g = (x * 2 for x in range(3))\nprint(list(g), list(g))",
+      "options": [
+        "[0, 2, 4] [0, 2, 4]",
+        "[0, 2, 4] []",
+        "[] [0, 2, 4]",
+        "[0, 1, 2] []"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der erste list()-Aufruf verbraucht den Generator vollständig. Danach ist er erschöpft, der zweite liefert eine leere Liste."
+    },
+    {
+      "question": "Was liefert der letzte Block von in_bloecken(range(10), 4) aus der Lektion?",
+      "code": "from itertools import islice\n\ndef in_bloecken(daten, groesse):\n    it = iter(daten)\n    while True:\n        block = list(islice(it, groesse))\n        if not block:\n            return\n        yield block\n\nprint(list(in_bloecken(range(10), 4))[-1])",
+      "options": [
+        "[9]",
+        "[6, 7, 8, 9]",
+        "[8, 9]",
+        "[8, 9, None, None]"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Blöcke sind [0, 1, 2, 3], [4, 5, 6, 7] und [8, 9]. Der letzte Block ist einfach kürzer, er wird nicht aufgefüllt."
+    },
+    {
+      "question": "Warum ist for zeile in datei: bei einer 20-GB-Datei besser als datei.readlines()?",
+      "options": [
+        "Weil immer nur eine Zeile im Speicher liegt, statt die ganze Datei als Liste zu laden",
+        "Weil readlines() Umlaute nicht lesen kann",
+        "Weil for-Schleifen automatisch parallel laufen",
+        "Weil readlines() nur die erste Zeile liest"
+      ],
+      "correctIndex": 0,
+      "explanation": "readlines() erzeugt eine Liste aller Zeilen – bei 20 GB sprengt das den Arbeitsspeicher. Das Datei-Objekt liefert Zeilen dagegen einzeln."
+    },
+    {
+      "question": "In welcher Reihenfolge erscheinen die Ausgaben?",
+      "code": "def gen():\n    print(\"start\")\n    yield 1\n\nx = gen()\nprint(\"nach Aufruf\")\nprint(next(x))",
+      "options": [
+        "start, nach Aufruf, 1",
+        "start, 1, nach Aufruf",
+        "nach Aufruf, 1, start",
+        "nach Aufruf, start, 1"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Aufruf gen() führt noch keinen Code aus, er liefert nur das Generator-Objekt. Erst next() startet die Funktion bis zum ersten yield."
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+ "id": "syp-j4-requirements_01_requirements_management",
+ "title": "Requirements Management",
+ "summary": "Anforderungen eindeutig verwalten, nachverfolgen und mit MoSCoW und Kano priorisieren.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Im 3. Jahrgang hast du Anforderungen erhoben und in Lastenheft, Pflichtenheft oder User Stories beschrieben. Requirements Management kümmert sich darum, was danach passiert: Anforderungen eindeutig kennzeichnen, ihren Status verfolgen, Änderungen kontrollieren, priorisieren und mit Entwurf, Code und Tests verknüpfen – über die ganze Projektlaufzeit."
+  },
+  {
+   "type": "text",
+   "content": "Jede Anforderung bekommt eine eindeutige ID und Attribute, z. B. Quelle (wer wollte das?), Priorität, Status (neu, abgestimmt, umgesetzt, getestet), Version und Verantwortliche:n. Ein abgestimmter, eingefrorener Stand aller Anforderungen heißt Baseline. Spätere Änderungen werden gegen die Baseline geprüft und nur kontrolliert übernommen."
+  },
+  {
+   "type": "text",
+   "content": "Nachverfolgbarkeit (Traceability) heißt: Man kann jede Anforderung zu ihrer Quelle zurückverfolgen (rückwärts) und zu Entwurf, Code und Testfällen weiterverfolgen (vorwärts). So beantwortet man Fragen wie „Ist jede Anforderung getestet?“, „Welche Tests sind betroffen, wenn sich A7 ändert?“ oder „Wozu gibt es diesen Code überhaupt?“."
+  },
+  {
+   "type": "code",
+   "content": "Traceability-Matrix\n\n       T1  T2  T3  T4\nA1     x   x\nA2                 \nA3             x\nA4                 x\n\nA2 hat keinen Testfall -> Lücke!"
+  },
+  {
+   "type": "code",
+   "content": "anf = {\"A1\": [\"T1\", \"T2\"], \"A2\": [],\n       \"A3\": [\"T3\"], \"A4\": []}\n\nohne = [a for a in anf if not anf[a]]\nabdeckung = 1 - len(ohne) / len(anf)\nprint(ohne, f\"{abdeckung:.0%}\")\n# ['A2', 'A4'] 50%"
+  },
+  {
+   "type": "text",
+   "content": "Selten reichen Zeit und Budget für alles – also wird priorisiert. Die MoSCoW-Methode teilt Anforderungen in vier Klassen:\n• Must have: ohne sie ist das Produkt unbrauchbar\n• Should have: wichtig, aber es gibt einen Workaround\n• Could have: nett, wenn Zeit bleibt\n• Won't have (this time): bewusst nicht in diesem Release\nFaustregel aus DSDM: Must-Anforderungen sollten höchstens etwa 60 % des Aufwands ausmachen, sonst fehlt der Puffer."
+  },
+  {
+   "type": "text",
+   "content": "Typischer Fehler: Alles wird zum „Must“. Dann hat die Priorisierung keine Wirkung, und bei Zeitnot fällt nicht das Unwichtigste weg, sondern das, was zufällig zuletzt drankommt. Die Klasse „Won't“ ist wertvoll, weil sie Erwartungen klar macht: Der Auftraggeber weiß, dass die Funktion nicht vergessen, sondern bewusst verschoben wurde."
+  },
+  {
+   "type": "text",
+   "content": "Das Kano-Modell fragt, wie Merkmale die Zufriedenheit beeinflussen:\n• Basismerkmale: werden vorausgesetzt; fehlen sie, ist man unzufrieden, sind sie da, begeistert es nicht (Login funktioniert)\n• Leistungsmerkmale: je mehr, desto zufriedener (Ladezeit)\n• Begeisterungsmerkmale: unerwartet, begeistern (Stundenplan-Widget)\nMit der Zeit werden Begeisterungsmerkmale zu Basismerkmalen."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Requirements Management verwaltet Anforderungen mit IDs, Attributen und Baselines. Traceability verknüpft sie rückwärts mit der Quelle und vorwärts mit Entwurf, Code und Tests und deckt Lücken auf. MoSCoW priorisiert in Must/Should/Could/Won't, das Kano-Modell unterscheidet Basis-, Leistungs- und Begeisterungsmerkmale."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Von 12 Anforderungen haben 10 mindestens einen Testfall. Wie hoch ist die Testabdeckung der Anforderungen?",
+   "options": [
+    "10 %",
+    "83,3 %",
+    "120 %",
+    "20 %"
+   ],
+   "correctIndex": 1,
+   "explanation": "10 / 12 ≈ 0,833 = 83,3 %. Die zwei Anforderungen ohne Testfall sind Lücken, die man schließen muss."
+  },
+  {
+   "question": "Ein Auftraggeber sagt: „Export nach Excel brauchen wir, aber vorerst reicht auch Copy & Paste.“ Welche MoSCoW-Klasse passt?",
+   "options": [
+    "Must have",
+    "Won't have",
+    "Should have",
+    "Could have"
+   ],
+   "correctIndex": 2,
+   "explanation": "Wichtig, aber es gibt einen Workaround – das ist ein Should. Must wäre es nur, wenn das Produkt ohne Export unbrauchbar wäre."
+  },
+  {
+   "question": "Nutzer:innen beschweren sich, wenn die App Passwörter nicht sicher speichert, loben es aber nie. Welche Kano-Kategorie?",
+   "options": [
+    "Basismerkmal",
+    "Leistungsmerkmal",
+    "Begeisterungsmerkmal",
+    "Won't have"
+   ],
+   "correctIndex": 0,
+   "explanation": "Basismerkmale werden vorausgesetzt: Fehlen erzeugt Unzufriedenheit, Vorhandensein keine Begeisterung."
+  },
+  {
+   "question": "Was ermöglicht Rückwärts-Traceability?",
+   "options": [
+    "Testfälle automatisch generieren",
+    "Die Priorität berechnen",
+    "Den Code schneller machen",
+    "Zu einer Anforderung oder einem Codeteil herauszufinden, woher die Anforderung stammt"
+   ],
+   "correctIndex": 3,
+   "explanation": "Rückwärts führt zur Quelle (z. B. Gespräch mit dem Kunden, Gesetz). Vorwärts führt zu Entwurf, Code und Tests."
+  }
+ ]
+}

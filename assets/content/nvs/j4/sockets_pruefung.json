@@ -1,0 +1,118 @@
+{
+  "id": "nvs-j4-sockets_pruefung",
+  "title": "Abschlussprüfung: Verteilte Systeme & Socket-API",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein vollvermaschtes P2P-Netz wächst von 10 auf 20 Peers. Um wie viele direkte Verbindungen wächst es?",
+      "options": [
+        "10",
+        "100",
+        "145",
+        "190"
+      ],
+      "correctIndex": 2,
+      "explanation": "10 Peers: 10·9/2 = 45, 20 Peers: 20·19/2 = 190. Zuwachs: 190 − 45 = 145."
+    },
+    {
+      "question": "Welche Annahme gehört zu den „Fallacies of Distributed Computing“?",
+      "options": [
+        "Netzwerkaufrufe können fehlschlagen.",
+        "Die Latenz ist null.",
+        "Teile des Systems können ausfallen.",
+        "Nachrichten können verzögert ankommen."
+      ],
+      "correctIndex": 1,
+      "explanation": "„Die Latenz ist null“ ist eine typische FALSCHE Annahme. Die anderen Aussagen sind korrekte Eigenschaften verteilter Systeme."
+    },
+    {
+      "question": "Was liefert handle() für diese Eingaben?",
+      "code": "print(handle(\"ADD 2 3 4\"))\nprint(handle(\"ping x\"))",
+      "options": [
+        "ERR keine Zahl / ERR unbekannt",
+        "OK 9 / OK PONG",
+        "ERR unbekannt / ERR unbekannt",
+        "ERR unbekannt / OK PONG"
+      ],
+      "correctIndex": 3,
+      "explanation": "ADD braucht genau zwei Argumente, sonst fällt der Befehl auf ERR unbekannt durch. PING prüft keine Argumente, daher OK PONG."
+    },
+    {
+      "question": "In welcher Reihenfolge ruft ein TCP-Server die Socket-Funktionen auf?",
+      "options": [
+        "socket – bind – listen – accept",
+        "socket – connect – listen – accept",
+        "socket – accept – bind – listen",
+        "bind – socket – accept – listen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zuerst den Socket erzeugen, an Adresse/Port binden, in den Wartezustand gehen (listen) und dann Verbindungen annehmen (accept). connect() ruft der Client auf."
+    },
+    {
+      "question": "Was gibt accept() in Python zurück?",
+      "options": [
+        "Nur die Adresse des Clients",
+        "Die empfangenen Daten als Bytes",
+        "Ein Paar aus neuem Verbindungs-Socket und Client-Adresse",
+        "Den Port des Servers"
+      ],
+      "correctIndex": 2,
+      "explanation": "conn, addr = s.accept(): conn ist ein neuer Socket nur für diesen Client, addr ist (IP, Port) des Clients. Der ursprüngliche Socket wartet weiter auf neue Verbindungen."
+    },
+    {
+      "question": "Warum verwendet das Beispielprotokoll ein Zeilenende \\n nach jedem Befehl?",
+      "options": [
+        "Damit TCP schneller überträgt",
+        "Damit der Empfänger erkennt, wo eine Nachricht endet",
+        "Weil Sockets nur Text mit \\n übertragen können",
+        "Damit die Verbindung verschlüsselt wird"
+      ],
+      "correctIndex": 1,
+      "explanation": "TCP ist ein Bytestrom ohne Nachrichtengrenzen. Das Zeilenende ist das Framing, mit dem Nachrichten wieder getrennt werden."
+    },
+    {
+      "question": "Ein Client ruft socket.create_connection((\"127.0.0.1\", 5000)) auf, aber kein Server läuft. Was passiert typischerweise?",
+      "options": [
+        "Die Funktion wartet für immer.",
+        "Es kommt b'' zurück.",
+        "Die Verbindung wird zu Port 80 umgeleitet.",
+        "Es tritt ConnectionRefusedError auf."
+      ],
+      "correctIndex": 3,
+      "explanation": "Auf localhost antwortet das Betriebssystem bei geschlossenem Port sofort mit einem Reset; Python wirft ConnectionRefusedError."
+    },
+    {
+      "question": "Ein Formular legt eine Bestellung per REST an. Welche Methode und welcher Statuscode passen bei Erfolg?",
+      "options": [
+        "POST, 201 Created",
+        "GET, 200 OK",
+        "PUT, 404 Not Found",
+        "DELETE, 204 No Content"
+      ],
+      "correctIndex": 0,
+      "explanation": "Neue Ressourcen legt man mit POST auf die Sammlungs-URI an; 201 Created signalisiert, dass etwas erzeugt wurde."
+    },
+    {
+      "question": "Warum ist die Datenbank in einer 3-Schichten-Webapplikation nicht direkt aus dem Internet erreichbar?",
+      "options": [
+        "Weil SQL nicht über TCP funktioniert",
+        "Weil Datenbanken keine IP-Adressen haben",
+        "Weil nur die Logikschicht mit ihr reden soll, die Berechtigungen prüft",
+        "Weil REST keine Datenbanken erlaubt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Logikschicht kontrolliert Zugriffe und Regeln. Eine offen erreichbare Datenbank wäre eine große Angriffsfläche – sie liegt daher in einer internen Zone."
+    },
+    {
+      "question": "Welche Middleware passt, wenn ein Client eine Funktion auf einem entfernten Server so aufrufen will, als wäre sie lokal?",
+      "options": [
+        "Message Broker mit Warteschlange",
+        "RPC (z. B. gRPC)",
+        "NAT",
+        "Peer-to-Peer-Overlay"
+      ],
+      "correctIndex": 1,
+      "explanation": "Remote Procedure Call verbirgt das Verpacken und Versenden der Parameter; der Aufruf sieht aus wie ein lokaler Funktionsaufruf, ist aber synchron über das Netz."
+    }
+  ]
+}

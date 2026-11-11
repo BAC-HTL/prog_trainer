@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j4-last_02_load_balancing",
+  "title": "Load Balancing & Health Checks",
+  "summary": "Wie ein Load Balancer Anfragen mit Round Robin, Least Connections oder Hashing verteilt und ausgefallene Server erkennt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Load Balancer (Lastverteiler) nimmt Anfragen unter einer gemeinsamen Adresse entgegen und verteilt sie auf mehrere gleichwertige Server (Backend-Pool). So erreicht man zwei Ziele aus der letzten Lektion gleichzeitig: mehr Leistung (horizontale Skalierung – mehr Server statt eines größeren) und höhere Verfügbarkeit (Aktiv/Aktiv-Redundanz). Bekannte Software dafür sind HAProxy und nginx; es gibt auch Hardware-Appliances und Cloud-Dienste."
+    },
+    {
+      "type": "code",
+      "content": "            Clients\n               │\n        ┌──────┴──────┐\n        │Load Balancer│ 203.0.113.5\n        └─┬────┬────┬─┘\n          │    │    │\n        web1 web2 web3  (privat)"
+    },
+    {
+      "type": "text",
+      "content": "Round Robin verteilt der Reihe nach: web1, web2, web3, web1, … – einfach und fair, solange alle Server gleich stark und alle Anfragen ähnlich aufwendig sind. Bei Weighted Round Robin bekommt ein doppelt so starker Server doppelt so viele Anfragen. Least Connections schickt die nächste Anfrage an den Server mit den wenigsten offenen Verbindungen – besser, wenn Anfragen unterschiedlich lange dauern (z. B. Downloads neben kurzen Seitenaufrufen)."
+    },
+    {
+      "type": "code",
+      "content": "from itertools import cycle\n\nserver = [\"web1\", \"web2\", \"web3\"]\nrr = cycle(server)\nprint([next(rr) for _ in range(5)])\n\n# Least Connections\noffen = {\"web1\": 12, \"web2\": 3, \"web3\": 7}\nziel = min(offen, key=offen.get)\nprint(ziel)\n\n# Ausgabe:\n# ['web1', 'web2', 'web3', 'web1', 'web2']\n# web2"
+    },
+    {
+      "type": "text",
+      "content": "Beim Hashing berechnet der Load Balancer aus einem Merkmal der Anfrage (z. B. Client-IP oder URL) einen Hashwert und wählt per Modulo den Server. Derselbe Client landet so immer beim selben Server. Achtung: Pythons eingebautes hash() für Strings ist bei jedem Programmstart anders (Hash-Randomisierung) – für feste Zuordnung braucht man eine deterministische Funktion wie CRC32."
+    },
+    {
+      "type": "code",
+      "content": "import zlib\n\ndef per_hash(ip, server):\n    h = zlib.crc32(ip.encode())\n    return server[h % len(server)]\n\ns3 = [\"web1\", \"web2\", \"web3\"]\nfor ip in [\"10.0.0.4\", \"10.0.0.5\",\n           \"10.0.0.4\"]:\n    print(ip, \"->\", per_hash(ip, s3))\n\ns2 = [\"web1\", \"web2\"]   # web3 weg\nprint(per_hash(\"10.0.0.5\", s2))\n\n# Ausgabe:\n# 10.0.0.4 -> web1\n# 10.0.0.5 -> web3\n# 10.0.0.4 -> web1\n# web1"
+    },
+    {
+      "type": "text",
+      "content": "Das Beispiel zeigt die Schwäche von „Hash modulo Anzahl“: Fällt web3 weg, ändert sich die Zuordnung für viele Clients – auch für solche, deren Server noch läuft. Consistent Hashing verringert das: Bei einer Änderung wird nur ein kleiner Teil der Clients neu zugeordnet. Verwandt ist Session Persistence (Sticky Sessions): Der Client bleibt per Cookie oder IP bei „seinem“ Server. Besser ist meist eine zustandslose Anwendung (wie bei REST), die Sitzungsdaten zentral, z. B. in einer Datenbank, ablegt."
+    },
+    {
+      "type": "text",
+      "content": "Health Checks sorgen dafür, dass keine Anfragen an tote Server gehen. Aktive Checks fragen regelmäßig nach, z. B. alle 2 Sekunden einen TCP-Verbindungsaufbau oder GET /health mit Erwartung 200. Erst nach mehreren Fehlschlägen hintereinander wird der Server aus dem Pool genommen (damit ein einzelner verlorener Check nicht gleich alles umwirft), und nach erfolgreichen Checks wieder aufgenommen. Passive Checks werten Fehler im echten Verkehr aus."
+    },
+    {
+      "type": "code",
+      "content": "FALL = 3   # Fehlschläge bis \"down\"\n\nstatus = {\"web1\": \"up\", \"web2\": \"up\"}\nfehler = {\"web1\": 0, \"web2\": 0}\n\ndef check(name, ok):\n    if ok:\n        fehler[name] = 0\n        status[name] = \"up\"\n    else:\n        fehler[name] += 1\n        if fehler[name] >= FALL:\n            status[name] = \"down\"\n\nfor ok in [False, False, True,\n           False, False, False]:\n    check(\"web2\", ok)\nprint(status, fehler)\n\n# Ausgabe:\n# {'web1': 'up', 'web2': 'down'} {'web1': 0, 'web2': 3}"
+    },
+    {
+      "type": "text",
+      "content": "Ein Layer-4-Load-Balancer verteilt TCP/UDP-Verbindungen nur nach IP und Port. Ein Layer-7-Load-Balancer versteht HTTP, kann nach URL oder Header verteilen (z. B. /api an andere Server als Bilder) und oft TLS terminieren. Typischer Fehler: Der Load Balancer selbst ist nicht redundant – dann ist er der neue SPOF. Zusammenfassung: Round Robin für gleichartige Anfragen, Least Connections für unterschiedlich lange, Hashing für feste Zuordnung; Health Checks nehmen kranke Server automatisch aus dem Pool."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from itertools import cycle\nrr = cycle([\"a\", \"b\", \"c\"])\nx = [next(rr) for _ in range(7)]\nprint(x[-1])",
+      "options": [
+        "a",
+        "b",
+        "c",
+        "IndexError"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Folge lautet a, b, c, a, b, c, a – das 7. Element ist a. cycle beginnt nach dem Ende einfach wieder von vorn."
+    },
+    {
+      "question": "Offene Verbindungen: web1 = 5, web2 = 9, web3 = 2. Wohin schickt Least Connections die nächste Anfrage?",
+      "options": [
+        "web1",
+        "web2",
+        "web3",
+        "Reihum an alle drei"
+      ],
+      "correctIndex": 2,
+      "explanation": "Least Connections wählt den Server mit den wenigsten offenen Verbindungen, also web3 mit 2."
+    },
+    {
+      "question": "Ein Health Check verwendet FALL = 3 wie im Beispiel. Ergebnisse für web2: Fehler, Fehler, OK, Fehler, Fehler. Welcher Status gilt danach?",
+      "options": [
+        "down, weil insgesamt 4 Fehler",
+        "up, weil nur 2 Fehler hintereinander",
+        "down, weil der letzte Check fehlschlug",
+        "unbekannt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der erfolgreiche Check setzt den Zähler auf 0 zurück. Danach folgen nur 2 Fehler hintereinander – die Grenze von 3 ist nicht erreicht, web2 bleibt up."
+    },
+    {
+      "question": "Warum eignet sich Pythons eingebautes hash(\"10.0.0.5\") nicht für die feste Zuordnung von Clients zu Servern über mehrere Load-Balancer-Prozesse hinweg?",
+      "options": [
+        "Weil hash() nur für Zahlen funktioniert",
+        "Weil hash() immer 0 liefert",
+        "Weil hash() zu langsam ist",
+        "Weil der Hash von Strings bei jedem Programmstart anders sein kann"
+      ],
+      "correctIndex": 3,
+      "explanation": "Python randomisiert String-Hashes pro Prozess (Schutz vor Angriffen auf Dictionaries). Zwei Prozesse würden denselben Client unterschiedlich zuordnen; CRC32 oder ähnliche Funktionen sind deterministisch."
+    }
+  ]
+}

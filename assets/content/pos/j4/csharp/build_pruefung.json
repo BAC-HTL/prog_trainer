@@ -1,0 +1,117 @@
+{
+  "id": "pos-j4-csharp-build_pruefung",
+  "title": "Abschlussprüfung: Build-Management & Dokumentation",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Aufgabe gehört NICHT zu einem typischen Build-Prozess?",
+      "options": [
+        "Abhängigkeiten wiederherstellen",
+        "Code kompilieren",
+        "Tests ausführen",
+        "Code-Reviews im Team durchführen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Restore, Kompilieren, Testen und Verpacken laufen automatisiert. Ein Code-Review ist eine Tätigkeit von Menschen, kein Build-Schritt."
+    },
+    {
+      "question": "Du hast in Visual Studio eine Projekteinstellung geändert, aber nur in deinen lokalen Benutzereinstellungen. Was ist das Problem?",
+      "options": [
+        "Der Build-Server und das Team bauen ohne diese Einstellung – der Build ist nicht reproduzierbar",
+        "Gar keines",
+        "Die Einstellung gilt dann für alle Projekte weltweit",
+        "dotnet build ignoriert die .csproj"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nur was in der .csproj (bzw. im Repository) steht, gilt für alle Builds. Lokale Einstellungen führen zu „bei mir läuft's“."
+    },
+    {
+      "question": "Worin unterscheiden sich Debug- und Release-Build?",
+      "options": [
+        "Debug läuft nur unter Windows",
+        "Release enthält keine Klassen",
+        "Release ist optimiert, Debug enthält mehr Debug-Informationen und ist nicht optimiert",
+        "Es gibt keinen Unterschied, nur den Ordnernamen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Debug ist auf Fehlersuche ausgelegt, Release auf Geschwindigkeit für die Auslieferung. Ausgeliefert wird die Release-Version."
+    },
+    {
+      "question": "Was bewirkt dotnet publish -c Release -r win-x64 --self-contained?",
+      "options": [
+        "Das Programm wird auf nuget.org veröffentlicht",
+        "Die .NET-Laufzeit wird mitgeliefert; am Windows-Zielrechner muss .NET nicht installiert sein",
+        "Es wird nur eine XML-Dokumentation erzeugt",
+        "Der Code wird nach Python übersetzt"
+      ],
+      "correctIndex": 1,
+      "explanation": "self-contained packt die Laufzeit für die angegebene Plattform (Runtime Identifier win-x64) dazu. Der Ordner wird größer, das Programm läuft ohne installiertes .NET."
+    },
+    {
+      "question": "Welche Versionen erfüllt Version=\"[2.0,3.0]\"?",
+      "options": [
+        "Nur 2.0",
+        "2.0 bis ausschließlich 3.0",
+        "2.0 bis einschließlich 3.0",
+        "Alle ab 3.0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beide Klammern sind eckig, also beide Grenzen inklusive: ≥ 2.0 und ≤ 3.0."
+    },
+    {
+      "question": "Paket A braucht Paket B. Du fügst nur A hinzu. Wie heißt B aus Sicht deines Projekts?",
+      "options": [
+        "Projektreferenz",
+        "Floating Version",
+        "Lock-Datei",
+        "Transitive Abhängigkeit"
+      ],
+      "correctIndex": 3,
+      "explanation": "B ist eine indirekte, transitive Abhängigkeit. NuGet lädt sie automatisch mit; dotnet list package --include-transitive zeigt sie an."
+    },
+    {
+      "question": "Wozu dient packages.lock.json?",
+      "options": [
+        "Sie verhindert, dass andere das Repository klonen",
+        "Sie speichert die exakt aufgelösten Paketversionen für reproduzierbare Restores",
+        "Sie enthält die Passwörter für nuget.org",
+        "Sie ersetzt die .csproj"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Lock-Datei hält fest, welche Versionen tatsächlich verwendet wurden. Mit --locked-mode schlägt der Restore fehl, wenn sich etwas ändern würde."
+    },
+    {
+      "question": "Welcher Befehl zeigt Pakete mit bekannten Sicherheitslücken an?",
+      "options": [
+        "dotnet list package --vulnerable",
+        "dotnet build --secure",
+        "dotnet restore --check",
+        "dotnet publish --audit"
+      ],
+      "correctIndex": 0,
+      "explanation": "dotnet list package kennt die Optionen --outdated, --vulnerable und --include-transitive."
+    },
+    {
+      "question": "Ein Dokumentationskommentar enthält <param name=\"wert\">, die Methode hat aber den Parameter betrag. Welche Warnungen meldet der Compiler (bei aktivem GenerateDocumentationFile)?",
+      "options": [
+        "Keine – Namen in Kommentaren werden nicht geprüft",
+        "Nur CS1591",
+        "CS1572 und CS1573",
+        "Einen Laufzeitfehler beim Aufruf"
+      ],
+      "correctIndex": 2,
+      "explanation": "CS1572: param-Tag für einen nicht existierenden Parameter. CS1573: Parameter betrag hat kein param-Tag."
+    },
+    {
+      "question": "In welcher Reihenfolge entsteht eine Dokumentations-Website für eine Klassenbibliothek?",
+      "options": [
+        "DocFX → ///-Kommentare → Build → XML",
+        "///-Kommentare → Build mit GenerateDocumentationFile → XML-Datei → DocFX → HTML",
+        "XML-Datei von Hand schreiben → dotnet publish → HTML",
+        "NuGet-Paket → ///-Kommentare → DocFX"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Kommentare stehen im Code, der Compiler sammelt sie in der XML-Datei, und ein Generator wie DocFX erzeugt daraus die Website."
+    }
+  ]
+}

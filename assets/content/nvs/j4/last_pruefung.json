@@ -1,0 +1,117 @@
+{
+  "id": "nvs-j4-last_pruefung",
+  "title": "Abschlussprüfung: Verfügbarkeit & Lastverteilung",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Dienst war in einem Monat mit 30 Tagen insgesamt 3 Stunden ausgefallen. Wie hoch war die Verfügbarkeit (gerundet)?",
+      "options": [
+        "99,0 %",
+        "99,9 %",
+        "99,58 %",
+        "97,0 %"
+      ],
+      "correctIndex": 2,
+      "explanation": "30 Tage = 720 h. A = (720 − 3) / 720 = 717 / 720 ≈ 0,99583 = 99,58 %."
+    },
+    {
+      "question": "Firewall (99,9 %), Load Balancer (99,9 %) und Datenbank (99,5 %) liegen seriell hintereinander. Wie hoch ist die Gesamtverfügbarkeit ungefähr?",
+      "options": [
+        "99,30 %",
+        "99,50 %",
+        "99,77 %",
+        "99,90 %"
+      ],
+      "correctIndex": 0,
+      "explanation": "0,999 · 0,999 · 0,995 ≈ 0,99300. Seriell ist das Ergebnis immer schlechter als das schwächste Glied (99,5 %)."
+    },
+    {
+      "question": "Wie viele unabhängige Server mit je 90 % Verfügbarkeit brauchst du mindestens parallel, damit die Gesamtverfügbarkeit mindestens 99,9 % beträgt?",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "10"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ausfallwahrscheinlichkeit 0,1ⁿ: n = 2 → 1 − 0,01 = 99 %, n = 3 → 1 − 0,001 = 99,9 %. Also 3 Server."
+    },
+    {
+      "question": "Ein System hat MTBF = 500 h. Die MTTR sinkt durch ein Ersatzteillager von 10 h auf 2 h. Wie ändert sich die Verfügbarkeit?",
+      "options": [
+        "Sie bleibt gleich, weil die MTBF gleich bleibt.",
+        "Von ca. 99,60 % auf ca. 98,04 %",
+        "Von 98,0 % auf 99,8 %",
+        "Von ca. 98,04 % auf ca. 99,60 %"
+      ],
+      "correctIndex": 3,
+      "explanation": "A = 500/510 ≈ 98,04 % vorher, 500/502 ≈ 99,60 % nachher. Schnellere Reparatur erhöht die Verfügbarkeit, auch ohne bessere Hardware."
+    },
+    {
+      "question": "Ein Server ist doppelt so leistungsstark wie die beiden anderen. Welches Verfahren berücksichtigt das ohne Messung der aktuellen Last?",
+      "options": [
+        "Weighted Round Robin",
+        "Round Robin",
+        "IP-Hashing",
+        "Least Connections"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei Weighted Round Robin bekommt jeder Server Anfragen proportional zu seinem Gewicht, z. B. 2:1:1."
+    },
+    {
+      "question": "Bei Hashing mit „Hash modulo Anzahl der Server“ fällt einer von vier Servern aus. Was ist die Folge?",
+      "options": [
+        "Nur die Clients des ausgefallenen Servers werden neu verteilt.",
+        "Viele Clients werden neu zugeordnet, auch solche, deren Server noch läuft.",
+        "Kein Client wird neu zugeordnet.",
+        "Der Load Balancer stoppt."
+      ],
+      "correctIndex": 1,
+      "explanation": "Durch den neuen Divisor (3 statt 4) ändert sich das Ergebnis der Modulo-Rechnung für einen Großteil der Hashwerte. Consistent Hashing begrenzt das auf einen kleinen Teil."
+    },
+    {
+      "question": "Warum nimmt ein Health Check einen Server meist erst nach mehreren Fehlschlägen hintereinander aus dem Pool?",
+      "options": [
+        "Damit der Server Zeit für Updates hat",
+        "Weil ein Check nur alle 24 Stunden läuft",
+        "Damit ein einzelner verlorener Check den Server nicht sofort entfernt",
+        "Weil Round Robin das verlangt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Einzelne Checks können zufällig scheitern (z. B. verlorenes Paket). Ein Schwellwert verhindert ständiges Ein- und Austragen („Flapping“)."
+    },
+    {
+      "question": "Antwortzeiten in ms: 8, 9, 7, 10, 9, 8, 120, 9. Welche Aussage stimmt (Nearest Rank)?",
+      "options": [
+        "p50 = 9, Mittelwert = 22,5",
+        "p50 = 8, Mittelwert = 9",
+        "p50 = 9, Mittelwert = 9",
+        "p50 = 10, Mittelwert = 22,5"
+      ],
+      "correctIndex": 0,
+      "explanation": "Sortiert: 7, 8, 8, 9, 9, 9, 10, 120. Rang für p50 = aufrunden(0,5 · 8) = 4 → 9. Mittelwert = 180 / 8 = 22,5 – der Ausreißer zieht ihn stark nach oben."
+    },
+    {
+      "question": "Eine Anwendung speichert Sitzungsdaten im Arbeitsspeicher des jeweiligen Webservers. Was ist beim Load Balancing die Folge?",
+      "options": [
+        "Man braucht Sticky Sessions oder muss die Sitzungen zentral ablegen.",
+        "Round Robin funktioniert problemlos.",
+        "Health Checks sind nicht mehr möglich.",
+        "Die Latenz sinkt automatisch."
+      ],
+      "correctIndex": 0,
+      "explanation": "Landet ein Client beim nächsten Request auf einem anderen Server, fehlt dort seine Sitzung. Lösungen: Sticky Sessions oder besser zustandslose Server mit zentralem Sitzungsspeicher."
+    },
+    {
+      "question": "Ein Download von 100 MB über eine Leitung mit 100 Mbit/s dauert im Idealfall wie lange?",
+      "options": [
+        "1 s",
+        "8 s",
+        "12,5 s",
+        "100 s"
+      ],
+      "correctIndex": 1,
+      "explanation": "100 MB = 800 Mbit. 800 Mbit / 100 Mbit/s = 8 s. Typischer Fehler: Bytes und Bits verwechseln (Faktor 8)."
+    }
+  ]
+}

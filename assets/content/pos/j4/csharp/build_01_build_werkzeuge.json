@@ -1,0 +1,89 @@
+{
+  "id": "pos-j4-csharp-build_01_build_werkzeuge",
+  "title": "Build-Werkzeuge: csproj und dotnet CLI",
+  "summary": "Wie aus Quellcode ein lauffähiges Programm wird – reproduzierbar, mit einem Befehl.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "„Bei mir läuft's“ reicht im Team nicht. Ein Build-Werkzeug sorgt dafür, dass jedes Teammitglied und jeder Build-Server aus demselben Quellcode auf dieselbe Weise dasselbe Ergebnis erzeugt. Ein Build umfasst typischerweise: Abhängigkeiten holen, kompilieren, Tests ausführen und das Ergebnis verpacken. In der Java-Welt erledigen das Maven oder Gradle, in .NET MSBuild – meist bedient über die dotnet-Kommandozeile (CLI)."
+    },
+    {
+      "type": "text",
+      "content": "Die Projektdatei .csproj ist eine XML-Datei, die MSBuild sagt, was gebaut wird. Moderne „SDK-Style“-Projekte sind kurz: Alle .cs-Dateien im Ordner gehören automatisch dazu. Die wichtigsten Einstellungen stehen in einer PropertyGroup."
+    },
+    {
+      "type": "code",
+      "content": "<Project Sdk=\"Microsoft.NET.Sdk\">\n <PropertyGroup>\n  <OutputType>Exe</OutputType>\n  <TargetFramework>net8.0</TargetFramework>\n  <ImplicitUsings>enable</ImplicitUsings>\n  <Nullable>enable</Nullable>\n </PropertyGroup>\n</Project>"
+    },
+    {
+      "type": "text",
+      "content": "OutputType Exe erzeugt ein ausführbares Programm; fehlt die Zeile, entsteht eine Klassenbibliothek (DLL). TargetFramework legt fest, für welche .NET-Version kompiliert wird. ImplicitUsings fügt häufige using-Direktiven (System, System.Linq, …) automatisch ein, Nullable schaltet die Warnungen für mögliche null-Werte ein. Die Projektdatei gehört ins Git-Repository – die Ordner bin und obj (Build-Ergebnisse und Zwischendateien) nicht, sie kommen in die .gitignore."
+    },
+    {
+      "type": "code",
+      "content": "dotnet new console -n Notenrechner\ncd Notenrechner\ndotnet build    # kompilieren\ndotnet run      # bauen + starten\ndotnet test     # Testprojekt ausführen\ndotnet clean    # bin/obj leeren"
+    },
+    {
+      "type": "text",
+      "content": "dotnet build erzeugt standardmäßig die Debug-Konfiguration: mit Debug-Informationen und ohne Optimierungen, ideal zum Debuggen. Mit -c Release (Configuration) baust du die optimierte Version für die Auslieferung. Das Ergebnis landet in bin/<Konfiguration>/<Framework>, z. B. bin/Release/net8.0/Notenrechner.dll."
+    },
+    {
+      "type": "code",
+      "content": "dotnet publish -c Release -o ausgabe\nls ausgabe\n# Notenrechner          (Starter)\n# Notenrechner.dll      (Programm)\n# Notenrechner.deps.json\n# Notenrechner.pdb      (Debug-Infos)\n# Notenrechner.runtimeconfig.json"
+    },
+    {
+      "type": "text",
+      "content": "dotnet publish stellt alles zusammen, was zum Ausliefern nötig ist, in einen Ordner. Standardmäßig ist das Ergebnis „framework-dependent“: Auf dem Zielrechner muss die passende .NET-Laufzeit installiert sein. Mit -r linux-x64 --self-contained (bzw. -r win-x64) wird die Laufzeit mitgeliefert – größer, aber ohne Installation lauffähig. Größere Anwendungen bestehen aus mehreren Projekten, die in einer Solution (.sln) zusammengefasst werden; dotnet build Schule.sln baut alle in der richtigen Reihenfolge."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: bin und obj ins Repository einchecken; eine Debug-Version ausliefern; Einstellungen nur in der IDE ändern statt in der .csproj (dann fehlen sie am Build-Server). Zusammenfassung: Die .csproj beschreibt das Projekt, MSBuild führt den Build aus, die dotnet CLI bedient ihn mit new, build, run, test und publish. Ein reproduzierbarer Build ist die Grundlage für automatisierte Builds in der CI-Pipeline."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was fehlt in der .csproj einer Klassenbibliothek im Vergleich zu einer Konsolenanwendung typischerweise?",
+      "options": [
+        "<TargetFramework>",
+        "<OutputType>Exe</OutputType>",
+        "<Project Sdk=…>",
+        "<PropertyGroup>"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne OutputType Exe baut MSBuild eine Klassenbibliothek (DLL), die von anderen Projekten verwendet, aber nicht direkt gestartet wird."
+    },
+    {
+      "question": "Welcher Befehl erzeugt einen Auslieferungsordner mit der optimierten Version?",
+      "options": [
+        "dotnet build",
+        "dotnet run -c Debug",
+        "dotnet publish -c Release -o ausgabe",
+        "dotnet new release"
+      ],
+      "correctIndex": 2,
+      "explanation": "publish stellt alle benötigten Dateien zusammen, -c Release wählt die optimierte Konfiguration, -o bestimmt den Zielordner."
+    },
+    {
+      "question": "Welche Ordner gehören NICHT ins Git-Repository?",
+      "options": [
+        "bin und obj",
+        "src und tests",
+        "Properties",
+        "Der Ordner mit der .csproj"
+      ],
+      "correctIndex": 0,
+      "explanation": "bin und obj enthalten Build-Ergebnisse und Zwischendateien. Sie lassen sich jederzeit neu erzeugen und gehören in die .gitignore."
+    },
+    {
+      "question": "Was bedeutet „framework-dependent“ bei dotnet publish?",
+      "options": [
+        "Das Programm läuft nur in Visual Studio",
+        "Auf dem Zielrechner muss die passende .NET-Laufzeit installiert sein",
+        "Das Programm enthält die komplette .NET-Laufzeit",
+        "Das Programm kann nur Bibliotheken verwenden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Framework-dependent ist der Standard: Klein, aber die .NET-Laufzeit muss am Zielrechner vorhanden sein. --self-contained liefert sie mit."
+    }
+  ]
+}

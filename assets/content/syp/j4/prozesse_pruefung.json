@@ -1,0 +1,117 @@
+{
+ "id": "syp-j4-prozesse_pruefung",
+ "title": "Abschlussprüfung: IT-Markt & Prozessmodelle",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "Ein Unternehmen verbindet Lager, Einkauf, Vertrieb und Buchhaltung in einem System mit gemeinsamer Datenbank. Um welches System handelt es sich?",
+   "options": [
+    "CRM",
+    "ERP",
+    "DMS",
+    "CMS"
+   ],
+   "correctIndex": 1,
+   "explanation": "Die Integration von Ressourcen und Abteilungen über eine gemeinsame Datenbasis ist das Kennzeichen eines ERP-Systems."
+  },
+  {
+   "question": "Welche Funktion gehört typischerweise NICHT zu einem DMS?",
+   "options": [
+    "Versionierung von Dokumenten",
+    "Texterkennung (OCR) beim Scannen",
+    "Lagerbestand automatisch verringern",
+    "Revisionssichere Archivierung"
+   ],
+   "correctIndex": 2,
+   "explanation": "Lagerbestände verwaltet das ERP (Materialwirtschaft). Die anderen Funktionen sind typisch für ein DMS."
+  },
+  {
+   "question": "Make: 80 000 € einmalig + 6 000 €/Jahr. Buy: 20 000 € einmalig + 18 000 €/Jahr. Nach wie vielen Jahren sind beide gleich teuer?",
+   "options": [
+    "4 Jahre",
+    "3,3 Jahre",
+    "6 Jahre",
+    "5 Jahre"
+   ],
+   "correctIndex": 3,
+   "explanation": "80 000 + 6 000·x = 20 000 + 18 000·x ⇒ 60 000 = 12 000·x ⇒ x = 5 Jahre."
+  },
+  {
+   "question": "Welches Argument spricht am ehesten für „Make“?",
+   "options": [
+    "Die Funktion ist Standard, z. B. Lohnverrechnung",
+    "Die Software soll in zwei Wochen laufen",
+    "Die Funktion unterscheidet das Unternehmen vom Mitbewerb und erfordert eigenes Know-how",
+    "Im Unternehmen gibt es keine Entwickler:innen"
+   ],
+   "correctIndex": 2,
+   "explanation": "Was zum Kerngeschäft gehört und einen Wettbewerbsvorteil bringt, entwickelt man eher selbst. Standardaufgaben, Zeitdruck und fehlendes Know-how sprechen für Buy."
+  },
+  {
+   "question": "Ein BPMN-Modell enthält ein exklusives Gateway mit drei ausgehenden Pfeilen. Wie viele Wege werden bei einem Durchlauf genommen?",
+   "options": [
+    "Genau einer",
+    "Alle drei",
+    "Mindestens zwei",
+    "Keiner, das Gateway beendet den Prozess"
+   ],
+   "correctIndex": 0,
+   "explanation": "Das exklusive Gateway (X) wählt genau einen Weg anhand der Bedingungen."
+  },
+  {
+   "question": "Was wird in BPMN mit Lanes dargestellt?",
+   "options": [
+    "Datenbanktabellen",
+    "Rollen oder Abteilungen innerhalb eines Teilnehmers",
+    "Fehlerfälle",
+    "Die Reihenfolge der Aktivitäten"
+   ],
+   "correctIndex": 1,
+   "explanation": "Lanes unterteilen einen Pool nach Zuständigkeiten. Die Reihenfolge zeigt der Sequenzfluss."
+  },
+  {
+   "question": "In einer EPK steht „Rechnung ist eingelangt“. Was ist das?",
+   "options": [
+    "Eine Funktion",
+    "Ein Konnektor",
+    "Eine Organisationseinheit",
+    "Ein Ereignis"
+   ],
+   "correctIndex": 3,
+   "explanation": "Ein eingetretener Zustand ist ein Ereignis (Sechseck). Funktionen beschreiben Tätigkeiten wie „Rechnung prüfen“."
+  },
+  {
+   "question": "Ein Prozess: Bearbeitung 15 + 10 + 5 min, Wartezeiten 120 + 30 min. Wie groß sind Durchlaufzeit und Prozesseffizienz?",
+   "options": [
+    "150 min, 20 %",
+    "180 min, ca. 16,7 %",
+    "180 min, 30 %",
+    "30 min, 100 %"
+   ],
+   "correctIndex": 1,
+   "explanation": "Bearbeitung 30 min, Warten 150 min, Durchlauf 180 min. Effizienz = 30 / 180 ≈ 16,7 %."
+  },
+  {
+   "question": "Die Durchlaufzeit eines Genehmigungsprozesses beträgt 3 Tage, die Bearbeitung nur 25 Minuten. Welche Maßnahme bringt am meisten?",
+   "options": [
+    "Schneller tippen lernen",
+    "Ein zusätzliches Prüfformular",
+    "Wartezeiten verkürzen, z. B. automatische Weiterleitung und Freigabegrenzen",
+    "Mehr Schritte einfügen"
+   ],
+   "correctIndex": 2,
+   "explanation": "Fast die ganze Durchlaufzeit ist Wartezeit. Dort setzt man an; schnelleres Arbeiten spart nur Minuten."
+  },
+  {
+   "question": "Von 400 Bestellungen waren 18 fehlerhaft. Wie hoch ist die Fehlerquote?",
+   "options": [
+    "1,8 %",
+    "18 %",
+    "2,2 %",
+    "4,5 %"
+   ],
+   "correctIndex": 3,
+   "explanation": "18 / 400 = 0,045 = 4,5 %."
+  }
+ ]
+}

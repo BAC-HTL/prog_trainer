@@ -1,0 +1,117 @@
+{
+ "id": "syp-j4-requirements_pruefung",
+ "title": "Abschlussprüfung: Requirements Engineering & Testmanagement",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "Was ist eine Baseline im Requirements Management?",
+   "options": [
+    "Die erste Codezeile",
+    "Ein abgestimmter, eingefrorener Stand der Anforderungen",
+    "Die niedrigste Priorität",
+    "Ein Testwerkzeug"
+   ],
+   "correctIndex": 1,
+   "explanation": "Gegen die Baseline werden spätere Änderungen geprüft; sie ändert sich nur über kontrollierte Change Requests."
+  },
+  {
+   "question": "Ein Gesetz ändert sich. Wie findest du am schnellsten heraus, welche Testfälle betroffen sind?",
+   "options": [
+    "Alle Testfälle neu schreiben",
+    "Den Kunden fragen",
+    "Über die Traceability von der Anforderung zu den Testfällen",
+    "Gar nicht, Tests sind unabhängig von Anforderungen"
+   ],
+   "correctIndex": 2,
+   "explanation": "Die Vorwärts-Traceability verknüpft Anforderungen mit Entwurf, Code und Testfällen und macht die Auswirkungsanalyse möglich."
+  },
+  {
+   "question": "In einem Projekt sind 90 % des Aufwands als „Must have“ eingestuft. Was ist das Problem?",
+   "options": [
+    "Es gibt kaum Puffer; bei Verzögerungen kann man nichts Unwichtigeres streichen",
+    "Must have ist in MoSCoW nicht erlaubt",
+    "Dann braucht man kein Testkonzept",
+    "Das ist ideal, weil alles wichtig ist"
+   ],
+   "correctIndex": 0,
+   "explanation": "Die DSDM-Faustregel empfiehlt höchstens etwa 60 % Must, damit Should und Could als Puffer dienen können."
+  },
+  {
+   "question": "Ein Feature war vor einigen Jahren eine Überraschung, heute erwarten es alle. Wie beschreibt das Kano-Modell diese Entwicklung?",
+   "options": [
+    "Basismerkmal wird zu Begeisterungsmerkmal",
+    "Leistungsmerkmal wird zu Won't have",
+    "Begeisterungsmerkmal wird zu Basismerkmal",
+    "Kano kennt keine Veränderung"
+   ],
+   "correctIndex": 2,
+   "explanation": "Gewöhnung macht aus Begeisterungsmerkmalen mit der Zeit Basismerkmale."
+  },
+  {
+   "question": "Welcher Inhalt gehört NICHT in ein Testkonzept?",
+   "options": [
+    "Testende-Kriterien",
+    "Testumgebung und Testdaten",
+    "Rollen und Zeitplan",
+    "Der vollständige Quellcode der Anwendung"
+   ],
+   "correctIndex": 3,
+   "explanation": "Das Testkonzept plant das Testen. Der Quellcode ist Testobjekt, aber kein Inhalt des Konzepts."
+  },
+  {
+   "question": "150 Testfälle geplant, 135 durchgeführt, 27 fehlgeschlagen. Wie hoch sind Durchführungsgrad und Bestehensquote?",
+   "options": [
+    "90 % und 80 %",
+    "90 % und 72 %",
+    "80 % und 90 %",
+    "135 % und 27 %"
+   ],
+   "correctIndex": 0,
+   "explanation": "Durchführungsgrad = 135 / 150 = 90 %. Bestanden = 135 − 27 = 108, Bestehensquote = 108 / 135 = 80 %."
+  },
+  {
+   "question": "Ein Fehler wurde behoben. Welche Tests sind danach sinnvoll?",
+   "options": [
+    "Keine, der Fehler ist ja behoben",
+    "Fehlernachtest und Regressionstests",
+    "Nur ein Lasttest",
+    "Nur die Abnahme"
+   ],
+   "correctIndex": 1,
+   "explanation": "Der Fehlernachtest prüft die Korrektur, Regressionstests prüfen, ob dabei nichts anderes kaputtgegangen ist."
+  },
+  {
+   "question": "Wer erkennt bei der Abnahme das Ergebnis formal als vertragsgemäß an?",
+   "options": [
+    "Die Tester:innen des Auftragnehmers",
+    "Das CCB",
+    "Der Auftraggeber",
+    "Die Projektleitung des Auftragnehmers allein"
+   ],
+   "correctIndex": 2,
+   "explanation": "Die Abnahme ist eine Erklärung des Auftraggebers, dokumentiert im Abnahmeprotokoll."
+  },
+  {
+   "question": "Ein CR kostet 60 h bei einer Baseline von 480 h und einem Stundensatz von 75 €. Welche Aussage stimmt?",
+   "options": [
+    "+12,5 % Aufwand, 4 500 € Mehrkosten",
+    "+8 % Aufwand, 3 600 € Mehrkosten",
+    "+12,5 % Aufwand, 6 000 € Mehrkosten",
+    "+60 % Aufwand, 4 500 € Mehrkosten"
+   ],
+   "correctIndex": 0,
+   "explanation": "60 / 480 = 0,125 = 12,5 %. 60 h · 75 € = 4 500 €."
+  },
+  {
+   "question": "Was gehört zur Auswirkungsanalyse eines Change Requests?",
+   "options": [
+    "Nur die Programmiersprache festlegen",
+    "Abnahmeprotokoll unterschreiben",
+    "Den Change sofort umsetzen",
+    "Aufwand, Termin, Kosten, Risiko und betroffene Anforderungen und Tests ermitteln"
+   ],
+   "correctIndex": 3,
+   "explanation": "Erst mit diesen Informationen kann die Projektleitung oder das CCB fundiert entscheiden."
+  }
+ ]
+}

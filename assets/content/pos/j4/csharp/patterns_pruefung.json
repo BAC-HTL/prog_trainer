@@ -1,0 +1,119 @@
+{
+  "id": "pos-j4-csharp-patterns_pruefung",
+  "title": "Abschlussprüfung: Design Patterns",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Eine Klasse Schueler implementiert IPerson mit 12 Methoden, wirft aber in 8 davon NotImplementedException. Welches Prinzip ist hier vor allem verletzt?",
+      "options": [
+        "Interface Segregation",
+        "Open/Closed",
+        "DRY",
+        "Dependency Inversion"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Interface ist zu groß. Interface Segregation verlangt kleine, spezifische Interfaces, sodass niemand Methoden implementieren muss, die er nicht braucht."
+    },
+    {
+      "question": "Was bedeutet „lose Kopplung“?",
+      "options": [
+        "Klassen haben möglichst viele public-Felder",
+        "Klassen kennen voneinander möglichst wenig, idealerweise nur Interfaces",
+        "Jede Klasse steht in einer eigenen Datei",
+        "Klassen erben möglichst tief voneinander"
+      ],
+      "correctIndex": 1,
+      "explanation": "Lose gekoppelte Klassen hängen nur über schmale Schnittstellen zusammen. Eine Änderung in einer Klasse zieht dann keine Änderungen in vielen anderen nach sich."
+    },
+    {
+      "question": "Welche Aussage zu YAGNI ist richtig?",
+      "options": [
+        "Jeden Code nur einmal schreiben",
+        "Unterklassen müssen die Basisklasse ersetzen können",
+        "Keine Funktionalität auf Vorrat bauen, die noch niemand braucht",
+        "Abhängigkeiten im Konstruktor übergeben"
+      ],
+      "correctIndex": 2,
+      "explanation": "YAGNI – „You Aren't Gonna Need It“: Baue nur, was aktuell gebraucht wird. Die anderen Aussagen beschreiben DRY, Liskov und Dependency Injection."
+    },
+    {
+      "question": "Was gibt der Code aus? (Rahmen liefert [x], Stern liefert *x*)",
+      "code": "INachricht n = new Rahmen(\n    new Stern(new Text(\"ok\")));\nConsole.WriteLine(n.Inhalt());",
+      "options": [
+        "*[ok]*",
+        "[ok]*",
+        "*ok*",
+        "[*ok*]"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der äußerste Decorator wird zuletzt angewendet: Stern macht aus ok *ok*, Rahmen umschließt das zu [*ok*]."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "Action<int> h = w =>\n    Console.Write($\"{w} \");\nz.Tick += h;\nz.Tick += h;\nz.Los(3);\nz.Tick -= h;\nz.Los(4);",
+      "options": [
+        "3 4",
+        "3 3 4",
+        "3 3",
+        "3 3 4 4"
+      ],
+      "correctIndex": 1,
+      "explanation": "h ist zweimal angemeldet, Los(3) gibt also zweimal 3 aus. -= entfernt EINE Anmeldung von h, daher wird 4 einmal ausgegeben."
+    },
+    {
+      "question": "Warum ist ein privater Konstruktor beim Singleton nötig?",
+      "options": [
+        "Damit die Klasse nicht vererbt werden kann",
+        "Damit Lazy<T> schneller ist",
+        "Damit niemand außerhalb weitere Instanzen mit new erzeugen kann",
+        "Damit die Instanz nicht null ist"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur die Klasse selbst darf die eine Instanz erzeugen. Mit einem public-Konstruktor könnte jeder new Konfig() aufrufen."
+    },
+    {
+      "question": "Welche Alternative zum Singleton wird für testbaren Code empfohlen?",
+      "options": [
+        "Eine Instanz im Hauptprogramm erzeugen und per Konstruktor weitergeben",
+        "Eine statische Klasse mit statischen Feldern",
+        "Die Instanz in einer globalen Variable ablegen",
+        "Den Singleton von einer abstrakten Klasse erben lassen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Dependency Injection macht die Abhängigkeit sichtbar, und im Test kann man ein Fake übergeben. Statische Klassen und globale Variablen haben dieselben Probleme wie der Singleton."
+    },
+    {
+      "question": "Eine Methode Erzeuge(\"pdf\") liefert ein IExport-Objekt, ohne dass der Aufrufer die Klasse PdfExport kennt. Welches Muster ist das?",
+      "options": [
+        "Builder",
+        "Strategy",
+        "Decorator",
+        "Factory"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine Factory entscheidet, welche konkrete Klasse erzeugt wird, und liefert sie über das Interface zurück."
+    },
+    {
+      "question": "Worin unterscheiden sich Strategy und Decorator?",
+      "options": [
+        "Strategy tauscht einen Algorithmus aus, Decorator ergänzt Verhalten durch Einwickeln",
+        "Strategy erzeugt Objekte, Decorator zerstört sie",
+        "Beide sind identisch, nur anders benannt",
+        "Decorator braucht Vererbung, Strategy darf keine Interfaces verwenden"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei Strategy wird ein Teil des Verhaltens ersetzt; beim Decorator bleibt das innere Objekt erhalten und bekommt zusätzliches Verhalten."
+    },
+    {
+      "question": "Ein Schulnetz-Monitor soll bei jedem Ausfall eines Servers die Anzeige, ein Log und eine E-Mail-Benachrichtigung auslösen. Neue Empfänger sollen sich später anmelden können. Welches Muster passt am besten?",
+      "options": [
+        "Adapter",
+        "Builder",
+        "Singleton",
+        "Observer"
+      ],
+      "correctIndex": 3,
+      "explanation": "Observer: Der Monitor löst ein Event aus, beliebig viele Beobachter melden sich mit += an – ohne dass der Monitor sie kennen muss."
+    }
+  ]
+}

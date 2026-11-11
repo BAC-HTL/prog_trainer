@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-csharp-parallel_01_parallele_algorithmen",
+  "title": "Parallele Algorithmen",
+  "summary": "Rechenarbeit mit Parallel.For, PLINQ und Tasks auf mehrere Kerne verteilen – und mit Amdahl abschätzen, was es bringt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Moderne Prozessoren haben mehrere Kerne, ein einfaches for nutzt aber nur einen. Bei rechenintensiven Aufgaben – z. B. alle Primzahlen unter 5 Millionen zählen – lohnt es sich, die Arbeit aufzuteilen. Statt selbst Threads zu verwalten, verwendest du die Task Parallel Library (TPL): Sie teilt die Arbeit auf Threads aus dem Thread-Pool auf, Environment.ProcessorCount verrät dir, wie viele logische Kerne es gibt."
+    },
+    {
+      "type": "code",
+      "content": "int anzahl = 0;\nParallel.For(0, 5_000_000, i =>\n{\n    if (IstPrim(i))\n        Interlocked.Increment(\n            ref anzahl);\n});\nConsole.WriteLine(anzahl); // 348513"
+    },
+    {
+      "type": "text",
+      "content": "Parallel.For(start, ende, body) ruft den Rumpf für jedes i auf – in unbestimmter Reihenfolge und gleichzeitig. Typischer Fehler: anzahl++ ohne Interlocked. Dann entsteht eine Race Condition wie im 3. Jahrgang, und das Ergebnis ist zu klein (bei einem Testlauf z. B. 345698 statt 348513). Gemeinsame Variablen im Rumpf also vermeiden oder absichern. Für Sammlungen gibt es Parallel.ForEach."
+    },
+    {
+      "type": "text",
+      "content": "Oft noch eleganter ist PLINQ (Parallel LINQ): .AsParallel() macht aus einer LINQ-Abfrage eine parallele. Die Teilergebnisse werden intern sicher zusammengeführt – keine gemeinsame Variable, keine Race Condition. Achtung: Die Reihenfolge der Ergebnisse ist ohne .AsOrdered() nicht garantiert."
+    },
+    {
+      "type": "code",
+      "content": "int prim = Enumerable\n    .Range(0, 5_000_000)\n    .AsParallel()\n    .Count(IstPrim);   // 348513\n\nvar q = Enumerable.Range(1, 10)\n    .AsParallel().AsOrdered()\n    .Select(x => x * x)\n    .Take(4);          // 1,4,9,16"
+    },
+    {
+      "type": "text",
+      "content": "Parallel.For und PLINQ eignen sich für CPU-lastige Arbeit (Datenparallelität: dieselbe Operation auf viele Daten). Wartet das Programm dagegen auf Netzwerk oder Dateien, startest du mehrere asynchrone Tasks gleichzeitig und wartest mit Task.WhenAll auf alle. Drei Downloads à 300 ms dauern so insgesamt ungefähr 300 ms statt 900 ms."
+    },
+    {
+      "type": "code",
+      "content": "async Task<int> Lade(string n)\n{\n    await Task.Delay(300);\n    return n.Length;\n}\nint[] r = await Task.WhenAll(\n    Lade(\"Mathe\"), Lade(\"POS\"),\n    Lade(\"NVS\"));\nConsole.WriteLine(r.Sum()); // 11\n// Dauer ≈ 300 ms, nicht 900 ms"
+    },
+    {
+      "type": "text",
+      "content": "Wie viel schneller wird ein Programm mit n Kernen? Das Gesetz von Amdahl sagt: Nur der parallelisierbare Anteil p wird schneller, der sequenzielle Rest (1 − p) bleibt gleich. Der Speedup ist S(n) = 1 / ((1 − p) + p / n). Auch mit unendlich vielen Kernen gilt S ≤ 1 / (1 − p). Die Effizienz E = S / n gibt an, wie gut die Kerne ausgelastet sind."
+    },
+    {
+      "type": "code",
+      "content": "p = 0.9, n = 4:\nS = 1 / (0.1 + 0.9/4)\n  = 1 / (0.1 + 0.225)\n  = 1 / 0.325 ≈ 3.08\nE = 3.08 / 4 ≈ 0.77\n\nn → ∞:  S = 1 / 0.1 = 10\np = 0.5, n = 2: S = 1/0.75 ≈ 1.33"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Parallel.For/ForEach und PLINQ (AsParallel) verteilen CPU-Arbeit auf die Kerne, Task.WhenAll lässt mehrere Wartevorgänge gleichzeitig laufen. Gemeinsame Variablen sind gefährlich – Interlocked oder PLINQ-Aggregationen verwenden. Parallelisierung hat Verwaltungsaufwand: Bei kleinen Datenmengen ist die sequenzielle Version oft schneller. Miss deshalb immer (z. B. mit Stopwatch) und rechne mit Amdahl, was maximal möglich ist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Programm ist zu 80 % parallelisierbar. Welcher Speedup ergibt sich nach Amdahl mit 4 Kernen?",
+      "options": [
+        "4.00",
+        "3.20",
+        "2.50",
+        "1.25"
+      ],
+      "correctIndex": 2,
+      "explanation": "S = 1 / (0.2 + 0.8/4) = 1 / (0.2 + 0.2) = 1 / 0.4 = 2.5."
+    },
+    {
+      "question": "Ein Programm ist zu 95 % parallelisierbar. Welcher Speedup ist selbst mit beliebig vielen Kernen höchstens möglich?",
+      "options": [
+        "20",
+        "95",
+        "Unbegrenzt",
+        "1.05"
+      ],
+      "correctIndex": 0,
+      "explanation": "Für n → ∞ fällt p/n weg: S = 1 / (1 − 0.95) = 1 / 0.05 = 20. Der sequenzielle Anteil begrenzt den Gewinn."
+    },
+    {
+      "question": "Was ist am Code problematisch?",
+      "code": "int summe = 0;\nParallel.For(0, 1_000_000, i =>\n{\n    summe++;\n});",
+      "options": [
+        "Parallel.For gibt es nicht",
+        "summe++ ist eine Race Condition – das Ergebnis kann zu klein sein",
+        "Der Code läuft nur auf einem Kern",
+        "Die Schleife läuft nur bis 999 999"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mehrere Threads führen summe++ gleichzeitig aus (lesen, erhöhen, schreiben). Dabei gehen Erhöhungen verloren. Abhilfe: Interlocked.Increment oder PLINQ."
+    },
+    {
+      "question": "Du lädst Stundenpläne von 5 Servern, jeder Abruf dauert etwa 1 s (vor allem Wartezeit auf das Netzwerk). Was ist am passendsten?",
+      "options": [
+        "Parallel.For mit 5 Durchläufen und Thread.Sleep",
+        "PLINQ mit AsOrdered",
+        "Ein einfaches for mit await in jedem Durchlauf",
+        "Fünf asynchrone Tasks starten und mit Task.WhenAll warten"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beim Warten auf I/O braucht man keine Rechenkerne, sondern gleichzeitiges Warten. Task.WhenAll erledigt die 5 Abrufe in etwa 1 s statt 5 s."
+    }
+  ]
+}

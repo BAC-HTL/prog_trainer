@@ -1,0 +1,95 @@
+{
+  "id": "pos-j4-theorie-paradigmen_01_typsysteme",
+  "title": "Typsysteme: statisch, dynamisch, stark, schwach",
+  "summary": "Wann und wie streng eine Programmiersprache Typen prüft – und was Typinferenz damit zu tun hat.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Das Typsystem einer Sprache legt fest, welche Operationen auf welchen Werten erlaubt sind. Du kannst Sprachen entlang von zwei unabhängigen Achsen einordnen:\n• Wann wird geprüft? → statisch oder dynamisch\n• Wie streng wird geprüft? → stark oder schwach\nDie beiden Achsen werden oft verwechselt – „dynamisch“ heißt nicht automatisch „schwach“."
+    },
+    {
+      "type": "text",
+      "content": "Statisch typisiert (C#, Java, C): Jede Variable hat einen festen Typ, den der Compiler schon vor dem Start prüft. Dynamisch typisiert (Python, JavaScript): Nur die Werte haben Typen, eine Variable kann nacheinander auf Werte verschiedener Typen zeigen. Geprüft wird erst zur Laufzeit, wenn die Operation tatsächlich ausgeführt wird."
+    },
+    {
+      "type": "code",
+      "content": "# Python: dynamisch\nx = 42\nprint(type(x))  # <class 'int'>\nx = \"jetzt Text\"\nprint(type(x))  # <class 'str'>\n\n// C#: statisch\nvar n = 42;\nn = \"Hallo\";\n// error CS0029: Cannot implicitly\n// convert type 'string' to 'int'"
+    },
+    {
+      "type": "text",
+      "content": "Stark typisiert heißt: Die Sprache wandelt Typen kaum still und heimlich um, sondern meldet einen Fehler. Schwach typisiert heißt: Es gibt viele implizite Umwandlungen (Coercion). Python ist dynamisch, aber stark. JavaScript ist dynamisch und schwach. „Stark/schwach“ ist kein exakt definierter Begriff, sondern eher ein Spektrum."
+    },
+    {
+      "type": "code",
+      "content": "# Python (stark)\nprint(\"5\" + 3)\n# TypeError: can only concatenate\n# str (not \"int\") to str\nprint(\"5\" * 3)   # 555 (Wiederholung)\n\n// JavaScript (schwach)\n\"5\" * 2    // 10   (Text → Zahl)\n\"5\" + 3    // \"53\" (Zahl → Text)\n\"5\" - 1    // 4\n1 == \"1\"   // true"
+    },
+    {
+      "type": "text",
+      "content": "Auch stark typisierte Sprachen kennen einzelne, klar definierte Umwandlungen: In C# ergibt \"5\" + 3 den String \"53\", weil + mit einem string-Operanden als Verkettung festgelegt ist. Eine verlustbehaftete Umwandlung wie double → int verweigert der Compiler dagegen (int i = 3.7; → error CS0266), du musst explizit casten: (int)3.7."
+    },
+    {
+      "type": "text",
+      "content": "Typinferenz: Der Compiler leitet den Typ aus dem zugewiesenen Wert ab, du musst ihn nicht hinschreiben. var n = 42; ist in C# trotzdem ein int – fest und statisch geprüft! Typischer Fehler: var mit dynamischer Typisierung verwechseln. Echte dynamische Typisierung gibt es in C# nur mit dynamic."
+    },
+    {
+      "type": "code",
+      "content": "var n = 42;        // inferiert: int\nConsole.WriteLine(n.GetType());\n// System.Int32\n\ndynamic d = 5;\nd = \"jetzt Text\";  // erlaubt\nConsole.WriteLine(d.Length); // 10\n// Prüfung erst zur Laufzeit"
+    },
+    {
+      "type": "text",
+      "content": "Python kennt Type Hints. Der Interpreter ignoriert sie zur Laufzeit – erst ein statisches Prüfwerkzeug wie mypy findet den Fehler, bevor das Programm läuft. So bekommst du in großen Projekten Vorteile der statischen Typisierung, ohne die Sprache zu wechseln."
+    },
+    {
+      "type": "code",
+      "content": "def verdopple(z: int) -> int:\n    return z * 2\n\nprint(verdopple(\"ab\"))  # abab\n\n$ mypy t.py\nt.py:4: error: Argument 1 to\n\"verdopple\" has incompatible type\n\"str\"; expected \"int\""
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Python-Code aus?",
+      "code": "print(\"5\" * 3)",
+      "options": [
+        "15",
+        "555",
+        "TypeError",
+        "5 5 5"
+      ],
+      "correctIndex": 1,
+      "explanation": "str * int bedeutet in Python Wiederholung: \"5\" * 3 ergibt \"555\". Nur \"5\" + 3 führt zu einem TypeError."
+    },
+    {
+      "question": "Was passiert bei diesem C#-Code?",
+      "code": "var n = 42;\nn = \"Hallo\";",
+      "options": [
+        "n wird zu einem string",
+        "Laufzeitfehler beim Zuweisen",
+        "Kompilierfehler: string kann nicht in int umgewandelt werden",
+        "n bekommt den Wert 0"
+      ],
+      "correctIndex": 2,
+      "explanation": "var leitet beim ersten Zuweisen den Typ int ab. Danach ist n fest ein int – der Compiler meldet CS0029."
+    },
+    {
+      "question": "JavaScript berechnet \"5\" * 2 als 10. Welche Eigenschaft zeigt das?",
+      "options": [
+        "Statische Typisierung",
+        "Typinferenz",
+        "Starke Typisierung",
+        "Schwache Typisierung (implizite Umwandlung)"
+      ],
+      "correctIndex": 3,
+      "explanation": "JavaScript wandelt den String still in eine Zahl um. Solche impliziten Umwandlungen kennzeichnen schwache Typisierung."
+    },
+    {
+      "question": "Welche Einordnung von Python ist richtig?",
+      "options": [
+        "Dynamisch und stark typisiert",
+        "Statisch und stark typisiert",
+        "Dynamisch und schwach typisiert",
+        "Statisch und schwach typisiert"
+      ],
+      "correctIndex": 0,
+      "explanation": "Typen werden in Python erst zur Laufzeit geprüft (dynamisch), unpassende Typen werden aber nicht still umgewandelt (stark): \"5\" + 3 ist ein TypeError."
+    }
+  ]
+}

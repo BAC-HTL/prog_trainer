@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-theorie-zuverlaessig_03_hilfesysteme_logging",
+  "title": "Logging-Level und Hilfesysteme",
+  "summary": "Mit gezieltem Logging Fehler im Betrieb nachvollziehen und Benutzer:innen mit Hilfesystemen und guten Fehlermeldungen unterstützen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein zuverlässiges System muss im Fehlerfall zwei Gruppen helfen: Entwickler:innen und Betrieb müssen nachvollziehen können, was passiert ist (Logging), und Benutzer:innen müssen verstehen, was sie tun können (Hilfesystem). print-Ausgaben reichen dafür nicht: Sie haben keinen Schweregrad und keinen Zeitstempel, lassen sich nicht zentral abschalten oder in Dateien umleiten und müssen vor der Abgabe mühsam gelöscht werden."
+    },
+    {
+      "type": "text",
+      "content": "Logging-Frameworks ordnen jede Meldung einem Level zu. Das Programm stellt einen Schwellwert ein – ausgegeben wird nur, was mindestens so wichtig ist. In der Entwicklung wählt man DEBUG, im Betrieb meist INFO oder WARNING. Typischer Fehler in Python: Ohne Konfiguration liegt der Schwellwert bei WARNING, deshalb erscheinen info-Meldungen einfach nicht."
+    },
+    {
+      "type": "code",
+      "content": "Level     Wert  Wofür?\n────────────────────────────────────\nDEBUG      10   Details zur Fehlersuche\nINFO       20   normaler Ablauf\n                (Start, Import fertig)\nWARNING    30   Unerwartetes, Programm\n                läuft weiter\nERROR      40   Aktion fehlgeschlagen\nCRITICAL   50   Programm kann nicht\n                weiterarbeiten\n\nC# (ILogger): Trace, Debug, Information,\nWarning, Error, Critical"
+    },
+    {
+      "type": "code",
+      "content": "import logging\n\nlogging.basicConfig(\n    level=logging.INFO,\n    format=\"%(asctime)s %(levelname)s\"\n           \" %(name)s: %(message)s\",\n    datefmt=\"%H:%M:%S\")\nlog = logging.getLogger(\"notenrechner\")\n\nlog.debug(\"Rohdaten: %s\", [1, 2])\nlog.info(\"Import gestartet: %s\",\n         \"noten.csv\")\nlog.warning(\"Zeile %d übersprungen:\"\n            \" leer\", 7)\ntry:\n    1 / 0\nexcept ZeroDivisionError:\n    log.exception(\"Schnitt fehlgeschlagen\")"
+    },
+    {
+      "type": "code",
+      "content": "Ausgabe (umbrochen, DEBUG fehlt):\n20:44:32 INFO notenrechner:\n  Import gestartet: noten.csv\n20:44:32 WARNING notenrechner:\n  Zeile 7 übersprungen: leer\n20:44:32 ERROR notenrechner:\n  Schnitt fehlgeschlagen\nTraceback (most recent call last):\n  …\nZeroDivisionError: division by zero"
+    },
+    {
+      "type": "text",
+      "content": "Gute Praxis beim Logging:\n• Pro Modul einen eigenen Logger: logging.getLogger(__name__)\n• Platzhalter statt f-String: log.info(\"%s\", x) – formatiert wird nur, wenn die Meldung wirklich ausgegeben wird\n• Im except-Block log.exception verwenden, das schreibt den Traceback mit\n• Kontext mitloggen (Datei, Zeile, Benutzer-ID), aber niemals Passwörter oder unnötige personenbezogene Daten (DSGVO)\nIn C# liefert das Paket Microsoft.Extensions.Logging die Schnittstelle ILogger mit den Methoden LogInformation, LogWarning usw."
+    },
+    {
+      "type": "text",
+      "content": "Hilfesysteme unterstützen Benutzer:innen direkt im Programm:\n• kontextsensitive Hilfe – F1 oder Tooltip zeigt Hilfe genau zum aktuellen Feld\n• Online-Hilfe bzw. Handbuch mit Suche und Schritt-für-Schritt-Anleitungen\n• FAQ und Wissensdatenbank für häufige Probleme\n• Assistenten (Wizards) und Einführungstouren beim ersten Start\n• bei Kommandozeilenprogrammen: --help\nFür Entwickler:innen sind Docstrings bzw. XML-Kommentare in C# die eingebaute Hilfe – help(funktion) zeigt den Docstring an."
+    },
+    {
+      "type": "code",
+      "content": "import argparse\np = argparse.ArgumentParser(\n    prog=\"notenrechner\",\n    description=\"Berechnet Notenschnitte.\")\np.add_argument(\"datei\",\n    help=\"CSV-Datei mit Noten\")\np.add_argument(\"-f\", \"--fach\",\n    help=\"nur dieses Fach\")\nargs = p.parse_args()\n\n$ python notenrechner.py --help\nusage: notenrechner [-h] [-f FACH] datei\n\nBerechnet Notenschnitte.\n\npositional arguments:\n  datei            CSV-Datei mit Noten\n…"
+    },
+    {
+      "type": "text",
+      "content": "Auch Fehlermeldungen sind Teil des Hilfesystems. Eine gute Meldung sagt in der Sprache der Benutzer:innen, was passiert ist, warum und was sie jetzt tun können – technische Details gehören ins Log, nicht in den Dialog.\nSchlecht: „Error 0x80004005“\nGut: „Die Datei noten.csv wurde nicht gefunden. Prüfe den Pfad oder wähle eine andere Datei über Datei → Öffnen.“"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Logging mit Levels (DEBUG < INFO < WARNING < ERROR < CRITICAL) und einem einstellbaren Schwellwert macht Fehler im Betrieb nachvollziehbar. Hilfesysteme – von Tooltip und F1 über Handbuch bis --help – und verständliche Fehlermeldungen helfen den Benutzer:innen. Beides zusammen mit Issue-Tracking und Tests macht ein System zuverlässig und wartbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Zeilen gibt dieser Code aus?",
+      "code": "import logging\nlogging.basicConfig(\n    level=logging.WARNING)\nlog = logging.getLogger(\"app\")\nlog.debug(\"a\")\nlog.info(\"b\")\nlog.warning(\"c\")\nlog.error(\"d\")",
+      "options": [
+        "4",
+        "1",
+        "3",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ausgegeben werden nur Meldungen mit Level ≥ WARNING: warning und error → 2 Zeilen."
+    },
+    {
+      "question": "Die Konfigurationsdatei fehlt, das Programm verwendet Standardwerte und läuft normal weiter. Welches Level passt?",
+      "options": [
+        "DEBUG",
+        "WARNING",
+        "CRITICAL",
+        "INFO"
+      ],
+      "correctIndex": 1,
+      "explanation": "Etwas Unerwartetes ist passiert, das Programm kann aber weiterarbeiten – das ist der typische Fall für WARNING."
+    },
+    {
+      "question": "Ein Python-Programm ruft ohne vorherige Konfiguration logging.info(\"Start\") auf. Was passiert?",
+      "options": [
+        "Es wird nichts ausgegeben, weil der Standard-Schwellwert WARNING ist",
+        "Die Meldung erscheint auf der Konsole",
+        "Es wird eine Exception ausgelöst",
+        "Die Meldung wird in eine Datei log.txt geschrieben"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Root-Logger hat standardmäßig das Level WARNING. INFO liegt darunter und wird verworfen."
+    },
+    {
+      "question": "Welche Fehlermeldung ist für Benutzer:innen am hilfreichsten?",
+      "options": [
+        "NullReferenceException at Line 42",
+        "Fehler!",
+        "Speichern fehlgeschlagen: Der USB-Stick ist schreibgeschützt. Wähle einen anderen Speicherort.",
+        "Error 0x80070005"
+      ],
+      "correctIndex": 2,
+      "explanation": "Sie erklärt verständlich was passiert ist, warum, und was man tun kann. Technische Details gehören ins Log."
+    }
+  ]
+}

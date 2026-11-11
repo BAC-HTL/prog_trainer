@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-architektur_01_architekturmodelle",
+ "title": "Architekturmodelle",
+ "summary": "Schichtenarchitektur, Client/Server sowie Monolith und Microservices im Vergleich.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Die Architektur eines Systems beschreibt seine Bausteine, deren Beziehungen und die grundlegenden Entscheidungen dahinter – also das, was später nur schwer zu ändern ist. Ob eine App eine Datenbank direkt anspricht oder über eine API, entscheidet man früh, und es prägt Wartbarkeit, Sicherheit und Kosten über Jahre."
+  },
+  {
+   "type": "text",
+   "content": "Bei der Schichtenarchitektur (Layers) wird das System in Ebenen mit klaren Aufgaben geteilt, meist Präsentation (Oberfläche), Geschäftslogik (Regeln) und Datenzugriff (Persistenz). Eine Schicht nutzt nur Dienste der Schicht darunter. Bei strikter Schichtung nur die direkt darunter liegende, bei lockerer Schichtung auch tiefere. Vorteil: Eine Schicht lässt sich austauschen, z. B. eine neue Oberfläche bei gleicher Logik."
+  },
+  {
+   "type": "code",
+   "content": "+-------------------------+\n| Präsentation (UI)       |\n+-------------------------+\n            | ruft auf\n            v\n+-------------------------+\n| Geschäftslogik          |\n+-------------------------+\n            |\n            v\n+-------------------------+\n| Datenzugriff            |\n+-------------------------+\n            |\n            v\n       [ Datenbank ]"
+  },
+  {
+   "type": "text",
+   "content": "Beim Client/Server-Modell stellt ein Server Dienste bereit, Clients fordern sie an. Ein Thin Client (z. B. Browser) zeigt fast nur an, die Logik liegt am Server. Ein Fat oder Rich Client (z. B. eine Desktop-Anwendung) erledigt viel Logik selbst. Achtung bei den Begriffen: Layer bezeichnet die logische Schicht im Code, Tier die physische Verteilung auf Rechner. Eine 3-Tier-Architektur verteilt Präsentation, Logik und Daten auf drei Ebenen."
+  },
+  {
+   "type": "code",
+   "content": "3-Tier-Architektur\n\n[Browser]  <-- HTTPS -->  [App-Server]\n  Tier 1                    Tier 2\n                               |\n                              SQL\n                               |\n                         [DB-Server]\n                            Tier 3"
+  },
+  {
+   "type": "text",
+   "content": "Ein Monolith wird als eine Einheit gebaut und ausgeliefert. Vorteile: einfach zu entwickeln, zu testen und zu betreiben, Aufrufe sind schnelle Funktionsaufrufe, Transaktionen sind einfach. Nachteile bei großen Systemen: jede kleine Änderung erfordert ein komplettes Deployment, Skalieren geht nur als Ganzes, und ohne Disziplin verschwimmen die Modulgrenzen („Big Ball of Mud“)."
+  },
+  {
+   "type": "text",
+   "content": "Microservices sind kleine, eigenständig deploybare Dienste, die je eine fachliche Aufgabe erfüllen (z. B. Bestellung, Zahlung, Benachrichtigung). Jeder Service hat seine eigenen Daten und kommuniziert über das Netzwerk, etwa per REST oder Messaging. Vorteile: unabhängige Teams und Releases, gezieltes Skalieren, unterschiedliche Technologien möglich. Nachteile: Netzwerkfehler, schwierige Datenkonsistenz, aufwendiger Betrieb mit Monitoring und Deployment-Automatisierung."
+  },
+  {
+   "type": "code",
+   "content": "Verfügbarkeit einer Aufrufkette\n(jeder Service 99,9 %)\n\nA -> B -> C\n0,999 · 0,999 · 0,999\n= 0,997  ->  99,7 %\n\nJeder zusätzliche Service in der\nKette senkt die Gesamtverfügbarkeit."
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: Microservices für ein kleines Team wählen, weil es modern klingt – bei einer Diplomarbeit mit drei Personen überwiegt meist der Zusatzaufwand. Oder Microservices bauen, die alle auf dieselbe Datenbank zugreifen: Das ergibt einen „verteilten Monolithen“ mit den Nachteilen beider Welten. Ein guter Mittelweg ist der modulare Monolith mit sauberen Modulgrenzen, aus dem man später bei Bedarf Services herauslösen kann."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Schichten trennen Präsentation, Logik und Daten; Layer ist logisch, Tier physisch. Client/Server verteilt Aufgaben zwischen Anbieter und Nutzer eines Dienstes. Ein Monolith ist einfach, aber als Ganzes zu ändern und zu skalieren; Microservices sind unabhängig, bringen aber verteilte Komplexität. Die Wahl hängt von Teamgröße, Last und Änderungshäufigkeit ab."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Vier Microservices werden bei einer Anfrage nacheinander aufgerufen, jeder hat 99 % Verfügbarkeit. Wie hoch ist die Gesamtverfügbarkeit ungefähr?",
+   "options": [
+    "99 %",
+    "96 %",
+    "98 %",
+    "99,96 %"
+   ],
+   "correctIndex": 1,
+   "explanation": "0,99⁴ ≈ 0,9606, also rund 96 %. Fallen Services unabhängig aus, multiplizieren sich die Verfügbarkeiten in einer Kette."
+  },
+  {
+   "question": "Was unterscheidet „Tier“ von „Layer“?",
+   "options": [
+    "Tier ist die physische Verteilung, Layer die logische Schicht",
+    "Es gibt keinen Unterschied",
+    "Layer ist physisch, Tier logisch",
+    "Tier gibt es nur bei Microservices"
+   ],
+   "correctIndex": 0,
+   "explanation": "Mehrere Layer können auf einem Rechner laufen (1 Tier); bei 3-Tier sind Präsentation, Logik und Daten auf getrennte Ebenen verteilt."
+  },
+  {
+   "question": "In einer strikten Schichtenarchitektur greift die Oberfläche direkt mit SQL auf die Datenbank zu. Was ist das Problem?",
+   "options": [
+    "Gar keines, das ist schneller und daher erlaubt",
+    "SQL funktioniert nur in der Logikschicht",
+    "Die Oberfläche wird dadurch zum Thin Client",
+    "Die Schichtung wird verletzt: Logik wird umgangen und die Datenbank ist schwer austauschbar"
+   ],
+   "correctIndex": 3,
+   "explanation": "Bei strikter Schichtung darf jede Schicht nur die direkt darunter liegende nutzen. Direkter DB-Zugriff aus der UI umgeht Geschäftsregeln und koppelt UI und Datenbank."
+  },
+  {
+   "question": "Was ist ein typischer Nachteil von Microservices gegenüber einem Monolithen?",
+   "options": [
+    "Man kann keine Teile einzeln skalieren",
+    "Alle Teams müssen gemeinsam releasen",
+    "Aufrufe gehen über das Netzwerk und können fehlschlagen; Betrieb und Monitoring werden aufwendiger",
+    "Es darf nur eine Programmiersprache verwendet werden"
+   ],
+   "correctIndex": 2,
+   "explanation": "Microservices tauschen schnelle lokale Aufrufe gegen Netzwerkkommunikation. Einzelnes Skalieren und unabhängige Releases sind gerade ihre Vorteile."
+  }
+ ]
+}

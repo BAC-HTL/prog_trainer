@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-theorie-komplexitaet_03_optimieren",
+  "title": "Optimieren: erst der Algorithmus, dann der Feinschliff",
+  "summary": "Programme gezielt schneller machen – mit Messen, besseren Algorithmen, passenden Datenstrukturen und Memoization.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die wichtigste Regel beim Optimieren: Erst messen, dann ändern. Programme verbringen meist den Großteil der Zeit in wenigen Stellen (Hotspots). Ohne Messung optimierst du oft die falsche Stelle. Donald Knuth: „Premature optimization is the root of all evil“ – verfrühte Optimierung macht Code unlesbar, ohne spürbar etwas zu bringen."
+    },
+    {
+      "type": "text",
+      "content": "Hotspots findest du mit einem Profiler. In Python ist cProfile eingebaut. ncalls zeigt die Anzahl der Aufrufe, tottime die Zeit in der Funktion selbst, cumtime inklusive aller aufgerufenen Funktionen. Im Beispiel steckt eine versteckte Schleife: liste.count(x) durchläuft jedes Mal die ganze Liste – in einer Comprehension über die Liste ergibt das Θ(n²)."
+    },
+    {
+      "type": "code",
+      "content": "def langsam(liste):\n    return [x for x in liste\n            if liste.count(x) > 1]\n\n$ python -m cProfile -s tottime p.py\n ncalls tottime ... function\n   3001   0.058 ... {method 'count'\n                     of 'list' objects}\n      1   0.001 ... p.py:1(langsam)"
+    },
+    {
+      "type": "text",
+      "content": "Algorithmus vor Mikro-Optimierung: Der Wechsel in eine bessere Komplexitätsklasse bringt Faktoren von 100 oder 1000, Tricks wie x*x statt x**2 nur wenige Prozent. Beispiel: Prüfen, ob eine Liste Duplikate enthält. Der naive Vergleich jedes Paares ist Θ(n²), mit einer Menge (set, Hash-basiert, Lookup im Mittel O(1)) wird daraus Θ(n)."
+    },
+    {
+      "type": "code",
+      "content": "def hat_duplikat_langsam(liste):\n    for i in range(len(liste)):\n        for j in range(i + 1, len(liste)):\n            if liste[i] == liste[j]:\n                return True\n    return False\n\ndef hat_duplikat_schnell(liste):\n    gesehen = set()\n    for x in liste:\n        if x in gesehen:\n            return True\n        gesehen.add(x)\n    return False"
+    },
+    {
+      "type": "code",
+      "content": "Messung mit 5000 Zahlen ohne\nDuplikat (Beispielwerte):\nlangsam  ≈ 320 ms\nschnell  ≈ 0,1 ms\n\n// C#: HashSet.Add liefert false,\n// wenn das Element schon da ist\nvar gesehen = new HashSet<int>();\nforeach (var x in a)\n    if (!gesehen.Add(x)) return true;\nreturn false;"
+    },
+    {
+      "type": "text",
+      "content": "Die passende Datenstruktur ist oft schon die halbe Optimierung: x in liste ist Θ(n), x in menge im Mittel Θ(1). Für 100 000 Elemente war die Suche in der Liste bei der Messung mehr als 10 000-mal langsamer. Weitere Klassiker: Sortieren mit sorted (Θ(n log n)) statt selbst geschriebenem Bubblesort, Dictionary statt Liste von Paaren für Zuordnungen."
+    },
+    {
+      "type": "text",
+      "content": "Memoization: Eine reine Funktion liefert für gleiche Argumente immer dasselbe Ergebnis – also kann man Ergebnisse speichern und wiederverwenden. Die naive fib-Funktion berechnet dieselben Werte immer wieder (fib(30): über 2,6 Millionen Aufrufe). Mit Cache wird jeder Wert nur einmal berechnet: 31 Aufrufe, Θ(n). Speicher gegen Zeit – ein typischer Tausch."
+    },
+    {
+      "type": "code",
+      "content": "from functools import lru_cache\n\n@lru_cache(maxsize=None)\ndef fib(n):\n    if n < 2:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(30))   # 832040\nprint(fib(100))\n# 354224848179261915075\n\n# Ohne Decorator, mit dict:\nmemo = {}\ndef fib2(n):\n    if n < 2:\n        return n\n    if n not in memo:\n        memo[n] = fib2(n-1) + fib2(n-2)\n    return memo[n]"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung und typische Fehler:\n1. Messen (Profiler, timeit) statt raten.\n2. Algorithmus und Datenstruktur verbessern.\n3. Erst ganz zum Schluss Mikro-Optimierungen – nur, wenn die Messung es rechtfertigt.\nMemoization nur bei reinen Funktionen einsetzen: Hängt das Ergebnis von Zeit, Zufall oder globalem Zustand ab, liefert der Cache falsche Werte. Und nach jeder Optimierung die Tests laufen lassen – schnell und falsch hilft niemandem."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Änderung bringt bei großen Listen den größten Geschwindigkeitsgewinn?",
+      "options": [
+        "x * x statt x ** 2 schreiben",
+        "Variablennamen kürzen",
+        "Eine Θ(n²)-Duplikatprüfung durch eine set-basierte Θ(n)-Lösung ersetzen",
+        "Eine for-Schleife durch eine while-Schleife ersetzen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Wechsel der Komplexitätsklasse wirkt sich bei großen n um Größenordnungen aus. Die anderen Änderungen bringen höchstens wenige Prozent oder gar nichts."
+    },
+    {
+      "question": "Welche Laufzeit hat diese Funktion?",
+      "code": "def f(liste):\n    return [x for x in liste\n            if liste.count(x) == 1]",
+      "options": [
+        "Θ(n²)",
+        "Θ(n)",
+        "Θ(n log n)",
+        "Θ(1)"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Comprehension läuft n-mal, und jedes count durchsucht die ganze Liste (n Schritte) → n · n = Θ(n²)."
+    },
+    {
+      "question": "Für welche Funktion ist Memoization NICHT geeignet?",
+      "options": [
+        "def quadrat(n): return n * n",
+        "def fak(n): return 1 if n == 0 else n * fak(n - 1)",
+        "def wege(n): return 1 if n < 2 else wege(n-1) + wege(n-2)",
+        "def jetzt_plus(n): return time.time() + n"
+      ],
+      "correctIndex": 3,
+      "explanation": "jetzt_plus ist nicht rein – das Ergebnis hängt von der aktuellen Zeit ab. Ein Cache würde einen veralteten Wert zurückgeben."
+    },
+    {
+      "question": "Wie oft wird der Funktionskörper von fib bei fib(30) mit @lru_cache(maxsize=None) ausgeführt (beim ersten Aufruf)?",
+      "options": [
+        "30",
+        "31",
+        "60",
+        "2 692 537"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jeder Wert fib(0) bis fib(30) wird genau einmal berechnet – das sind 31 verschiedene Argumente. Alle weiteren Aufrufe kommen aus dem Cache."
+    }
+  ]
+}

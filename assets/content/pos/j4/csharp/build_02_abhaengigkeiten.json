@@ -1,0 +1,89 @@
+{
+  "id": "pos-j4-csharp-build_02_abhaengigkeiten",
+  "title": "Abhängigkeiten und Versionen",
+  "summary": "Fremde Bibliotheken mit NuGet einbinden, Versionen festlegen und eigene Projekte referenzieren.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Kaum ein Projekt kommt ohne fremde Bibliotheken aus: ein Test-Framework wie xUnit, ein Datenbanktreiber, ein Logging-Paket. Diese Abhängigkeiten von Hand als DLL-Dateien zu kopieren, führt ins Chaos – welche Version war das, und was braucht die DLL selbst? Ein Paketmanager löst das. In .NET ist das NuGet, die zentrale öffentliche Paketquelle ist nuget.org."
+    },
+    {
+      "type": "code",
+      "content": "dotnet add package Newtonsoft.Json\n# trägt in die .csproj ein:\n<ItemGroup>\n  <PackageReference\n    Include=\"Newtonsoft.Json\"\n    Version=\"13.0.3\" />\n</ItemGroup>"
+    },
+    {
+      "type": "text",
+      "content": "Die Versionsnummer im Beispiel ist nur zur Veranschaulichung – dotnet add package trägt die aktuelle Version ein. Beim Build führt dotnet automatisch ein restore durch: Die Pakete werden heruntergeladen und in einem globalen Cache im Benutzerordner (~/.nuget/packages) abgelegt, nicht im Projektordner. Darum reicht es, die .csproj ins Repository einzuchecken."
+    },
+    {
+      "type": "text",
+      "content": "Die meisten Pakete verwenden Semantic Versioning (SemVer): MAJOR.MINOR.PATCH. PATCH (13.0.2 → 13.0.3) = Fehlerbehebung, MINOR (13.0 → 13.1) = neue Funktionen, abwärtskompatibel, MAJOR (13 → 14) = inkompatible Änderungen, dein Code muss eventuell angepasst werden. Achtung: Version=\"13.0.3\" bedeutet in NuGet „mindestens 13.0.3“, nicht „genau 13.0.3“."
+    },
+    {
+      "type": "code",
+      "content": "Version=\"13.0.3\"   ≥ 13.0.3\nVersion=\"[13.0.3]\" genau 13.0.3\nVersion=\"[1.0,2.0)\"\n            ≥ 1.0 und < 2.0\nVersion=\"13.*\"     höchste 13.x"
+    },
+    {
+      "type": "text",
+      "content": "Ein Paket hat oft selbst Abhängigkeiten – diese transitiven Abhängigkeiten holt NuGet automatisch mit. Mit dotnet list package --include-transitive siehst du den ganzen Baum, --outdated zeigt veraltete und --vulnerable Pakete mit bekannten Sicherheitslücken. Für wirklich reproduzierbare Builds kann man eine Lock-Datei erzwingen: Mit <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile> in der .csproj entsteht packages.lock.json mit den exakt aufgelösten Versionen; dotnet restore --locked-mode bricht ab, wenn sich etwas geändert hat."
+    },
+    {
+      "type": "text",
+      "content": "Abhängigkeiten zwischen eigenen Projekten sind keine Pakete, sondern Projektreferenzen. Die Konsolenanwendung verwendet z. B. die Klassenbibliothek NotenLib aus derselben Solution; MSBuild baut dann automatisch zuerst NotenLib."
+    },
+    {
+      "type": "code",
+      "content": "cd Notenrechner\ndotnet add reference ../NotenLib\n# in Notenrechner.csproj:\n<ItemGroup>\n  <ProjectReference\n    Include=\"..\\NotenLib\\NotenLib.csproj\"\n    />\n</ItemGroup>"
+    },
+    {
+      "type": "text",
+      "content": "Woher die Pakete kommen, steht in einer nuget.config. Schulen und Firmen verwenden dort oft eine eigene, interne Paketquelle oder sperren nuget.org – dann schlägt dotnet add package mit einem Restore-Fehler fehl. Typische Fehler: Pakete „nur zum Ausprobieren“ hinzufügen und nie entfernen; MAJOR-Updates blind übernehmen; Sicherheitswarnungen ignorieren. Zusammenfassung: PackageReference für fremde Pakete, ProjectReference für eigene Projekte, Versionen bewusst wählen und mit dotnet list package regelmäßig prüfen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was bedeutet in einer PackageReference die Angabe Version=\"2.1.0\"?",
+      "options": [
+        "Genau Version 2.1.0",
+        "Mindestens Version 2.1.0",
+        "Höchstens Version 2.1.0",
+        "Irgendeine Version 2.x"
+      ],
+      "correctIndex": 1,
+      "explanation": "In NuGet ist eine einfache Versionsangabe eine Untergrenze. Für genau eine Version schreibt man [2.1.0]."
+    },
+    {
+      "question": "Ein Paket springt von 4.2.7 auf 5.0.0. Was sagt das laut Semantic Versioning aus?",
+      "options": [
+        "Nur Fehlerbehebungen",
+        "Neue Funktionen, voll abwärtskompatibel",
+        "Es kann inkompatible Änderungen geben",
+        "Die Version ist eine Vorabversion"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine neue MAJOR-Version zeigt inkompatible Änderungen an. Vor dem Update solltest du die Änderungsliste lesen und testen."
+    },
+    {
+      "question": "Welche Versionen erlaubt Version=\"[1.0,2.0)\"?",
+      "options": [
+        "1.0 bis einschließlich 2.0",
+        "Nur 1.0 und 2.0",
+        "Über 1.0 und bis einschließlich 2.0",
+        "1.0 bis ausschließlich 2.0"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eckige Klammer = inklusive, runde Klammer = exklusive. Erlaubt ist also ≥ 1.0 und < 2.0."
+    },
+    {
+      "question": "Wie bindest du die eigene Klassenbibliothek NotenLib aus derselben Solution in dein Konsolenprojekt ein?",
+      "options": [
+        "dotnet add reference ../NotenLib",
+        "dotnet add package NotenLib",
+        "Die DLL in den bin-Ordner kopieren",
+        "using NotenLib; reicht ohne weitere Schritte"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eigene Projekte verbindest du mit einer ProjectReference. MSBuild baut dann die Bibliothek automatisch mit. Ein using allein findet die Klassen nicht."
+    }
+  ]
+}

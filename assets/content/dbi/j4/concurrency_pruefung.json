@@ -1,0 +1,120 @@
+{
+  "id": "dbi-j4-concurrency_pruefung",
+  "title": "Abschlussprüfung: Mehrbenutzerbetrieb & Concurrency Control",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Anomalie liegt vor?",
+      "code": "r1(x) w2(x) c2 r1(x) c1",
+      "options": [
+        "Lost Update",
+        "Dirty Read",
+        "Phantom",
+        "Non-Repeatable Read"
+      ],
+      "correctIndex": 3,
+      "explanation": "T1 liest x zweimal; dazwischen schreibt T2 x und committet. T1 sieht zwei verschiedene Werte derselben Zeile."
+    },
+    {
+      "question": "Eine Webapp liest den Lagerstand (SELECT), rechnet in Python -1 und schreibt den Wert mit UPDATE … SET stand = <neuer Wert> zurück. Was verhindert Lost Updates zuverlässig, ohne das Isolationslevel zu ändern?",
+      "options": [
+        "Ein Index auf stand",
+        "SELECT … FOR UPDATE beim Lesen",
+        "Ein zusätzliches COMMIT nach dem SELECT",
+        "READ UNCOMMITTED"
+      ],
+      "correctIndex": 1,
+      "explanation": "FOR UPDATE sperrt die Zeile bis zum Transaktionsende. Eine zweite Transaktion wartet beim Lesen, bis die erste fertig ist, und liest dann den neuen Wert."
+    },
+    {
+      "question": "Welchen Konfliktgraphen hat der Schedule?",
+      "code": "r2(x) w1(x) w1(y) r3(y) w3(z) r2(z)",
+      "options": [
+        "T1 → T2 und T2 → T3",
+        "Keine Kanten",
+        "T2 → T1, T1 → T3, T3 → T2 (Zyklus)",
+        "T1 → T3 und T2 → T3"
+      ],
+      "correctIndex": 2,
+      "explanation": "r2(x) vor w1(x): T2 → T1. w1(y) vor r3(y): T1 → T3. w3(z) vor r2(z): T3 → T2. Das ergibt einen Zyklus, also nicht konfliktserialisierbar."
+    },
+    {
+      "question": "Zu welchem seriellen Schedule ist der folgende äquivalent?",
+      "code": "r1(x) w2(y) w1(y) r3(x) w3(z)",
+      "options": [
+        "T2, T1, T3",
+        "T1, T2, T3",
+        "T3, T2, T1",
+        "Zu keinem"
+      ],
+      "correctIndex": 0,
+      "explanation": "Einziger Konflikt: w2(y) vor w1(y) ergibt T2 → T1. T3 hat keine Konflikte und kann beliebig eingereiht werden – T2, T1, T3 passt."
+    },
+    {
+      "question": "Was unterscheidet striktes 2PL vom einfachen 2PL?",
+      "options": [
+        "Striktes 2PL verwendet keine Lesesperren.",
+        "Striktes 2PL erlaubt neue Sperren nach einer Freigabe.",
+        "Striktes 2PL verhindert alle Deadlocks.",
+        "Bei striktem 2PL werden Schreibsperren erst bei COMMIT/ROLLBACK freigegeben."
+      ],
+      "correctIndex": 3,
+      "explanation": "Weil Schreibsperren bis zum Ende gehalten werden, kann niemand uncommittete Werte lesen; kaskadierende Abbrüche werden vermieden. Deadlocks sind weiterhin möglich."
+    },
+    {
+      "question": "Zwei Programme buchen Geld zwischen Konten um. Programm 1 sperrt erst Konto A, dann B; Programm 2 erst B, dann A. Was ist die einfachste Abhilfe gegen die auftretenden Deadlocks?",
+      "options": [
+        "Isolationslevel auf READ UNCOMMITTED senken",
+        "Beide sperren die Konten immer in derselben Reihenfolge (z. B. nach Kontonummer).",
+        "Mehr Arbeitsspeicher",
+        "Die Fremdschlüssel entfernen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine feste, globale Sperrreihenfolge verhindert den Zyklus im Wartegraphen."
+    },
+    {
+      "question": "Was macht PostgreSQL, wenn es einen Deadlock erkennt?",
+      "options": [
+        "Es bricht eine der beteiligten Transaktionen mit „deadlock detected“ ab; die andere läuft weiter.",
+        "Es wartet unbegrenzt.",
+        "Es bricht beide ab.",
+        "Es committet beide Transaktionen."
+      ],
+      "correctIndex": 0,
+      "explanation": "Das DBMS findet den Zyklus im Wartegraphen und wählt ein Opfer. Die Anwendung sollte die abgebrochene Transaktion wiederholen."
+    },
+    {
+      "question": "Welche Aussage über PostgreSQL ist richtig?",
+      "options": [
+        "Mit READ UNCOMMITTED sind Dirty Reads möglich.",
+        "SERIALIZABLE ist der Standard.",
+        "REPEATABLE READ verhindert dort auch Phantome, weil die Transaktion einen festen Snapshot sieht.",
+        "Leser blockieren immer Schreiber."
+      ],
+      "correctIndex": 2,
+      "explanation": "Durch MVCC liest eine REPEATABLE-READ-Transaktion immer denselben Snapshot, also tauchen keine neuen Zeilen auf. READ UNCOMMITTED verhält sich wie READ COMMITTED; Standard ist READ COMMITTED."
+    },
+    {
+      "question": "Ein Bericht soll Summen aus mehreren Abfragen bilden, die zueinander passen müssen, während parallel Noten eingetragen werden. Welches Level ist mindestens sinnvoll?",
+      "options": [
+        "REPEATABLE READ",
+        "READ COMMITTED",
+        "READ UNCOMMITTED",
+        "Keines, Berichte sind immer konsistent"
+      ],
+      "correctIndex": 0,
+      "explanation": "Unter READ COMMITTED sieht jede Abfrage einen anderen Stand, die Summen passen dann eventuell nicht zusammen. REPEATABLE READ liefert einen gemeinsamen Snapshot."
+    },
+    {
+      "question": "Zwei Transaktionen in REPEATABLE READ verringern in PostgreSQL gleichzeitig denselben Kassastand. Die erste committet. Was passiert mit dem UPDATE der zweiten?",
+      "options": [
+        "Es überschreibt den Wert der ersten (Lost Update).",
+        "Es rechnet mit dem neuen Wert weiter.",
+        "Es scheitert mit „could not serialize access due to concurrent update“.",
+        "Es wartet unbegrenzt."
+      ],
+      "correctIndex": 2,
+      "explanation": "Die zweite Transaktion würde eine Zeile ändern, die seit ihrem Snapshot geändert wurde. PostgreSQL bricht sie ab, statt einen Lost Update zuzulassen."
+    }
+  ]
+}

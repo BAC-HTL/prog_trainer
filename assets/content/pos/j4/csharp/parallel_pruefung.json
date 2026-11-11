@@ -1,0 +1,119 @@
+{
+  "id": "pos-j4-csharp-parallel_pruefung",
+  "title": "Abschlussprüfung: Parallele Programmierung & Reflection",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Programm ist zu 75 % parallelisierbar und läuft auf 3 Kernen. Wie groß sind Speedup S und Effizienz E nach Amdahl?",
+      "options": [
+        "S = 3.00, E = 1.00",
+        "S = 2.25, E = 0.75",
+        "S = 2.00, E ≈ 0.67",
+        "S = 1.33, E ≈ 0.44"
+      ],
+      "correctIndex": 2,
+      "explanation": "S = 1 / (0.25 + 0.75/3) = 1 / (0.25 + 0.25) = 2. E = S / n = 2 / 3 ≈ 0.67."
+    },
+    {
+      "question": "Ein Programm braucht sequenziell 100 s, davon sind 10 s nicht parallelisierbar. Wie lange dauert es nach Amdahl mit 9 Kernen mindestens?",
+      "options": [
+        "11.1 s",
+        "10 s",
+        "20 s",
+        "19 s"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der sequenzielle Teil bleibt 10 s, der parallele Teil 90 s wird durch 9 geteilt: 10 s. Insgesamt 10 + 10 = 20 s (Speedup 5)."
+    },
+    {
+      "question": "Welche Aussage zu PLINQ ist richtig?",
+      "options": [
+        "AsParallel garantiert, dass die Ergebnisse in der ursprünglichen Reihenfolge kommen",
+        "Ohne AsOrdered ist die Reihenfolge der Ergebnisse nicht garantiert",
+        "PLINQ funktioniert nur mit Arrays",
+        "PLINQ ist immer schneller als normales LINQ"
+      ],
+      "correctIndex": 1,
+      "explanation": "PLINQ verarbeitet Teile parallel; die Reihenfolge bleibt nur mit AsOrdered erhalten. Bei kleinen Datenmengen ist der Verwaltungsaufwand oft größer als der Gewinn."
+    },
+    {
+      "question": "Wofür ist Parallel.For gut geeignet?",
+      "options": [
+        "Viele unabhängige, rechenintensive Berechnungen, z. B. Bildpixel einzeln filtern",
+        "Auf eine Benutzereingabe warten",
+        "Mehrere Webseiten abrufen, die je 2 s Antwortzeit haben",
+        "Eine Datei Zeile für Zeile in fester Reihenfolge ausgeben"
+      ],
+      "correctIndex": 0,
+      "explanation": "Parallel.For ist für CPU-lastige Datenparallelität gedacht. Wartevorgänge (I/O) löst man besser mit async Tasks und Task.WhenAll; feste Reihenfolge widerspricht der Parallelität."
+    },
+    {
+      "question": "Wie viele Methoden liefert t.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly) für diese Klasse?",
+      "code": "class Person\n{\n  public string Name { get; set; }\n      = \"\";\n  public int Alter { get; set; }\n  public string Gruss() => \"Hi\";\n}",
+      "options": [
+        "1",
+        "3",
+        "5",
+        "7"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zwei Properties ergeben je get_ und set_ (4 Methoden), dazu kommt Gruss: 5. Durch DeclaredOnly fehlen die von object geerbten Methoden."
+    },
+    {
+      "question": "Wie heißt die Klasse für ein eigenes Attribut, das als [Spalte(\"vorname\")] verwendet wird, und wovon erbt sie?",
+      "options": [
+        "Spalte, erbt von object",
+        "SpalteAttribute, erbt von Attribute",
+        "SpalteAnnotation, erbt von Type",
+        "Spalte, erbt von MethodInfo"
+      ],
+      "correctIndex": 1,
+      "explanation": "Per Konvention endet der Name auf Attribute, das Suffix darf beim Verwenden weggelassen werden. Basisklasse ist System.Attribute; der Konstruktor nimmt hier den string entgegen."
+    },
+    {
+      "question": "Welche Aussage zu Reflection ist FALSCH?",
+      "options": [
+        "Frameworks wie xUnit finden Testmethoden über Reflection",
+        "Reflection-Aufrufe sind langsamer als direkte Aufrufe",
+        "Tippfehler in Methodennamen meldet der Compiler sofort",
+        "Mit Activator.CreateInstance erzeugt man Objekte aus einem Type"
+      ],
+      "correctIndex": 2,
+      "explanation": "Methodennamen werden bei Reflection als string übergeben – der Compiler kann sie nicht prüfen. Ein Tippfehler fällt erst zur Laufzeit auf (GetMethod liefert null)."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "IEnumerable<long> Quadrate()\n{\n  for (long i = 1; ; i++)\n    yield return i * i;\n}\nConsole.WriteLine(string.Join(\",\",\n  Quadrate()\n    .Where(q => q % 2 == 1)\n    .Take(3)));",
+      "options": [
+        "1,9,25",
+        "1,4,9",
+        "Endlosschleife",
+        "1,3,5"
+      ],
+      "correctIndex": 0,
+      "explanation": "Quadrate ist unendlich, aber verzögert: Take(3) fordert nur so viele Elemente an, bis drei ungerade Quadrate gefunden sind: 1, 9, 25."
+    },
+    {
+      "question": "Was ist beim Verarbeiten einer 20-GB-CSV-Datei am sinnvollsten?",
+      "options": [
+        "File.ReadAllLines(pfad).ToList()",
+        "File.ReadAllText(pfad).Split('\\n')",
+        "Die Datei in ein string-Array kopieren und dann sortieren",
+        "File.ReadLines(pfad) mit einer yield-Pipeline, die jede Zeile sofort verarbeitet"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur zeilenweises Streaming hält den Speicherverbrauch klein. Die anderen Varianten laden die ganze Datei in den Arbeitsspeicher."
+    },
+    {
+      "question": "Wie viele Arrays liefert Enumerable.Range(1, 2500).Chunk(1000), und wie groß ist das letzte?",
+      "options": [
+        "2 Arrays, das letzte hat 1500 Elemente",
+        "3 Arrays, das letzte hat 500 Elemente",
+        "3 Arrays, alle mit 1000 Elementen",
+        "2 Arrays mit je 1250 Elementen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Chunk teilt in Blöcke zu höchstens 1000 Elementen: 1000, 1000 und ein letzter Block mit den restlichen 500."
+    }
+  ]
+}

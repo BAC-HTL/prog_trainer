@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-governance_02_it_service_management_itil",
+ "title": "IT-Service-Management mit ITIL",
+ "summary": "IT-Services, Service Desk sowie Incident, Problem und Change nach ITIL unterscheiden.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "IT-Service-Management (ITSM) versteht die IT als Dienstleister für ihre Kund:innen. Ein IT-Service ist ein Paket, das Nutzen stiftet, ohne dass der Kunde Technik, Kosten und Risiken selbst tragen muss. Beispiel „E-Mail für Lehrkräfte“: Postfach, Server, Spamfilter, Backup und Support gehören dazu. Alle angebotenen Services stehen im Servicekatalog."
+  },
+  {
+   "type": "text",
+   "content": "ITIL ist die bekannteste Sammlung bewährter Praktiken (Best Practices) für ITSM und stammt ursprünglich aus Großbritannien. ITIL ist keine Norm und wird nicht 1:1 umgesetzt, sondern angepasst. Neuere Ausgaben sprechen von Practices statt Prozessen und betonen die gemeinsame Wertschöpfung mit dem Kunden. Zertifizieren lassen kann sich eine Organisation nach der Norm ISO/IEC 20000, Personen über ITIL-Zertifikate."
+  },
+  {
+   "type": "text",
+   "content": "Der Service Desk ist der zentrale Ansprechpunkt (Single Point of Contact, SPOC) für alle Anwender:innen – per Telefon, Portal oder E-Mail. Er erfasst jede Meldung als Ticket, löst einfache Fälle selbst und leitet den Rest weiter. Neben Störungen landen dort Service Requests: Standardanfragen wie „neues Passwort“ oder „Software X installieren“, die keine Störung sind."
+  },
+  {
+   "type": "code",
+   "content": "Support-Stufen\n\nAnwender:in\n    |\n[1st Level] Service Desk\n    |  nicht lösbar\n    v\n[2nd Level] Fachteams\n    |  (Netzwerk, Server …)\n    v\n[3rd Level] Hersteller,\n            Entwicklung"
+  },
+  {
+   "type": "text",
+   "content": "Ein Incident ist eine ungeplante Unterbrechung oder Qualitätsminderung eines Services, z. B. „Drucker im EDV-Saal druckt nicht“. Ziel des Incident Managements ist, den Service so schnell wie möglich wiederherzustellen – ein Workaround (Umgehungslösung) ist dabei völlig in Ordnung. Ablauf: erfassen, kategorisieren, priorisieren, diagnostizieren, ggf. eskalieren, lösen, schließen."
+  },
+  {
+   "type": "code",
+   "content": "Priorität = Auswirkung × Dringlichkeit\n\n            Dringlichkeit\nAuswirkung  hoch  mittel  niedrig\nhoch         1      2       3\nmittel       2      3       4\nniedrig      3      4       5\n\nPrio 1 = höchste Priorität"
+  },
+  {
+   "type": "text",
+   "content": "Ein Problem ist die (unbekannte) Ursache eines oder mehrerer Incidents. Problem Management sucht die Grundursache (Root Cause) und beseitigt sie dauerhaft. Ist die Ursache gefunden, aber noch nicht behoben, spricht man von einem Known Error; er wird mit Workaround in einer Known Error Database dokumentiert, damit der Service Desk künftige Incidents schneller löst."
+  },
+  {
+   "type": "text",
+   "content": "Ein Change ist das Hinzufügen, Ändern oder Entfernen von etwas, das Services beeinflussen kann. ITIL unterscheidet Standard Changes (risikoarm, vorab genehmigt, z. B. freigegebene Software installieren), Normal Changes (werden bewertet und genehmigt, bei Bedarf mit einem Change Advisory Board, CAB) und Emergency Changes (müssen sofort umgesetzt werden, beschleunigte Freigabe)."
+  },
+  {
+   "type": "text",
+   "content": "Ein Fall: Am Montag melden 30 Schüler:innen „kein WLAN im 2. Stock“ – das sind 30 Tickets zu einem großen Incident; der Service Desk verknüpft sie. Workaround: Klassen in Räume mit funktionierendem WLAN verlegen. Problem Management findet als Ursache eine fehlerhafte Firmware der Access Points. Behoben wird sie über einen Change: Firmware-Update im Wartungsfenster. Typischer Fehler: nach dem Workaround das Problem für erledigt halten."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Ein IT-Service bündelt Technik und Support zu Kundennutzen. Der Service Desk ist SPOC und nimmt Incidents und Service Requests an. Incident Management stellt schnell wieder her, Problem Management beseitigt Ursachen (Known Error mit Workaround), Change Management steuert Änderungen als Standard-, Normal- oder Emergency Change. Priorität ergibt sich aus Auswirkung und Dringlichkeit."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Eine Schülerin meldet: „Ich habe mein Passwort vergessen.“ Was ist das nach ITIL?",
+   "options": [
+    "Ein Problem",
+    "Ein Emergency Change",
+    "Ein Service Request",
+    "Ein Known Error"
+   ],
+   "correctIndex": 2,
+   "explanation": "Ein Passwort-Reset ist eine Standardanfrage, keine Störung eines Services – also ein Service Request."
+  },
+  {
+   "question": "Ein Incident hat mittlere Auswirkung und hohe Dringlichkeit. Welche Priorität ergibt die Matrix der Lektion?",
+   "options": [
+    "Prio 2",
+    "Prio 1",
+    "Prio 3",
+    "Prio 4"
+   ],
+   "correctIndex": 0,
+   "explanation": "Zeile „mittel“, Spalte „hoch“ ergibt Prio 2."
+  },
+  {
+   "question": "Was ist das Ziel des Incident Managements?",
+   "options": [
+    "Die Grundursache dauerhaft beseitigen",
+    "Den Service möglichst schnell wiederherstellen, notfalls mit Workaround",
+    "Änderungen genehmigen",
+    "Den Servicekatalog schreiben"
+   ],
+   "correctIndex": 1,
+   "explanation": "Incident Management stellt den Betrieb wieder her. Die Ursache dauerhaft zu beheben ist Aufgabe des Problem Managements."
+  },
+  {
+   "question": "Die Ursache wiederkehrender Abstürze ist gefunden, ein Workaround ist dokumentiert, die endgültige Lösung steht noch aus. Wie nennt man das?",
+   "options": [
+    "Service Request",
+    "Standard Change",
+    "Major Incident",
+    "Known Error"
+   ],
+   "correctIndex": 3,
+   "explanation": "Ein Known Error ist ein Problem mit bekannter Ursache (meist mit Workaround), das noch nicht behoben ist."
+  }
+ ]
+}

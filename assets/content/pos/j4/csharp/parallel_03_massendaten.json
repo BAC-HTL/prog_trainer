@@ -1,0 +1,91 @@
+{
+  "id": "pos-j4-csharp-parallel_03_massendaten",
+  "title": "Massendaten verarbeiten",
+  "summary": "Mit IEnumerable, yield return und Streaming verarbeitest du Daten, die nicht in den Speicher passen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Wetterstation an der Schule schreibt jede Sekunde einen Messwert in eine CSV-Datei – nach einem Jahr sind das über 30 Millionen Zeilen. File.ReadAllLines würde alle Zeilen auf einmal als string-Array in den Arbeitsspeicher laden. Bei großen Dateien wird das langsam oder scheitert mit einer OutOfMemoryException. Die Lösung heißt Streaming: Daten Stück für Stück lesen, verarbeiten und wieder vergessen."
+    },
+    {
+      "type": "text",
+      "content": "Die Grundlage in C# ist IEnumerable<T>: eine Folge, die man Element für Element durchlaufen kann, ohne dass alle Elemente gleichzeitig existieren müssen. Mit yield return schreibst du solche Folgen selbst. Die Methode wird dabei nicht auf einmal ausgeführt, sondern pausiert bei jedem yield return und läuft erst weiter, wenn das nächste Element angefordert wird (verzögerte Ausführung, „lazy evaluation“)."
+    },
+    {
+      "type": "code",
+      "content": "IEnumerable<int> Zahlen()\n{\n  Console.WriteLine(\"Start\");\n  for (int i = 1; i <= 3; i++)\n  {\n    Console.WriteLine($\"liefere {i}\");\n    yield return i;\n  }\n}\nvar z = Zahlen();\nConsole.WriteLine(\"vor foreach\");\nforeach (var x in z)\n  Console.WriteLine($\"bekomme {x}\");"
+    },
+    {
+      "type": "code",
+      "content": "vor foreach\nStart\nliefere 1\nbekomme 1\nliefere 2\nbekomme 2\nliefere 3\nbekomme 3"
+    },
+    {
+      "type": "text",
+      "content": "Beachte: „Start“ erscheint erst nach „vor foreach“ – der Aufruf Zahlen() allein führt noch keinen Code aus. Weil nur angefordert wird, was gebraucht wird, sind sogar unendliche Folgen möglich: Eine Methode, die mit for (long i = 1; ; i++) yield return i * i; alle Quadratzahlen liefert, funktioniert problemlos mit .Where(q => q % 2 == 1).Take(3) und ergibt 1, 9, 25."
+    },
+    {
+      "type": "text",
+      "content": "Für Dateien gibt es File.ReadLines: Im Gegensatz zu ReadAllLines liefert es ein IEnumerable<string> und liest die Datei zeilenweise beim Durchlaufen. Kombiniert mit einer eigenen yield-Methode und LINQ entsteht eine Pipeline, bei der immer nur eine Zeile im Speicher ist – egal wie groß die Datei ist."
+    },
+    {
+      "type": "code",
+      "content": "IEnumerable<double> LeseWerte(\n    string pfad)\n{\n  foreach (var zeile in File\n      .ReadLines(pfad).Skip(1))\n  {\n    var t = zeile.Split(';');\n    if (double.TryParse(t[1],\n          out double w))\n      yield return w;\n  }\n}\n// 1 000 000 Zeilen, Werte 20–29:\nvar werte = LeseWerte(\"mess.csv\");\nConsole.WriteLine(werte.Average());\n// 24.5"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: mehrfaches Aufzählen. werte.Average() und danach werte.Max() lesen die Datei zweimal komplett, weil jede Aufzählung die yield-Methode neu startet. Bei kleinen Ergebnissen hilft .ToList() (einmal lesen, dann im Speicher); bei riesigen Daten berechnest du besser alles in einem Durchlauf. Umgekehrt ist ein unbedachtes .ToList() auf die ganze Datei genau das, was Streaming verhindern soll. Für Datenbank-Inserts in Blöcken teilt .Chunk(1000) eine Folge in Arrays zu je 1000 Elementen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: IEnumerable<T> + yield return = verzögerte, speichersparende Verarbeitung. File.ReadLines statt ReadAllLines bei großen Dateien. LINQ-Methoden wie Where, Select und Take arbeiten ebenfalls verzögert, erst foreach, Count, Sum oder ToList lösen die Ausführung aus. Achte auf mehrfaches Aufzählen. Für rechenintensive Schritte lässt sich die Pipeline mit AsParallel aus Lektion 1 kombinieren."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt der Code aus? (Zahlen() wie oben, Zeilen hier durch Beistriche getrennt)",
+      "code": "Console.WriteLine(Zahlen().First());",
+      "options": [
+        "Start, liefere 1, 1",
+        "1",
+        "Start, 1",
+        "Start, liefere 1, liefere 2, liefere 3, 1"
+      ],
+      "correctIndex": 0,
+      "explanation": "First() fordert nur das erste Element an. Die Methode läuft bis zum ersten yield return und pausiert dort – liefere 2 und 3 werden nie ausgeführt."
+    },
+    {
+      "question": "Warum ist File.ReadLines für eine 5-GB-Logdatei besser als File.ReadAllLines?",
+      "options": [
+        "ReadLines liest die Datei schneller in ein Array",
+        "ReadLines liest zeilenweise beim Durchlaufen, statt alles auf einmal in den Speicher zu laden",
+        "ReadAllLines kann keine Textdateien lesen",
+        "ReadLines komprimiert die Datei"
+      ],
+      "correctIndex": 1,
+      "explanation": "ReadAllLines erzeugt ein Array mit allen Zeilen, ReadLines ein IEnumerable<string>, das immer nur die aktuelle Zeile im Speicher hält."
+    },
+    {
+      "question": "Was gibt der Code aus? Teuer() erhöht beim Start aufrufe und liefert per yield die Werte 1 und 2; aufrufe ist anfangs 0.",
+      "code": "var e = Teuer();\nConsole.WriteLine(\n  $\"{e.Count()} {e.Sum()} {aufrufe}\");",
+      "options": [
+        "2 3 1",
+        "2 3 0",
+        "2 3 2",
+        "Kompilierfehler"
+      ],
+      "correctIndex": 2,
+      "explanation": "Count() und Sum() zählen die Folge jeweils neu auf – die Methode startet also zweimal, aufrufe ist danach 2."
+    },
+    {
+      "question": "Wann wird der Rumpf einer Methode mit yield return ausgeführt?",
+      "options": [
+        "Sofort beim Aufruf der Methode",
+        "Beim Kompilieren",
+        "Nur, wenn ToList() aufgerufen wird",
+        "Erst, wenn die Folge durchlaufen wird, Stück für Stück"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Aufruf liefert nur ein IEnumerable-Objekt. Der Code läuft erst beim Durchlaufen (foreach, LINQ-Methoden wie First, Count, ToList) – und nur so weit wie nötig."
+    }
+  ]
+}

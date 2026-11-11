@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-normalformen_01_business_rules",
+  "title": "Business Rules",
+  "summary": "Du erhebst Geschäftsregeln aus dem Schulalltag, formulierst sie eindeutig und entscheidest, wie die Datenbank sie durchsetzt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bevor du eine Tabelle anlegst, musst du wissen, welche Regeln in der Wirklichkeit gelten. Solche Regeln heißen Business Rules (Geschäftsregeln). Beispiele aus der Schule: „Jede:r Schüler:in gehört genau einer Klasse an.“, „Eine Note liegt zwischen 1 und 5.“, „Jede Klasse hat genau einen Klassenvorstand.“ Das Datenmodell ist nur so gut wie die Regeln, auf denen es aufbaut."
+    },
+    {
+      "type": "text",
+      "content": "Business Rules findest du in Gesprächen mit den Anwender:innen (z. B. Sekretariat, Administration), in Formularen und Ausdrucken (Zeugnis, Stundenplan), in Vorschriften und in bestehenden Programmen. Wichtig: Frag nach! Die Person im Sekretariat weiß, dass ein Kind die Klasse wechseln kann – das siehst du an keinem Formular."
+    },
+    {
+      "type": "text",
+      "content": "Man unterscheidet grob vier Arten:\n• Strukturregeln: Welche Dinge gibt es, wie hängen sie zusammen? („Eine Klasse hat viele Schüler:innen.“)\n• Wertebereichsregeln: Welche Werte sind erlaubt? („Note 1 bis 5“)\n• Ableitungsregeln: Wie wird ein Wert berechnet? („Notenschnitt = Mittelwert aller Noten“)\n• Aktionsregeln: Was passiert, wenn …? („Wird eine Note 5 eingetragen, bekommt der KV eine Nachricht.“)"
+    },
+    {
+      "type": "code",
+      "content": "Schlecht:\n  „Noten werden gespeichert.“\n\nGut (atomar, eindeutig, prüfbar):\n  R1: Ein:e Schüler:in hat pro Fach\n      und Semester höchstens eine\n      Zeugnisnote.\n  R2: Eine Zeugnisnote ist eine\n      ganze Zahl von 1 bis 5.\n  R3: Jede Zeugnisnote gehört zu\n      genau einer/einem Schüler:in."
+    },
+    {
+      "type": "text",
+      "content": "Eine gute Regel ist atomar (eine Aussage), eindeutig (keine Wörter wie „meistens“ oder „normalerweise“) und überprüfbar. Formuliere sie in der Sprache der Anwender:innen, nicht in SQL – so kann das Sekretariat bestätigen, ob sie stimmt. Nummeriere die Regeln, damit du später im Modell darauf verweisen kannst."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE zeugnisnote (\n  sch_nr   INTEGER\n    REFERENCES schueler,     -- R3\n  fach     TEXT,\n  semester INTEGER\n    CHECK (semester\n      BETWEEN 1 AND 10),\n  note     INTEGER NOT NULL\n    CHECK (note\n      BETWEEN 1 AND 5),       -- R2\n  PRIMARY KEY\n    (sch_nr, fach, semester) -- R1\n);"
+    },
+    {
+      "type": "code",
+      "content": "INSERT INTO zeugnisnote\n  VALUES (1, 'DBI', 7, 6);\n-- CHECK constraint failed:\n--   note BETWEEN 1 AND 5\n\nINSERT INTO zeugnisnote\n  VALUES (1, 'DBI', 7, 1);\n-- (Note 2 existiert schon)\n-- UNIQUE constraint failed:\n--   zeugnisnote.sch_nr, ..."
+    },
+    {
+      "type": "text",
+      "content": "Viele Regeln setzt die Datenbank selbst durch: Schlüssel, NOT NULL, UNIQUE, CHECK und Fremdschlüssel (deklarativ). Andere lassen sich so nicht ausdrücken, z. B. „Eine Klasse hat höchstens 36 Schüler:innen“ – dafür brauchst du einen Trigger oder eine Prüfung in der Anwendung. Ableitungsregeln speicherst du meist gar nicht, sondern berechnest sie in einer View. Faustregel: Je näher an den Daten, desto sicherer – eine Regel nur in der App gilt nicht für das nächste Skript, das direkt schreibt."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Regeln aus Beispieldaten „erraten“ (nur weil in der Testliste alle Namen verschieden sind, ist der Name noch lange nicht eindeutig), schwammige Formulierungen und vergessene Ausnahmen (Klassenwechsel, Wiederholung). Regeln wie „Jede Klasse hat genau einen KV“ werden in der nächsten Lektion zu funktionalen Abhängigkeiten: klasse → kv."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Business Rules beschreiben, was in der Realität gilt. Formuliere sie atomar, eindeutig und prüfbar, lass sie von den Anwender:innen bestätigen und setze sie möglichst deklarativ in der Datenbank um (Schlüssel, Constraints), sonst mit Triggern oder in der Anwendung."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "„Der Notenschnitt einer Schülerin ist der Mittelwert all ihrer Zeugnisnoten.“ Welche Art von Business Rule ist das?",
+      "options": [
+        "Strukturregel",
+        "Wertebereichsregel",
+        "Aktionsregel",
+        "Ableitungsregel"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Regel sagt, wie ein Wert aus anderen berechnet wird – eine Ableitungsregel. Solche Werte berechnet man meist in einer View statt sie zu speichern."
+    },
+    {
+      "question": "Welche Formulierung ist als Business Rule am besten geeignet?",
+      "options": [
+        "Klassen haben normalerweise einen KV.",
+        "Jede Klasse hat genau eine Lehrkraft als Klassenvorstand.",
+        "Der KV wird irgendwo gespeichert.",
+        "KV ist eine Spalte vom Typ VARCHAR."
+      ],
+      "correctIndex": 1,
+      "explanation": "Sie ist atomar, eindeutig und prüfbar. „Normalerweise“ ist schwammig, „irgendwo gespeichert“ sagt nichts aus, und eine Spaltendefinition ist schon SQL statt Fachsprache."
+    },
+    {
+      "question": "Was passiert bei diesem INSERT, wenn für Schüler 1 in DBI im Semester 7 schon eine Note existiert?",
+      "code": "-- PRIMARY KEY (sch_nr, fach, semester)\n-- CHECK (note BETWEEN 1 AND 5)\nINSERT INTO zeugnisnote\n  VALUES (1, 'DBI', 7, 3);",
+      "options": [
+        "Die alte Note wird überschrieben.",
+        "Es entsteht ein zweiter Datensatz.",
+        "Der INSERT schlägt wegen des Primärschlüssels fehl.",
+        "Der INSERT schlägt wegen des CHECK fehl."
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Primärschlüssel (sch_nr, fach, semester) setzt R1 durch: Die Kombination darf nur einmal vorkommen. Die Note 3 selbst erfüllt den CHECK."
+    },
+    {
+      "question": "„Eine Klasse hat höchstens 36 Schüler:innen.“ Wie setzt du das in einer relationalen Datenbank typischerweise durch?",
+      "options": [
+        "Mit einem Trigger (oder einer Prüfung in der Anwendung)",
+        "Mit einem CHECK auf der Spalte klasse",
+        "Mit UNIQUE auf klasse",
+        "Gar nicht – solche Regeln gehören nicht ins Modell"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein CHECK sieht nur die eigene Zeile, kann also nicht zählen, wie viele Zeilen zur Klasse gehören. Dafür brauchst du einen Trigger oder eine Prüfung in der Anwendung."
+    }
+  ]
+}

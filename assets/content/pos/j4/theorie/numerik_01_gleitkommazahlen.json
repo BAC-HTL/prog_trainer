@@ -1,0 +1,95 @@
+{
+  "id": "pos-j4-theorie-numerik_01_gleitkommazahlen",
+  "title": "Gleitkommazahlen nach IEEE 754",
+  "summary": "Wie Computer Kommazahlen als Vorzeichen, Exponent und Mantisse speichern – und warum 0.1 + 0.2 nicht 0.3 ergibt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Computer speichern reelle Zahlen fast immer als Gleitkommazahlen nach dem Standard IEEE 754. Die Idee ist die wissenschaftliche Schreibweise im Binärsystem: Wert = (−1)ˢ · 1,m · 2ᴱ. Gespeichert werden das Vorzeichenbit s, der Exponent und die Mantisse m (Nachkommastellen). Die führende 1 vor dem Komma wird bei normalisierten Zahlen nicht gespeichert (verstecktes Bit)."
+    },
+    {
+      "type": "code",
+      "content": "Format    Bits  Vorz. Exp. Mant. Bias\n─────────────────────────────────────\nsingle     32     1    8    23   127\ndouble     64     1   11    52  1023\n\nC#: float = single, double = double\nPython: float = double"
+    },
+    {
+      "type": "text",
+      "content": "Der Exponent wird mit einem Bias gespeichert, damit auch negative Exponenten ohne eigenes Vorzeichen auskommen: gespeichert = E + Bias. Nachgerechnet für −6,25 als single:\n• 6,25 = 110,01₂ = 1,1001₂ · 2²\n• Vorzeichen: 1 (negativ)\n• Exponent: 2 + 127 = 129 = 10000001₂\n• Mantisse: 1001, mit Nullen auf 23 Bit aufgefüllt"
+    },
+    {
+      "type": "code",
+      "content": "1 10000001 10010000000000000000000\n= 1100 0000 1100 1000 0000 …\n= 0xC0C80000\n\nimport struct\nstruct.pack(\">f\", -6.25).hex()\n# 'c0c80000'"
+    },
+    {
+      "type": "text",
+      "content": "Viele Dezimalbrüche haben im Binärsystem unendlich viele Stellen – so wie 1/3 = 0,333… im Dezimalsystem. 0,1 = 0,000110011001100…₂ (periodisch). Gespeichert wird nur die nächstgelegene darstellbare Zahl. Dieser kleine Rundungsfehler wird beim Rechnen sichtbar. Zahlen wie 0,5, 0,25 oder 0,75 (Zweierpotenz-Brüche) sind dagegen exakt."
+    },
+    {
+      "type": "code",
+      "content": "print(f\"{0.1:.20f}\")\n# 0.10000000000000000555\nprint(0.1 + 0.2)\n# 0.30000000000000004\nprint(0.1 + 0.2 == 0.3)   # False\nprint(0.5 + 0.25 == 0.75) # True\n\ns = 0.0\nfor i in range(10):\n    s += 0.1\nprint(s)   # 0.9999999999999999"
+    },
+    {
+      "type": "text",
+      "content": "Die Genauigkeit ist relativ, nicht absolut. Die Maschinengenauigkeit ε ist der Abstand von 1,0 zur nächstgrößeren double-Zahl: 2⁻⁵² ≈ 2,2 · 10⁻¹⁶. Das entspricht etwa 15–16 gültigen Dezimalstellen (single: etwa 7). Bei großen Zahlen werden die Abstände größer: Ab 2⁵³ sind nicht einmal mehr alle ganzen Zahlen darstellbar."
+    },
+    {
+      "type": "code",
+      "content": "import sys, math\nsys.float_info.epsilon\n# 2.220446049250313e-16\nsys.float_info.max\n# 1.7976931348623157e+308\n\nmath.ulp(1e16)       # 2.0\nprint(1e16 + 1 == 1e16)  # True\nprint(float(2**53) + 1\n      == float(2**53))   # True"
+    },
+    {
+      "type": "text",
+      "content": "Sonderwerte: Ist der Exponent ganz mit Einsen belegt, stellt die Zahl ±∞ (inf) oder NaN (Not a Number) dar, z. B. bei Überlauf oder 0.0/0.0 in C#. NaN ist zu nichts gleich, nicht einmal zu sich selbst – prüfe mit math.isnan bzw. double.IsNaN. Es gibt auch −0.0, das aber == 0.0 ist. Typischer C#-Fehler: double.Epsilon ist NICHT die Maschinengenauigkeit, sondern die kleinste positive double-Zahl (≈ 4,9 · 10⁻³²⁴). Für Geldbeträge verwendet man decimal (C#) bzw. Decimal (Python)."
+    },
+    {
+      "type": "code",
+      "content": "# Python\nprint(1e308 * 10)       # inf\nn = float(\"nan\")\nprint(n == n)           # False\nprint(math.isnan(n))    # True\n\n// C#\nConsole.WriteLine(0.0 / 0);  // NaN\nConsole.WriteLine(double.Epsilon);\n// 5E-324\nConsole.WriteLine(0.1m + 0.2m == 0.3m);\n// True (decimal)"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "6,25 = 1,1001₂ · 2². Welcher Wert steht im Exponentenfeld einer single-Zahl (Bias 127)?",
+      "options": [
+        "2",
+        "127",
+        "130",
+        "129"
+      ],
+      "correctIndex": 3,
+      "explanation": "Gespeichert wird E + Bias = 2 + 127 = 129 (10000001₂)."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "print(0.1 + 0.2 == 0.3)",
+      "options": [
+        "True",
+        "False",
+        "0.3",
+        "Einen TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "0,1 und 0,2 sind binär nicht exakt darstellbar. Die Summe ist 0.30000000000000004 und damit nicht gleich der gespeicherten 0.3."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "print(1e16 + 1 == 1e16)",
+      "options": [
+        "True",
+        "False",
+        "OverflowError",
+        "inf"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei 10¹⁶ beträgt der Abstand zwischen benachbarten double-Zahlen 2 (math.ulp(1e16) = 2.0). 1e16 + 1 wird daher wieder auf 1e16 gerundet."
+    },
+    {
+      "question": "Wie prüft man in Python korrekt, ob x den Wert NaN hat?",
+      "options": [
+        "x == float(\"nan\")",
+        "x is None",
+        "math.isnan(x)",
+        "x == 0"
+      ],
+      "correctIndex": 2,
+      "explanation": "NaN ist zu keinem Wert gleich, auch nicht zu sich selbst. x == float(\"nan\") ist daher immer False."
+    }
+  ]
+}

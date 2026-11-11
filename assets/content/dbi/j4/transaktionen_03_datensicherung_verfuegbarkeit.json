@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j4-transaktionen_03_datensicherung_verfuegbarkeit",
+  "title": "Datensicherung und Verfügbarkeit",
+  "summary": "Du planst Voll-, inkrementelle und differenzielle Sicherungen, verstehst Point-in-Time-Recovery und unterscheidest Backup von Replikation und Hochverfügbarkeit.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Gegen Medienfehler, versehentliches Löschen (DELETE ohne WHERE!), Ransomware oder Brand hilft nur eine Datensicherung (Backup) an einem anderen Ort. Zwei Kennzahlen helfen bei der Planung: RPO (Recovery Point Objective) – wie viele Daten darf ich höchstens verlieren, z. B. 1 Stunde? RTO (Recovery Time Objective) – wie lange darf die Wiederherstellung dauern?"
+    },
+    {
+      "type": "text",
+      "content": "Drei Sicherungsarten:\n• Vollsicherung: alles. Einfach wiederherzustellen, braucht aber viel Zeit und Platz.\n• Inkrementell: nur Änderungen seit der letzten Sicherung (egal welcher Art). Schnell und klein, beim Restore braucht man aber die Vollsicherung und alle Inkremente der Kette.\n• Differenziell: alle Änderungen seit der letzten Vollsicherung. Wird von Tag zu Tag größer, beim Restore braucht man nur Vollsicherung plus die letzte differenzielle."
+    },
+    {
+      "type": "code",
+      "content": "So:  Vollsicherung\nMo, Di, Mi abends: Teilsicherung\nDo früh: Crash\n\nInkrementell:\n  Mo=Δ(So→Mo) Di=Δ(Mo→Di) ...\n  Restore: Voll+Mo+Di+Mi  (4 Teile)\n\nDifferenziell:\n  Mo=Δ(So→Mo) Di=Δ(So→Di) ...\n  Restore: Voll+Mi        (2 Teile)"
+    },
+    {
+      "type": "text",
+      "content": "Bei Datenbanken unterscheidet man außerdem logische und physische Sicherungen. Eine logische Sicherung (z. B. pg_dump) erzeugt SQL bzw. ein Archiv mit Tabellen und Daten – portabel, gut für einzelne Tabellen. Eine physische Sicherung kopiert die Datendateien des Servers (z. B. pg_basebackup) – schnell bei großen Datenbanken und Grundlage für Point-in-Time-Recovery. Einfach die Dateien einer laufenden Datenbank kopieren ist keine konsistente Sicherung!"
+    },
+    {
+      "type": "code",
+      "content": "# logische Sicherung (PostgreSQL)\npg_dump -Fc -f schule.dump schule\n\n# Wiederherstellen in neue DB\ncreatedb schule_neu\npg_restore -d schule_neu schule.dump"
+    },
+    {
+      "type": "text",
+      "content": "Point-in-Time-Recovery (PITR): Du kombinierst eine physische Vollsicherung mit dem archivierten Write-Ahead-Log aus der letzten Lektion. Beim Wiederherstellen spielt der Server das WAL bis zu einem gewählten Zeitpunkt ein – z. B. bis 10:14 Uhr, eine Minute bevor jemand versehentlich die Notentabelle gelöscht hat. So verlierst du fast nichts."
+    },
+    {
+      "type": "code",
+      "content": "# postgresql.conf (laufend)\nwal_level = replica\narchive_mode = on\narchive_command =\n  'cp %p /archiv/%f'\n\n# Wiederherstellung (auf Kopie\n# der Basissicherung)\nrestore_command =\n  'cp /archiv/%f %p'\nrecovery_target_time =\n  '2026-11-11 10:14:00'\n# + leere Datei recovery.signal"
+    },
+    {
+      "type": "text",
+      "content": "Verfügbarkeit ist der Anteil der Zeit, in der ein System nutzbar ist. Schon kleine Prozentunterschiede machen viel aus. Hochverfügbarkeit erreicht man durch Redundanz: RAID gegen Plattenausfall, und Replikation – ein Primärserver schickt sein WAL an einen oder mehrere Standby-Server. Fällt der Primärserver aus, übernimmt ein Standby (Failover)."
+    },
+    {
+      "type": "code",
+      "content": "for p in [99, 99.9, 99.99]:\n    h = 365 * 24 * (100 - p) / 100\n    print(f\"{p}% -> {h:.2f} h/Jahr\")\n\n# Ausgabe:\n# 99% -> 87.60 h/Jahr\n# 99.9% -> 8.76 h/Jahr\n# 99.99% -> 0.88 h/Jahr"
+    },
+    {
+      "type": "text",
+      "content": "Synchrone Replikation bestätigt ein COMMIT erst, wenn auch der Standby es gespeichert hat – kein Datenverlust beim Failover, aber langsamer. Asynchrone Replikation ist schneller, beim Ausfall können die letzten Transaktionen fehlen. Ganz wichtig: Replikation und RAID sind kein Backup! Ein DROP TABLE wird sofort auf alle Replikate übertragen.\n\nZusammenfassung: Plane nach RPO und RTO, kombiniere Voll- mit inkrementellen oder differenziellen Sicherungen, halte die 3-2-1-Regel ein (3 Kopien, 2 Medien, 1 außer Haus), teste regelmäßig das Wiederherstellen und nutze Replikation für Verfügbarkeit, nicht als Ersatz für Backups."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Vollsicherung am Sonntag, inkrementelle Sicherungen Montag bis Freitag jeweils abends. Am Samstag fällt die Platte aus. Wie viele Sicherungen brauchst du für den Restore?",
+      "options": [
+        "1",
+        "2",
+        "5",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Vollsicherung plus alle fünf Inkremente (Mo, Di, Mi, Do, Fr), weil jedes nur die Änderungen seit der vorigen Sicherung enthält: 6 Teile."
+    },
+    {
+      "question": "Gleiche Situation, aber mit differenziellen statt inkrementellen Sicherungen. Was brauchst du?",
+      "options": [
+        "Vollsicherung + Freitagssicherung",
+        "Nur die Freitagssicherung",
+        "Vollsicherung + alle fünf Differenziellen",
+        "Nur die Vollsicherung"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jede differenzielle Sicherung enthält alle Änderungen seit der Vollsicherung. Die letzte reicht daher zusammen mit der Vollsicherung."
+    },
+    {
+      "question": "Um 10:15 Uhr wurde versehentlich eine Tabelle gelöscht; das wurde sofort auf den synchronen Standby repliziert. Was hilft?",
+      "options": [
+        "Failover auf den Standby",
+        "RAID 1",
+        "Point-in-Time-Recovery aus Basissicherung und archiviertem WAL bis 10:14 Uhr",
+        "Den Server neu starten, damit das UNDO greift"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Löschbefehl war committet und ist auch auf dem Standby. Nur PITR stellt den Zustand kurz vor dem Fehler wieder her."
+    },
+    {
+      "question": "Wie viele Stunden darf ein System mit 99,9 % Verfügbarkeit pro Jahr (365 Tage) höchstens ausfallen?",
+      "options": [
+        "0,876 h",
+        "8,76 h",
+        "87,6 h",
+        "36,5 h"
+      ],
+      "correctIndex": 1,
+      "explanation": "0,1 % von 8760 Stunden sind 8,76 Stunden."
+    }
+  ]
+}

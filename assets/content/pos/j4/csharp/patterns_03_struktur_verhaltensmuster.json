@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-csharp-patterns_03_struktur_verhaltensmuster",
+  "title": "Struktur- und Verhaltensmuster",
+  "summary": "Adapter, Decorator, Observer und Strategy: Objekte flexibel verbinden, erweitern und austauschen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Strukturmuster beschreiben, wie Klassen und Objekte zu größeren Einheiten zusammengesetzt werden. Verhaltensmuster beschreiben, wie Objekte zusammenarbeiten und Aufgaben verteilen. Alle vier Muster dieser Lektion beruhen auf Interfaces und Komposition – genau den SOLID-Ideen aus Lektion 1.\n\nAdapter (Strukturmuster): Du hast eine fertige Klasse, deren Schnittstelle nicht zu deinem Interface passt – z. B. einen alten Sensor, der Fahrenheit liefert, während dein Programm ITemperatur mit Celsius erwartet. Der Adapter implementiert das gewünschte Interface und übersetzt intern die Aufrufe, wie ein Reisestecker."
+    },
+    {
+      "type": "code",
+      "content": "interface ITemperatur\n{\n    double Celsius();\n}\nclass FahrenheitAdapter(AltSensor alt)\n    : ITemperatur\n{\n    public double Celsius() =>\n        Math.Round(\n          (alt.LeseFahrenheit() - 32)\n          * 5 / 9, 1);\n}\n// LeseFahrenheit() liefert 98.6\n// Celsius() → 37"
+    },
+    {
+      "type": "text",
+      "content": "Decorator (Strukturmuster): Ein Objekt bekommt zur Laufzeit zusätzliches Verhalten, indem man es in ein anderes Objekt mit demselben Interface „einwickelt“. Jeder Decorator ruft das innere Objekt auf und ergänzt etwas. So kombinierst du Funktionen beliebig, ohne für jede Kombination eine Unterklasse zu brauchen. Aus .NET kennst du das: Ein StreamReader liest aus einem Stream, der Stream kann z. B. in einen GZipStream gewickelt sein."
+    },
+    {
+      "type": "code",
+      "content": "interface INachricht\n{ string Inhalt(); }\nclass Text(string t) : INachricht\n{ public string Inhalt() => t; }\nclass Rahmen(INachricht i)\n    : INachricht\n{ public string Inhalt() =>\n    $\"[{i.Inhalt()}]\"; }\nclass Gross(INachricht i)\n    : INachricht\n{ public string Inhalt() =>\n    i.Inhalt().ToUpper(); }\n\nINachricht n = new Gross(\n    new Rahmen(new Text(\"hallo\")));\nConsole.WriteLine(n.Inhalt());\n// [HALLO]"
+    },
+    {
+      "type": "text",
+      "content": "Observer (Verhaltensmuster): Ein Objekt (Subjekt) benachrichtigt beliebig viele Beobachter, wenn sich sein Zustand ändert – ohne sie zu kennen. In C# ist das mit event direkt in die Sprache eingebaut: Beobachter melden sich mit += an und mit -= ab, das Subjekt löst das Event mit Invoke aus. Der Operator ?. verhindert eine NullReferenceException, wenn niemand angemeldet ist."
+    },
+    {
+      "type": "code",
+      "content": "class Sensor\n{\n  public event Action<int>?\n      WertGeaendert;\n  private int wert;\n  public void Setze(int neu)\n  {\n    if (neu == wert) return;\n    wert = neu;\n    WertGeaendert?.Invoke(neu);\n  }\n}\nvar s = new Sensor();\ns.WertGeaendert += w =>\n    Console.WriteLine($\"Anzeige: {w}\");\ns.WertGeaendert += w =>\n    { if (w > 30)\n        Console.WriteLine(\"Alarm!\"); };\ns.Setze(25); // Anzeige: 25\ns.Setze(35); // Anzeige: 35, Alarm!"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler beim Observer: Von außen darf ein event nur mit += und -= verwendet werden – s.WertGeaendert = null oder ein Invoke von außen ergibt einen Kompilierfehler (CS0070). Das schützt die anderen Beobachter. Und: -= mit einem neuen Lambda meldet nichts ab, denn es ist ein anderes Delegate-Objekt. Speichere den Handler in einer Variable oder Methode, wenn du ihn wieder abmelden willst. Vergessene Abmeldungen halten Objekte im Speicher (Speicherleck)."
+    },
+    {
+      "type": "text",
+      "content": "Strategy (Verhaltensmuster): Ein Algorithmus wird in eine eigene Klasse ausgelagert und ist austauschbar – auch zur Laufzeit. Der Sortierer weiß nicht, wie sortiert wird; er ruft nur die Strategie auf. In C# reicht für einfache Fälle oft ein Delegate: liste.Sort((a, b) => b.CompareTo(a)) übergibt die Vergleichsstrategie als Lambda."
+    },
+    {
+      "type": "code",
+      "content": "interface ISortierStrategie\n{ List<int> Sortiere(List<int> l); }\nclass Absteigend : ISortierStrategie\n{ public List<int> Sortiere(\n    List<int> l) =>\n    l.OrderDescending().ToList(); }\nclass Sortierer(ISortierStrategie s)\n{\n  public ISortierStrategie Strategie\n    { get; set; } = s;\n  public List<int> Sortiere(\n    List<int> l) =>\n    Strategie.Sortiere(l);\n}\n// [5,3,8] → Absteigend → 8,5,3"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Adapter übersetzt eine unpassende Schnittstelle. Decorator ergänzt Verhalten durch Einwickeln. Observer benachrichtigt Abonnenten – in C# mit event, += und -=. Strategy macht Algorithmen austauschbar. Merke dir zu jedem Muster das Problem, das es löst – dann erkennst du es auch in fremdem Code."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Bibliothek liefert Messwerte als XML, dein Programm erwartet das Interface IMesswertQuelle. Welches Muster passt?",
+      "options": [
+        "Adapter",
+        "Singleton",
+        "Builder",
+        "Observer"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Adapter implementiert IMesswertQuelle und übersetzt intern die Aufrufe an die Bibliothek – die vorhandene Schnittstelle passt sonst nicht."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "var s = new Sensor();\ns.WertGeaendert += w =>\n    Console.WriteLine($\"Anzeige: {w}\");\ns.Setze(0);",
+      "options": [
+        "35",
+        "Anzeige: 35",
+        "Alarm!",
+        "Nichts"
+      ],
+      "correctIndex": 3,
+      "explanation": "Setze(0): Der neue Wert ist gleich dem alten (wert ist anfangs 0), daher kehrt die Methode sofort zurück und löst das Event nicht aus."
+    },
+    {
+      "question": "Was passiert bei s.WertGeaendert = null; außerhalb der Klasse Sensor?",
+      "options": [
+        "Alle Beobachter werden abgemeldet",
+        "Kompilierfehler, ein event erlaubt von außen nur += und -=",
+        "Eine NullReferenceException zur Laufzeit",
+        "Nichts, die Zeile wird ignoriert"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Schlüsselwort event schützt das Delegate: Außerhalb der Klasse sind nur += und -= erlaubt (Fehler CS0070)."
+    },
+    {
+      "question": "Welches Muster verwendest du, wenn ein Rabatt-Algorithmus je nach Kundentyp zur Laufzeit austauschbar sein soll?",
+      "options": [
+        "Decorator",
+        "Adapter",
+        "Strategy",
+        "Factory"
+      ],
+      "correctIndex": 2,
+      "explanation": "Strategy kapselt austauschbare Algorithmen hinter einem gemeinsamen Interface; das verwendende Objekt bekommt die passende Strategie übergeben."
+    }
+  ]
+}

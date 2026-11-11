@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-python-build_03_dokumentation_generieren",
+  "title": "Docstrings und Dokumentation generieren",
+  "summary": "Code mit Docstrings dokumentieren und daraus mit pydoc, doctest, Sphinx oder MkDocs Dokumentation erzeugen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Dokumentation gibt es auf mehreren Ebenen: Benutzerdoku (Bedienung), API- bzw. Entwicklerdoku (wie verwende ich diese Funktion?) und Kommentare im Code (warum ist das so gelöst?). Für die API-Doku verwendet Python Docstrings: Der erste String-Ausdruck in einem Modul, einer Klasse oder einer Funktion wird im Attribut __doc__ gespeichert. Werkzeuge können ihn auslesen und daraus Dokumentation erzeugen."
+    },
+    {
+      "type": "code",
+      "content": "\"\"\"Hilfsfunktionen rund um Schulnoten.\"\"\"\n\n\ndef schnitt(noten: list[int]) -> float:\n    \"\"\"Berechnet den Notendurchschnitt.\n\n    Args:\n        noten: Noten von 1 bis 5.\n\n    Returns:\n        Den Durchschnitt als float.\n\n    Raises:\n        ValueError: Wenn die Liste leer ist.\n\n    >>> schnitt([1, 2, 3])\n    2.0\n    \"\"\"\n    if not noten:\n        raise ValueError(\"keine Noten\")\n    return sum(noten) / len(noten)"
+    },
+    {
+      "type": "text",
+      "content": "Konventionen nach PEP 257: dreifache Anführungszeichen, die erste Zeile ist eine kurze Zusammenfassung mit Punkt, danach eine Leerzeile und die Details. Für die Details gibt es verbreitete Stile – Google (wie oben), NumPy und reStructuredText (:param noten:). Im Team einigt man sich auf einen. Typ-Hinweise in der Signatur ersparen es, Typen zusätzlich im Text zu wiederholen. Typischer Fehler: Der String steht nicht ganz am Anfang des Funktionskörpers – dann ist er kein Docstring, und __doc__ ist None."
+    },
+    {
+      "type": "code",
+      "content": ">>> import noten\n>>> print(noten.__doc__)\nHilfsfunktionen rund um Schulnoten.\n>>> doc = noten.schnitt.__doc__\n>>> print(doc.splitlines()[0])\nBerechnet den Notendurchschnitt.\n>>> help(noten.schnitt)   # ganze Doku"
+    },
+    {
+      "type": "text",
+      "content": "pydoc ist in der Standardbibliothek enthalten und erzeugt Dokumentation direkt aus den Docstrings. python -m pydoc noten zeigt sie in der Konsole an, python -m pydoc -w noten schreibt eine HTML-Datei noten.html, und python -m pydoc -b startet einen lokalen Webserver und öffnet die Doku aller installierten Module im Browser."
+    },
+    {
+      "type": "code",
+      "content": "$ python -m pydoc noten\nHelp on module noten:\n\nNAME\n    noten - Hilfsfunktionen rund um Schulnoten.\n\nFUNCTIONS\n    schnitt(noten: list[int]) -> float\n        Berechnet den Notendurchschnitt.\n        …\n\n$ python -m pydoc -w noten\nwrote noten.html"
+    },
+    {
+      "type": "text",
+      "content": "Doku veraltet leicht: Der Code ändert sich, der Text nicht. doctest hilft dagegen – es führt die Beispiele mit >>> im Docstring aus und vergleicht die Ausgabe Zeichen für Zeichen mit dem erwarteten Text. So ist das Beispiel gleichzeitig ein kleiner Test. Für umfangreiche Tests bleibt pytest das Mittel der Wahl."
+    },
+    {
+      "type": "code",
+      "content": "$ python -m doctest -v noten.py\nTrying:\n    schnitt([1, 2, 3])\nExpecting:\n    2.0\nok\n…\n1 passed.\nTest passed."
+    },
+    {
+      "type": "text",
+      "content": "Für größere Projekte gibt es Generatoren mit Suchfunktion, Querverweisen und eigenen Seiten. Sphinx ist der Standard im Python-Umfeld (auch die offizielle Python-Doku wird damit erstellt): Texte in reStructuredText, die Erweiterung autodoc übernimmt Docstrings, napoleon versteht den Google- und NumPy-Stil, Ausgabe z. B. als HTML oder PDF. MkDocs arbeitet mit Markdown und einer Konfigurationsdatei mkdocs.yml; mit dem Plugin mkdocstrings bindet es Docstrings ein. Zum Vergleich: C# nutzt XML-Kommentare (///), Java Javadoc. Die Doku wird idealerweise im Build bzw. in der CI automatisch erzeugt."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Docstrings beschreiben, was Module, Klassen und Funktionen tun und wie man sie verwendet; Kommentare erklären das Warum. Der Docstring muss die erste Anweisung sein. pydoc zeigt Doku an (-w HTML, -b Browser), doctest prüft die Beispiele, Sphinx (reStructuredText, autodoc) und MkDocs (Markdown, mkdocstrings) erzeugen komplette Doku-Websites."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def f():\n    x = 1\n    \"\"\"Liefert 1.\"\"\"\n    return x\n\nprint(f.__doc__)",
+      "options": [
+        "Liefert 1.",
+        "1",
+        "None",
+        "Einen SyntaxError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der String steht nicht als erste Anweisung im Funktionskörper. Er ist damit nur ein wirkungsloser Ausdruck, kein Docstring – __doc__ bleibt None."
+    },
+    {
+      "question": "Was macht python -m pydoc -w noten?",
+      "options": [
+        "Es schreibt die Dokumentation des Moduls noten als HTML-Datei noten.html.",
+        "Es prüft alle Beispiele im Docstring.",
+        "Es installiert Sphinx.",
+        "Es entfernt alle Docstrings aus noten.py."
+      ],
+      "correctIndex": 0,
+      "explanation": "-w steht für „write“: pydoc erzeugt eine HTML-Datei aus den Docstrings des Moduls."
+    },
+    {
+      "question": "Im Docstring steht „>>> halb(4)“ und darunter „2“. Die Funktion liefert x / 2. Was meldet python -m doctest?",
+      "options": [
+        "Test bestanden, weil 2 und 2.0 gleich groß sind",
+        "Einen SyntaxError im Docstring",
+        "Nichts, doctest prüft nur Funktionen mit return-Typ",
+        "Einen Fehlschlag: erwartet 2, erhalten 2.0"
+      ],
+      "correctIndex": 3,
+      "explanation": "doctest vergleicht die Textausgabe. 4 / 2 ergibt 2.0, und der Text „2.0“ ist nicht „2“."
+    },
+    {
+      "question": "Welches Werkzeug arbeitet mit Markdown-Dateien und einer Konfigurationsdatei mkdocs.yml?",
+      "options": [
+        "Sphinx",
+        "MkDocs",
+        "pydoc",
+        "doctest"
+      ],
+      "correctIndex": 1,
+      "explanation": "MkDocs erzeugt Doku-Websites aus Markdown. Sphinx verwendet standardmäßig reStructuredText."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "pos-j4-csharp-parallel_02_reflection",
+  "title": "Reflection und Attribute",
+  "summary": "Ein Programm untersucht zur Laufzeit seine eigenen Typen, liest Properties und wertet Attribute aus.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Normalerweise kennt dein Code die Klassen, mit denen er arbeitet, schon beim Kompilieren. Reflection erlaubt es, Typen erst zur Laufzeit zu untersuchen: Welche Properties hat das Objekt? Welche Methoden? Welche Attribute? Genau so arbeiten Frameworks, die du kennst – der JSON-Serializer liest die Properties deiner Klasse, xUnit sucht alle Methoden mit [Fact], ein OR-Mapper verbindet Properties mit Tabellenspalten."
+    },
+    {
+      "type": "text",
+      "content": "Der Einstieg ist ein Type-Objekt aus System.Reflection. Du bekommst es mit typeof(Klasse), wenn du den Typ beim Programmieren kennst, oder mit obj.GetType() für den tatsächlichen Laufzeittyp eines Objekts. Name liefert den kurzen, FullName den Namen mit Namespace."
+    },
+    {
+      "type": "code",
+      "content": "class Schueler\n{\n  [Pflichtfeld]\n  public string Name { get; set; }\n      = \"\";\n  public string Klasse { get; set; }\n      = \"\";\n  [Pflichtfeld]\n  public string? Email { get; set; }\n  public string Gruss(string w)\n      => $\"{w}, {Name}!\";\n}"
+    },
+    {
+      "type": "code",
+      "content": "var s = new Schueler {\n    Name = \"Lea\", Klasse = \"4AHIF\" };\nType t = s.GetType();\nforeach (var p in t.GetProperties())\n  Console.WriteLine(\n    $\"{p.Name} = {p.GetValue(s)}\");\n// Name = Lea\n// Klasse = 4AHIF\n// Email ="
+    },
+    {
+      "type": "text",
+      "content": "GetMethods() liefert MethodInfo-Objekte – und zwar mehr, als du vielleicht erwartest: Jede Property besteht intern aus Methoden wie get_Name und set_Name, und von object werden ToString, Equals, GetHashCode und GetType geerbt. Mit BindingFlags filterst du: Public | Instance | DeclaredOnly liefert nur die in der Klasse selbst deklarierten öffentlichen Instanzmethoden. Mit Invoke rufst du eine Methode auf, Activator.CreateInstance erzeugt ein Objekt aus einem Type."
+    },
+    {
+      "type": "code",
+      "content": "var flags = BindingFlags.Public\n  | BindingFlags.Instance\n  | BindingFlags.DeclaredOnly;\nforeach (var m in t.GetMethods(flags))\n  Console.Write(m.Name + \" \");\n// get_Name set_Name get_Klasse\n// set_Klasse get_Email set_Email\n// Gruss\n\nvar g = t.GetMethod(\"Gruss\")!;\nConsole.WriteLine(\n  g.Invoke(s, [\"Hallo\"]));\n// Hallo, Lea!"
+    },
+    {
+      "type": "text",
+      "content": "Attribute sind Metadaten in eckigen Klammern, die du an Klassen, Methoden oder Properties hängst. Sie tun selbst nichts – erst Code, der sie per Reflection ausliest, gibt ihnen eine Bedeutung. Ein eigenes Attribut ist eine Klasse, die von Attribute erbt; der Name endet per Konvention auf Attribute, beim Verwenden darf man das weglassen ([Pflichtfeld] statt [PflichtfeldAttribute])."
+    },
+    {
+      "type": "code",
+      "content": "[AttributeUsage(\n  AttributeTargets.Property)]\nclass PflichtfeldAttribute\n  : Attribute { }\n\nstatic List<string> Pruefe(object o)\n{\n  var fehler = new List<string>();\n  foreach (var p in\n      o.GetType().GetProperties())\n  {\n    bool pflicht = p.GetCustomAttribute\n      <PflichtfeldAttribute>() != null;\n    if (pflicht && string.IsNullOrEmpty(\n        p.GetValue(o) as string))\n      fehler.Add($\"{p.Name} fehlt\");\n  }\n  return fehler;\n}\n// Name = \"\" → Name fehlt, Email fehlt"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler und Grenzen: Reflection ist deutlich langsamer als ein direkter Aufruf – nicht in engen Schleifen verwenden. Tippfehler in Namen (GetMethod(\"Gruß\")) fallen erst zur Laufzeit auf: GetMethod liefert dann null. Mit BindingFlags.NonPublic kommt man sogar an private Felder – das umgeht die Kapselung und ist nur für Werkzeuge wie Test-Frameworks oder Serializer gedacht. Zusammenfassung: typeof/GetType liefern ein Type-Objekt; GetProperties, GetMethods, GetValue und Invoke untersuchen und verwenden es; eigene Attribute plus GetCustomAttribute ermöglichen deklarative Regeln wie [Pflichtfeld]."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was ist der Unterschied zwischen typeof(Tier) und tier.GetType()?",
+      "options": [
+        "Es gibt keinen",
+        "typeof liefert den beim Kompilieren angegebenen Typ, GetType den tatsächlichen Laufzeittyp des Objekts",
+        "GetType funktioniert nur bei Strukturen",
+        "typeof liefert einen string, GetType ein Type-Objekt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zeigt eine Variable vom Typ Tier auf einen Hund, liefert typeof(Tier) Tier, tier.GetType() aber Hund."
+    },
+    {
+      "question": "Wie viele Fehler liefert Pruefe für dieses Objekt? (Name und Email sind [Pflichtfeld])",
+      "code": "var s = new Schueler {\n    Name = \"Lea\", Klasse = \"\" };\nConsole.WriteLine(\n    Pruefe(s).Count);",
+      "options": [
+        "0",
+        "2",
+        "1",
+        "3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Name ist gesetzt, Klasse ist kein Pflichtfeld. Email wurde nicht gesetzt (null) – das ergibt genau einen Fehler: „Email fehlt“."
+    },
+    {
+      "question": "Warum enthält t.GetMethods() auch Einträge wie get_Name?",
+      "options": [
+        "Weil Properties intern aus Getter- und Setter-Methoden bestehen",
+        "Weil Reflection alle Felder in Methoden umwandelt",
+        "Weil es ein Fehler in .NET ist",
+        "Weil Name ein Attribut hat"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Compiler erzeugt für jede Property die Methoden get_… und set_…; Reflection zeigt sie als normale Methoden an."
+    },
+    {
+      "question": "Was passiert bei t.GetMethod(\"Grus\"), wenn die Methode eigentlich Gruss heißt?",
+      "options": [
+        "Kompilierfehler",
+        "Es wird automatisch die ähnlichste Methode gewählt",
+        "Eine MissingMethodException beim Kompilieren",
+        "Es wird null zurückgegeben"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Name ist nur ein string, der Compiler kann ihn nicht prüfen. GetMethod liefert null; erst ein Invoke darauf würde eine NullReferenceException auslösen."
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "pos-j4-theorie-komplexitaet_01_o_notation",
+  "title": "O-Notation: O, Ω und Θ",
+  "summary": "Wie man das Wachstum von Laufzeiten mit O, Ω und Θ beschreibt und die typischen Komplexitätsklassen einordnet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wie schnell ist ein Algorithmus? Sekunden hängen vom Rechner ab. Deshalb zählt man, wie die Anzahl der Grundschritte mit der Eingabegröße n wächst. Konstante Faktoren und kleine n interessieren dabei nicht – nur das Verhalten für große n (asymptotisches Verhalten)."
+    },
+    {
+      "type": "text",
+      "content": "Die drei Landau-Symbole:\n• f ∈ O(g): f wächst höchstens so schnell wie g (obere Schranke). Es gibt c > 0 und n₀, sodass f(n) ≤ c · g(n) für alle n ≥ n₀.\n• f ∈ Ω(g): f wächst mindestens so schnell wie g (untere Schranke): f(n) ≥ c · g(n) ab n₀.\n• f ∈ Θ(g): beides gleichzeitig – g beschreibt das Wachstum genau."
+    },
+    {
+      "type": "text",
+      "content": "Nachgerechnet: f(n) = 3n² + 5n + 20 ist in Θ(n²).\nObere Schranke mit c = 4: 3n² + 5n + 20 ≤ 4n² gilt genau dann, wenn n² − 5n − 20 ≥ 0, also ab n ≥ 8 (n₀ = 8).\nUntere Schranke mit c = 3: 3n² + 5n + 20 ≥ 3n² gilt für alle n ≥ 1."
+    },
+    {
+      "type": "code",
+      "content": "  n │ 3n²+5n+20 │ 4n²\n────┼───────────┼─────\n  6 │    158    │ 144  ✗\n  7 │    202    │ 196  ✗\n  8 │    252    │ 256  ✓\n  9 │    308    │ 324  ✓"
+    },
+    {
+      "type": "text",
+      "content": "Rechenregeln für die Praxis:\n• Konstante Faktoren weglassen: 7n ∈ O(n)\n• Nur der am schnellsten wachsende Term zählt: n³ + 1000n² ∈ O(n³)\n• Logarithmus-Basis egal: log₂ n und log₁₀ n unterscheiden sich nur um einen konstanten Faktor\n• O ist nur eine obere Schranke: n ∈ O(n²) stimmt, ist aber ungenau. Wenn man es genau meint, schreibt man Θ."
+    },
+    {
+      "type": "text",
+      "content": "Typische Komplexitätsklassen von schnell nach langsam, mit Beispielen:\n• O(1) – Listenzugriff per Index, Dictionary-Lookup (im Mittel)\n• O(log n) – binäre Suche\n• O(n) – lineare Suche, Summe einer Liste\n• O(n log n) – gute Sortierverfahren (Mergesort)\n• O(n²) – zwei verschachtelte Schleifen, Bubblesort\n• O(2ⁿ) – alle Teilmengen durchprobieren\n• O(n!) – alle Reihenfolgen durchprobieren"
+    },
+    {
+      "type": "code",
+      "content": "    n │ log₂n │ n log n │    n²  │   2ⁿ\n──────┼───────┼─────────┼────────┼─────────\n   10 │  3,3  │     33  │   100  │ 1024\n  100 │  6,6  │    664  │  10⁴   │ ≈1,3·10³⁰\n 1000 │ 10,0  │   9966  │  10⁶   │ ≈10³⁰¹"
+    },
+    {
+      "type": "text",
+      "content": "Daraus folgt eine nützliche Faustregel: Verdoppelst du n, dann braucht ein O(n)-Algorithmus etwa doppelt so lange, ein O(n²)-Algorithmus etwa viermal so lange, ein O(n³)-Algorithmus achtmal so lange. Bei O(2ⁿ) verdoppelt sich die Zeit schon, wenn n nur um 1 wächst – solche Algorithmen sind schon für n ≈ 50 unbrauchbar."
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: O, Ω, Θ mit Worst, Best und Average Case verwechseln. Das sind zwei verschiedene Dinge! Der Fall sagt, welche Eingabe man betrachtet (z. B. lineare Suche: Element ganz vorne = Best Case, gar nicht enthalten = Worst Case), das Landau-Symbol beschreibt die Schranke für die Funktion dieses Falls. Lineare Suche: Best Case Θ(1), Worst Case Θ(n)."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: O = obere, Ω = untere, Θ = genaue Wachstumsschranke. Konstanten und kleinere Terme fallen weg. Merke dir die Klassen-Reihenfolge 1 < log n < n < n log n < n² < 2ⁿ < n! und die Verdopplungsregel – damit kannst du Laufzeiten grob abschätzen, bevor du eine Zeile Code schreibst."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Klasse liegt f(n) = 5n + 2n² + 100 genau (Θ)?",
+      "options": [
+        "Θ(n)",
+        "Θ(n²)",
+        "Θ(n³)",
+        "Θ(1)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der am schnellsten wachsende Term ist 2n². Konstante Faktoren und kleinere Terme fallen weg → Θ(n²)."
+    },
+    {
+      "question": "Ein Θ(n²)-Algorithmus braucht für n = 1000 eine Sekunde. Wie lange braucht er ungefähr für n = 2000?",
+      "options": [
+        "2 Sekunden",
+        "8 Sekunden",
+        "4 Sekunden",
+        "1,4 Sekunden"
+      ],
+      "correctIndex": 2,
+      "explanation": "(2n)² = 4n². Bei doppelter Eingabegröße vervierfacht sich die Laufzeit."
+    },
+    {
+      "question": "Welche Aussage ist richtig?",
+      "options": [
+        "n² ∈ O(n)",
+        "n log n ∈ O(n)",
+        "2ⁿ ∈ O(n³)",
+        "n ∈ O(n²)"
+      ],
+      "correctIndex": 3,
+      "explanation": "O ist eine obere Schranke. n wächst höchstens so schnell wie n², also n ∈ O(n²). Die anderen Funktionen wachsen schneller als die angegebene Schranke."
+    },
+    {
+      "question": "Wie viele Vergleiche braucht die binäre Suche in einer sortierten Liste mit 1 000 000 Elementen im schlechtesten Fall ungefähr?",
+      "options": [
+        "20",
+        "1000",
+        "500 000",
+        "6"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jeder Schritt halbiert den Suchbereich: log₂(1 000 000) ≈ 19,9 → etwa 20 Vergleiche."
+    }
+  ]
+}
