@@ -1,0 +1,90 @@
+{
+  "id": "nvs-j3-entwurf_01_netzwerkmodelle_planung",
+  "title": "Netzwerkmodelle und Planung",
+  "summary": "Das hierarchische Netzwerkdesign mit Core, Distribution und Access verstehen und einen VLAN- und Adressplan erstellen, den du mit Pythons ipaddress prüfst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Netze sind „gewachsen“: Hier noch ein Switch, dort ein Kabel – bis niemand mehr durchblickt und ein einziger Fehler das ganze Haus lahmlegt. Professionelle Netze werden geplant. Bewährt hat sich das hierarchische Modell mit drei Schichten: Access, Distribution und Core. Jede Schicht hat eine klare Aufgabe; dadurch lässt sich das Netz erweitern und Fehler bleiben auf einen Bereich begrenzt."
+    },
+    {
+      "type": "code",
+      "content": "      [Core-1]=====[Core-2]\n         ║   ╲     ╱   ║\n      [Dist-1]=====[Dist-2]\n       │    │   │     │\n    [Acc-1][Acc-2][Acc-3][Acc-4]\n       │      │      │      │\n      PCs    APs  Drucker  PCs\n\n=== redundante Hochleistungs-\n    verbindungen"
+    },
+    {
+      "type": "text",
+      "content": "Access-Schicht: Hier hängen die Endgeräte – PCs, Drucker, Access Points. Aufgaben: Ports, VLAN-Zuordnung, Port Security, 802.1X, Strom per PoE.\nDistribution-Schicht: Sie bündelt die Access-Switches eines Gebäudes oder Stockwerks, routet zwischen den VLANs (meist Layer-3-Switches), setzt Regeln wie ACLs durch und ist redundant ausgelegt, z. B. mit einem ausfallsicheren Gateway (Protokoll VRRP).\nCore-Schicht: Das schnelle Rückgrat zwischen den Distribution-Blöcken, dem Serverbereich und dem Internetzugang. Hier zählt nur Tempo und Ausfallsicherheit – aufwendige Paketfilterung gehört nicht in den Core."
+    },
+    {
+      "type": "text",
+      "content": "Nicht jedes Netz braucht drei getrennte Schichten. In einem einzelnen Schulgebäude legt man Core und Distribution oft auf ein Paar Layer-3-Switches zusammen – das nennt man Collapsed Core (zweistufiges Modell). In Rechenzentren verwendet man stattdessen häufig eine Spine-Leaf-Architektur, bei der jeder Leaf-Switch mit jedem Spine-Switch verbunden ist. Die Grundidee bleibt gleich: klare Aufgaben pro Ebene und Redundanz dort, wo ein Ausfall viele Geräte trifft."
+    },
+    {
+      "type": "text",
+      "content": "Ablauf einer Planung:\n1) Anforderungen erheben: Wie viele Personen und Geräte? Welche Dienste? Welche Bereiche müssen getrennt sein (Verwaltung, Unterricht, Gäste, Server)? Mit wie viel Wachstum rechnest du?\n2) Logischer Entwurf: VLANs, Adressplan, Routing, Sicherheitszonen.\n3) Physischer Entwurf: Standorte der Verteiler, Verkabelung, Geräte.\n4) Umsetzen, testen, dokumentieren.\nTypischer Fehler: ohne Reserve planen. Reicht ein Subnetz nicht mehr, muss man später umnummerieren – mit Ausfällen und viel Arbeit."
+    },
+    {
+      "type": "code",
+      "content": "VLAN Zweck       Netz           Hosts\n---- ----------  -------------  -----\n10   Verwaltung  10.10.10.0/24    254\n20   Lehrer      10.10.20.0/24    254\n30   Schüler     10.10.32.0/22   1022\n40   Server      10.10.40.0/26     62\n99   Management  10.10.99.0/27     30\n\nGateway = erste Hostadresse\nBlock für die Schule: 10.10.0.0/16"
+    },
+    {
+      "type": "text",
+      "content": "So kommt man auf die Präfixe: Im Schüler-VLAN rechnet man mit rund 800 Geräten (Laptops und Handys) plus Reserve. Ein /23 bietet nur 2⁹ − 2 = 510 Hosts, ein /22 dagegen 2¹⁰ − 2 = 1022 – also /22. Für Server reichen 62 Adressen (/26), für das Management der Netzwerkgeräte 30 (/27). Eine einfache Konvention hilft beim Lesen: Das dritte Oktett erinnert an die VLAN-Nummer, das Gateway ist immer die erste Hostadresse. Ob der Plan widerspruchsfrei ist, prüfst du am besten mit einem kleinen Skript – unten hat jemand nachträglich ein Drucker-VLAN eingetragen:"
+    },
+    {
+      "type": "code",
+      "content": "import ipaddress as ip\n\nblock = ip.ip_network(\"10.10.0.0/16\")\nplan = {\n    \"V10 Verwaltung\": \"10.10.10.0/24\",\n    \"V20 Lehrer\": \"10.10.20.0/24\",\n    \"V30 Schüler\": \"10.10.32.0/22\",\n    \"V40 Server\": \"10.10.40.0/26\",\n    \"V99 Mgmt\": \"10.10.99.0/27\",\n    \"V50 Drucker\": \"10.10.20.128/25\",\n}\nnets = {k: ip.ip_network(v)\n        for k, v in plan.items()}\n\nfor name, n in nets.items():\n    if not n.subnet_of(block):\n        print(\"Außerhalb:\", name)\n    gw = next(n.hosts())\n    print(f\"{name:15}{n.num_addresses-2:5}\"\n          f\" {gw}\")\n\nnames = list(nets)\nfor i, a in enumerate(names):\n    for b in names[i+1:]:\n        if nets[a].overlaps(nets[b]):\n            print(\"Überlappung:\", a, b)\n\n# Ausgabe:\n# V10 Verwaltung   254 10.10.10.1\n# V20 Lehrer       254 10.10.20.1\n# V30 Schüler     1022 10.10.32.1\n# V40 Server        62 10.10.40.1\n# V99 Mgmt          30 10.10.99.1\n# V50 Drucker      126 10.10.20.129\n# Überlappung: V20 Lehrer V50 Drucker"
+    },
+    {
+      "type": "text",
+      "content": "„overlaps“ findet sich überschneidende Netze, „subnet_of“ prüft, ob ein Netz im zugewiesenen Block liegt, und „hosts()“ liefert die nutzbaren Adressen. Das Drucker-Netz 10.10.20.128/25 liegt mitten im Lehrer-VLAN – im Betrieb gäbe das doppelte Adressen und unerklärliche Fehler. Richtig wäre z. B. 10.10.50.0/25. Zusammenfassung: Access verbindet Endgeräte, Distribution routet und setzt Regeln durch, Core transportiert schnell; kleine Netze nutzen einen Collapsed Core. Plane mit Reserve, halte Konventionen ein und prüfe den Adressplan automatisch."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Schicht des hierarchischen Modells findet typischerweise das Inter-VLAN-Routing mit ACLs statt?",
+      "options": [
+        "Access",
+        "Core",
+        "Distribution",
+        "In keiner – das macht der Provider"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Distribution-Schicht bündelt die Access-Switches, routet zwischen den VLANs und setzt Regeln durch. Der Core soll nur schnell transportieren."
+    },
+    {
+      "question": "Ein VLAN braucht Platz für 450 Geräte. Welches ist das kleinste passende Präfix?",
+      "options": [
+        "/24",
+        "/23",
+        "/22",
+        "/25"
+      ],
+      "correctIndex": 1,
+      "explanation": "/23 bietet 2⁹ − 2 = 510 Hosts. /24 hätte nur 254 – zu wenig. /22 ginge auch, verschwendet aber mehr Adressen."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "import ipaddress as ip\n\na = ip.ip_network(\"10.10.32.0/22\")\nb = ip.ip_network(\"10.10.35.0/24\")\nc = ip.ip_network(\"10.10.36.0/24\")\nprint(a.overlaps(b), a.overlaps(c))\nprint(b.subnet_of(a))",
+      "options": [
+        "True False\nTrue",
+        "True True\nFalse",
+        "False False\nTrue",
+        "True False\nFalse"
+      ],
+      "correctIndex": 0,
+      "explanation": "10.10.32.0/22 umfasst 10.10.32.0 bis 10.10.35.255. 10.10.35.0/24 liegt darin (Überlappung und subnet_of = True), 10.10.36.0/24 liegt außerhalb."
+    },
+    {
+      "question": "Was versteht man unter einem Collapsed Core?",
+      "options": [
+        "Ein Core, der nach einem Ausfall abgeschaltet wurde",
+        "Ein Netz ganz ohne Access-Switches",
+        "Ein Core aus nur einem einzigen Switch ohne Redundanz",
+        "Core- und Distribution-Schicht sind auf denselben Geräten zusammengefasst"
+      ],
+      "correctIndex": 3,
+      "explanation": "In kleineren Netzen übernehmen meist zwei Layer-3-Switches gemeinsam die Aufgaben von Core und Distribution – das spart Geräte, die Redundanz bleibt."
+    }
+  ]
+}

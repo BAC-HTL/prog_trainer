@@ -1,0 +1,117 @@
+{
+  "id": "pos-j3-csharp-compiler_pruefung",
+  "title": "Abschlussprüfung: Compiler & Parser",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "In welcher Reihenfolge arbeiten die Analysephasen eines Compilers?",
+      "options": [
+        "Parser → Lexer → semantische Analyse",
+        "Semantische Analyse → Lexer → Parser",
+        "Lexer → Parser → semantische Analyse",
+        "Lexer → semantische Analyse → Parser"
+      ],
+      "correctIndex": 2,
+      "explanation": "Erst zerlegt der Lexer den Text in Tokens, dann baut der Parser daraus einen Syntaxbaum, und erst darauf prüft die semantische Analyse Typen und Namen."
+    },
+    {
+      "question": "Welcher Fehler wird von der lexikalischen Analyse gefunden?",
+      "options": [
+        "int x = 5 $;  (Zeichen $ ist hier nicht erlaubt)",
+        "int x = 5  (Semikolon fehlt)",
+        "int x = \"fünf\";  (falscher Typ)",
+        "int x = y;  (y nicht deklariert)"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Lexer kann aus $ an dieser Stelle kein gültiges Token bilden (CS1056). Das fehlende Semikolon ist ein Syntaxfehler, die anderen beiden sind semantische Fehler."
+    },
+    {
+      "question": "Welche Aufgabe übernimmt die Symboltabelle?",
+      "options": [
+        "Sie speichert die Tokens in der Reihenfolge des Quelltexts",
+        "Sie speichert zu Namen (Variablen, Methoden …) Informationen wie Typ und Gültigkeitsbereich",
+        "Sie enthält alle Fehlermeldungen des Compilers",
+        "Sie speichert den erzeugten Maschinencode"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Symboltabelle ordnet jedem Bezeichner seine Eigenschaften zu. Die semantische Analyse prüft damit z. B., ob eine Variable deklariert ist und welchen Typ sie hat."
+    },
+    {
+      "question": "Was liefert der Parser der Lektion für \"10-2*3\"?",
+      "options": [
+        "24",
+        "4",
+        "-6",
+        "16"
+      ],
+      "correctIndex": 1,
+      "explanation": "Punkt vor Strich: Term rechnet zuerst 2*3 = 6, Ausdruck dann 10 - 6 = 4. Diese Rangfolge ergibt sich aus der Grammatik, nicht aus einer extra Regel."
+    },
+    {
+      "question": "Was liefert der Parser der Lektion für \"20/4/5\"?",
+      "options": [
+        "25",
+        "0",
+        "1",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die while-Schleife in Term rechnet von links nach rechts: (20/4)/5 = 5/5 = 1. Rechtsassoziativ wäre es 20/(4/5) = 20/0 und würde abstürzen."
+    },
+    {
+      "question": "Welche Eingabe weist der Parser der Lektion als syntaktisch falsch zurück?",
+      "options": [
+        "((7))",
+        "7",
+        "2*(3)",
+        "(2+)3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nach dem + erwartet Term einen Faktor, also eine Zahl oder (. Gefunden wird aber ). Die anderen Eingaben passen zur Grammatik."
+    },
+    {
+      "question": "Wie setzt ein rekursiver Abstiegsparser die EBNF-Regel Faktor = Zahl | \"(\" Ausdruck \")\" um?",
+      "options": [
+        "Mit einer while-Schleife über alle Zahlen",
+        "Mit einer Fallunterscheidung: Ist das Token eine Zahl oder eine öffnende Klammer? Im zweiten Fall ruft er Ausdruck() auf und erwartet dann )",
+        "Mit einem regulären Ausdruck",
+        "Mit einer eigenen Klasse für jede Zahl"
+      ],
+      "correctIndex": 1,
+      "explanation": "| wird zu if/else, ein Nichtterminal zu einem Methodenaufruf, ein Terminal zu einer Prüfung des aktuellen Tokens. Der Aufruf von Ausdruck() macht den Parser rekursiv."
+    },
+    {
+      "question": "Hashtabelle mit Verkettung, Größe 7, Summen-Hashfunktion. Eingefügt werden \"i\" (105), \"p\" (112) und \"w\" (119). Wie sieht die Tabelle aus?",
+      "options": [
+        "Alle drei stehen in einer Kette in Bucket 0",
+        "i in 0, p in 1, w in 2",
+        "Die Tabelle ist voll und muss vergrößert werden",
+        "i in 0, p und w gehen verloren"
+      ],
+      "correctIndex": 0,
+      "explanation": "105, 112 und 119 sind alle durch 7 teilbar, also Hash 0. Bei Verkettung hängen alle drei in der Liste von Bucket 0: i -> p -> w."
+    },
+    {
+      "question": "Warum soll man in .NET den Wert von \"Hallo\".GetHashCode() nicht in einer Datei speichern?",
+      "options": [
+        "Weil Strings keinen Hashcode haben",
+        "Weil der Hashcode immer 0 ist",
+        "Weil string-Hashcodes bei jedem Programmstart anders sein können",
+        "Weil GetHashCode eine Exception wirft"
+      ],
+      "correctIndex": 2,
+      "explanation": "In .NET werden String-Hashcodes pro Prozess zufällig gestaltet. Innerhalb eines Programmlaufs sind sie stabil, beim nächsten Start aber andere."
+    },
+    {
+      "question": "Ein Compiler verwaltet Scopes als Stack von Dictionaries und sucht vom innersten Scope nach außen. Außen gilt x: int, name: string; innen x: double. Welche Typen liefert die Suche nach x und nach name im inneren Block?",
+      "options": [
+        "int und string",
+        "double und string",
+        "double und „unbekannt“",
+        "int und „unbekannt“"
+      ],
+      "correctIndex": 1,
+      "explanation": "x wird schon im inneren Scope gefunden (double) und verdeckt das äußere x. name steht nur außen und wird dort gefunden (string). Nach dem Verlassen des Blocks wäre x wieder int."
+    }
+  ]
+}

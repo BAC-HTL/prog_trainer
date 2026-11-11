@@ -1,0 +1,94 @@
+{
+  "id": "pos-j3-csharp-dbzugriff_01_verbindung_abfragen",
+  "title": "Verbindung und Abfragen",
+  "summary": "Mit ADO.NET und Microsoft.Data.Sqlite eine Datenbank öffnen, SQL-Befehle ausführen und Ergebnisse lesen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "SQL kennst du aus dem Datenbank-Unterricht. Jetzt soll dein C#-Programm selbst mit der Datenbank sprechen – etwa eine Schülerverwaltung, die Daten dauerhaft speichert. In .NET heißt die Grundtechnik ADO.NET: Für jedes Datenbanksystem gibt es einen Provider mit denselben Bausteinen – Connection (Verbindung), Command (SQL-Befehl) und DataReader (Ergebnis zeilenweise lesen). Wir verwenden SQLite, weil die ganze Datenbank in einer einzigen Datei liegt und kein Server nötig ist."
+    },
+    {
+      "type": "text",
+      "content": "Den SQLite-Provider holst du als NuGet-Paket: dotnet add package Microsoft.Data.Sqlite. Für SQL Server gäbe es Microsoft.Data.SqlClient mit SqlConnection, für MySQL/MariaDB z. B. MySqlConnector. Die Muster in diesem Modul sind überall gleich, nur die Klassennamen ändern sich."
+    },
+    {
+      "type": "code",
+      "content": "dotnet new console -n Schule\ncd Schule\ndotnet add package Microsoft.Data.Sqlite"
+    },
+    {
+      "type": "text",
+      "content": "Die Verbindung beschreibt ein Connection-String. „Data Source=schule.db“ öffnet die Datei schule.db und legt sie an, falls es sie noch nicht gibt. Verbindungen sind knappe Ressourcen und müssen wieder geschlossen werden – deshalb immer mit using: Am Ende des Blocks wird Dispose() aufgerufen und die Verbindung geschlossen, auch wenn eine Exception fliegt. Typischer Fehler: Open() vergessen – dann wirft der erste Befehl eine InvalidOperationException."
+    },
+    {
+      "type": "code",
+      "content": "using Microsoft.Data.Sqlite;\n\nusing var verbindung =\n    new SqliteConnection(\n        \"Data Source=schule.db\");\nverbindung.Open();\n\nusing var befehl =\n    verbindung.CreateCommand();\nbefehl.CommandText = \"\"\"\n    CREATE TABLE IF NOT EXISTS schueler (\n      id      INTEGER PRIMARY KEY,\n      name    TEXT NOT NULL,\n      klasse  TEXT NOT NULL,\n      schnitt REAL\n    )\n    \"\"\";\nbefehl.ExecuteNonQuery();"
+    },
+    {
+      "type": "text",
+      "content": "Ein Command kennt drei Ausführungsarten:\n• ExecuteNonQuery() – für INSERT, UPDATE, DELETE, CREATE. Liefert die Anzahl der betroffenen Zeilen.\n• ExecuteScalar() – liefert nur den ersten Wert der ersten Zeile, ideal für COUNT, MAX oder AVG. Rückgabetyp ist object?.\n• ExecuteReader() – liefert einen DataReader für Abfragen mit mehreren Zeilen.\nAchtung: SQLite speichert Ganzzahlen als 64 Bit. COUNT(*) kommt als long zurück, ein direkter Cast (int) wirft eine InvalidCastException – nimm Convert.ToInt32."
+    },
+    {
+      "type": "code",
+      "content": "befehl.CommandText =\n    \"UPDATE schueler SET klasse = '4AHIF'\"\n  + \" WHERE klasse = '3AHIF'\";\nint geaendert = befehl.ExecuteNonQuery();\nConsole.WriteLine(geaendert); // z. B. 2\n\nbefehl.CommandText =\n    \"SELECT COUNT(*) FROM schueler\";\nint anzahl = Convert.ToInt32(\n    befehl.ExecuteScalar());"
+    },
+    {
+      "type": "text",
+      "content": "Mit ExecuteReader liest du das Ergebnis Zeile für Zeile. reader.Read() springt zur nächsten Zeile und liefert false, wenn keine mehr da ist – deshalb die while-Schleife. Die Spalten holst du typisiert über ihren Index (0, 1, …) mit GetInt32, GetString, GetDouble usw. Der Reader ist „vorwärts-only“: zurückspringen geht nicht."
+    },
+    {
+      "type": "code",
+      "content": "befehl.CommandText = \"\"\"\n    SELECT id, name FROM schueler\n    WHERE klasse = '3AHIF'\n    ORDER BY name\n    \"\"\";\nusing var reader =\n    befehl.ExecuteReader();\nwhile (reader.Read())\n{\n    int id = reader.GetInt32(0);\n    string name = reader.GetString(1);\n    Console.WriteLine($\"{id}: {name}\");\n}\n// 1: Anna\n// 2: Ben"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Paket Microsoft.Data.Sqlite einbinden, SqliteConnection mit Connection-String erzeugen und öffnen, Command über CreateCommand anlegen, CommandText setzen und passend ausführen (NonQuery, Scalar, Reader). Alles, was eine Verbindung oder einen Reader hält, kommt in using. In dieser Lektion stehen die Werte noch fest im SQL – in der nächsten siehst du, warum das mit Benutzereingaben gefährlich ist."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Methode verwendest du, um mit SELECT COUNT(*) die Anzahl der Schüler:innen zu ermitteln?",
+      "options": [
+        "ExecuteNonQuery()",
+        "ExecuteReader()",
+        "ExecuteScalar()",
+        "Open()"
+      ],
+      "correctIndex": 2,
+      "explanation": "ExecuteScalar liefert genau einen Wert – die erste Spalte der ersten Zeile. Ideal für COUNT, MAX, AVG usw."
+    },
+    {
+      "question": "Was liefert ExecuteNonQuery() bei einem UPDATE?",
+      "options": [
+        "Die Anzahl der betroffenen Zeilen",
+        "Immer 0",
+        "Die geänderten Datensätze",
+        "true oder false"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei INSERT, UPDATE und DELETE gibt ExecuteNonQuery die Anzahl der betroffenen Zeilen zurück."
+    },
+    {
+      "question": "Finde den Fehler: Warum wirft dieser Code eine InvalidCastException?",
+      "code": "befehl.CommandText =\n    \"SELECT COUNT(*) FROM schueler\";\nint n = (int)befehl.ExecuteScalar()!;",
+      "options": [
+        "COUNT(*) ist in SQLite nicht erlaubt",
+        "ExecuteScalar liefert bei SQLite einen long – ein direkter Cast eines object auf int schlägt fehl",
+        "Es fehlt ein using vor int",
+        "ExecuteScalar darf nur einmal pro Verbindung aufgerufen werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "SQLite liefert Ganzzahlen als 64-Bit-Wert (long). Ein geboxter long lässt sich nicht direkt per (int) entpacken. Convert.ToInt32(...) wandelt korrekt um."
+    },
+    {
+      "question": "Warum steht die SqliteConnection in einer using-Deklaration?",
+      "options": [
+        "Damit die Verbindung automatisch geöffnet wird",
+        "Weil der Compiler sonst einen Fehler meldet",
+        "Damit SQL-Injection verhindert wird",
+        "Damit sie am Blockende sicher geschlossen wird – auch bei einer Exception"
+      ],
+      "correctIndex": 3,
+      "explanation": "using ruft am Ende des Gültigkeitsbereichs Dispose() auf und gibt die Verbindung frei. Öffnen musst du sie trotzdem selbst mit Open()."
+    }
+  ]
+}

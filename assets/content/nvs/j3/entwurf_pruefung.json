@@ -1,0 +1,117 @@
+{
+  "id": "nvs-j3-entwurf_pruefung",
+  "title": "Abschlussprüfung: Netzwerkentwurf & -management",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "In welcher Schicht des hierarchischen Modells wird Port Security für die Arbeitsplatz-PCs konfiguriert?",
+      "options": [
+        "Core",
+        "Access",
+        "Distribution",
+        "In allen drei gleichermaßen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Port Security betrifft die Ports, an denen Endgeräte hängen – das ist die Access-Schicht."
+    },
+    {
+      "question": "Ein Kollege möchte im Core aufwendige ACLs zur Filterung des Schülerverkehrs einsetzen. Was spricht dagegen?",
+      "options": [
+        "ACLs funktionieren nur auf Access-Switches.",
+        "Der Core hat keine IP-Adressen.",
+        "Im Core gibt es keine VLANs.",
+        "Der Core soll Daten möglichst schnell transportieren; Regeln gehören in die Distribution-Schicht."
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Core ist das Hochgeschwindigkeits-Rückgrat. Filterung und Richtlinien werden näher an der Quelle in der Distribution-Schicht umgesetzt."
+    },
+    {
+      "question": "Im Adressplan stehen 10.10.32.0/22 (Schüler) und 10.10.34.0/24 (Labor). Was stimmt?",
+      "options": [
+        "Die Netze überlappen, weil 10.10.34.0/24 im Bereich 10.10.32.0 – 10.10.35.255 liegt.",
+        "Kein Problem, die Präfixe sind verschieden.",
+        "Kein Problem, weil das dritte Oktett verschieden ist.",
+        "Die Netze überlappen nur, wenn beide /24 sind."
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein /22 umfasst vier /24-Blöcke: .32, .33, .34 und .35. Das Labornetz liegt also mitten im Schüler-VLAN – ipaddress meldet overlaps() = True."
+    },
+    {
+      "question": "Eine Abteilung hat 100 Geräte, es sollen 50 % Reserve eingeplant werden. Welches Präfix ist das kleinste passende?",
+      "options": [
+        "/25",
+        "/26",
+        "/24",
+        "/23"
+      ],
+      "correctIndex": 2,
+      "explanation": "100 · 1,5 = 150 Hosts. /25 bietet nur 126, /24 bietet 254 – passt."
+    },
+    {
+      "question": "Was liefert ipaddress.ip_network(\"10.10.40.0/26\").num_addresses - 2?",
+      "options": [
+        "64",
+        "62",
+        "30",
+        "254"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein /26 hat 2⁶ = 64 Adressen, minus Netz- und Broadcastadresse = 62 Hosts."
+    },
+    {
+      "question": "Ein Techniker steht vor einem vollen Patchfeld und muss die Dose A104-2 finden. Was hilft am meisten?",
+      "options": [
+        "Der logische Netzwerkplan",
+        "Ein beidseitig beschriftetes Kabel und ein aktueller Patchplan",
+        "Die SNMP-Community",
+        "Das Syslog des Routers"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Patchplan ordnet Dose, Patchfeld-Port und Switch-Port zu, die Beschriftung an beiden Enden bestätigt es vor Ort."
+    },
+    {
+      "question": "In einem git diff einer Switch-Konfiguration steht „- switchport access vlan 30“ und „+ switchport access vlan 20“. Was bedeutet das?",
+      "options": [
+        "VLAN 30 wurde gelöscht.",
+        "Der Port wurde von VLAN 20 nach VLAN 30 verschoben.",
+        "Der Port wurde von VLAN 30 nach VLAN 20 verschoben.",
+        "Beide Zeilen gelten jetzt gleichzeitig."
+      ],
+      "correctIndex": 2,
+      "explanation": "„-“ markiert die entfernte (alte) Zeile, „+“ die neue. Der Port ist jetzt in VLAN 20."
+    },
+    {
+      "question": "Warum fragt man bei Gigabit-Interfaces ifHCInOctets statt ifInOctets ab?",
+      "options": [
+        "Der 32-Bit-Zähler ifInOctets kann bei hoher Last zwischen zwei Abfragen überlaufen.",
+        "ifInOctets zählt nur ausgehende Bytes.",
+        "ifHCInOctets ist verschlüsselt.",
+        "ifInOctets gibt es nur bei SNMPv3."
+      ],
+      "correctIndex": 0,
+      "explanation": "2³² Byte sind rund 4,3 GB – bei voller Gigabit-Last in ca. 34 Sekunden erreicht. Der 64-Bit-Zähler (HC = High Capacity) läuft praktisch nie über."
+    },
+    {
+      "question": "Welchen Schweregrad hat die Meldung „%LINK-3-UPDOWN“?",
+      "options": [
+        "Notice",
+        "Critical",
+        "Warning",
+        "Error"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Zahl in der Mitte ist die Severity: 3 = Error."
+    },
+    {
+      "question": "Bei der Analyse eines Ausfalls passen die Syslog-Meldungen von Switch und Router zeitlich nicht zusammen. Was fehlt wahrscheinlich?",
+      "options": [
+        "SNMPv3",
+        "Eine Zeitsynchronisation aller Geräte per NTP",
+        "Ein zweiter Syslog-Server",
+        "Ein größerer Adressplan"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur mit synchronisierten Uhren lassen sich Ereignisse verschiedener Geräte in die richtige Reihenfolge bringen."
+    }
+  ]
+}

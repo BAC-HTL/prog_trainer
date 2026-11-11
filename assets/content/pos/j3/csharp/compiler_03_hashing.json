@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-compiler_03_hashing",
+  "title": "Hashing & Symboltabellen",
+  "summary": "Wie Hashtabellen funktionieren, wie Kollisionen behandelt werden und warum Compiler sie für Symboltabellen nutzen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Compiler muss ständig nachschlagen: Ist die Variable summe deklariert? Welchen Typ hat sie? Diese Infos stehen in der Symboltabelle. Bei Tausenden Namen wäre eine Liste, die man jedes Mal von vorne durchsucht, zu langsam. Eine Hashtabelle findet einen Eintrag im Durchschnitt in konstanter Zeit – unabhängig davon, wie viele Einträge es gibt. In C# steckt genau das hinter Dictionary<TKey, TValue> und HashSet<T>."
+    },
+    {
+      "type": "text",
+      "content": "Die Idee: Eine Hashfunktion berechnet aus dem Schlüssel eine Zahl, den Hashwert. Daraus wird ein Index in ein Array (die „Buckets“) – meist mit Hashwert % Arraygröße. Dort wird der Eintrag abgelegt und später wieder gesucht.\n\nEine einfache (schlechte, aber anschauliche) Hashfunktion für Strings: Zeichencodes addieren. 'x' hat den Code 120, also ist Hash(\"x\", 7) = 120 % 7 = 1."
+    },
+    {
+      "type": "code",
+      "content": "int Hash(string s, int groesse)\n{\n    int summe = 0;\n    foreach (char c in s)\n        summe += c;\n    return summe % groesse;\n}\n\nHash(\"x\", 7)     // 1\nHash(\"y\", 7)     // 2\nHash(\"i\", 7)     // 0\nHash(\"anna\", 7)  // 1\nHash(\"otto\", 7)  // 6\nHash(\"ab\", 7)    // 6\nHash(\"ba\", 7)    // 6  <- Kollision!"
+    },
+    {
+      "type": "text",
+      "content": "Landen zwei verschiedene Schlüssel im selben Bucket, spricht man von einer Kollision. Weil es viel mehr mögliche Schlüssel als Buckets gibt, lassen sich Kollisionen nie ganz vermeiden. Eine gute Hashfunktion verteilt die Schlüssel aber möglichst gleichmäßig. Die Summenfunktion oben ist schwach: Alle Wörter mit denselben Buchstaben (ab, ba) kollidieren immer.\n\nZwei klassische Lösungen: Verkettung und offene Adressierung."
+    },
+    {
+      "type": "code",
+      "content": "// Verkettung: jeder Bucket ist eine Liste\n// Größe 7, Einfügen: x, i, p, y, w\n// (Hash: x=1, i=0, p=0, y=2, w=0)\n\n[0] i -> p -> w\n[1] x\n[2] y\n[3]\n[4]\n[5]\n[6]"
+    },
+    {
+      "type": "code",
+      "content": "// Offene Adressierung, lineares Sondieren:\n// Platz belegt? -> nächsten freien nehmen\n// Größe 7, Einfügen: x, y, i, p, w\n\nx: Hash 1 -> Platz 1\ny: Hash 2 -> Platz 2\ni: Hash 0 -> Platz 0\np: Hash 0 -> Platz 3   (0,1,2 belegt)\nw: Hash 0 -> Platz 4   (0-3 belegt)\n\ni | x | y | p | w | - | -"
+    },
+    {
+      "type": "text",
+      "content": "Bei der Verkettung hängen kollidierende Einträge in einer Liste im selben Bucket. Bei der offenen Adressierung liegt alles direkt im Array; bei einer Kollision wird nach einem festen Schema (z. B. linear: nächster Platz) ein freier Platz gesucht. Beim Suchen geht man denselben Weg, bis man den Schlüssel oder einen leeren Platz findet.\n\nWird die Tabelle zu voll (hoher Füllgrad), werden die Ketten bzw. Sondierwege lang. Dann legt man ein größeres Array an und fügt alle Einträge neu ein (Rehashing). Das .NET-Dictionary arbeitet intern mit Verkettung und vergrößert sich automatisch."
+    },
+    {
+      "type": "text",
+      "content": "In C# hat jedes Objekt die Methode GetHashCode(). Für int liefert sie die Zahl selbst (42.GetHashCode() ist 42). Hashwerte von Strings werden in .NET bei jedem Programmstart neu „gewürfelt“ – speichere sie also nie in Dateien. Weil Hashwerte negativ sein können und % in C# dann negativ bleibt (-17 % 10 ist -7), entfernt man vorher das Vorzeichenbit.\n\nWichtige Regel: Sind zwei Objekte laut Equals gleich, müssen sie denselben Hashcode haben. Überschreibst du Equals, überschreib auch GetHashCode – sonst findet ein Dictionary oder HashSet deine Objekte nicht mehr. Records erledigen beides automatisch."
+    },
+    {
+      "type": "code",
+      "content": "int Index(object key, int n) =>\n    (key.GetHashCode() & 0x7FFFFFFF) % n;\nConsole.WriteLine(Index(17, 10));   // 7\nConsole.WriteLine(Index(27, 10));   // 7\n\nclass Punkt\n{\n    public int X { get; }\n    public int Y { get; }\n    public Punkt(int x, int y)\n        { X = x; Y = y; }\n    public override bool Equals(object o) =>\n        o is Punkt p && p.X == X && p.Y == Y;\n    public override int GetHashCode() =>\n        HashCode.Combine(X, Y);\n}\n// Ohne die beiden Overrides liefert\n// set.Contains(new Punkt(1, 2)) false,\n// obwohl ein Punkt(1, 2) im Set ist."
+    },
+    {
+      "type": "text",
+      "content": "Zurück zum Compiler: Eine Symboltabelle ist ein Dictionary<string, Symbol> (Name → Typ, Speicherort …). Für Gültigkeitsbereiche (Scopes) verwendet man einen Stack von Dictionaries: Beim Betreten eines Blocks wird ein neues Dictionary gepusht, beim Verlassen gepoppt. Gesucht wird vom innersten Scope nach außen – so verdeckt eine innere Variable eine äußere mit gleichem Namen.\n\nZusammenfassung: Hashfunktion → Index → Bucket. Kollisionen löst man mit Verkettung oder offener Adressierung, bei hohem Füllgrad wird vergrößert. Equals und GetHashCode gehören immer zusammen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Mit der Summen-Hashfunktion der Lektion und Tabellengröße 7: In welchem Bucket landet \"ba\"? ('a' = 97, 'b' = 98)",
+      "options": [
+        "3",
+        "0",
+        "5",
+        "6"
+      ],
+      "correctIndex": 3,
+      "explanation": "98 + 97 = 195, und 195 % 7 = 6 (7 · 27 = 189, Rest 6). \"ab\" landet ebenfalls in Bucket 6 – eine Kollision."
+    },
+    {
+      "question": "Lineares Sondieren, Tabellengröße 7. Die Plätze 0, 1 und 2 sind belegt. Ein neuer Schlüssel hat den Hash 1. Wo wird er gespeichert?",
+      "options": [
+        "Platz 3",
+        "Platz 1, der alte Eintrag wird überschrieben",
+        "Platz 2",
+        "Platz 0"
+      ],
+      "correctIndex": 0,
+      "explanation": "Platz 1 ist belegt, also wird der nächste geprüft: 2 ist auch belegt, 3 ist frei. Beim linearen Sondieren geht man immer einen Platz weiter."
+    },
+    {
+      "question": "Finde den Fehler: Warum gibt dieser Code False aus?",
+      "code": "class Punkt\n{\n    public int X, Y;\n    public Punkt(int x, int y)\n        { X = x; Y = y; }\n}\nvar set = new HashSet<Punkt>\n    { new Punkt(1, 2) };\nConsole.WriteLine(\n    set.Contains(new Punkt(1, 2)));",
+      "options": [
+        "HashSet kann keine eigenen Klassen speichern",
+        "Die Klasse überschreibt weder Equals noch GetHashCode – zwei neue Objekte gelten als verschieden",
+        "Die Felder X und Y müssen Properties sein",
+        "Contains vergleicht nur Strings"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne Overrides vergleicht eine Klasse nach Referenz: Zwei mit new erzeugte Objekte sind verschieden, auch bei gleichen Werten. Mit Equals und GetHashCode (oder als record) liefert Contains true."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.WriteLine(-17 % 10);",
+      "options": [
+        "-7",
+        "3",
+        "7",
+        "1"
+      ],
+      "correctIndex": 0,
+      "explanation": "In C# hat das Ergebnis von % das Vorzeichen des linken Operanden: -17 % 10 = -7. Darum entfernt man bei Hashwerten das Vorzeichenbit (& 0x7FFFFFFF), bevor man % rechnet – ein negativer Array-Index würde sonst eine Exception auslösen."
+    }
+  ]
+}

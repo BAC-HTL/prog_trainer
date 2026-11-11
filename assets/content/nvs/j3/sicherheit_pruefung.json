@@ -1,0 +1,118 @@
+{
+  "id": "nvs-j3-sicherheit_pruefung",
+  "title": "Abschlussprüfung: Netzwerksicherheit",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein Angreifer verändert unbemerkt Noten in einer übertragenen Datei. Welches Schutzziel ist verletzt?",
+      "options": [
+        "Verfügbarkeit",
+        "Integrität",
+        "Vertraulichkeit",
+        "Keines, solange niemand die Datei liest"
+      ],
+      "correctIndex": 1,
+      "explanation": "Integrität bedeutet, dass Daten nicht unbemerkt verändert werden."
+    },
+    {
+      "question": "Warum lässt sich ein DDoS-Angriff nicht einfach durch das Sperren einer IP-Adresse stoppen?",
+      "options": [
+        "Weil DDoS nur über IPv6 läuft",
+        "Weil die Firewall DDoS-Pakete nicht sieht",
+        "Weil der Verkehr von sehr vielen verschiedenen Rechnern (oft einem Botnetz) kommt",
+        "Weil DDoS-Pakete verschlüsselt sind"
+      ],
+      "correctIndex": 2,
+      "explanation": "Distributed heißt verteilt: Tausende Quellen, oft gekaperte Geräte. Abwehr erfordert Filterung vorgelagert, z. B. beim Provider."
+    },
+    {
+      "question": "Welche Switch-Funktion prüft ARP-Antworten gegen bekannte IP-MAC-Zuordnungen und erschwert so ARP-Spoofing?",
+      "options": [
+        "Spanning Tree",
+        "PortFast",
+        "Trunking",
+        "Dynamic ARP Inspection"
+      ],
+      "correctIndex": 3,
+      "explanation": "DAI vergleicht ARP-Pakete mit der Bindungstabelle aus DHCP Snooping und verwirft gefälschte Antworten."
+    },
+    {
+      "question": "Warum ist ein MITM-Angreifer bei einer korrekt geprüften HTTPS-Verbindung kaum gefährlich?",
+      "options": [
+        "Weil er die Daten nur verschlüsselt sieht und ohne gültiges Zertifikat nicht unbemerkt den Server spielen kann",
+        "Weil HTTPS ARP abschaltet",
+        "Weil HTTPS nur im WLAN funktioniert",
+        "Weil HTTPS-Pakete nicht geroutet werden"
+      ],
+      "correctIndex": 0,
+      "explanation": "TLS verschlüsselt und authentifiziert den Server per Zertifikat. Gefährlich wird es erst, wenn Benutzer:innen Zertifikatswarnungen wegklicken."
+    },
+    {
+      "question": "Welche Kombination entspricht Defense in Depth am besten?",
+      "options": [
+        "Nur eine sehr teure Firewall",
+        "VLAN-Segmentierung, aktuelle Firmware, minimale Rechte, MFA und Offline-Backups",
+        "Ein starkes gemeinsames Admin-Passwort für alle Geräte",
+        "Versteckte SSID und MAC-Filter"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mehrere unabhängige Schutzschichten: Fällt eine aus, greifen die anderen."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "print(round(26 ** 5 / 26 ** 4))",
+      "options": [
+        "8",
+        "32",
+        "64",
+        "26"
+      ],
+      "correctIndex": 3,
+      "explanation": "26⁵ / 26⁴ = 26 – jedes zusätzliche Zeichen aus 26 Kleinbuchstaben vervielfacht die Kombinationen um 26."
+    },
+    {
+      "question": "Telnet wird zur Verwaltung der Switches verwendet. Was ist die richtige Maßnahme?",
+      "options": [
+        "Auf SSH umstellen, weil Telnet alles inklusive Passwort im Klartext überträgt",
+        "Telnet auf einen anderen Port legen",
+        "Das Telnet-Passwort verlängern",
+        "Telnet nur im WLAN verwenden"
+      ],
+      "correctIndex": 0,
+      "explanation": "Telnet ist unverschlüsselt. SSH verschlüsselt die gesamte Sitzung; zusätzlich sollte der Zugang nur aus dem Management-VLAN möglich sein."
+    },
+    {
+      "question": "Eine Firewall hat die Regeln: 1) allow 10.10.20.0/24 → Server Port 22, 2) deny any → Server Port 22, 3) allow any → Server Port 443, 4) deny any. Was passiert mit SSH von 10.10.33.7 zum Server?",
+      "options": [
+        "Erlaubt durch Regel 1",
+        "Erlaubt durch Regel 3",
+        "Verworfen durch Regel 2",
+        "Verworfen erst durch Regel 4"
+      ],
+      "correctIndex": 2,
+      "explanation": "10.10.33.7 liegt nicht in 10.10.20.0/24, Regel 1 passt nicht. Regel 2 passt (beliebige Quelle, Port 22) und entscheidet sofort."
+    },
+    {
+      "question": "Worin unterscheidet sich ein zustandsloser Paketfilter von einer Stateful Firewall?",
+      "options": [
+        "Der Paketfilter prüft auch Inhalte von Webseiten.",
+        "Der Paketfilter kennt keine Verbindungen und braucht eigene Regeln für Antwortpakete.",
+        "Die Stateful Firewall prüft keine Ports.",
+        "Es gibt keinen Unterschied."
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Paketfilter bewertet jedes Paket isoliert. Die Stateful Firewall erkennt anhand ihrer Zustandstabelle, ob ein Paket zu einer erlaubten Verbindung gehört."
+    },
+    {
+      "question": "Die Schule will ihren Webserver aus dem Internet erreichbar machen. Wo sollte er stehen und welche Regel ist zentral?",
+      "options": [
+        "Im LAN; Internet → LAN Port 443 erlauben",
+        "In der DMZ; Internet → DMZ nur Port 443, DMZ → LAN gesperrt",
+        "In der DMZ; DMZ → LAN alles erlauben, damit Updates gehen",
+        "Im Management-VLAN; alles erlauben"
+      ],
+      "correctIndex": 1,
+      "explanation": "Öffentliche Server gehören in die DMZ. Nur der nötige Dienst wird von außen geöffnet, und aus der DMZ gibt es keinen Weg ins LAN."
+    }
+  ]
+}

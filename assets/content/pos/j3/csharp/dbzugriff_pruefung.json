@@ -1,0 +1,121 @@
+{
+  "id": "pos-j3-csharp-dbzugriff_pruefung",
+  "title": "Abschlussprüfung: Datenbankzugriff aus Programmen",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche drei Grundbausteine verwendet ADO.NET für eine Abfrage?",
+      "options": [
+        "Connection, Command, DataReader",
+        "Table, Row, Column",
+        "Server, Client, Socket",
+        "Repository, Record, Regex"
+      ],
+      "correctIndex": 0,
+      "explanation": "Über die Connection erreicht man die Datenbank, der Command enthält das SQL, der DataReader liest das Ergebnis zeilenweise."
+    },
+    {
+      "question": "Was gibt dieses Programm aus, wenn die Tabelle drei Schüler:innen enthält, zwei davon in der 3AHIF?",
+      "code": "cmd.CommandText =\n  \"UPDATE schueler \" +\n  \"SET klasse = '4AHIF' \" +\n  \"WHERE klasse = '3AHIF'\";\nConsole.WriteLine(\n    cmd.ExecuteNonQuery());",
+      "options": [
+        "3",
+        "1",
+        "2",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "ExecuteNonQuery liefert bei UPDATE die Anzahl der betroffenen Zeilen – nur die zwei Zeilen der 3AHIF werden geändert."
+    },
+    {
+      "question": "Warum steht reader.Read() in einer while-Schleife?",
+      "options": [
+        "Weil Read() die ganze Tabelle auf einmal lädt",
+        "Weil Read() zur nächsten Zeile springt und false liefert, wenn keine mehr vorhanden ist",
+        "Weil Read() die Verbindung öffnet",
+        "Weil der Reader rückwärts liest"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der DataReader ist vorwärts-only. Jeder Read()-Aufruf rückt eine Zeile vor; false bedeutet: Ende des Ergebnisses."
+    },
+    {
+      "question": "Ein Angreifer gibt beim unsicheren Login als Name admin'-- ein. Was passiert?",
+      "code": "cmd.CommandText =\n  \"SELECT COUNT(*) FROM benutzer \" +\n  $\"WHERE name = '{name}' \" +\n  $\"AND passwort = '{pw}'\";",
+      "options": [
+        "Die Abfrage schlägt mit einem Syntaxfehler fehl",
+        "Nur Benutzer mit dem Namen admin'-- werden gefunden",
+        "Alle Passwörter werden gelöscht",
+        "Der Passwort-Teil wird zum Kommentar – der Login als admin gelingt ohne Passwort"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Apostroph beendet den Namen, -- leitet in SQL einen Kommentar ein. Die Passwortbedingung wird nicht mehr ausgewertet."
+    },
+    {
+      "question": "Welche Aussage über Parameter in Microsoft.Data.Sqlite stimmt?",
+      "options": [
+        "Parameter können auch Tabellennamen ersetzen",
+        "Platzhalter wie @name werden mit Parameters.AddWithValue mit Werten belegt",
+        "Parameter funktionieren nur bei SELECT",
+        "Bei Parametern muss man Apostrophe in den Werten selbst verdoppeln"
+      ],
+      "correctIndex": 1,
+      "explanation": "Platzhalter (@, $ oder :) stehen im SQL, die Werte kommen über AddWithValue. Sie gelten nur für Werte, nicht für Bezeichner – und Sonderzeichen muss man nicht mehr selbst behandeln."
+    },
+    {
+      "question": "Welche Eingaben akzeptiert IstGueltigeKlasse?",
+      "code": "static bool IstGueltigeKlasse(string k)\n    => Regex.IsMatch(k,\n        @\"^[1-5][A-Z]{4}$\");\n// geprüft: \"3AHIF\", \"3ahif\", \"10AHIF\"",
+      "options": [
+        "Nur \"3AHIF\"",
+        "\"3AHIF\" und \"3ahif\"",
+        "\"3AHIF\" und \"10AHIF\"",
+        "\"3AHIF\", \"3ahif\" und \"10AHIF\""
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Muster verlangt genau eine Ziffer von 1 bis 5 und danach genau vier Großbuchstaben. \"3ahif\" (klein) und \"10AHIF\" (zwei Ziffern) passen nicht."
+    },
+    {
+      "question": "Was liefert diese Abfrage, wenn schnitt bei Anna 1.8, bei Ben 2.4 und bei Clara NULL ist?",
+      "code": "SELECT AVG(schnitt) FROM schueler;",
+      "options": [
+        "1.4",
+        "NULL",
+        "2.1",
+        "Eine Exception"
+      ],
+      "correctIndex": 2,
+      "explanation": "Aggregatfunktionen wie AVG ignorieren NULL-Werte. Der Durchschnitt wird nur aus 1.8 und 2.4 gebildet: 4.2 / 2 = 2.1."
+    },
+    {
+      "question": "Eine Methode FindeNachId(int id) findet keinen Datensatz. Was ist das übliche Verhalten?",
+      "options": [
+        "Sie liefert ein leeres Schueler-Objekt mit Id 0",
+        "Sie hängt sich in einer Endlosschleife auf",
+        "Sie liefert die erste Zeile der Tabelle",
+        "if (r.Read()) ist false, die Methode gibt null zurück (Rückgabetyp Schueler?)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei höchstens einem Treffer prüft man mit if (r.Read()). Gibt es keine Zeile, signalisiert null (nullable Rückgabetyp), dass nichts gefunden wurde."
+    },
+    {
+      "question": "Welche Vorteile bietet eine Repository-Klasse?",
+      "options": [
+        "SQL, Verbindung und Mapping liegen an einer Stelle; der restliche Code arbeitet nur mit Objekten",
+        "Sie macht Parameter überflüssig",
+        "Sie hält eine Verbindung für immer offen und ist dadurch sicherer",
+        "Sie ersetzt die Datenbank"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Repository kapselt den Datenbankzugriff. Änderungen am SQL betreffen nur diese Klasse, und der Rest des Programms bleibt übersichtlich und testbar."
+    },
+    {
+      "question": "Wie liest du in einem DataReader eine REAL-Spalte, die NULL sein darf, sicher in eine double?-Variable?",
+      "options": [
+        "double? s = r.GetDouble(i);",
+        "double? s = r.IsDBNull(i) ? null : r.GetDouble(i);",
+        "double? s = (double?)r.GetString(i);",
+        "double? s = r.GetDouble(i) ?? null;"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zuerst mit IsDBNull prüfen, nur bei einem echten Wert GetDouble aufrufen. GetDouble selbst kann kein NULL liefern."
+    }
+  ]
+}

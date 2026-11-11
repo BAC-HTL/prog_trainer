@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-dbzugriff_02_parameter_sql_injection",
+  "title": "Parameter und SQL-Injection",
+  "summary": "Warum zusammengesetzte SQL-Strings gefährlich sind und wie Parameter und Eingabevalidierung dein Programm schützen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Login für die Schulbibliothek: Benutzername und Passwort kommen aus Textfeldern. Naheliegend – und falsch – ist es, die Eingaben einfach in den SQL-Text einzubauen. (Passwörter würde man in der Praxis außerdem nie im Klartext speichern, sondern als Hash; hier geht es nur um das SQL.)"
+    },
+    {
+      "type": "code",
+      "content": "// UNSICHER!\nbefehl.CommandText =\n    \"SELECT COUNT(*) FROM benutzer\"\n  + $\" WHERE name = '{name}'\"\n  + $\" AND passwort = '{pw}'\";\nbool ok = Convert.ToInt32(\n    befehl.ExecuteScalar()) > 0;"
+    },
+    {
+      "type": "text",
+      "content": "Gibt jemand als Name und Passwort jeweils ' OR '1'='1 ein, entsteht das SQL unten. Die eingegebenen Apostrophe beenden den String, und der Rest wird als SQL-Code ausgeführt. Weil AND stärker bindet als OR und '1'='1' immer wahr ist, zählt die Abfrage alle Benutzer – der Login klappt ohne Passwort. Das ist SQL-Injection: Eingaben werden zu Code."
+    },
+    {
+      "type": "code",
+      "content": "SELECT COUNT(*) FROM benutzer\nWHERE name = '' OR '1'='1'\n  AND passwort = '' OR '1'='1'\n-- liefert alle Zeilen!\n\n-- Name: admin'--  (Rest = Kommentar)\nSELECT COUNT(*) FROM benutzer\nWHERE name = 'admin'--' AND ...\n-- Login als admin ohne Passwort"
+    },
+    {
+      "type": "text",
+      "content": "Die Lösung sind Parameter. Im SQL steht nur ein Platzhalter wie @name, der Wert wird getrennt übergeben. Die Datenbank behandelt ihn immer als Wert, nie als SQL-Code – egal, welche Zeichen er enthält. Microsoft.Data.Sqlite erkennt Platzhalter mit @, $ oder :. Nebeneffekt: Du musst dich nicht mehr um Apostrophe in Namen wie O'Brien kümmern."
+    },
+    {
+      "type": "code",
+      "content": "befehl.CommandText = \"\"\"\n    SELECT COUNT(*) FROM benutzer\n    WHERE name = @name\n      AND passwort = @pw\n    \"\"\";\nbefehl.Parameters\n    .AddWithValue(\"@name\", name);\nbefehl.Parameters\n    .AddWithValue(\"@pw\", pw);\nbool ok = Convert.ToInt32(\n    befehl.ExecuteScalar()) > 0;\n// ' OR '1'='1  →  0 Treffer"
+    },
+    {
+      "type": "text",
+      "content": "Parameter funktionieren für Werte – nicht für Tabellen- oder Spaltennamen. Ein ORDER BY @spalte sortiert nicht nach der Spalte. Muss der Benutzer eine Spalte wählen können, prüfst du die Eingabe gegen eine feste Liste erlaubter Namen (Whitelist). Typischer Fehler: Einen Befehl mehrmals verwenden und Parameter immer wieder hinzufügen – dann gibt es @name doppelt. Vorher Parameters.Clear() aufrufen oder einen neuen Command erzeugen."
+    },
+    {
+      "type": "text",
+      "content": "Zusätzlich gilt: Eingaben validieren, bevor sie überhaupt in die Datenbank gehen. Ist das Feld leer? Hat die Klasse das erwartete Format? Liegt die Note zwischen 1 und 5? Validierung ersetzt Parameter nicht, sondern ergänzt sie: Parameter verhindern Injection, Validierung verhindert unsinnige Daten und liefert verständliche Fehlermeldungen."
+    },
+    {
+      "type": "code",
+      "content": "static bool IstGueltigeKlasse(string k)\n    => Regex.IsMatch(k,\n        @\"^[1-5][A-Z]{4}$\");\n\nIstGueltigeKlasse(\"3AHIF\");   // true\nIstGueltigeKlasse(\"3ahif\");   // false\nIstGueltigeKlasse(\n    \"x' OR 1=1 --\");          // false"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Benutzereingaben nie per + oder $\"…\" in SQL einbauen. Immer Parameter (@name + AddWithValue) verwenden, Tabellen-/Spaltennamen nur über eine Whitelist zulassen und Eingaben zusätzlich validieren. SQL-Injection gehört seit Jahren zu den häufigsten Sicherheitslücken in Webanwendungen – sie ist mit Parametern einfach vermeidbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Benutzer gibt als Klasse x' OR 1=1 -- ein. Welches SQL entsteht?",
+      "code": "string k = Console.ReadLine()!;\nbefehl.CommandText =\n  \"SELECT name FROM schueler \" +\n  $\"WHERE klasse = '{k}'\";",
+      "options": [
+        "SELECT name FROM schueler WHERE klasse = 'x'' OR 1=1 --'",
+        "Ein Compilerfehler",
+        "SELECT name FROM schueler WHERE klasse = 'x' OR 1=1 --'",
+        "SELECT name FROM schueler WHERE klasse = @k"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Eingabe wird unverändert eingefügt. Der Apostroph nach x beendet den String, OR 1=1 ist immer wahr, und -- macht den restlichen Apostroph zum Kommentar. Die Abfrage liefert alle Schüler:innen."
+    },
+    {
+      "question": "Warum verhindern Parameter SQL-Injection?",
+      "options": [
+        "Weil sie Apostrophe automatisch löschen",
+        "Weil die Datenbank den Parameterwert immer als Wert behandelt, nie als SQL-Code",
+        "Weil Parameter nur Zahlen erlauben",
+        "Weil das SQL dann verschlüsselt übertragen wird"
+      ],
+      "correctIndex": 1,
+      "explanation": "SQL-Text und Werte werden getrennt übergeben. Was immer im Wert steht, kann die Struktur der Abfrage nicht mehr verändern."
+    },
+    {
+      "question": "Was liefert der parametrisierte Login, wenn Name und Passwort jeweils ' OR '1'='1 lauten (die Tabelle enthält zwei Benutzer)?",
+      "code": "befehl.CommandText =\n  \"SELECT COUNT(*) FROM benutzer \" +\n  \"WHERE name = @n AND passwort = @p\";\nbefehl.Parameters.AddWithValue(\"@n\", n);\nbefehl.Parameters.AddWithValue(\"@p\", p);",
+      "options": [
+        "2",
+        "1",
+        "Eine SqliteException",
+        "0"
+      ],
+      "correctIndex": 3,
+      "explanation": "Es wird nach einem Benutzer gesucht, der wörtlich ' OR '1'='1 heißt. Den gibt es nicht – COUNT(*) liefert 0."
+    },
+    {
+      "question": "Ein Programm soll nach einer vom Benutzer gewählten Spalte sortieren. Was ist der sichere Weg?",
+      "options": [
+        "ORDER BY @spalte mit AddWithValue",
+        "Spaltennamen gegen eine feste Liste erlaubter Namen prüfen und erst dann einbauen",
+        "Den Spaltennamen in Anführungszeichen einbauen",
+        "Die Eingabe auf 10 Zeichen kürzen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Parameter ersetzen nur Werte, keine Bezeichner. Spaltennamen dürfen nur aus einer Whitelist bekannter Namen stammen."
+    }
+  ]
+}

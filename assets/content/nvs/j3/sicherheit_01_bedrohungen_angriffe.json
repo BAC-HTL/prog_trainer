@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j3-sicherheit_01_bedrohungen_angriffe",
+  "title": "Bedrohungen und Angriffsarten",
+  "summary": "Die Schutzziele der IT-Sicherheit und die wichtigsten Bedrohungen im Netz – Malware, Phishing, DoS/DDoS, Man-in-the-Middle und ARP-Spoofing – erkennen und einordnen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "IT-Sicherheit schützt drei Ziele, die CIA-Triade: Vertraulichkeit (nur Berechtigte lesen Daten), Integrität (Daten werden nicht unbemerkt verändert) und Verfügbarkeit (Systeme funktionieren, wenn man sie braucht). Jede Bedrohung greift mindestens eines dieser Ziele an. In dieser Lektion geht es darum, Angriffe zu ERKENNEN und zu verstehen – wie man sich schützt, folgt in den nächsten Lektionen."
+    },
+    {
+      "type": "code",
+      "content": "Malware-Art   Kennzeichen\n------------  ------------------------\nVirus         hängt sich an Dateien,\n              braucht einen Wirt\nWurm          verbreitet sich selbst\n              übers Netz\nTrojaner      tarnt sich als nützliches\n              Programm\nRansomware    verschlüsselt Daten,\n              fordert Lösegeld\nSpyware       spioniert heimlich aus\nBot           Teil eines fernge-\n              steuerten Botnetzes"
+    },
+    {
+      "type": "text",
+      "content": "Malware kommt meist über E-Mail-Anhänge, manipulierte Downloads, USB-Sticks oder ungepatchte Sicherheitslücken. Besonders gefährlich ist Ransomware: Sie verschlüsselt auch Daten auf erreichbaren Netzlaufwerken – ein Grund, warum Rechte und Backups so wichtig sind. Hinweise auf einen Befall: plötzlich unlesbare Dateien mit neuer Endung, ungewöhnlich hohe Netzwerk- oder CPU-Last, Verbindungen zu unbekannten Zielen, abgeschaltete Virenscanner."
+    },
+    {
+      "type": "text",
+      "content": "Phishing nutzt den Menschen als Schwachstelle (Social Engineering): Eine gefälschte Nachricht soll dazu bringen, Zugangsdaten einzugeben oder einen Anhang zu öffnen. Gezielte Angriffe auf bestimmte Personen heißen Spear-Phishing. Warnzeichen:\n• Zeitdruck oder Drohung („Konto wird heute gesperrt“)\n• Absender oder Link-Domain passt nicht (z. B. „htl-login.example.net“ statt der echten Schuldomain)\n• Aufforderung, Passwort oder Codes einzugeben\n• unerwartete Anhänge, ungewöhnliche Anrede\nIm Zweifel: nicht klicken, sondern über einen bekannten Weg nachfragen und den Vorfall der IT melden."
+    },
+    {
+      "type": "text",
+      "content": "DoS (Denial of Service) greift die Verfügbarkeit an: Ein Dienst wird so überlastet, dass echte Anfragen nicht mehr durchkommen. Bei DDoS (Distributed DoS) kommt die Last von sehr vielen Rechnern gleichzeitig, oft aus einem Botnetz – deshalb lässt sie sich nicht einfach durch Sperren einer Adresse stoppen. Man unterscheidet grob Angriffe, die die Leitung füllen (volumenbasiert), solche, die Protokollzustände erschöpfen (z. B. viele halboffene TCP-Verbindungen), und solche, die eine Anwendung mit teuren Anfragen überlasten. Erkennbar ist DoS im Monitoring an plötzlichen Lastspitzen, die nicht zur Baseline passen."
+    },
+    {
+      "type": "text",
+      "content": "Bei einem Man-in-the-Middle-Angriff (MITM) schaltet sich jemand unbemerkt zwischen zwei Kommunikationspartner und kann mitlesen oder Daten verändern. Im LAN geschieht das häufig über ARP-Spoofing: ARP hat keine Authentifizierung – jedes Gerät glaubt ARP-Antworten. Ein Angreifer verschickt gefälschte Antworten, die die IP des Default Gateways mit SEINER MAC-Adresse verknüpfen. Die Opfer schicken dann ihren Internetverkehr an ihn. Ähnliche Tricks: ein fremder DHCP-Server, der ein falsches Gateway verteilt, oder ein „Evil Twin“-Access-Point mit bekannter SSID."
+    },
+    {
+      "type": "text",
+      "content": "Erkennen lässt sich ARP-Spoofing u. a. daran, dass in der ARP-Tabelle (arp -a) plötzlich mehrere IP-Adressen dieselbe MAC-Adresse haben oder sich die MAC des Gateways ändert. Ein kleines Prüfskript dafür:"
+    },
+    {
+      "type": "code",
+      "content": "from collections import defaultdict\n\n# Ausgabe von \"arp -a\", vereinfacht\narp = {\n  \"192.168.1.1\":  \"aa-bb-cc-00-00-01\",\n  \"192.168.1.20\": \"aa-bb-cc-00-00-20\",\n  \"192.168.1.66\": \"aa-bb-cc-00-00-66\",\n}\n# später erneut abgefragt:\narp[\"192.168.1.1\"] = \"aa-bb-cc-00-00-66\"\n\nips = defaultdict(list)\nfor ip, mac in arp.items():\n    ips[mac].append(ip)\nfor mac, lst in ips.items():\n    if len(lst) > 1:\n        print(\"Verdacht:\", mac, lst)\n\n# Ausgabe:\n# Verdacht: aa-bb-cc-00-00-66\n#   ['192.168.1.1', '192.168.1.66']\n#   (eine Zeile)"
+    },
+    {
+      "type": "text",
+      "content": "Gegenmaßnahmen auf dem Switch sind DHCP Snooping (nur vertrauenswürdige Ports dürfen DHCP-Antworten senden) und darauf aufbauend Dynamic ARP Inspection (ARP-Antworten werden gegen die bekannten IP-MAC-Zuordnungen geprüft). Verschlüsselung (HTTPS, SSH) sorgt dafür, dass ein MITM nichts Brauchbares mitlesen kann – sofern Zertifikatswarnungen nicht weggeklickt werden. Zusammenfassung: Bedrohungen richten sich gegen Vertraulichkeit, Integrität oder Verfügbarkeit; Malware verbreitet sich über Anhänge, Downloads und Lücken; Phishing zielt auf Menschen; DDoS legt Dienste lahm; MITM und ARP-Spoofing leiten Verkehr um – erkennbar an doppelten MACs in der ARP-Tabelle."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Schutzziel greift ein DDoS-Angriff in erster Linie an?",
+      "options": [
+        "Vertraulichkeit",
+        "Integrität",
+        "Authentizität",
+        "Verfügbarkeit"
+      ],
+      "correctIndex": 3,
+      "explanation": "DDoS überlastet einen Dienst, sodass er nicht mehr erreichbar ist – das betrifft die Verfügbarkeit."
+    },
+    {
+      "question": "Welche Malware verbreitet sich selbstständig über das Netzwerk, ohne dass ein Benutzer eine Datei öffnen muss?",
+      "options": [
+        "Wurm",
+        "Trojaner",
+        "Virus",
+        "Spyware"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Wurm nutzt z. B. Sicherheitslücken, um sich von Rechner zu Rechner zu kopieren. Ein Virus braucht eine Wirtsdatei, ein Trojaner muss vom Opfer gestartet werden."
+    },
+    {
+      "question": "In „arp -a“ eines PCs stehen 192.168.1.1 (Gateway) und 192.168.1.66 mit derselben MAC-Adresse. Was ist die naheliegendste Erklärung?",
+      "options": [
+        "Der PC hat zwei Netzwerkkarten.",
+        "Möglicherweise ARP-Spoofing: Ein Gerät gibt sich als Gateway aus.",
+        "Das Gateway ist ausgefallen.",
+        "Der DNS-Server ist falsch eingetragen."
+      ],
+      "correctIndex": 1,
+      "explanation": "Normalerweise hat das Gateway eine eigene MAC. Teilt es sie plötzlich mit einem Client, deutet das darauf hin, dass dieser Client gefälschte ARP-Antworten verschickt."
+    },
+    {
+      "question": "Du bekommst eine Mail: „Ihr Schulkonto wird in 2 Stunden gesperrt – jetzt hier anmelden“, der Link führt auf eine fremde Domain. Was ist richtig?",
+      "options": [
+        "Schnell anmelden, damit das Konto nicht gesperrt wird",
+        "Den Link öffnen, aber nur den Benutzernamen eingeben",
+        "Nicht klicken, den Vorfall der IT melden und das Konto nur über die bekannte Adresse prüfen",
+        "Die Mail an alle Klassenkolleg:innen weiterleiten"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zeitdruck plus fremde Domain sind klassische Phishing-Merkmale. Melden hilft der IT, andere zu warnen und die Mail zu sperren."
+    }
+  ]
+}

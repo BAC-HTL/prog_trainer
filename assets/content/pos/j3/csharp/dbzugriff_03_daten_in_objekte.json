@@ -1,0 +1,95 @@
+{
+  "id": "pos-j3-csharp-dbzugriff_03_daten_in_objekte",
+  "title": "Daten in Objekte mappen",
+  "summary": "Zeilen aus dem DataReader in records umwandeln, NULL-Werte behandeln und den Datenbankzugriff in einer Repository-Klasse bündeln.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Mit einzelnen Variablen aus reader.GetString(1) zu arbeiten ist mühsam. Besser: Jede Zeile wird zu einem Objekt. Dieses Umwandeln heißt Mapping. Für reine Datenobjekte eignen sich records – sie sind kurz zu schreiben, haben ein lesbares ToString() und vergleichen nach Werten."
+    },
+    {
+      "type": "code",
+      "content": "record Schueler(\n    int Id,\n    string Name,\n    string Klasse,\n    double? Schnitt);  // darf NULL sein"
+    },
+    {
+      "type": "text",
+      "content": "Statt Spaltennummern ist GetOrdinal(\"name\") robuster: Ändert sich die Reihenfolge im SELECT, stimmt das Mapping trotzdem. Wichtig sind NULL-Werte: GetDouble auf eine NULL-Spalte wirft eine Exception. Prüfe vorher mit IsDBNull und verwende in C# einen nullable Typ (double?). Typischer Fehler: SELECT * verwenden und sich auf die Spaltenreihenfolge verlassen."
+    },
+    {
+      "type": "code",
+      "content": "static Schueler Map(SqliteDataReader r)\n{\n    int iS = r.GetOrdinal(\"schnitt\");\n    return new Schueler(\n        r.GetInt32(r.GetOrdinal(\"id\")),\n        r.GetString(r.GetOrdinal(\"name\")),\n        r.GetString(\n            r.GetOrdinal(\"klasse\")),\n        r.IsDBNull(iS)\n            ? null\n            : r.GetDouble(iS));\n}"
+    },
+    {
+      "type": "text",
+      "content": "Damit du Verbindung, Command und Mapping nicht überall wiederholst, bündelst du den Zugriff in einer Repository-Klasse. Der Rest des Programms sieht nur Methoden wie Alle(), FindeNachId(…) oder Einfuegen(…) und arbeitet mit Schueler-Objekten – SQL kommt dort nicht mehr vor. Jede Methode öffnet ihre eigene, kurzlebige Verbindung (mit using)."
+    },
+    {
+      "type": "code",
+      "content": "class SchuelerRepository(string cs)\n{\n    public List<Schueler> InKlasse(\n        string klasse)\n    {\n        using var con =\n            new SqliteConnection(cs);\n        con.Open();\n        using var cmd =\n            con.CreateCommand();\n        cmd.CommandText = \"\"\"\n          SELECT id, name, klasse, schnitt\n          FROM schueler\n          WHERE klasse = @k\n          \"\"\";\n        cmd.Parameters\n            .AddWithValue(\"@k\", klasse);\n        using var r = cmd.ExecuteReader();\n        var liste = new List<Schueler>();\n        while (r.Read())\n            liste.Add(Map(r));\n        return liste;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Sucht man nach einer Id, gibt es höchstens einen Treffer. Dann reicht if (r.Read()) statt while, und ohne Treffer gibt die Methode null zurück (Rückgabetyp Schueler?). Beim Einfügen liefert SELECT last_insert_rowid() die von SQLite vergebene Id. Ein C#-null musst du als DBNull.Value übergeben – Microsoft.Data.Sqlite akzeptiert null als Parameterwert nicht."
+    },
+    {
+      "type": "code",
+      "content": "public int Einfuegen(Schueler s)\n{\n    // con, cmd wie oben\n    cmd.CommandText = \"\"\"\n      INSERT INTO schueler\n        (name, klasse, schnitt)\n      VALUES (@n, @k, @s);\n      SELECT last_insert_rowid();\n      \"\"\";\n    cmd.Parameters.AddWithValue(\n        \"@n\", s.Name);\n    cmd.Parameters.AddWithValue(\n        \"@k\", s.Klasse);\n    cmd.Parameters.AddWithValue(\"@s\",\n        (object?)s.Schnitt\n          ?? DBNull.Value);\n    return Convert.ToInt32(\n        cmd.ExecuteScalar());\n}"
+    },
+    {
+      "type": "text",
+      "content": "Mit Generics aus diesem Jahrgang lässt sich die Lese-Schleife sogar für alle Klassen verallgemeinern: Eine Methode List<T> Abfragen<T>(string sql, Func<SqliteDataReader, T> map) führt das SQL aus und ruft für jede Zeile die Mapping-Funktion auf. Genau so arbeiten im Kern auch Bibliotheken wie Dapper oder Entity Framework Core, die dir das Mapping komplett abnehmen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Zeilen werden zu Objekten (records). Spalten über GetOrdinal ansprechen, NULL mit IsDBNull prüfen und auf nullable Typen abbilden; beim Schreiben null als DBNull.Value übergeben. Ein Repository kapselt Verbindung, SQL, Parameter und Mapping – der Rest des Programms arbeitet nur noch mit Objekten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Die Spalte schnitt ist bei Clara NULL. Was passiert bei r.GetDouble(3) ohne vorherige Prüfung?",
+      "options": [
+        "Es wird 0 zurückgegeben",
+        "Es wird double.NaN zurückgegeben",
+        "Es wird eine Exception geworfen",
+        "Die Zeile wird übersprungen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die typisierten Get-Methoden können NULL nicht darstellen und werfen eine Exception. Deshalb vorher mit IsDBNull prüfen und auf double? abbilden."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "record Schueler(int Id, string Name,\n    string Klasse, double? Schnitt);\n\nvar a = new Schueler(1, \"Anna\",\n    \"3AHIF\", 1.8);\nvar b = new Schueler(1, \"Anna\",\n    \"3AHIF\", 1.8);\nConsole.WriteLine(a == b);",
+      "options": [
+        "True",
+        "False",
+        "Compilerfehler",
+        "Schueler"
+      ],
+      "correctIndex": 0,
+      "explanation": "Records vergleichen nach Werten: Zwei Schueler mit gleichen Eigenschaften sind gleich, auch wenn es zwei verschiedene Objekte sind."
+    },
+    {
+      "question": "Warum ist r.GetString(r.GetOrdinal(\"name\")) robuster als r.GetString(1)?",
+      "options": [
+        "Weil GetOrdinal schneller ist",
+        "Weil es auch bei geänderter Spaltenreihenfolge im SELECT die richtige Spalte findet",
+        "Weil GetString(1) nur für Zahlen funktioniert",
+        "Weil GetOrdinal NULL-Werte automatisch ersetzt"
+      ],
+      "correctIndex": 1,
+      "explanation": "GetOrdinal ermittelt den Index anhand des Spaltennamens. Ändert sich das SELECT, bleibt das Mapping korrekt."
+    },
+    {
+      "question": "Finde den Fehler: Beim Einfügen eines Schülers ohne Schnitt (null) kommt es zu einer Exception. Was ist die Lösung?",
+      "code": "cmd.Parameters.AddWithValue(\n    \"@s\", s.Schnitt); // s.Schnitt null",
+      "options": [
+        "Die Spalte schnitt löschen",
+        "Statt AddWithValue die Werte in den SQL-String einbauen",
+        "Schnitt immer auf 0 setzen",
+        "null als DBNull.Value übergeben: (object?)s.Schnitt ?? DBNull.Value"
+      ],
+      "correctIndex": 3,
+      "explanation": "Microsoft.Data.Sqlite verlangt, dass jeder Parameter einen Wert hat; ein Datenbank-NULL wird als DBNull.Value übergeben. Werte in den String einzubauen würde SQL-Injection ermöglichen."
+    }
+  ]
+}
