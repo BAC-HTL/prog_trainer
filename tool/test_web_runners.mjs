@@ -3,7 +3,8 @@
 import { chromium } from 'playwright';
 
 const url = process.argv[2];
-const browser = await chromium.launch();
+// Vorinstalliertes Chrome der GitHub-Runner (kein Browser-Download nötig).
+const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined });
 const page = await browser.newPage();
 page.on('pageerror', (e) => console.log('  [pageerror]', e.message));
 await page.goto(url);

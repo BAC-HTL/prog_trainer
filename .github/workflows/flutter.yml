@@ -24,6 +24,9 @@ jobs:
   csharp-runtime:
     name: C#-Laufzeit (WebAssembly) im Browser testen
     runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PW_CHANNEL: chrome
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-dotnet@v5
@@ -38,10 +41,8 @@ jobs:
       - name: Laufzeit bauen und packen (wie auf Pages)
         run: bash tool/package_csharp_runtime.sh /tmp/csharp
       - name: Playwright installieren
-        run: |
-          npm install --no-save playwright
-          # Ubuntu-Spiegel sind manchmal kurz nicht erreichbar → einmal wiederholen
-          npx playwright install --with-deps chromium || (sleep 30 && npx playwright install --with-deps chromium)
+        # Nutzt das vorinstallierte Google Chrome des Runners (PW_CHANNEL).
+        run: npm install --no-save playwright
       - name: Im Browser testen
         run: |
           python3 -m http.server 8000 --directory /tmp/csharp &

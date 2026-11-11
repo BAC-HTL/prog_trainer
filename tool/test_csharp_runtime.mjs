@@ -16,7 +16,8 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const url = process.argv[2] ?? 'http://localhost:8000/';
-const browser = await chromium.launch();
+// Vorinstalliertes Chrome der GitHub-Runner (kein Browser-Download nötig).
+const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined });
 const page = await browser.newPage();
 page.on('console', (m) => console.log('  [browser]', m.text()));
 page.on('pageerror', (e) => console.log('  [pageerror]', e.message));
