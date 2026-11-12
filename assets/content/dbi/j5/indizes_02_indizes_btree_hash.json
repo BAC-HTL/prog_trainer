@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j5-indizes_02_indizes_btree_hash",
+  "title": "B+-Baum und Hash-Index",
+  "summary": "Wie Indizes aufgebaut sind und wie du Höhe und Seitenzugriffe eines B+-Baums nachrechnest.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Index ist eine zusätzliche Datenstruktur, die zu einem Suchschlüssel den Speicherort der Zeile liefert – wie das Stichwortverzeichnis hinten in einem Buch. In PostgreSQL zeigt ein Indexeintrag auf eine Tuple-ID (Seite, Position), in SQLite auf die rowid. Mit CREATE INDEX legst du einen an; für PRIMARY KEY und UNIQUE erzeugt das DBMS automatisch einen."
+    },
+    {
+      "type": "text",
+      "content": "Der Standard-Index fast aller relationalen DBMS ist der B+-Baum:\n• Er ist balanciert: Alle Blätter liegen gleich tief.\n• Ein Knoten ist eine ganze Seite und enthält viele Schlüssel – nicht nur zwei Kinder wie beim binären Suchbaum aus POS.\n• Innere Knoten sind nur Wegweiser, die Einträge (Schlüssel + Zeiger auf die Zeile) stehen in den Blättern.\n• Die Blätter sind miteinander verkettet."
+    },
+    {
+      "type": "code",
+      "content": "            [ 40 | 80 ]\n           /     |     \\\n   [10|25]    [50|65]    [90]\n   /  |  \\    /  |  \\    /  \\\n Blatt <-> Blatt <-> ... <-> Blatt\n\nSuche 65: Wurzel -> Mitte -> Blatt\nBereich 50..90: Blatt suchen,\n  dann Blattkette entlanglaufen"
+    },
+    {
+      "type": "text",
+      "content": "Die Anzahl der Kinder pro Knoten heißt Verzweigungsgrad (Fan-out) f. Weil ein Knoten eine ganze Seite füllt, ist f groß – oft einige Hundert. Ein Baum mit h Ebenen kann bis zu f^h Einträge adressieren. Die Höhe ist daher die kleinste Zahl h mit f^h ≥ N. Für eine Suche liest das DBMS eine Seite pro Ebene und danach noch die Datenseite der Tabelle."
+    },
+    {
+      "type": "code",
+      "content": "Seite 8 KB, Eintrag = Schlüssel 8 B\n+ Zeiger 8 B = 16 B\nf ≈ 8192 / 16 = 512\n-> angenommen f = 500 (Füllgrad)\n\nN = 1 000 000 Schüler-Einträge\n500^1 =         500\n500^2 =     250 000  < 1 Mio\n500^3 = 125 000 000 >= 1 Mio\n=> Höhe h = 3\n\nZugriffe: 3 Indexseiten\n        + 1 Datenseite = 4\nFull Table Scan: tausende Seiten"
+    },
+    {
+      "type": "text",
+      "content": "Das kannst du in PostgreSQL nachprüfen. Die Erweiterung pageinspect zeigt die Ebene der Wurzel (level 2 = drei Ebenen 2, 1, 0). EXPLAIN mit BUFFERS zeigt, wie viele Seiten wirklich angefasst wurden – bei der Primärschlüssel-Suche in einer Tabelle mit 200 000 Zeilen genau 3 Indexseiten + 1 Tabellenseite:"
+    },
+    {
+      "type": "code",
+      "content": "CREATE EXTENSION pageinspect;\nSELECT level\nFROM bt_metap('schueler_pkey');\n-- level: 2\n\nEXPLAIN (ANALYZE, BUFFERS)\nSELECT * FROM schueler\nWHERE id = 4242;\n-- Index Scan using schueler_pkey\n--   Index Cond: (id = 4242)\n--   Buffers: shared hit=4"
+    },
+    {
+      "type": "text",
+      "content": "Ein Hash-Index berechnet aus dem Schlüssel mit einer Hashfunktion direkt die Nummer des Behälters (Bucket), in dem der Eintrag liegt – im Idealfall genügt ein Seitenzugriff, egal wie groß die Tabelle ist. Ist ein Bucket voll, kommen Überlaufseiten dazu. Weil die Hashfunktion die Reihenfolge zerstört, kann ein Hash-Index nur Gleichheit (=) beantworten, keine Bereiche (<, BETWEEN) und kein ORDER BY."
+    },
+    {
+      "type": "code",
+      "content": "# Hashfunktion h(k) = k mod 4\nbuckets = {i: [] for i in range(4)}\nfor k in [17, 42, 8, 25, 33, 12]:\n    buckets[k % 4].append(k)\nprint(buckets)\n# {0: [8, 12], 1: [17, 25, 33],\n#  2: [42], 3: []}\n\n-- PostgreSQL\nCREATE INDEX ix_plz ON schueler\n  USING hash (plz);\n-- plz = 1234      -> nutzt ix_plz\n-- plz BETWEEN ... -> Seq Scan"
+    },
+    {
+      "type": "text",
+      "content": "Indizes sind nicht gratis: Jedes INSERT, UPDATE oder DELETE muss alle betroffenen Indizes mitändern, und jeder Index braucht Speicherplatz. Typischer Fehler: „Einfach auf jede Spalte einen Index.“ Lege Indizes gezielt auf Spalten, nach denen oft gesucht, gejoint oder sortiert wird. Achtung: PostgreSQL legt für Fremdschlüssel keinen Index automatisch an – für schnelle Joins musst du ihn selbst erstellen.\n\nZusammenfassung: B+-Baum = balanciert, großer Fan-out, Höhe = kleinstes h mit f^h ≥ N, Zugriffe = h + 1; kann =, Bereiche und Sortierung. Hash-Index = ein Bucket-Zugriff, nur Gleichheit."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein B+-Baum hat den Fan-out 100 und enthält 50 000 Schlüssel. Wie viele Ebenen hat er mindestens?",
+      "options": [
+        "2",
+        "5",
+        "500",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "100² = 10 000 < 50 000, 100³ = 1 000 000 ≥ 50 000. Also braucht man 3 Ebenen."
+    },
+    {
+      "question": "Seite 4096 Byte, ein Indexeintrag (Schlüssel + Zeiger) braucht 16 Byte. Welcher Fan-out ergibt sich höchstens?",
+      "options": [
+        "256",
+        "16",
+        "128",
+        "512"
+      ],
+      "correctIndex": 0,
+      "explanation": "4096 / 16 = 256 Einträge pro Knoten. In der Praxis etwas weniger wegen Seitenkopf und Füllgrad."
+    },
+    {
+      "question": "Welche Abfrage kann ein Hash-Index auf der Spalte note NICHT unterstützen?",
+      "options": [
+        "WHERE note = 1",
+        "WHERE note BETWEEN 1 AND 2",
+        "WHERE note IN (1, 2)",
+        "WHERE note = 5"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Hashfunktion verteilt die Werte ohne Ordnung auf Buckets. Gleichheit (auch IN als Liste von Gleichheiten) geht, Bereichsabfragen nicht."
+    },
+    {
+      "question": "Ein B+-Baum hat 3 Ebenen. Wie viele Seiten liest eine Suche nach einem eindeutigen Schlüssel inklusive der Tabellenzeile?",
+      "options": [
+        "3",
+        "1",
+        "4",
+        "1 + Anzahl der Blätter"
+      ],
+      "correctIndex": 2,
+      "explanation": "Pro Ebene eine Indexseite (3) und danach eine Seite der Tabelle, in der die Zeile steht: 3 + 1 = 4."
+    }
+  ]
+}

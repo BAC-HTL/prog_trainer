@@ -1,0 +1,94 @@
+{
+ "id": "syp-j5-standards_01_sicherheitsrichtlinien",
+ "title": "Sicherheitsrichtlinien und ISO 27001",
+ "summary": "Schutzziele, Leitlinie und Richtlinien schreiben und ein ISMS nach ISO 27001 im Überblick.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Informationssicherheit schützt Informationen nach drei Schutzzielen: Vertraulichkeit (nur Berechtigte sehen die Daten), Integrität (Daten sind korrekt und unverändert) und Verfügbarkeit (Daten und Systeme sind nutzbar, wenn man sie braucht). Damit Sicherheit nicht vom Zufall oder einzelnen Personen abhängt, legt eine Organisation verbindliche Regeln schriftlich fest: Sicherheitsleitlinie, Richtlinien und Arbeitsanweisungen."
+  },
+  {
+   "type": "text",
+   "content": "Diese Dokumente bilden eine Pyramide. Ganz oben steht die Sicherheitsleitlinie (Security Policy): Die Leitung erklärt, welche Ziele gelten, wer verantwortlich ist und dass sie Sicherheit unterstützt. Darunter folgen themenspezifische Richtlinien, etwa für Passwörter und Anmeldung, Nutzung der IT (Acceptable Use), Datensicherung, mobile Geräte und Homeoffice, Zugriffsrechte oder Clean Desk. Ganz unten stehen konkrete Verfahren und Arbeitsanweisungen, z. B. „So richtest du einen neuen Laptop ein“."
+  },
+  {
+   "type": "code",
+   "content": "        /\\\n       /  \\   Leitlinie\n      /    \\  (Leitung, Ziele)\n     /------\\\n    /        \\  Richtlinien\n   / Passwort, \\ (je Thema)\n  / Backup, BYOD \\\n /----------------\\\n/ Verfahren, Arbeits-\\\n/ anweisungen (konkret)\\\n------------------------"
+  },
+  {
+   "type": "text",
+   "content": "Eine gute Richtlinie enthält: Zweck und Geltungsbereich (für wen, für welche Systeme), Verantwortlichkeiten, konkrete und prüfbare Regeln, Umgang mit Ausnahmen, Konsequenzen bei Verstößen, Gültigkeit und regelmäßige Überprüfung. Sie muss verständlich sein und geschult werden – eine Richtlinie, die niemand kennt, schützt nichts. Regeln, die im Alltag nicht einhaltbar sind, werden umgangen (Passwort auf dem Post-it)."
+  },
+  {
+   "type": "code",
+   "content": "Passwortrichtlinie (Auszug)\nP1 Mindestens 12 Zeichen,\n   Passphrasen sind erwünscht.\nP2 Kein Benutzername im Passwort.\nP3 Bekannte/geleakte Passwörter\n   sind gesperrt.\nP4 Für Fernzugriff und Admin-\n   Konten ist MFA Pflicht.\nP5 Passwortmanager erlaubt.\nP6 Wechsel nur bei Verdacht auf\n   Kompromittierung."
+  },
+  {
+   "type": "text",
+   "content": "Prüfbare Regeln lassen sich auch technisch durchsetzen. Diese Funktion setzt P1 bis P3 um. Die Sperrliste ist hier nur ein winziges Beispiel; in der Praxis prüft man gegen große Listen geleakter Passwörter."
+  },
+  {
+   "type": "code",
+   "content": "GESPERRT = {\"passwort1234\",\n            \"qwertzuiop123\"}\n\ndef pruefe(pw, user):\n    fehler = []\n    if len(pw) < 12:\n        fehler.append(\"zu kurz\")\n    if user.lower() in pw.lower():\n        fehler.append(\"Benutzername\")\n    if pw.lower() in GESPERRT:\n        fehler.append(\"gesperrt\")\n    return fehler or [\"ok\"]\n\nprint(pruefe(\"Sommer2026\", \"mmuster\"))\nprint(pruefe(\"mmuster-Fussball\",\n             \"mmuster\"))\nprint(pruefe(\"Kaffee Tasse Rad 7\",\n             \"mmuster\"))\n\n# Ausgabe:\n# ['zu kurz']\n# ['Benutzername']\n# ['ok']"
+  },
+  {
+   "type": "text",
+   "content": "ISO/IEC 27001 ist die international verbreitete Norm für ein Informationssicherheits-Managementsystem (ISMS). Sie schreibt keine bestimmte Technik vor, sondern einen Managementprozess: Kontext und Geltungsbereich festlegen, Leitung einbinden, Risiken beurteilen und behandeln, Maßnahmen umsetzen, Wirksamkeit messen, interne Audits und Managementbewertung durchführen, laufend verbessern (PDCA-Zyklus). Ein Anhang listet Maßnahmen (Controls); in der Erklärung zur Anwendbarkeit (Statement of Applicability) begründet die Organisation, welche sie umsetzt. ISO/IEC 27002 gibt dazu Umsetzungshinweise. Eine akkreditierte Stelle kann das ISMS zertifizieren, mit regelmäßigen Überwachungsaudits."
+  },
+  {
+   "type": "code",
+   "content": "ISMS nach PDCA\nPlan:  Geltungsbereich, Risiken\n       beurteilen, Maßnahmen\n       wählen\nDo:    Maßnahmen umsetzen,\n       schulen\nCheck: messen, interne Audits,\n       Managementbewertung\nAct:   Abweichungen korrigieren,\n       verbessern -> wieder Plan"
+  },
+  {
+   "type": "text",
+   "content": "Weitere Orientierung bieten das IT-Grundschutz-Kompendium des deutschen BSI mit konkreten Bausteinen und das Österreichische Informationssicherheitshandbuch. Für Betreiber wichtiger Dienste gibt es auf EU-Ebene zusätzlich gesetzliche Pflichten (NIS-2-Richtlinie). Typische Fehler: Richtlinien aus dem Internet kopieren, ohne sie anzupassen; keine Schulung; Zertifikat als Ziel statt Sicherheit. Zusammenfassung: Schutzziele Vertraulichkeit, Integrität, Verfügbarkeit; Dokumentenpyramide Leitlinie – Richtlinien – Verfahren; ISO 27001 = ISMS mit Risikobeurteilung, Maßnahmen, Audits und PDCA."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Was gibt der Code aus?",
+   "code": "def pruefe(pw, user):\n    fehler = []\n    if len(pw) < 12:\n        fehler.append(\"zu kurz\")\n    if user.lower() in pw.lower():\n        fehler.append(\"Benutzername\")\n    return fehler or [\"ok\"]\n\nprint(pruefe(\"Anna-Lernt-Python\", \"anna\"))",
+   "options": [
+    "['zu kurz']",
+    "['zu kurz', 'Benutzername']",
+    "['Benutzername']",
+    "['ok']"
+   ],
+   "correctIndex": 2,
+   "explanation": "\"Anna-Lernt-Python\" hat 17 Zeichen, ist also lang genug, enthält aber den Benutzernamen \"anna\" (Groß-/Kleinschreibung wird ignoriert)."
+  },
+  {
+   "question": "Ein Angreifer verändert unbemerkt Noten in der Datenbank. Welches Schutzziel ist verletzt?",
+   "options": [
+    "Integrität",
+    "Verfügbarkeit",
+    "Vertraulichkeit",
+    "Keines, solange niemand die Daten sieht"
+   ],
+   "correctIndex": 0,
+   "explanation": "Integrität bedeutet, dass Daten korrekt und unverfälscht sind. Unbefugte Änderungen verletzen sie – auch wenn die Daten nicht veröffentlicht werden."
+  },
+  {
+   "question": "Welches Dokument gehört an die Spitze der Dokumentenpyramide?",
+   "options": [
+    "Die Arbeitsanweisung zur Laptop-Einrichtung",
+    "Die Passwortrichtlinie",
+    "Das Backup-Protokoll",
+    "Die von der Leitung getragene Sicherheitsleitlinie"
+   ],
+   "correctIndex": 3,
+   "explanation": "Die Leitlinie legt Ziele und Verantwortung fest und wird von der Leitung getragen. Themenrichtlinien und Arbeitsanweisungen leiten sich daraus ab."
+  },
+  {
+   "question": "Was verlangt ISO/IEC 27001 im Kern?",
+   "options": [
+    "Einen bestimmten Firewall-Hersteller",
+    "Ein Managementsystem mit Risikobeurteilung, passenden Maßnahmen, Audits und kontinuierlicher Verbesserung",
+    "Dass alle Daten in der Cloud liegen",
+    "Eine jährliche Passwortänderung für alle"
+   ],
+   "correctIndex": 1,
+   "explanation": "ISO 27001 ist eine Managementsystem-Norm: Sie fordert einen risikobasierten, dokumentierten und laufend verbesserten Prozess, keine bestimmten Produkte."
+  }
+ ]
+}

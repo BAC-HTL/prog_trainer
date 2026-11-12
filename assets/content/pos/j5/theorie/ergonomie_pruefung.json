@@ -1,0 +1,121 @@
+{
+  "id": "pos-j5-theorie-ergonomie_pruefung",
+  "title": "Abschlussprüfung: Softwareergonomie & Dialoggestaltung",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "In einer Werkzeugleiste haben alle Löschen-Funktionen ein rotes Symbol, alle Bearbeiten-Funktionen ein blaues. Welches Gestaltgesetz wird genutzt?",
+      "options": [
+        "Gesetz der Nähe",
+        "Gesetz der Ähnlichkeit",
+        "Gesetz der Geschlossenheit",
+        "Fitts’ Gesetz"
+      ],
+      "correctIndex": 1,
+      "explanation": "Gleich aussehende Elemente (hier gleiche Farbe) werden als zusammengehörig wahrgenommen. Die Farbe sollte trotzdem nicht das einzige Unterscheidungsmerkmal sein."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import math\nid_a = math.log2(300 / 100 + 1)\nid_b = math.log2(600 / 40 + 1)\nprint(\"A\" if id_a < id_b else\n      \"B\" if id_b < id_a else \"gleich\")",
+      "options": [
+        "A",
+        "B",
+        "gleich",
+        "A B"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei A ist D/W + 1 = 300/100 + 1 = 4, log2 = 2. Bei B ist D/W + 1 = 600/40 + 1 = 16, log2 = 4. A hat den kleineren Schwierigkeitsindex und ist daher schneller zu treffen."
+    },
+    {
+      "question": "Ein Bestellformular lässt sich jederzeit abbrechen, man kann zurückgehen und die letzte Aktion rückgängig machen. Welcher Grundsatz nach ISO 9241-110 ist damit vor allem erfüllt?",
+      "options": [
+        "Aufgabenangemessenheit",
+        "Erlernbarkeit",
+        "Steuerbarkeit",
+        "Benutzerbindung"
+      ],
+      "correctIndex": 2,
+      "explanation": "Steuerbarkeit heißt: Die Benutzer:innen bestimmen Ablauf, Richtung und Tempo der Interaktion."
+    },
+    {
+      "question": "Ein Programm lehnt die Eingabe „3,5“ ab und akzeptiert nur „3.5“, mit der Meldung „Fehler 17“. Welche Grundsätze werden verletzt?",
+      "options": [
+        "Robustheit gegen Benutzungsfehler und Selbstbeschreibungsfähigkeit",
+        "Nur Benutzerbindung",
+        "Keine, Dezimalpunkt ist Standard",
+        "Nur Aufgabenangemessenheit"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die übliche österreichische Schreibweise wird nicht akzeptiert (Robustheit, auch Erwartungskonformität), und die Meldung erklärt nicht, was zu tun ist (Selbstbeschreibungsfähigkeit)."
+    },
+    {
+      "question": "Was ergibt dieser SUS-Fragebogen?",
+      "code": "a = [1, 5] * 5\ns = sum(x - 1 if i % 2 else 5 - x\n        for i, x in enumerate(a, 1))\nprint(s * 2.5)",
+      "options": [
+        "50.0",
+        "0.0",
+        "100.0",
+        "75.0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ungerade Aussagen mit 1: je 0 Punkte. Gerade Aussagen mit 5: je 5 − 5 = 0 Punkte. Summe 0, also SUS = 0.0 – das schlechtestmögliche Ergebnis."
+    },
+    {
+      "question": "Welche Aussage über Usability-Tests ist richtig?",
+      "options": [
+        "Man testet am besten mit dem eigenen Entwicklungsteam",
+        "Ein großer Test mit 50 Personen am Projektende ist ideal",
+        "Mehrere kleine Tests mit je etwa fünf Personen aus der Zielgruppe, dazwischen verbessern, sind meist effektiver",
+        "Usability lässt sich nur mit Fragebögen messen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Entwickler:innen kennen das System zu gut. Kleine, wiederholte Tests mit echten Zielgruppenvertreter:innen finden die meisten Probleme früh genug, um sie zu beheben."
+    },
+    {
+      "question": "Wofür steht das „R“ in den WCAG-Prinzipien POUR?",
+      "options": [
+        "Responsive – passt sich an die Bildschirmgröße an",
+        "Readable – gut lesbare Schrift",
+        "Reliable – fällt nie aus",
+        "Robust – funktioniert mit verschiedenen Benutzeragenten und Hilfstechnologien"
+      ],
+      "correctIndex": 3,
+      "explanation": "Robust heißt, dass Inhalte zuverlässig von Browsern und Hilfstechnologien wie Screenreadern interpretiert werden können – etwa durch korrektes HTML."
+    },
+    {
+      "question": "Was gibt dieser Code aus? (Leuchtdichten: Weiß 1.0, Schwarz 0.0)",
+      "code": "print(round((1.0 + 0.05) / (0.0 + 0.05), 1))",
+      "options": [
+        "20.0",
+        "1.0",
+        "21.0",
+        "10.5"
+      ],
+      "correctIndex": 2,
+      "explanation": "(1,0 + 0,05) / (0,0 + 0,05) = 1,05 / 0,05 = 21. Das ist der größtmögliche Kontrast."
+    },
+    {
+      "question": "Ein Text hat das Kontrastverhältnis 4,0:1 zum Hintergrund. Was gilt nach WCAG?",
+      "options": [
+        "Er erfüllt AA für normalen Text",
+        "Er erfüllt AA nur als großer Text (mind. 3:1), nicht als normaler Text (4,5:1)",
+        "Er erfüllt AAA für alle Textgrößen",
+        "Kontrast spielt bei WCAG keine Rolle"
+      ],
+      "correctIndex": 1,
+      "explanation": "Großer Text braucht bei AA 3:1, normaler 4,5:1. 4,0:1 liegt dazwischen – z. B. Rot (#FF0000) auf Weiß."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from html.parser import HTMLParser\nclass P(HTMLParser):\n    def __init__(self):\n        super().__init__()\n        self.f = []\n    def handle_starttag(self, tag, attrs):\n        a = dict(attrs)\n        if tag == \"img\" and \"alt\" not in a:\n            self.f.append(a[\"src\"])\np = P()\np.feed('<img src=\"x.png\"><img src=\"y.png\" alt=\"\">')\nprint(p.f)",
+      "options": [
+        "['x.png', 'y.png']",
+        "[]",
+        "['y.png']",
+        "['x.png']"
+      ],
+      "correctIndex": 3,
+      "explanation": "x.png hat kein alt-Attribut. y.png hat alt=\"\" – das ist korrekt für ein dekoratives Bild und gilt nicht als Fehler."
+    }
+  ]
+}

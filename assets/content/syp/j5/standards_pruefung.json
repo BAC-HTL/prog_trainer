@@ -1,0 +1,117 @@
+{
+ "id": "syp-j5-standards_pruefung",
+ "title": "Abschlussprüfung: IT-Sicherheitsstandards & Datenschutz",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "Ein Ransomware-Angriff verschlüsselt den Fileserver, die Daten sind aber nicht abgeflossen. Welches Schutzziel ist vor allem verletzt?",
+   "options": [
+    "Vertraulichkeit",
+    "Verfügbarkeit",
+    "Authentizität",
+    "Keines"
+   ],
+   "correctIndex": 1,
+   "explanation": "Die Daten sind nicht mehr nutzbar – die Verfügbarkeit ist verletzt. Auch so ein Fall kann eine meldepflichtige Datenpanne sein, wenn personenbezogene Daten betroffen sind."
+  },
+  {
+   "question": "Welche Regel in einer Richtlinie ist am besten prüfbar?",
+   "options": [
+    "„Passwörter sollen sicher sein.“",
+    "„Bitte vorsichtig mit Daten umgehen.“",
+    "„Admin-Konten nutzen Mehr-Faktor-Authentifizierung.“",
+    "„IT-Sicherheit ist allen wichtig.“"
+   ],
+   "correctIndex": 2,
+   "explanation": "Nur die MFA-Regel ist konkret und überprüfbar. Die anderen Sätze klingen gut, lassen sich aber weder umsetzen noch kontrollieren."
+  },
+  {
+   "question": "Wozu dient die Erklärung zur Anwendbarkeit (Statement of Applicability) in einem ISMS nach ISO 27001?",
+   "options": [
+    "Sie begründet, welche Maßnahmen aus dem Anhang umgesetzt werden und welche nicht",
+    "Sie ist das Zertifikat der Zertifizierungsstelle",
+    "Sie ersetzt die Risikobeurteilung",
+    "Sie listet alle Mitarbeiter:innen auf"
+   ],
+   "correctIndex": 0,
+   "explanation": "Die SoA verbindet Risikobeurteilung und Maßnahmen: Für jede Maßnahme wird festgehalten, ob und warum sie angewendet wird."
+  },
+  {
+   "question": "Welcher DSGVO-Grundsatz verlangt, dass ein Unternehmen die Einhaltung der Regeln dokumentiert nachweisen kann?",
+   "options": [
+    "Transparenz",
+    "Zweckbindung",
+    "Datenminimierung",
+    "Rechenschaftspflicht"
+   ],
+   "correctIndex": 3,
+   "explanation": "Art. 5 Abs. 2 DSGVO: Der Verantwortliche ist für die Einhaltung verantwortlich und muss sie nachweisen können."
+  },
+  {
+   "question": "Ein Fitness-Tracker der Schule speichert Herzfrequenzen der Schüler:innen. Was gilt dafür?",
+   "options": [
+    "Es sind keine personenbezogenen Daten",
+    "Es sind Gesundheitsdaten, also besondere Kategorien nach Art. 9 mit grundsätzlichem Verarbeitungsverbot und Ausnahmen",
+    "Es reicht immer das berechtigte Interesse der Schule",
+    "Die DSGVO gilt nur für Erwachsene"
+   ],
+   "correctIndex": 1,
+   "explanation": "Herzfrequenz einer bestimmten Person ist ein Gesundheitsdatum. Dafür braucht es eine Ausnahme nach Art. 9, z. B. eine ausdrückliche Einwilligung, und besondere Schutzmaßnahmen."
+  },
+  {
+   "question": "Welche Aussage über die Einwilligung nach DSGVO stimmt?",
+   "options": [
+    "Ein bereits angekreuztes Kästchen reicht",
+    "Sie gilt für alle zukünftigen Zwecke",
+    "Sie kann jederzeit widerrufen werden",
+    "Sie ist die einzige Rechtsgrundlage"
+   ],
+   "correctIndex": 2,
+   "explanation": "Die Einwilligung muss freiwillig, informiert und eindeutig sein und ist jederzeit widerrufbar. Art. 6 kennt daneben weitere Rechtsgrundlagen."
+  },
+  {
+   "question": "Eine Person verlangt am 3. März Auskunft über ihre Daten. Der Fall ist einfach. Bis wann muss spätestens geantwortet werden?",
+   "options": [
+    "Innerhalb von 72 Stunden",
+    "Innerhalb eines Jahres",
+    "Bis 3. Juni, ohne Begründung",
+    "Unverzüglich, spätestens innerhalb eines Monats, also bis etwa 3. April"
+   ],
+   "correctIndex": 3,
+   "explanation": "Die Regel ist: unverzüglich, spätestens innerhalb eines Monats. Eine Verlängerung um zwei weitere Monate ist nur bei Komplexität oder vielen Anträgen möglich und muss mitgeteilt werden. 72 Stunden gelten für Pannenmeldungen."
+  },
+  {
+   "question": "Ein Nutzer verlangt die Löschung seines Kontos. Seine Rechnungen unterliegen einer gesetzlichen Aufbewahrungspflicht. Was ist richtig?",
+   "options": [
+    "Alles sofort löschen, auch die Rechnungen",
+    "Gar nichts löschen",
+    "Nur das Passwort ändern",
+    "Profildaten löschen, Rechnungen bis zum Ende der Aufbewahrungsfrist aufbewahren und für anderes sperren"
+   ],
+   "correctIndex": 3,
+   "explanation": "Das Löschrecht gilt nicht, soweit eine rechtliche Verpflichtung zur Aufbewahrung besteht. Diese Daten werden nur noch dafür verwendet und danach gelöscht."
+  },
+  {
+   "question": "Was ist bei einer Datenpanne zu tun, die voraussichtlich zu keinem Risiko für die Betroffenen führt?",
+   "options": [
+    "Sie muss nicht gemeldet, aber intern dokumentiert werden",
+    "Sie muss allen Kund:innen gemeldet werden",
+    "Sie muss binnen 24 Stunden der Polizei gemeldet werden",
+    "Nichts, sie wird vergessen"
+   ],
+   "correctIndex": 0,
+   "explanation": "Ohne voraussichtliches Risiko entfällt die Meldung an die Aufsichtsbehörde, aber jede Panne wird intern dokumentiert (Art. 33 Abs. 5)."
+  },
+  {
+   "question": "Ein Newsletter-Dienstleister außerhalb von EU/EWR soll E-Mail-Adressen verarbeiten. Was braucht es zusätzlich zum AV-Vertrag?",
+   "options": [
+    "Nichts weiter",
+    "Geeignete Garantien für die Übermittlung in ein Drittland",
+    "Eine Zertifizierung nach ISO 9001",
+    "Die Zustimmung der Wirtschaftskammer"
+   ],
+   "correctIndex": 1,
+   "explanation": "Für Übermittlungen in Drittländer verlangt die DSGVO ein angemessenes Schutzniveau, etwa durch einen Angemessenheitsbeschluss oder geeignete Garantien wie Standardvertragsklauseln."
+  }
+ ]
+}

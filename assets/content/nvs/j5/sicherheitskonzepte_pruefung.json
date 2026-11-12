@@ -1,0 +1,118 @@
+{
+  "id": "nvs-j5-sicherheitskonzepte_pruefung",
+  "title": "Abschlussprüfung: Sicherheitskonzepte",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Der Schulserver hat seit Monaten keine Updates erhalten. In welche Kategorie der Risikoanalyse gehört das?",
+      "options": [
+        "Bedrohung",
+        "Wert (Asset)",
+        "Schwachstelle",
+        "Restrisiko"
+      ],
+      "correctIndex": 2,
+      "explanation": "Fehlende Updates sind eine Lücke, durch die eine Bedrohung (z. B. Schadsoftware) wirken kann – also eine Schwachstelle. Erst zusammen mit einer Bedrohung entsteht ein Risiko."
+    },
+    {
+      "question": "Risiko A: Wahrscheinlichkeit 4, Schaden 1. Risiko B: Wahrscheinlichkeit 1, Schaden 4. Was zeigt dieses Beispiel?",
+      "options": [
+        "A ist viermal so gefährlich wie B",
+        "B kann ignoriert werden, weil es selten ist",
+        "Die Matrix ist falsch berechnet",
+        "Beide haben das Produkt 4, obwohl B existenzbedrohend sein kann – das Produkt allein versteckt Extremfälle"
+      ],
+      "correctIndex": 3,
+      "explanation": "4 · 1 = 1 · 4 = 4. Ein seltenes, aber existenzbedrohendes Ereignis braucht oft eine eigene Regel oder Einfärbung in der Matrix."
+    },
+    {
+      "question": "Ein Server samt Daten ist 50 000 € wert. Ein Brand zerstört 80 % davon und tritt geschätzt alle 25 Jahre auf. Wie hoch ist der ALE?",
+      "options": [
+        "1600 €",
+        "40 000 €",
+        "2000 €",
+        "3200 €"
+      ],
+      "correctIndex": 0,
+      "explanation": "SLE = 50 000 · 0,8 = 40 000 €. ARO = 1/25 = 0,04. ALE = 40 000 · 0,04 = 1600 € pro Jahr."
+    },
+    {
+      "question": "Wer muss das Restrisiko nach Umsetzung aller geplanten Maßnahmen formal akzeptieren?",
+      "options": [
+        "Der Netzwerkadministrator",
+        "Die Leitung der Organisation",
+        "Der Cloud-Anbieter",
+        "Die Datenschutzbehörde"
+      ],
+      "correctIndex": 1,
+      "explanation": "Risikoakzeptanz ist eine Leitungsentscheidung, weil die Leitung für die Organisation haftet und Budget sowie Prioritäten bestimmt."
+    },
+    {
+      "question": "Moodle läuft auf zwei Servern im Load-Balancing-Verbund; einer allein kann den Betrieb übernehmen. Wie wirkt sich das auf den Verfügbarkeits-Schutzbedarf der einzelnen Server aus?",
+      "options": [
+        "Er steigt wegen des Kumulationseffekts",
+        "Er kann wegen des Verteilungseffekts niedriger eingestuft werden",
+        "Er ist immer „sehr hoch“, weil Moodle wichtig ist",
+        "Er bleibt nach dem Maximumprinzip zwingend gleich wie bei Moodle"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim Verteilungseffekt verkraftet der Verbund den Ausfall eines einzelnen Servers. Daher kann der einzelne Server begründet niedriger eingestuft werden als die Anwendung."
+    },
+    {
+      "question": "Welche Zuordnung ist richtig?",
+      "options": [
+        "USV im Serverraum – organisatorisch",
+        "Schulung zu Phishing – technisch",
+        "Mehr-Faktor-Authentifizierung – technisch; Verschwiegenheitserklärung – personell",
+        "Zutrittskontrolle zum Serverraum – personell"
+      ],
+      "correctIndex": 2,
+      "explanation": "MFA wird in Software umgesetzt (technisch), eine Verschwiegenheitserklärung betrifft Personen (personell). USV und Zutritt sind infrastrukturell, Schulungen organisatorisch bzw. personell."
+    },
+    {
+      "question": "Was beschreibt der Soll-Ist-Vergleich in einem Sicherheitskonzept?",
+      "options": [
+        "Die Prüfung, welche ausgewählten Anforderungen bereits umgesetzt sind und welche offen bleiben",
+        "Die Berechnung des Jahresschadens",
+        "Die Übertragung von Risiken an eine Versicherung",
+        "Die Meldung an die Aufsichtsbehörde"
+      ],
+      "correctIndex": 0,
+      "explanation": "Für jede Anforderung wird ja/teilweise/nein/entbehrlich festgehalten; Offenes geht in den Realisierungsplan."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "rpo, rto = 12, 6\nintervall = 6\nrestore = 2000 * 1000 / 100 / 3600 + 1\nprint(intervall <= rpo, restore <= rto)",
+      "options": [
+        "False False",
+        "True True",
+        "False True",
+        "True False"
+      ],
+      "correctIndex": 3,
+      "explanation": "Backup alle 6 h ≤ RPO 12 h → True. Restore: 2000 GB · 1000 / 100 MB/s = 20 000 s ≈ 5,56 h + 1 h = 6,56 h > RTO 6 h → False."
+    },
+    {
+      "question": "Warum soll das Notfallhandbuch auch ausgedruckt oder offline verfügbar sein?",
+      "options": [
+        "Weil Behörden nur Papier akzeptieren",
+        "Weil es sonst zu lang ist",
+        "Weil es im Notfall genau auf den Systemen liegen könnte, die ausgefallen oder verschlüsselt sind",
+        "Weil digitale Dokumente keine Kontaktlisten enthalten dürfen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Liegt das Handbuch nur auf dem Fileserver, ist es bei Ransomware oder Stromausfall genau dann nicht erreichbar, wenn man es braucht."
+    },
+    {
+      "question": "Eine unter NIS-2 fallende Einrichtung bemerkt am Samstag um 8:00 einen erheblichen Sicherheitsvorfall. Bis wann ist die Frühwarnung fällig?",
+      "options": [
+        "Montag 8:00, weil das Wochenende nicht zählt",
+        "Sonntag 8:00",
+        "Dienstag 8:00",
+        "Samstag 16:00"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Frühwarnung muss binnen 24 Stunden erfolgen, und Fristen laufen auch am Wochenende: Samstag 8:00 + 24 h = Sonntag 8:00."
+    }
+  ]
+}

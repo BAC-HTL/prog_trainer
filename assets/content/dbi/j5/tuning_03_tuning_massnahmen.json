@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j5-tuning_03_tuning_massnahmen",
+  "title": "Typische Tuning-Maßnahmen und ihre Kosten",
+  "summary": "Von besseren Abfragen über Indizes und Konfiguration bis zu Materialized Views – was hilft und was es kostet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Tuning findet auf mehreren Ebenen statt. Faustregel für die Reihenfolge: zuerst Anwendung und SQL (dort ist der Hebel meist am größten), dann Indizes, dann Schema, dann Serverkonfiguration und erst zuletzt Hardware. Jede Maßnahme hat Kosten – an Schreibleistung, Speicher, Aktualität der Daten oder Wartungsaufwand. Und: immer nur eine Sache ändern und messen (vorige Lektion)."
+    },
+    {
+      "type": "text",
+      "content": "Anwendung und SQL: Lies nur, was du brauchst (Spalten statt SELECT *, WHERE und LIMIT statt alles laden und im Programm filtern). Verarbeite Mengen statt Schleifen: Ein UPDATE für alle betroffenen Zeilen ist viel schneller als tausend einzelne. Ein Klassiker ist das N+1-Problem: Das Programm holt eine Liste und stellt dann für jedes Element eine weitere Abfrage – oft versteckt in einem ORM. Jede Abfrage kostet einen Netzwerk-Roundtrip."
+    },
+    {
+      "type": "code",
+      "content": "# N+1: 1 Abfrage + 1 pro Schüler\nfor sid, name, kid in q(\n        \"SELECT * FROM schueler\"):\n    kl = q(\"SELECT name FROM klasse\"\n           \" WHERE id = ?\", kid)[0][0]\nprint(\"N+1:\", anz, \"Abfragen\")\n# N+1: 4 Abfragen  (bei 3 Schülern)\n\n# besser: ein JOIN\nrows = q(\"\"\"SELECT s.name, k.name\n  FROM schueler s JOIN klasse k\n  ON k.id = s.klasse_id\"\"\")\n# JOIN: 1 Abfrage\n\n# q() zählt die Abfragen in anz"
+    },
+    {
+      "type": "text",
+      "content": "Indizes: Lege sie für häufige WHERE-, JOIN- und ORDER-BY-Spalten an und prüfe mit EXPLAIN, ob sie genutzt werden. Kosten: Jeder Index muss bei INSERT, UPDATE und DELETE mitgepflegt werden und braucht Platz. Ungenutzte Indizes findest du in PostgreSQL in pg_stat_user_indexes (idx_scan = 0) – sie sollten weg. Bei großen Ladevorgängen ist es manchmal schneller, Indizes vorher zu löschen und danach neu anzulegen."
+    },
+    {
+      "type": "code",
+      "content": "-- 500 000 Zeilen einfügen\n-- log1: keine Indizes\n-- log2: 4 Indizes\nINSERT INTO log1 SELECT ...;\n-- Time: 967 ms\nINSERT INTO log2 SELECT ...;\n-- Time: 5073 ms\n-- (Testsystem, Werte schwanken)\n\nSELECT indexrelname, idx_scan\nFROM pg_stat_user_indexes\nWHERE idx_scan = 0;"
+    },
+    {
+      "type": "text",
+      "content": "Konfiguration: shared_buffers bestimmt, wie viele Seiten im Puffer Platz haben; work_mem, wie viel Speicher eine Sortier- oder Hash-Operation bekommt, bevor auf die Platte ausgelagert wird. Im Plan erkennst du das an „Sort Method: external merge Disk“. Ein höheres work_mem kann helfen – wird aber pro Operation und Verbindung vergeben (Lektion DBMS-Interna). Man kann es auch nur für eine Sitzung oder einen Bericht erhöhen. Bei vielen kurzen Verbindungen hilft ein Connection Pool mehr als ein höheres max_connections."
+    },
+    {
+      "type": "code",
+      "content": "SET work_mem = '64kB';\nEXPLAIN (ANALYZE, COSTS OFF)\nSELECT * FROM log1 ORDER BY b;\n-- Sort Method: external merge\n--   Disk: 10744kB\n\nSET work_mem = '64MB';\n-- Sort Method: quicksort\n--   Memory: 47445kB\n\nRESET work_mem;"
+    },
+    {
+      "type": "text",
+      "content": "Schema und Architektur:\n• Denormalisierung: gezielt redundante Spalten (z. B. Klassenname direkt bei der Note), um Joins zu sparen – kostet Speicher und Aufwand für konsistente Updates.\n• Materialized View: Das Ergebnis einer teuren Abfrage wird gespeichert. Lesen ist schnell, aber die Daten sind veraltet, bis man REFRESH ausführt.\n• Partitionierung: Eine riesige Tabelle wird z. B. nach Schuljahr aufgeteilt; Abfragen lesen nur die passenden Partitionen, alte Jahre lassen sich schnell entfernen.\n• Caching (z. B. Redis) und Lese-Replikate entlasten den Server, bringen aber möglicherweise veraltete Daten.\n• Hardware: mehr RAM (größerer Puffer) und schnelle SSDs helfen, kosten aber Geld und lösen schlechte Abfragen nicht."
+    },
+    {
+      "type": "code",
+      "content": "CREATE MATERIALIZED VIEW mv_umsatz AS\nSELECT d.monat,\n       SUM(f.umsatz) AS umsatz\nFROM fakt_verkauf f\nJOIN dim_datum d USING (datum_id)\nGROUP BY d.monat;\n-- 1 | 317.50   2 | 215.00\n\nINSERT INTO fakt_verkauf\n  VALUES (20260209,2,1,10,20.00);\nSELECT * FROM mv_umsatz;\n-- 2 | 215.00  (noch alt!)\n\nREFRESH MATERIALIZED VIEW mv_umsatz;\n-- 2 | 235.00"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: an Serverparametern drehen, bevor die langsamste Abfrage gefunden ist; „mehr Hardware“ als erste Lösung; Indizes auf jede Spalte; mehrere Änderungen auf einmal, sodass niemand weiß, was gewirkt hat; Tuning ohne Dokumentation.\n\nZusammenfassung:\n• SQL/Anwendung: N+1 vermeiden, Mengen statt Schleifen – kostet Entwicklungszeit.\n• Indizes: schnelleres Lesen – kostet Schreibleistung und Platz.\n• Konfiguration (work_mem, shared_buffers, Pooling) – kostet RAM.\n• Denormalisierung, Materialized Views, Caches – kosten Aktualität und Konsistenzaufwand.\n• Hardware – kostet Geld."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Seite listet 50 Schüler:innen und lädt für jede einzeln die Klasse nach. Wie viele Abfragen entstehen?",
+      "options": [
+        "50",
+        "51",
+        "1",
+        "2"
+      ],
+      "correctIndex": 1,
+      "explanation": "N+1-Problem: 1 Abfrage für die Liste plus 50 Abfragen für die Klassen = 51. Mit einem JOIN genügt eine einzige Abfrage."
+    },
+    {
+      "question": "Im Plan steht „Sort Method: external merge Disk: 10744kB“. Welche Maßnahme kann helfen?",
+      "options": [
+        "shared_buffers verkleinern",
+        "Einen Hash-Index anlegen",
+        "work_mem für diese Sitzung erhöhen",
+        "ANALYZE ausführen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Sortierung passte nicht in work_mem und wurde auf die Platte ausgelagert. Mehr work_mem (gezielt, z. B. nur für diesen Bericht) ermöglicht eine Sortierung im Speicher. Alternativ könnte ein B+-Baum-Index die Sortierung ganz ersparen."
+    },
+    {
+      "question": "Welche Kosten hat eine Materialized View vor allem?",
+      "options": [
+        "Ihre Daten sind bis zum nächsten REFRESH veraltet",
+        "Sie verlangsamt jedes SELECT auf die Basistabellen",
+        "Sie kann keine Aggregatfunktionen enthalten",
+        "Sie verhindert Indizes auf den Basistabellen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Ergebnis wird gespeichert und nicht automatisch aktualisiert. Im Beispiel zeigt sie nach dem INSERT noch 215.00 statt 235.00."
+    },
+    {
+      "question": "pg_stat_user_indexes zeigt für einen Index auf einer Tabelle mit vielen Schreibzugriffen seit Monaten idx_scan = 0. Was ist sinnvoll?",
+      "options": [
+        "Einen zweiten gleichen Index anlegen",
+        "Den Server neu starten",
+        "shared_buffers erhöhen",
+        "Prüfen, ob er wirklich unnötig ist (auch z. B. für UNIQUE), und ihn dann löschen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein nie benutzter Index bremst nur die Schreibzugriffe und belegt Platz. Vorher prüfen, ob er eine Eindeutigkeit absichert oder nur selten (z. B. für Jahresberichte) gebraucht wird."
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j5-nosql_01_dbms_interna",
+  "title": "DBMS-Interna: Puffer, Prozesse, Speicher",
+  "summary": "Was im Inneren eines Datenbankservers passiert: Pufferverwaltung, Prozesse und Speicherbereiche.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein DBMS besteht intern aus mehreren Komponenten, die du teilweise schon kennst: Die Abfrageverarbeitung (Parser, Optimierer, Ausführung) übersetzt SQL in einen Plan. Die Pufferverwaltung hält Seiten im Arbeitsspeicher. Die Speicherverwaltung organisiert Dateien und Seiten auf der Platte. Transaktions-, Sperr- und Recovery-Manager kümmern sich um ACID (4. Jahrgang)."
+    },
+    {
+      "type": "code",
+      "content": "  SQL von Client\n        |\n[Parser -> Optimierer -> Ausführung]\n        |\n[Pufferverwaltung (RAM)]  <-> [Sperren,\n        |                    Transakt.,\n[Speicherverwaltung]          Log/WAL]\n        |\n  Dateien / Seiten auf SSD"
+    },
+    {
+      "type": "text",
+      "content": "Der Puffer (Buffer Pool, in PostgreSQL „shared buffers“) ist ein Bereich im RAM mit Platz für eine feste Anzahl Seiten (Rahmen). Braucht die Ausführung eine Seite, schaut die Pufferverwaltung zuerst dort nach: Treffer (Hit) = kein Plattenzugriff. Sonst (Miss) wird die Seite geladen. Geänderte Seiten heißen „dirty“ – sie werden nicht sofort zurückgeschrieben. Die Sicherheit liefert das Write-Ahead-Log (WAL), das beim COMMIT auf die Platte muss."
+    },
+    {
+      "type": "text",
+      "content": "Ist der Puffer voll, muss eine Seite verdrängt werden. Eine klassische Strategie ist LRU (Least Recently Used): Raus fliegt die Seite, die am längsten nicht benutzt wurde. PostgreSQL verwendet eine Annäherung daran („Clock Sweep“). Probleme macht ein großer Full Table Scan: Er würde mit lauter einmal gelesenen Seiten den ganzen Puffer verdrängen. Deshalb nutzt PostgreSQL für große Scans nur einen kleinen Ringpuffer."
+    },
+    {
+      "type": "code",
+      "content": "from collections import OrderedDict\n\ndef lru(zugriffe, rahmen):\n    puffer = OrderedDict()\n    hits = 0\n    for seite in zugriffe:\n        if seite in puffer:\n            hits += 1\n            puffer.move_to_end(seite)\n        else:\n            if len(puffer) == rahmen:\n                puffer.popitem(last=False)\n            puffer[seite] = True\n    return hits\n\nz = [1, 2, 3, 1, 4, 1, 2, 5, 1]\nh = lru(z, 3)\nprint(h, \"Treffer von\", len(z))\nprint(f\"Hit Ratio: {h/len(z):.0%}\")\n# 3 Treffer von 9\n# Hit Ratio: 33%"
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigste Kennzahl dazu ist die Cache Hit Ratio = Hits / (Hits + Misses). Bei einer gut dimensionierten OLTP-Datenbank liegt sie meist sehr nahe bei 100 %. Sinkt sie deutlich, passen die oft benutzten Daten nicht mehr in den Puffer. PostgreSQL zählt das pro Datenbank mit (blks_read = von außerhalb des Puffers geholt):"
+    },
+    {
+      "type": "code",
+      "content": "SELECT blks_hit, blks_read,\n  round(100.0 * blks_hit\n    / (blks_hit + blks_read), 1)\n  AS hit_ratio\nFROM pg_stat_database\nWHERE datname = 'c4';\n-- blks_hit | blks_read | hit_ratio\n--  1202470 |      1453 |      99.9"
+    },
+    {
+      "type": "text",
+      "content": "Prozessmanagement: PostgreSQL startet für jede Client-Verbindung einen eigenen Serverprozess (Backend), den der Hauptprozess (Postmaster) erzeugt. Dazu kommen Hintergrundprozesse: Der Checkpointer schreibt regelmäßig alle dirty pages (Checkpoint), der Background Writer schreibt vorab einzelne dirty pages, der WAL Writer schreibt das Log, der Autovacuum Launcher startet Aufräumarbeiten. MySQL/MariaDB verwendet stattdessen einen Thread pro Verbindung. Weil jede Verbindung Speicher kostet, setzt man bei vielen Clients einen Connection Pool ein."
+    },
+    {
+      "type": "code",
+      "content": "$ ps -u postgres -o cmd\npostgres -D /var/lib/postgresql/...\npostgres: 16/main: checkpointer\npostgres: 16/main: background writer\npostgres: 16/main: walwriter\npostgres: 16/main: autovacuum launcher\n...\n-- je Verbindung ein Backend:\nSELECT backend_type\nFROM pg_stat_activity;"
+    },
+    {
+      "type": "text",
+      "content": "Speichermanagement: Der gemeinsame Puffer (shared_buffers) wird beim Start einmal reserviert. Dazu kommt Speicher pro Verbindung, z. B. work_mem für Sortier- und Hash-Operationen – und zwar pro Operation, eine komplexe Abfrage kann ihn mehrfach belegen. Reicht work_mem nicht, wird auf die Platte ausgelagert (langsam). Typischer Fehler: work_mem großzügig erhöhen und vergessen, dass es mit der Zahl gleichzeitiger Operationen multipliziert wird. Zusätzlich puffert auch das Betriebssystem Dateien.\n\nZusammenfassung: Puffer hält Seiten im RAM, Verdrängung z. B. per LRU, Kennzahl Hit Ratio. PostgreSQL: ein Prozess pro Verbindung plus Hintergrundprozesse. Gemeinsamer Speicher (shared_buffers) und Speicher pro Operation (work_mem) getrennt betrachten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Treffer (Hits) erzielt ein LRU-Puffer mit 2 Rahmen bei dieser Zugriffsfolge (anfangs leer)?",
+      "code": "Zugriffe: 5, 6, 5, 7, 5, 6",
+      "options": [
+        "2",
+        "1",
+        "3",
+        "4"
+      ],
+      "correctIndex": 0,
+      "explanation": "5 Miss, 6 Miss, 5 Hit, 7 Miss (verdrängt 6), 5 Hit, 6 Miss (verdrängt 7). Ergibt 2 Treffer."
+    },
+    {
+      "question": "pg_stat_database zeigt blks_hit = 950 und blks_read = 50. Wie hoch ist die Cache Hit Ratio?",
+      "options": [
+        "5 %",
+        "95 %",
+        "94,7 %",
+        "99,5 %"
+      ],
+      "correctIndex": 1,
+      "explanation": "950 / (950 + 50) = 950 / 1000 = 95 %."
+    },
+    {
+      "question": "Welcher PostgreSQL-Prozess schreibt beim Checkpoint alle geänderten (dirty) Seiten auf die Platte?",
+      "options": [
+        "Postmaster",
+        "Autovacuum Launcher",
+        "Checkpointer",
+        "Client-Backend"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Checkpointer schreibt bei jedem Checkpoint alle dirty pages; danach muss das Recovery erst ab diesem Punkt im WAL starten."
+    },
+    {
+      "question": "work_mem = 64 MB, 50 Verbindungen führen gleichzeitig je eine Abfrage mit zwei Sortierungen aus. Wie viel Speicher kann dafür maximal belegt werden?",
+      "options": [
+        "64 MB",
+        "3,2 GB",
+        "128 MB",
+        "6,4 GB"
+      ],
+      "correctIndex": 3,
+      "explanation": "work_mem gilt pro Sortier-/Hash-Operation: 50 × 2 × 64 MB = 6400 MB ≈ 6,4 GB – zusätzlich zu shared_buffers."
+    }
+  ]
+}

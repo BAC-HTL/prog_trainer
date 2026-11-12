@@ -1,0 +1,89 @@
+{
+ "id": "syp-j5-recht_01_urheberrecht",
+ "title": "Urheberrecht an Software",
+ "summary": "Was an Software geschützt ist, Werknutzungsrechte und wem Code von Arbeitnehmer:innen gehört.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Hinweis: Diese Lektion vermittelt Grundwissen für den Unterricht und ist keine Rechtsberatung. Im konkreten Fall entscheiden Vertrag, Gesetzeslage und Gerichte – frag im Zweifel Fachleute. In Österreich ist Software durch das Urheberrechtsgesetz (UrhG) geschützt: Computerprogramme zählen zu den Sprachwerken, also zu den Werken der Literatur. Geschützt ist ein Programm, wenn es eine eigene geistige Schöpfung ist – das ist bei fast jedem nicht völlig trivialen Code der Fall. Der Schutz entsteht automatisch mit dem Schreiben. Es gibt keine Anmeldung, und ein ©-Vermerk ist nicht nötig, er informiert nur."
+  },
+  {
+   "type": "text",
+   "content": "Geschützt ist die konkrete Ausdrucksform: Quellcode, Maschinencode und das Entwurfsmaterial. Nicht geschützt sind Ideen und Grundsätze, die einem Programm zugrunde liegen – also Algorithmen als solche, die bloße Funktionalität oder eine Programmiersprache. Du darfst also eine Raumbuchungs-App mit denselben Funktionen wie ein Konkurrenzprodukt selbst programmieren, aber nicht dessen Code kopieren."
+  },
+  {
+   "type": "code",
+   "content": "geschützt             nicht geschützt\n--------------------  ---------------\nQuellcode             Idee „Raum-\nMaschinencode         buchung per App\"\nEntwurfsmaterial      Quicksort als\n(z. B. detaillierter  Algorithmus\nProgrammentwurf)      Programmier-\n                      sprache Python\n                      Funktionalität"
+  },
+  {
+   "type": "text",
+   "content": "Dem Urheber stehen Verwertungsrechte zu (Vervielfältigen, Verbreiten, Bearbeiten, öffentlich zur Verfügung stellen, etwa zum Download) und Urheberpersönlichkeitsrechte (z. B. als Urheber:in genannt zu werden). In Österreich ist das Urheberrecht als Ganzes nicht übertragbar, sondern nur vererblich. Andere bekommen Nutzungsrechte eingeräumt: als Werknutzungsrecht (ausschließlich) oder als Werknutzungsbewilligung (nicht ausschließlich). Der Schutz endet 70 Jahre nach dem Tod des Urhebers."
+  },
+  {
+   "type": "code",
+   "content": "Werknutzungsrecht\n  ausschließlich: nur der\n  Berechtigte darf so nutzen,\n  auch der Urheber nicht mehr\n  -> z. B. Kunde kauft exklusiv\n\nWerknutzungsbewilligung\n  nicht ausschließlich: der\n  Urheber darf weitere\n  Bewilligungen erteilen\n  -> z. B. Standardsoftware-\n     Lizenz, Open-Source-Lizenz"
+  },
+  {
+   "type": "text",
+   "content": "Arbeitnehmerwerke: Schafft ein Dienstnehmer ein Computerprogramm in Erfüllung seiner dienstlichen Pflichten, steht dem Dienstgeber nach § 40b UrhG ein unbeschränktes Werknutzungsrecht zu, wenn nichts anderes vereinbart ist. Die Firma darf den Code also verwenden, ändern und verkaufen. Diese Sonderregel gilt nicht automatisch für Freelancer im Werkvertrag und nicht für Schüler:innen: Bei ihnen müssen Nutzungsrechte ausdrücklich vertraglich eingeräumt werden. Bei einer Diplomarbeit mit Kooperationspartner sollte deshalb vorab schriftlich geregelt sein, wer den Code wie nutzen darf."
+  },
+  {
+   "type": "text",
+   "content": "Wer ein Programm rechtmäßig nutzen darf, hat bestimmte Mindestrechte, etwa eine Sicherungskopie anzulegen, soweit sie für die Nutzung nötig ist. Ein Programm zu dekompilieren ist nur in engen Grenzen erlaubt, z. B. um die Zusammenarbeit (Interoperabilität) mit einem eigenen Programm herzustellen. Lizenzbedingungen können Details regeln, diese Mindestrechte aber nicht beliebig aushebeln."
+  },
+  {
+   "type": "code",
+   "content": "Fall 1: Code aus einem Forum\n  -> Lizenz der Plattform prüfen\n  (Stack Overflow: CC BY-SA,\n  Namensnennung nötig)\nFall 2: Code von GitHub ohne\n  LICENSE-Datei\n  -> keine Nutzungsrechte!\nFall 3: Code von KI-Assistent\n  -> Rechtslage nicht abschließend\n  geklärt; prüfen, ob fremder\n  Code übernommen wurde"
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: „Was im Internet steht, ist frei“; öffentlich sichtbarer Code ohne Lizenz wird verwendet; ein Freelancer-Vertrag ohne Regelung der Nutzungsrechte; die Diplomarbeitssoftware wird von der Partnerfirma verkauft, ohne dass das vereinbart war. Zusammenfassung: Software ist als Sprachwerk automatisch geschützt, Ideen und Algorithmen nicht. Das Urheberrecht bleibt beim Urheber, andere erhalten Werknutzungsrechte oder -bewilligungen. Bei Dienstnehmern bekommt der Dienstgeber nach § 40b UrhG ein unbeschränktes Werknutzungsrecht, bei allen anderen braucht es einen Vertrag."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Was ist am Beispiel eines Sortierprogramms urheberrechtlich geschützt?",
+   "options": [
+    "Der Algorithmus Mergesort",
+    "Die Idee, Daten zu sortieren",
+    "Der konkrete Quellcode, den du geschrieben hast",
+    "Die Programmiersprache C#"
+   ],
+   "correctIndex": 2,
+   "explanation": "Geschützt ist die Ausdrucksform, also dein Code. Algorithmen, Ideen und Programmiersprachen sind frei."
+  },
+  {
+   "question": "Eine angestellte Entwicklerin schreibt im Rahmen ihrer Arbeit ein Programm. Es gibt keine besondere Vereinbarung. Wer darf das Programm verwerten?",
+   "options": [
+    "Nur die Entwicklerin",
+    "Der Dienstgeber hat ein unbeschränktes Werknutzungsrecht",
+    "Niemand, bis es angemeldet ist",
+    "Jede:r, weil es im Betrieb entstanden ist"
+   ],
+   "correctIndex": 1,
+   "explanation": "Nach § 40b UrhG steht dem Dienstgeber bei Programmen, die in Erfüllung dienstlicher Pflichten entstehen, ein unbeschränktes Werknutzungsrecht zu, wenn nichts anderes vereinbart ist."
+  },
+  {
+   "question": "Du findest auf GitHub ein öffentliches Repository ohne LICENSE-Datei. Was darfst du grundsätzlich?",
+   "options": [
+    "Alles, weil es öffentlich ist",
+    "Den Code verwenden, aber nicht verkaufen",
+    "Den Code verwenden, wenn du den Autor nennst",
+    "Ihn ansehen – Nutzungsrechte wie Kopieren oder Einbauen hast du ohne Lizenz nicht"
+   ],
+   "correctIndex": 3,
+   "explanation": "Ohne Lizenz gibt es keine Werknutzungsbewilligung. Sichtbarkeit bedeutet nicht Nutzungsrecht. Frag den Autor oder such eine Alternative mit Lizenz."
+  },
+  {
+   "question": "Worin unterscheidet sich ein Werknutzungsrecht von einer Werknutzungsbewilligung?",
+   "options": [
+    "Das Werknutzungsrecht ist ausschließlich, die Bewilligung nicht",
+    "Die Bewilligung gilt nur für Bücher",
+    "Das Werknutzungsrecht überträgt das ganze Urheberrecht",
+    "Es gibt keinen Unterschied"
+   ],
+   "correctIndex": 0,
+   "explanation": "Beim Werknutzungsrecht darf nur der Berechtigte die Nutzung ausüben. Eine Bewilligung ist nicht ausschließlich – der Urheber kann weiteren Personen Bewilligungen erteilen."
+  }
+ ]
+}

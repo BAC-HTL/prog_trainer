@@ -1,0 +1,120 @@
+{
+  "id": "pos-j5-theorie-architektur_pruefung",
+  "title": "Abschlussprüfung: Softwarearchitekturen & Architekturmuster",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Aussage beschreibt Softwarearchitektur am besten?",
+      "options": [
+        "Die Auswahl der Farben und Schriftarten einer App",
+        "Die Bausteine eines Systems, ihre Beziehungen und die grundlegenden, schwer änderbaren Entscheidungen",
+        "Die Liste aller Funktionen aus dem Pflichtenheft",
+        "Der Quellcode der main-Funktion"
+      ],
+      "correctIndex": 1,
+      "explanation": "Architektur betrifft Struktur und Grundsatzentscheidungen. Farben sind Gestaltung, Funktionslisten sind Anforderungen."
+    },
+    {
+      "question": "Welches der folgenden ist ein Qualitätsmerkmal nach ISO/IEC 25010 – und keine funktionale Anforderung?",
+      "options": [
+        "„Lehrkräfte können Noten eintragen.“",
+        "Wartbarkeit",
+        "„Schüler:innen sehen ihren Stundenplan.“",
+        "„Es gibt einen Export als PDF.“"
+      ],
+      "correctIndex": 1,
+      "explanation": "Wartbarkeit ist eines der Qualitätsmerkmale. Die anderen Aussagen beschreiben, was das System tut – also Funktionen."
+    },
+    {
+      "question": "In einem Qualitätsszenario fehlt ein Teil: „Bei 200 gleichzeitigen Anmeldungen am Montag um 7:50 wird die Startseite angezeigt.“ Was fehlt, damit es prüfbar ist?",
+      "options": [
+        "Der Auslöser",
+        "Die Umgebung",
+        "Ein messbares Maß (z. B. 95 % unter 2 s)",
+        "Die Programmiersprache"
+      ],
+      "correctIndex": 2,
+      "explanation": "Auslöser (200 Anmeldungen) und Umgebung (Montag 7:50) sind da, auch die Reaktion. Ohne Maß kann man aber nicht entscheiden, ob das Ziel erreicht ist."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Repo:\n    def noten(self):\n        return [1, 2]\nclass Service:\n    def __init__(self, r):\n        self.r = r\n    def schnitt(self):\n        n = self.r.noten()\n        return sum(n) / len(n)\nprint(Service(Repo()).schnitt())",
+      "options": [
+        "Schicht verletzt",
+        "2.0",
+        "1.5",
+        "None"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Service fragt das Repo nach den Noten [1, 2] und berechnet den Durchschnitt 1.5."
+    },
+    {
+      "question": "In einer strengen Drei-Schichten-Architektur ruft die Präsentation direkt das Repository auf. Was ist daran falsch?",
+      "options": [
+        "Nichts, das ist in strengen Schichten erlaubt",
+        "Die Präsentation überspringt die Geschäftslogik – bei strenger Schichtung darf nur die direkt darunterliegende Schicht genutzt werden",
+        "Das Repository muss die Präsentation aufrufen, nicht umgekehrt",
+        "Repositories dürfen nur von der Datenbank aufgerufen werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei strenger Schichtung nutzt jede Schicht nur die direkt darunter. Bei lockerer Schichtung wäre das Überspringen erlaubt. Aufrufe nach oben sind in beiden Fällen verboten."
+    },
+    {
+      "question": "Welche Komponente nimmt bei MVC die Benutzereingabe entgegen und aktualisiert das Model?",
+      "options": [
+        "View",
+        "Model",
+        "ViewModel",
+        "Controller"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Controller verarbeitet Eingaben, ändert das Model und wählt die View. Das ViewModel gehört zu MVVM."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class VM:\n    def __init__(self):\n        self.obs = []\n        self._n = \"\"\n    def set_name(self, n):\n        self._n = n\n        for f in self.obs:\n            f()\nvm = VM()\nzeige = lambda: print(f\"Hallo, {vm._n}!\")\nvm.obs += [zeige, zeige]\nvm.set_name(\"Max\")",
+      "options": [
+        "Hallo, !",
+        "Hallo, Max!",
+        "Hallo, Max!\nHallo, Max!",
+        "Nichts"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das ViewModel meldet jede Änderung von name. Es gibt zwei Beobachter, also wird die Meldung zweimal ausgegeben."
+    },
+    {
+      "question": "Ein Webshop soll nach einer Bestellung Rechnung, Lagerbuchung und Bestätigungsmail auslösen. Später sollen weitere Reaktionen dazukommen, ohne den Bestellcode zu ändern. Welches Muster passt?",
+      "options": [
+        "Event-driven (Publish/Subscribe)",
+        "Pipes-and-Filters",
+        "Microkernel",
+        "Strenge Schichten ohne Ereignisse"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Bestellung veröffentlicht ein Ereignis, beliebig viele Abonnenten reagieren. Neue Reaktionen werden nur angemeldet – der Sender bleibt unverändert."
+    },
+    {
+      "question": "Warum sollten Empfänger in verteilten ereignisgesteuerten Systemen idempotent sein?",
+      "options": [
+        "Weil Ereignisse verschlüsselt sein müssen",
+        "Weil Ereignisse mehrfach zugestellt werden können und doppelte Verarbeitung keinen Schaden anrichten soll",
+        "Weil es pro Ereignis nur einen Empfänger geben darf",
+        "Weil idempotente Funktionen schneller sind"
+      ],
+      "correctIndex": 1,
+      "explanation": "Message-Broker garantieren oft „mindestens einmal“. Ein idempotenter Empfänger liefert bei doppelter Zustellung dasselbe Ergebnis, z. B. wird eine Rechnung nicht doppelt erstellt."
+    },
+    {
+      "question": "Was gibt diese Filterkette aus?",
+      "code": "zeilen = [\" E1\", \"I2\", \"  \", \"E2 \", \"W3\"]\nsauber = (z.strip() for z in zeilen)\nnicht_leer = (z for z in sauber if z)\nfehler = [z for z in nicht_leer\n          if z.startswith(\"E\")]\nprint(len(fehler))",
+      "options": [
+        "3",
+        "5",
+        "4",
+        "2"
+      ],
+      "correctIndex": 3,
+      "explanation": "strip() entfernt Leerzeichen, der Filter behält nur nicht-leere Zeilen, die mit „E“ beginnen: „E1“ und „E2“ – also 2."
+    }
+  ]
+}

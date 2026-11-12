@@ -1,0 +1,117 @@
+{
+ "id": "syp-j5-recht_pruefung",
+ "title": "Abschlussprüfung: Recht in der Softwareentwicklung",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "Ab wann ist ein selbst geschriebenes Programm in Österreich urheberrechtlich geschützt?",
+   "options": [
+    "Ab der Registrierung beim Patentamt",
+    "Automatisch mit seiner Schaffung, wenn es eine eigene geistige Schöpfung ist",
+    "Erst mit einem ©-Vermerk",
+    "Erst nach der Veröffentlichung"
+   ],
+   "correctIndex": 1,
+   "explanation": "Der Schutz entsteht automatisch. Eine Anmeldung gibt es im Urheberrecht nicht, der ©-Vermerk ist nur ein Hinweis."
+  },
+  {
+   "question": "Eine Firma programmiert die Funktionen einer bekannten Notiz-App komplett neu nach, ohne deren Code zu verwenden. Was gilt urheberrechtlich?",
+   "options": [
+    "Verboten, weil die Idee geschützt ist",
+    "Erlaubt, weil Ideen und Funktionalität nicht geschützt sind, nur der konkrete Code",
+    "Erlaubt nur, wenn die App gratis ist",
+    "Verboten, weil Algorithmen immer geschützt sind"
+   ],
+   "correctIndex": 1,
+   "explanation": "Das Urheberrecht schützt die Ausdrucksform. Wer Funktionen selbst neu programmiert, verletzt es nicht (andere Rechte wie Marken oder Designs bleiben davon unberührt)."
+  },
+  {
+   "question": "Ein Freelancer entwickelt im Werkvertrag eine App für eine Firma. Nutzungsrechte wurden nicht geregelt. Was ist das Problem?",
+   "options": [
+    "Es gibt keines, die Firma ist automatisch Urheberin",
+    "Der Freelancer verliert alle Rechte",
+    "Die Sonderregel für Dienstnehmer (§ 40b UrhG) gilt nicht; die Nutzungsrechte hätten vertraglich eingeräumt werden müssen",
+    "Die App ist gemeinfrei"
+   ],
+   "correctIndex": 2,
+   "explanation": "§ 40b UrhG betrifft Dienstnehmer. Bei Freelancern regelt der Vertrag, welche Nutzungsrechte die Firma bekommt – fehlt die Regelung, gibt es Streitpotenzial."
+  },
+  {
+   "question": "Wie lange besteht der urheberrechtliche Schutz eines Programms?",
+   "options": [
+    "Bis 70 Jahre nach dem Tod des Urhebers",
+    "20 Jahre ab Anmeldung",
+    "10 Jahre ab Veröffentlichung",
+    "Solange die Software verkauft wird"
+   ],
+   "correctIndex": 0,
+   "explanation": "Die Schutzdauer endet 70 Jahre nach dem Tod des Urhebers. 20 Jahre ab Anmeldung ist die typische Dauer bei Patenten."
+  },
+  {
+   "question": "Welche Lizenz ist ein schwaches Copyleft?",
+   "options": [
+    "MIT",
+    "Apache 2.0",
+    "GPL",
+    "LGPL"
+   ],
+   "correctIndex": 3,
+   "explanation": "Die LGPL erlaubt die Nutzung einer Bibliothek durch Programme unter anderer Lizenz, unter Bedingungen. Änderungen an der Bibliothek selbst bleiben LGPL."
+  },
+  {
+   "question": "Ein Start-up betreibt eine geänderte AGPL-Software als Web-App, ohne den Code herauszugeben. Wo liegt das Problem?",
+   "options": [
+    "Es gibt keines, weil nichts heruntergeladen wird",
+    "Die AGPL verlangt auch bei Nutzung über ein Netzwerk, den Quellcode anzubieten",
+    "Die AGPL verbietet kommerzielle Nutzung",
+    "Die AGPL gilt nur für Desktop-Programme"
+   ],
+   "correctIndex": 1,
+   "explanation": "Die AGPL schließt die Lücke der GPL bei Netzwerknutzung: Wer geänderte AGPL-Software Nutzer:innen über ein Netzwerk anbietet, muss ihnen den Quellcode zugänglich machen."
+  },
+  {
+   "question": "Diese App steht unter der MIT-Lizenz. Darf jemand ihren Code in ein eigenes GPLv3-Projekt übernehmen?",
+   "options": [
+    "Ja, MIT ist mit GPL kompatibel; der MIT-Hinweis muss erhalten bleiben",
+    "Nein, MIT-Code darf nie in GPL-Projekte",
+    "Nur mit Zustimmung der Datenschutzbehörde",
+    "Ja, und der Copyright-Hinweis darf entfernt werden"
+   ],
+   "correctIndex": 0,
+   "explanation": "Permissiver MIT-Code darf in GPL-Projekte. Das Gesamtwerk wird GPL, Copyright-Hinweis und MIT-Text bleiben erhalten."
+  },
+  {
+   "question": "Ein Vertrag zwischen zwei Firmen schließt die Haftung „für jeden Fehler, auch bei grober Fahrlässigkeit“ aus. Was gilt in der Regel?",
+   "options": [
+    "Der Ausschluss gilt uneingeschränkt",
+    "Verträge dürfen gar keine Haftungsbeschränkung enthalten",
+    "Haftungsbeschränkungen gelten nur für Hardware",
+    "Für grobe Fahrlässigkeit und Vorsatz ist ein solcher Ausschluss in der Regel nicht wirksam"
+   ],
+   "correctIndex": 3,
+   "explanation": "Haftungsbeschränkungen sind üblich, etwa für leichte Fahrlässigkeit. Für Vorsatz und grobe Fahrlässigkeit lässt sich die Haftung in der Regel nicht wirksam ausschließen."
+  },
+  {
+   "question": "Welche Pflicht ergibt sich aus dem Verbrauchergewährleistungsgesetz für Anbieter digitaler Inhalte an Verbraucher:innen?",
+   "options": [
+    "Den Quellcode zu veröffentlichen",
+    "Für einen angemessenen Zeitraum nötige Aktualisierungen wie Sicherheitsupdates bereitzustellen",
+    "Eine lebenslange Garantie zu geben",
+    "Die Software jährlich neu zu verkaufen"
+   ],
+   "correctIndex": 1,
+   "explanation": "Das VGG verlangt, dass Verbraucher:innen nötige Aktualisierungen – insbesondere Sicherheitsupdates – für einen angemessenen Zeitraum erhalten."
+  },
+  {
+   "question": "Welche Maßnahme hilft am besten, Lizenz-Compliance dauerhaft sicherzustellen?",
+   "options": [
+    "Einmal vor dem ersten Release alle Lizenzen lesen",
+    "Nur Bibliotheken mit vielen GitHub-Sternen verwenden",
+    "Eine SBOM führen und Lizenzen automatisiert in der CI-Pipeline prüfen",
+    "Lizenzhinweise aus dem Code entfernen, damit er übersichtlich bleibt"
+   ],
+   "correctIndex": 2,
+   "explanation": "Abhängigkeiten ändern sich laufend. Eine SBOM und automatisierte Prüfung bei jedem Build entdecken nicht freigegebene oder unbekannte Lizenzen früh."
+  }
+ ]
+}

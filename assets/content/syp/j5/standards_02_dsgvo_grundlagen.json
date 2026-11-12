@@ -1,0 +1,93 @@
+{
+ "id": "syp-j5-standards_02_dsgvo_grundlagen",
+ "title": "DSGVO-Grundlagen",
+ "summary": "Begriffe, Grundsätze nach Art. 5, Rechtsgrundlagen nach Art. 6 und das österreichische DSG.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Hinweis: Diese Lektion erklärt Grundsätze für den Unterricht und ist keine Rechtsberatung. Die Datenschutz-Grundverordnung (DSGVO) ist eine EU-Verordnung und gilt seit 25. Mai 2018 unmittelbar in allen Mitgliedstaaten. In Österreich ergänzt sie das Datenschutzgesetz (DSG), das unter anderem das Grundrecht auf Datenschutz enthält und die Datenschutzbehörde (DSB) als Aufsichtsbehörde einrichtet. Als Entwickler:in betrifft dich die DSGVO fast immer: Kaum eine App kommt ohne personenbezogene Daten aus."
+  },
+  {
+   "type": "text",
+   "content": "Wichtige Begriffe: Personenbezogene Daten sind alle Informationen über eine identifizierte oder identifizierbare natürliche Person – Name, E-Mail, Klasse, Foto, Standort, unter Umständen auch eine IP-Adresse. Verarbeitung ist jeder Vorgang damit: erheben, speichern, abfragen, übermitteln, löschen. Der Verantwortliche entscheidet über Zweck und Mittel (z. B. die Schule), ein Auftragsverarbeiter verarbeitet in dessen Auftrag (z. B. der Hosting-Anbieter). Betroffene sind die Personen, um deren Daten es geht. Pseudonymisierte Daten bleiben personenbezogen, nur wirklich anonymisierte nicht mehr."
+  },
+  {
+   "type": "code",
+   "content": "Personenbezogen?\n\"lisa.huber@schule.at\"   ja\nMatrikelnr. + Notenliste ja\nPseudonym \"P-7f3a\"       ja (mit\n  Zuordnungstabelle)\n\"Klasse 5AHIF hat 24     nein\n  Schüler:innen\"         (anonym,\n                          Statistik)\nWetterdaten Schulhof     nein"
+  },
+  {
+   "type": "text",
+   "content": "Art. 5 DSGVO legt die Grundsätze fest, die für jede Verarbeitung gelten. Wichtig ist der letzte: Der Verantwortliche muss die Einhaltung nachweisen können (Rechenschaftspflicht) – Datenschutz muss also dokumentiert sein, nicht nur gelebt."
+  },
+  {
+   "type": "code",
+   "content": "Grundsätze (Art. 5 DSGVO)\n1 Rechtmäßigkeit, Treu und\n  Glauben, Transparenz\n2 Zweckbindung\n3 Datenminimierung\n4 Richtigkeit\n5 Speicherbegrenzung\n6 Integrität, Vertraulichkeit\n7 Rechenschaftspflicht\n\nBeispiel Anmelde-App Sportwoche:\n- Zweck: Teilnahme organisieren\n- Minimierung: kein Geburtsort,\n  keine Sozialversicherungsnr.\n- Speicherbegr.: nach der Woche\n  löschen"
+  },
+  {
+   "type": "text",
+   "content": "Eine Verarbeitung ist nur rechtmäßig, wenn eine Rechtsgrundlage nach Art. 6 Abs. 1 DSGVO vorliegt – mindestens eine reicht. Die Einwilligung ist nur eine davon und oft nicht die passendste. Eine Einwilligung muss freiwillig, für einen bestimmten Zweck, informiert und eindeutig sein und kann jederzeit widerrufen werden; ein vorangekreuztes Kästchen genügt nicht. Bei Online-Diensten, die sich direkt an Kinder richten, können in Österreich Jugendliche ab 14 Jahren selbst einwilligen, darunter braucht es die Zustimmung der Eltern."
+  },
+  {
+   "type": "code",
+   "content": "Art. 6 Abs. 1 DSGVO\na Einwilligung\n  (Newsletter der Schule)\nb Vertrag/Vertragsanbahnung\n  (Lieferadresse im Webshop)\nc rechtliche Verpflichtung\n  (Rechnungen aufbewahren)\nd lebenswichtige Interessen\n  (Notfall)\ne öffentliches Interesse /\n  öffentliche Gewalt\nf berechtigte Interessen,\n  abgewogen gegen die Rechte\n  der Betroffenen (Logfiles zur\n  Angriffserkennung)"
+  },
+  {
+   "type": "text",
+   "content": "Für besondere Kategorien personenbezogener Daten gilt nach Art. 9 DSGVO ein grundsätzliches Verarbeitungsverbot mit Ausnahmen (z. B. ausdrückliche Einwilligung). Dazu gehören Gesundheitsdaten, Daten zu religiöser oder weltanschaulicher Überzeugung, politischer Meinung, ethnischer Herkunft, Gewerkschaftszugehörigkeit, genetische Daten, biometrische Daten zur eindeutigen Identifizierung sowie Daten zum Sexualleben oder zur sexuellen Orientierung. Eine Allergie-Angabe in der Anmelde-App für die Sportwoche ist also ein Gesundheitsdatum und braucht besondere Sorgfalt."
+  },
+  {
+   "type": "code",
+   "content": "import hmac, hashlib\nSCHLUESSEL = b\"geheim-im-Tresor\"\n\ndef pseudonym(matrikel):\n    h = hmac.new(SCHLUESSEL,\n                 matrikel.encode(),\n                 hashlib.sha256)\n    return \"P-\" + h.hexdigest()[:6]\n\na = pseudonym(\"20231234\")\nprint(a == pseudonym(\"20231234\"))\nprint(a == pseudonym(\"20231235\"))\n\n# Ausgabe:\n# True\n# False"
+  },
+  {
+   "type": "text",
+   "content": "Das Pseudonym ist bei gleicher Matrikelnummer immer gleich – Auswertungen funktionieren also weiter. Wer den Schlüssel hat, kann aber jede Matrikelnummer wieder zuordnen, darum bleiben die Daten personenbezogen; der Schlüssel muss getrennt und geschützt aufbewahrt werden. Typische Fehler: „Wir haben eh eine Einwilligung“ als Antwort auf alles; Daten „für später einmal“ sammeln; Pseudonymisierung mit Anonymisierung verwechseln. Zusammenfassung: DSGVO plus österreichisches DSG, Aufsicht durch die DSB; Grundsätze nach Art. 5, Rechtsgrundlage nach Art. 6, besondere Kategorien nach Art. 9."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Eine Schule speichert für den Schulball Name und E-Mail der Gäste. Die Daten werden später ohne Zustimmung für Werbung eines Sponsors verwendet. Welcher Grundsatz ist vor allem verletzt?",
+   "options": [
+    "Richtigkeit",
+    "Zweckbindung",
+    "Speicherbegrenzung",
+    "Integrität"
+   ],
+   "correctIndex": 1,
+   "explanation": "Die Daten wurden für die Ballorganisation erhoben. Die Verwendung für Sponsorenwerbung ist ein neuer, nicht vereinbarer Zweck."
+  },
+  {
+   "question": "Ein Webshop speichert die Lieferadresse, um die bestellte Ware zuzustellen. Welche Rechtsgrundlage passt am besten?",
+   "options": [
+    "Art. 6 Abs. 1 lit. a – Einwilligung",
+    "Art. 6 Abs. 1 lit. d – lebenswichtige Interessen",
+    "Art. 6 Abs. 1 lit. b – Vertragserfüllung",
+    "Art. 9 – besondere Kategorien"
+   ],
+   "correctIndex": 2,
+   "explanation": "Ohne Adresse kann der Vertrag nicht erfüllt werden. Eine zusätzliche Einwilligung ist dafür nicht nötig."
+  },
+  {
+   "question": "Welche Aussage über pseudonymisierte Daten stimmt?",
+   "options": [
+    "Sie sind anonym und fallen nicht mehr unter die DSGVO",
+    "Sie dürfen ohne Rechtsgrundlage veröffentlicht werden",
+    "Sie sind besondere Kategorien nach Art. 9",
+    "Sie bleiben personenbezogen, weil sie mit Zusatzwissen wieder zuordenbar sind"
+   ],
+   "correctIndex": 3,
+   "explanation": "Pseudonymisierung senkt das Risiko, die Daten bleiben aber personenbezogen. Erst echte Anonymisierung ohne Rückführbarkeit fällt aus der DSGVO."
+  },
+  {
+   "question": "Welche Behörde ist in Österreich Aufsichtsbehörde für den Datenschutz?",
+   "options": [
+    "Die Datenschutzbehörde (DSB)",
+    "Das Bundesministerium für Bildung",
+    "Die Wirtschaftskammer",
+    "Der Oberste Gerichtshof"
+   ],
+   "correctIndex": 0,
+   "explanation": "Die Datenschutzbehörde ist die österreichische Aufsichtsbehörde nach DSGVO und DSG. Bei ihr können Betroffene Beschwerde einlegen."
+  }
+ ]
+}

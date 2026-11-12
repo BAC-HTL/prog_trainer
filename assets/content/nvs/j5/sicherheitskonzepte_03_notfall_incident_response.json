@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j5-sicherheitskonzepte_03_notfall_incident_response",
+  "title": "Notfallmanagement & Incident Response",
+  "summary": "Mit Business-Impact-Analyse, RTO und RPO auf Ausfälle vorbereiten, Sicherheitsvorfälle in Phasen bearbeiten und Meldefristen kennen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Auch das beste Sicherheitskonzept verhindert nicht jeden Vorfall. Notfallmanagement (Business Continuity Management, BCM) sorgt dafür, dass wichtige Abläufe auch dann weiterlaufen oder rasch wieder anlaufen. Der BSI-Standard 200-4 unterscheidet nach Schwere: Eine Störung wird im normalen Betrieb behoben (Drucker kaputt). Ein Notfall unterbricht wichtige Prozesse so, dass die normale Organisation nicht mehr reicht (Verwaltungsnetz durch Ransomware verschlüsselt). Eine Krise geht noch darüber hinaus und lässt sich nicht mit vorbereiteten Plänen allein bewältigen."
+    },
+    {
+      "type": "text",
+      "content": "Ausgangspunkt ist die Business-Impact-Analyse (BIA): Für jeden Prozess wird festgelegt, wie lange er höchstens ausfallen darf. Daraus ergeben sich zwei Kennzahlen für die IT. Die RTO (Recovery Time Objective) ist die Zeit, bis ein System wieder läuft. Der RPO (Recovery Point Objective) ist der maximal tolerierbare Datenverlust, gemessen als Zeitspanne – er bestimmt, wie oft gesichert werden muss. Typischer Fehler: Es gibt Backups, aber niemand hat je geprüft, ob und wie schnell sich daraus wiederherstellen lässt."
+    },
+    {
+      "type": "code",
+      "content": "rpo_h, rto_h = 4, 8      # aus der BIA\nbackup_alle_h = 24       # nächtl. Backup\n\ndaten_gb = 800\nmb_pro_s = 200           # Restore-Tempo\naufbau_h = 2             # Server bereit.\n\nverlust = backup_alle_h  # schlimmster Fall\nrestore = (daten_gb * 1000 / mb_pro_s\n           / 3600 + aufbau_h)\nprint(\"RPO ok?\", verlust <= rpo_h)\nprint(f\"Restore {restore:.1f} h,\",\n      \"RTO ok?\", restore <= rto_h)\n\n# Ausgabe:\n# RPO ok? False\n# Restore 3.1 h, RTO ok? True"
+    },
+    {
+      "type": "text",
+      "content": "Das nächtliche Backup verletzt den RPO von 4 Stunden: Im schlimmsten Fall gehen 24 Stunden Arbeit verloren. Es braucht häufigere Sicherungen oder eine Replikation. Die RTO wird mit 3,1 Stunden eingehalten – sofern Ersatzhardware tatsächlich bereitsteht. Solche Pläne landen im Notfallhandbuch: Alarmierungs- und Eskalationswege, Kontaktlisten (auch externe Dienstleister), Zuständigkeiten, Wiederanlaufpläne mit Reihenfolge und Abhängigkeiten (erst Netz und Verzeichnisdienst, dann Anwendungen). Das Handbuch muss auch ohne IT verfügbar sein, z. B. ausgedruckt, und wird regelmäßig geübt, etwa als Planspiel (Tabletop-Übung)."
+    },
+    {
+      "type": "text",
+      "content": "Für Sicherheitsvorfälle (Security Incidents) gibt es ein eigenes Vorgehen, die Incident Response, oft durch ein Team (CSIRT) mit festen Rollen. Das klassische Phasenmodell, wie es z. B. in NIST SP 800-61 beschrieben ist, hat vier Phasen, die einen Kreislauf bilden:"
+    },
+    {
+      "type": "code",
+      "content": "1 Vorbereitung\n  Plan, Rollen, Kontakte, Tools,\n  Übungen, Logging aktiv\n2 Erkennung & Analyse\n  Alarm prüfen, einstufen,\n  Umfang klären, dokumentieren\n3 Eindämmung, Beseitigung,\n  Wiederherstellung\n  isolieren, Ursache entfernen,\n  aus sauberem Backup zurück\n4 Nachbereitung\n  Lessons Learned, Plan und\n  Maßnahmen verbessern\n        └──────> zurück zu 1"
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Grundregeln im Ernstfall: Ruhe bewahren und den Vorfall sofort über den festgelegten Meldeweg melden, statt allein herumzuprobieren. Betroffene Systeme vom Netz trennen, um die Ausbreitung zu stoppen; ob ein Gerät eingeschaltet bleibt, damit flüchtige Spuren im Arbeitsspeicher gesichert werden können, legt der Notfallplan fest. Logs und Beweise nicht löschen, alles mit Uhrzeit dokumentieren. Passwörter von einem sauberen Gerät aus ändern. Vor der Wiederherstellung muss die Ursache beseitigt sein, sonst ist der Angreifer nach dem Restore gleich wieder da."
+    },
+    {
+      "type": "text",
+      "content": "Dazu kommen Meldepflichten. Nach Art. 33 DSGVO muss der Verantwortliche eine Verletzung des Schutzes personenbezogener Daten unverzüglich und möglichst binnen 72 Stunden, nachdem sie bekannt wurde, der Aufsichtsbehörde melden (in Österreich der Datenschutzbehörde) – außer sie führt voraussichtlich nicht zu einem Risiko für die Betroffenen. Bei hohem Risiko müssen nach Art. 34 auch die Betroffenen informiert werden. Für Einrichtungen, die unter die NIS-2-Richtlinie fallen, gilt bei erheblichen Vorfällen ein gestuftes Verfahren: Frühwarnung binnen 24 Stunden, Meldung binnen 72 Stunden, Abschlussbericht spätestens einen Monat danach – an die national zuständige Stelle. Fristen laufen auch am Wochenende. Das ist ein Überblick, keine Rechtsberatung; die konkreten Pflichten regeln die nationalen Gesetze."
+    },
+    {
+      "type": "code",
+      "content": "from datetime import datetime, timedelta\n\nTAG = \"Mo Di Mi Do Fr Sa So\".split()\nbekannt = datetime(2026, 3, 13, 16, 40)\nfristen = {\n    \"NIS-2 Frühwarnung\": 24,\n    \"NIS-2 Meldung\":     72,\n    \"DSGVO an Behörde\":  72,\n}\nprint(\"bekannt:\", TAG[bekannt.weekday()],\n      f\"{bekannt:%d.%m. %H:%M}\")\nfor name, h in fristen.items():\n    t = bekannt + timedelta(hours=h)\n    print(f\"{name:18} {TAG[t.weekday()]}\"\n          f\" {t:%d.%m. %H:%M}\")\n\n# Ausgabe:\n# bekannt: Fr 13.03. 16:40\n# NIS-2 Frühwarnung  Sa 14.03. 16:40\n# NIS-2 Meldung      Mo 16.03. 16:40\n# DSGVO an Behörde   Mo 16.03. 16:40"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Störung < Notfall < Krise. Die BIA liefert RTO (Wiederanlaufzeit) und RPO (tolerierbarer Datenverlust); Backup-Intervall ≤ RPO, Restore-Zeit ≤ RTO – und Wiederherstellung regelmäßig testen. Das Notfallhandbuch enthält Alarmierung, Kontakte und Wiederanlaufpläne und liegt auch offline vor. Incident Response: Vorbereitung → Erkennung & Analyse → Eindämmung, Beseitigung, Wiederherstellung → Nachbereitung (Lessons Learned). DSGVO: Meldung möglichst binnen 72 h; NIS-2: 24 h / 72 h / ein Monat."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Die BIA legt für das Notensystem einen RPO von 1 Stunde fest. Welches Sicherungskonzept erfüllt das?",
+      "options": [
+        "Tägliches Vollbackup um Mitternacht",
+        "Wöchentliches Backup plus tägliche Kontrolle",
+        "Stündliche Sicherung bzw. laufende Replikation auf ein zweites System",
+        "Ein RAID 1 im Server"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der RPO verlangt, dass höchstens eine Stunde Daten verloren gehen. Das schaffen nur Sicherungen mindestens jede Stunde oder Replikation. RAID schützt nicht vor Löschung oder Verschlüsselung durch Ransomware."
+    },
+    {
+      "question": "Wie lange dauert die Wiederherstellung von 1,2 TB (1200 GB) bei 250 MB/s plus 1 Stunde Aufbau (gerundet)?",
+      "code": "restore = 1200 * 1000 / 250 / 3600 + 1",
+      "options": [
+        "2,3 h",
+        "1,3 h",
+        "5,8 h",
+        "4,8 h"
+      ],
+      "correctIndex": 0,
+      "explanation": "1200 · 1000 MB / 250 MB/s = 4800 s = 1,33 h. Plus 1 h Aufbau = 2,33 h ≈ 2,3 h."
+    },
+    {
+      "question": "In welche Phase der Incident Response gehört es, einen infizierten Rechner vom Netz zu trennen?",
+      "options": [
+        "Vorbereitung",
+        "Eindämmung, Beseitigung, Wiederherstellung",
+        "Nachbereitung",
+        "Business-Impact-Analyse"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Isolieren betroffener Systeme ist Eindämmung (Containment): Die Ausbreitung wird gestoppt, bevor die Ursache beseitigt und wiederhergestellt wird."
+    },
+    {
+      "question": "Ein Datenleck mit Schülerdaten wird am Dienstag um 9:00 bekannt und führt voraussichtlich zu einem Risiko für die Betroffenen. Bis wann sollte die Meldung an die Datenschutzbehörde nach DSGVO möglichst erfolgt sein?",
+      "options": [
+        "Dienstag 17:00 (Dienstschluss)",
+        "Mittwoch 9:00",
+        "Montag der Folgewoche",
+        "Freitag 9:00"
+      ],
+      "correctIndex": 3,
+      "explanation": "Unverzüglich, möglichst binnen 72 Stunden ab Bekanntwerden: Dienstag 9:00 + 72 h = Freitag 9:00."
+    }
+  ]
+}

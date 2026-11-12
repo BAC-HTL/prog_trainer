@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-theorie-architektur_03_microkernel_eventdriven",
+  "title": "Microkernel, Event-driven & Pipes-and-Filters",
+  "summary": "Drei weitere Architekturmuster kennenlernen und gegeneinander abwägen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Beim Microkernel-Muster (Plug-in-Architektur) gibt es einen kleinen, stabilen Kern mit den Grundfunktionen. Alles Weitere kommt über Plug-ins dazu, die sich über eine fest definierte Schnittstelle beim Kern anmelden. Beispiele: Entwicklungsumgebungen wie VS Code mit Erweiterungen, Browser mit Add-ons."
+    },
+    {
+      "type": "code",
+      "content": "class Kern:\n    def __init__(self):\n        self.plugins = {}\n\n    def registriere(self, name, f):\n        self.plugins[name] = f\n\n    def ausfuehren(self, name, text):\n        if name not in self.plugins:\n            return \"unbekannt\"\n        return self.plugins[name](text)\n\nk = Kern()\nk.registriere(\"gross\", str.upper)\nk.registriere(\"woerter\",\n    lambda t: len(t.split()))\nprint(k.ausfuehren(\"gross\", \"htl\"))\nprint(k.ausfuehren(\"woerter\", \"a b c\"))\nprint(k.ausfuehren(\"pdf\", \"x\"))\n# HTL\n# 3\n# unbekannt"
+    },
+    {
+      "type": "text",
+      "content": "Bei einer ereignisgesteuerten Architektur (Event-driven) rufen sich Bausteine nicht direkt auf. Ein Sender veröffentlicht ein Ereignis („Note eingetragen“) über einen Event-Bus bzw. Message-Broker; alle Interessierten haben es abonniert und reagieren (Publish/Subscribe). Der Sender weiß nicht, wer zuhört – sehr lose Kopplung. Neue Reaktionen hängst du an, ohne den Sender zu ändern."
+    },
+    {
+      "type": "code",
+      "content": "from collections import defaultdict\n\nclass Bus:\n    def __init__(self):\n        self.abos = defaultdict(list)\n    def abonniere(self, typ, f):\n        self.abos[typ].append(f)\n    def sende(self, typ, daten):\n        for f in self.abos[typ]:\n            f(daten)\n\nbus = Bus()\nbus.abonniere(\"note\", lambda d:\n    print(\"Mail an\", d[\"schueler\"]))\nbus.abonniere(\"note\", lambda d:\n    print(\"Statistik +1\"))\nbus.sende(\"note\",\n    {\"schueler\": \"Ben\", \"note\": 2})\n# Mail an Ben\n# Statistik +1"
+    },
+    {
+      "type": "text",
+      "content": "Der Preis der losen Kopplung: Der Ablauf steht nirgends an einer Stelle im Code, Fehlersuche wird schwieriger. In verteilten Systemen kommen Ereignisse eventuell verspätet, doppelt oder in anderer Reihenfolge an – Empfänger sollten damit umgehen können (z. B. idempotent sein: dasselbe Ereignis zweimal verarbeitet ergibt dasselbe Ergebnis)."
+    },
+    {
+      "type": "text",
+      "content": "Pipes-and-Filters zerlegt eine Verarbeitung in eine Kette unabhängiger Filter. Jeder Filter nimmt Daten entgegen, verarbeitet sie und gibt sie über eine Pipe an den nächsten weiter. Bekannt aus der Shell (cat log | grep ERROR | sort) und aus Compilern (Lexer → Parser → Codegenerator). Filter lassen sich einzeln testen, umstellen und wiederverwenden."
+    },
+    {
+      "type": "code",
+      "content": "def lesen(zeilen):\n    for z in zeilen:\n        yield z.strip()\n\ndef nur_fehler(zeilen):\n    for z in zeilen:\n        if z.startswith(\"ERROR\"):\n            yield z\n\ndef nummerieren(zeilen):\n    for i, z in enumerate(zeilen, 1):\n        yield f\"{i}: {z}\"\n\nlog = [\"INFO start\", \"ERROR db\",\n       \"INFO ok\", \"ERROR netz\"]\nfor z in nummerieren(\n        nur_fehler(lesen(log))):\n    print(z)\n# 1: ERROR db\n# 2: ERROR netz"
+    },
+    {
+      "type": "text",
+      "content": "Kein Muster ist immer das beste – die Wahl folgt den priorisierten Qualitätszielen. Oft werden Muster kombiniert: z. B. Schichten innerhalb eines Dienstes und Ereignisse zwischen den Diensten."
+    },
+    {
+      "type": "code",
+      "content": "Muster      Stärke         Schwäche\n----------- -------------- ------------\nSchichten   einfach,       Durchreichen,\n            verständlich   träge bei\n                           großen Sys.\nMicrokernel erweiterbar    Schnittstelle\n                           schwer änderb.\nEvent-      lose Kopplung, Ablauf schwer\n driven     skalierbar     nachvollziehb.\nPipes and   Filter wieder- ungeeignet f.\n Filters    verwendbar     Dialoge"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Microkernel = kleiner Kern + Plug-ins über feste Schnittstelle. Event-driven = Publish/Subscribe über einen Bus, sehr lose Kopplung, aber schwerer zu debuggen. Pipes-and-Filters = Verarbeitungskette aus unabhängigen Schritten. Typischer Fehler: ein Muster wählen, weil es modern klingt, statt weil es die wichtigsten Qualitätsziele erfüllt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "abos = {\"x\": [], \"y\": []}\nabos[\"x\"].append(lambda: print(\"A\"))\nabos[\"x\"].append(lambda: print(\"B\"))\nfor f in abos[\"x\"]:\n    f()\nfor f in abos[\"y\"]:\n    f()",
+      "options": [
+        "A\nB",
+        "B\nA",
+        "A",
+        "Nichts"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beide Funktionen haben „x“ abonniert und werden in der Reihenfolge der Anmeldung aufgerufen. Das Ereignis „y“ hat keine Abonnenten, also passiert dabei nichts."
+    },
+    {
+      "question": "Ein Bildbearbeitungsprogramm soll von Drittanbietern um neue Filter erweitert werden können, ohne den Kern neu auszuliefern. Welches Muster passt am besten?",
+      "options": [
+        "Strenge Schichtenarchitektur",
+        "Microkernel (Plug-in-Architektur)",
+        "MVC",
+        "Ein einziges großes Modul"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein stabiler Kern mit definierter Plug-in-Schnittstelle erlaubt Erweiterungen von außen – genau die Stärke des Microkernel-Musters."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def gerade(xs):\n    for x in xs:\n        if x % 2 == 0:\n            yield x\ndef quadrat(xs):\n    for x in xs:\n        yield x * x\nprint(list(quadrat(gerade([1, 2, 3, 4]))))",
+      "options": [
+        "[2, 4, 6, 8]",
+        "[4, 16]",
+        "[2, 4]",
+        "[1, 4, 9, 16]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der erste Filter lässt nur gerade Zahlen durch (2, 4), der zweite quadriert sie: 4 und 16."
+    },
+    {
+      "question": "Welcher Nachteil ist typisch für ereignisgesteuerte Architekturen?",
+      "options": [
+        "Sender und Empfänger sind fest gekoppelt",
+        "Neue Empfänger erfordern Änderungen am Sender",
+        "Der Gesamtablauf ist schwerer nachzuvollziehen und zu debuggen",
+        "Es kann immer nur einen Empfänger pro Ereignis geben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Weil der Sender nicht weiß, wer reagiert, steht der Ablauf nicht an einer Stelle. Dafür sind Sender und Empfänger lose gekoppelt und es kann beliebig viele Abonnenten geben."
+    }
+  ]
+}

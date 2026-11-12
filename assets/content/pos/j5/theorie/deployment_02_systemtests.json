@@ -1,0 +1,94 @@
+{
+  "id": "pos-j5-theorie-deployment_02_systemtests",
+  "title": "Systemtests & Abnahme",
+  "summary": "Das Gesamtsystem gegen die Anforderungen testen und die Abnahme durch den Auftraggeber vorbereiten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Unit-Tests prüfen einzelne Funktionen, Integrationstests das Zusammenspiel von Komponenten. Der Systemtest prüft das vollständige System – installiert in einer Testumgebung, die der Produktion möglichst gleicht – gegen die Anforderungen aus dem Pflichtenheft. Er ist ein Blackbox-Test: Man bedient das System von außen (Oberfläche, API) und schaut nicht in den Code."
+    },
+    {
+      "type": "code",
+      "content": "V-Modell: jede Ebene hat ihren Test\n\nAnforderungen ------ Abnahmetest\n  Systementwurf ---- Systemtest\n   Komp.-Entwurf -- Integrationstest\n     Modulentwurf - Unit-Test\n           \\       /\n          Implementierung"
+    },
+    {
+      "type": "text",
+      "content": "Systemtests prüfen nicht nur Funktionen, sondern auch nicht-funktionale Anforderungen: Last und Performance, Sicherheit, Bedienbarkeit, Installation und Update, Wiederherstellung nach Absturz oder Datenverlust und – passend zur Internationalisierung – die korrekte Darstellung in allen unterstützten Sprachen."
+    },
+    {
+      "type": "text",
+      "content": "Ein automatisierter Systemtest spricht das laufende System über seine echte Schnittstelle an. Im Beispiel wird ein kleiner HTTP-Dienst gestartet und dann – wie von einem Client – per HTTP abgefragt. In der Praxis läuft der Dienst in der Testumgebung, und Werkzeuge wie pytest, Playwright oder Postman/Newman schicken die Anfragen."
+    },
+    {
+      "type": "code",
+      "content": "import json, threading\nfrom http.server import (\n    HTTPServer, BaseHTTPRequestHandler)\nfrom urllib.request import urlopen\n\nclass Api(BaseHTTPRequestHandler):\n    def do_GET(self):\n        body = json.dumps(\n            {\"klasse\": \"5AHIF\"}).encode()\n        self.send_response(200)\n        self.end_headers()\n        self.wfile.write(body)\n    def log_message(self, *args):\n        pass  # kein Log in der Konsole\n\nsrv = HTTPServer((\"127.0.0.1\", 0), Api)\nthreading.Thread(\n    target=srv.serve_forever,\n    daemon=True).start()\n\nurl = f\"http://127.0.0.1:{srv.server_port}/\"\nwith urlopen(url) as antwort:\n    assert antwort.status == 200\n    daten = json.load(antwort)\nassert daten[\"klasse\"] == \"5AHIF\"\nprint(\"Systemtest bestanden\")\nsrv.shutdown()"
+    },
+    {
+      "type": "text",
+      "content": "Manuelle Systemtests werden als Testfälle beschrieben, damit jede Person sie gleich durchführt und das Ergebnis nachvollziehbar ist. Jeder Testfall verweist auf eine Anforderung – so sieht man, ob alle Anforderungen abgedeckt sind (Rückverfolgbarkeit)."
+    },
+    {
+      "type": "code",
+      "content": "ID:        TF-07\nAnforderung: A-12 Noten eintragen\nVorbed.:   Lehrkraft angemeldet,\n           Klasse 5AHIF existiert\nSchritte:  1. Klasse wählen\n           2. Note 2 bei Ben eintragen\n           3. Speichern\nErwartet:  Meldung „Gespeichert“,\n           Ben hat Note 2\nIst:       wie erwartet\nStatus:    bestanden"
+    },
+    {
+      "type": "text",
+      "content": "Der Abnahmetest wird vom Auftraggeber (oder in seinem Auftrag) durchgeführt – oft als User Acceptance Test mit echten Benutzer:innen. Geprüft wird gegen vorher vereinbarte Abnahmekriterien, z. B. „mindestens 95 % der Testfälle bestanden, kein kritischer Fehler offen“. Das Ergebnis hält ein Abnahmeprotokoll fest, mit Liste der offenen Mängel. Die Abnahme hat meist vertragliche Folgen (z. B. Fälligkeit der Zahlung) – was genau gilt, regelt der Vertrag; das hier ist keine Rechtsberatung."
+    },
+    {
+      "type": "code",
+      "content": "ergebnisse = [\"ok\"] * 38 + [\n    \"fehler:gering\", \"fehler:mittel\"]\n\nok = ergebnisse.count(\"ok\")\nquote = ok / len(ergebnisse)\nkritisch = sum(1 for e in ergebnisse\n               if e == \"fehler:kritisch\")\n\nprint(f\"Quote: {quote:.0%}\")\nabnahme = quote >= 0.95 and kritisch == 0\nprint(\"Abnahme:\", abnahme)\n# Quote: 95%\n# Abnahme: True"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Abnahmekriterien erst am Ende verhandeln; im Systemtest mit Entwickler-Daten statt realistischen Daten testen; nach einer Fehlerbehebung nicht erneut testen. Nach jeder Änderung läuft deshalb ein Regressionstest, nach jeder Installation ein kurzer Smoke-Test (Startet das System? Funktioniert die Anmeldung?).\n\nZusammenfassung: Systemtest = ganzes System, produktionsnahe Umgebung, gegen Anforderungen, funktional und nicht-funktional. Abnahmetest = Auftraggeber prüft gegen vereinbarte Kriterien, Ergebnis im Abnahmeprotokoll."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was unterscheidet einen Systemtest von einem Integrationstest?",
+      "options": [
+        "Der Systemtest prüft einzelne Funktionen isoliert",
+        "Der Systemtest prüft das gesamte System in produktionsnaher Umgebung gegen die Anforderungen",
+        "Der Systemtest wird immer vom Auftraggeber durchgeführt",
+        "Es gibt keinen Unterschied"
+      ],
+      "correctIndex": 1,
+      "explanation": "Integrationstests prüfen das Zusammenspiel einzelner Komponenten. Der Systemtest betrachtet das vollständige System von außen. Den Abnahmetest führt der Auftraggeber durch."
+    },
+    {
+      "question": "Abnahmekriterium: mindestens 95 % bestanden und kein kritischer Fehler. Was gibt dieser Code aus?",
+      "code": "e = [\"ok\"] * 57 + [\"gering\",\n    \"gering\", \"kritisch\"]\nquote = e.count(\"ok\") / len(e)\nprint(quote >= 0.95\n      and \"kritisch\" not in e)",
+      "options": [
+        "True",
+        "False",
+        "0.95",
+        "ZeroDivisionError"
+      ],
+      "correctIndex": 1,
+      "explanation": "57 von 60 sind 95 % – die Quote reicht. Einer der drei Fehler ist aber kritisch, daher ist die Abnahme nicht möglich: False."
+    },
+    {
+      "question": "Welche Angabe gehört NICHT zu einer üblichen Testfallbeschreibung im Systemtest?",
+      "options": [
+        "Vorbedingungen",
+        "Erwartetes Ergebnis",
+        "Zeilennummern im Quellcode, die durchlaufen werden",
+        "Bezug zur Anforderung"
+      ],
+      "correctIndex": 2,
+      "explanation": "Systemtests sind Blackbox-Tests: Man beschreibt Vorbedingungen, Schritte, erwartetes Ergebnis und die zugehörige Anforderung, nicht den Code."
+    },
+    {
+      "question": "Nach dem Einspielen einer neuen Version prüft das Team in zwei Minuten, ob die App startet und die Anmeldung geht. Wie heißt dieser Test?",
+      "options": [
+        "Abnahmetest",
+        "Lasttest",
+        "Unit-Test",
+        "Smoke-Test"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Smoke-Test prüft nur grob, ob das System grundsätzlich läuft. Erst danach lohnen sich ausführliche Tests."
+    }
+  ]
+}

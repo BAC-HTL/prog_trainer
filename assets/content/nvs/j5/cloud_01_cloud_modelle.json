@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j5-cloud_01_cloud_modelle",
+  "title": "Cloud-Modelle: IaaS, PaaS, SaaS & Shared Responsibility",
+  "summary": "Die Service- und Bereitstellungsmodelle des Cloud Computing unterscheiden, die geteilte Verantwortung verstehen und Kosten mit eigenem Betrieb vergleichen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Cloud Computing heißt: IT-Ressourcen wie Rechenleistung, Speicher oder fertige Anwendungen werden über das Netz bezogen statt selbst betrieben. Die übliche Definition des US-Instituts NIST nennt fünf Merkmale: Selbstbedienung nach Bedarf (On-Demand Self-Service), Zugriff über das Netz, gemeinsam genutzte Ressourcenpools beim Anbieter, schnelle Elastizität (Ressourcen in Minuten dazu- oder wegnehmen) und gemessene Nutzung (Abrechnung nach Verbrauch). Ein Server im Keller, der per Webinterface verwaltet wird, ist also noch keine Cloud."
+    },
+    {
+      "type": "text",
+      "content": "Nach dem Servicemodell unterscheidet man, wie viel der Anbieter übernimmt. IaaS (Infrastructure as a Service): Du mietest virtuelle Maschinen, Netze und Speicher und kümmerst dich selbst um Betriebssystem, Updates und Software. PaaS (Platform as a Service): Du lieferst nur deinen Code oder Container, Laufzeitumgebung, Datenbank-Server und Skalierung betreibt der Anbieter. SaaS (Software as a Service): Du nutzt eine fertige Anwendung im Browser, z. B. ein Online-Office oder eine gehostete Lernplattform. Dazu kommt oft FaaS bzw. „Serverless“: einzelne Funktionen, die nur bei einem Ereignis laufen und pro Aufruf abgerechnet werden."
+    },
+    {
+      "type": "text",
+      "content": "Daraus folgt das Modell der geteilten Verantwortung (Shared Responsibility): Der Anbieter ist für die Sicherheit DER Cloud zuständig (Rechenzentrum, Hardware, Virtualisierung), der Kunde für die Sicherheit IN der Cloud. Je weiter Richtung SaaS, desto mehr übernimmt der Anbieter – aber nie alles:"
+    },
+    {
+      "type": "code",
+      "content": "Schicht       On-Prem IaaS PaaS SaaS\n------------  ------- ---- ---- ----\nDaten,Konten   K       K    K    K\nAnwendung      K       K    K    A\nLaufzeit/DB    K       K    A    A\nBetriebssyst.  K       K    A    A\nVirtualisier.  K       A    A    A\nServer/Netz    K       A    A    A\nRechenzentrum  K       A    A    A\n\nK = Kunde, A = Anbieter (Cloud)"
+    },
+    {
+      "type": "text",
+      "content": "Daten, Benutzerkonten und Zugriffsrechte bleiben immer beim Kunden, auch bei SaaS – ebenso die Konfiguration, die der Kunde selbst einstellt. Viele bekannte Datenlecks entstanden nicht durch Angriffe auf den Anbieter, sondern durch Fehlkonfiguration: ein öffentlich lesbarer Speicher-Bucket, ein Admin-Konto ohne Mehr-Faktor-Authentifizierung, eine Datenbank ohne Firewallregel im Internet. Typischer Denkfehler: „Das liegt in der Cloud, also kümmert sich der Anbieter um die Sicherheit.“"
+    },
+    {
+      "type": "text",
+      "content": "Nach dem Bereitstellungsmodell unterscheidet man: Public Cloud (Ressourcen eines Anbieters, von vielen Kunden geteilt), Private Cloud (nur für eine Organisation, im eigenen oder einem fremden Rechenzentrum), Community Cloud (für eine Gruppe mit gleichen Anforderungen, z. B. Behörden) und Hybrid Cloud (Kombination, z. B. sensible Notendaten im eigenen Rechenzentrum, Lastspitzen in der Public Cloud). Nutzt man mehrere Public-Cloud-Anbieter parallel, spricht man von Multi-Cloud – oft, um Abhängigkeit von einem Anbieter (Vendor Lock-in) zu verringern."
+    },
+    {
+      "type": "text",
+      "content": "Auch wirtschaftlich unterscheidet sich die Cloud: Statt einer großen Investition (CapEx) zahlst du laufende Betriebskosten (OpEx) nach Verbrauch. Das lohnt sich vor allem bei schwankender oder kurzer Nutzung. Ein Vergleich mit erfundenen Beispielpreisen – echte Preise ändern sich laufend und müssen beim Anbieter nachgerechnet werden:"
+    },
+    {
+      "type": "code",
+      "content": "# Beispielpreise (erfunden!)\nkauf, jahre = 3000, 4      # eig. Server\nbetrieb_mon = 40           # Strom, Wartung\neigen = kauf / jahre + 12 * betrieb_mon\nvm_h = 0.20                # Cloud-VM €/h\n\nfor name, h in [(\"Projekt\", 10 * 40),\n                (\"24/7\", 365 * 24)]:\n    print(f\"{name:8} eigen {eigen:6.0f} €\"\n          f\"  cloud {h * vm_h:6.0f} €\")\nprint(\"Break-even:\", round(eigen / vm_h),\n      \"h/Jahr\")\n\n# Ausgabe:\n# Projekt  eigen   1230 €  cloud     80 €\n# 24/7     eigen   1230 €  cloud   1752 €\n# Break-even: 6150 h/Jahr"
+    },
+    {
+      "type": "text",
+      "content": "Für ein Schulprojekt mit 400 Stunden pro Jahr ist die Cloud-VM viel billiger, im Dauerbetrieb der eigene Server – ab etwa 6150 Stunden im Jahr kippt die Rechnung. Nicht vergessen: Bei personenbezogenen Daten gilt die DSGVO. Der Cloud-Anbieter ist dann meist Auftragsverarbeiter (Art. 28 DSGVO), es braucht einen Vertrag zur Auftragsverarbeitung, und der Speicherort (EU oder Drittland) muss geklärt sein. Das ist ein Überblick, keine Rechtsberatung.\n\nZusammenfassung: NIST-Merkmale: Selbstbedienung, Netzzugriff, Ressourcenpool, Elastizität, gemessene Nutzung. IaaS < PaaS < SaaS in der Verantwortung des Anbieters; Daten, Konten und Rechte bleiben immer beim Kunden. Bereitstellung: Public, Private, Community, Hybrid. Cloud lohnt sich besonders bei schwankender Last – immer konkret nachrechnen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Team lädt seinen Container hoch; Betriebssystem-Updates, Laufzeitumgebung und automatische Skalierung übernimmt der Anbieter. Welches Servicemodell ist das?",
+      "options": [
+        "IaaS",
+        "SaaS",
+        "PaaS",
+        "On-Premises"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei PaaS liefert der Kunde nur Code oder Container, die Plattform darunter betreibt der Anbieter. Bei IaaS müsste das Team das Betriebssystem selbst pflegen."
+    },
+    {
+      "question": "Eine Schule nutzt ein Online-Office als SaaS. Wer ist dafür verantwortlich, dass ausgeschiedene Lehrkräfte keinen Zugang mehr haben?",
+      "options": [
+        "Die Schule als Kunde",
+        "Der SaaS-Anbieter",
+        "Das Rechenzentrum des Anbieters",
+        "Niemand, Konten laufen automatisch ab"
+      ],
+      "correctIndex": 0,
+      "explanation": "Benutzerkonten und Zugriffsrechte liegen in jedem Servicemodell beim Kunden. Der Anbieter stellt die Funktion bereit, die Verwaltung der Konten macht die Schule."
+    },
+    {
+      "question": "Mit den Beispielpreisen der Lektion (eigener Server 1230 €/Jahr, VM 0,20 €/h): Was kostet die VM bei 12 Stunden täglich an 365 Tagen?",
+      "options": [
+        "1230 €",
+        "876 €",
+        "1752 €",
+        "2628 €"
+      ],
+      "correctIndex": 1,
+      "explanation": "12 · 365 = 4380 h; 4380 · 0,20 € = 876 €. Das liegt unter dem Break-even von 6150 h, die VM ist also noch günstiger."
+    },
+    {
+      "question": "Eine Firma betreibt ihr ERP im eigenen Rechenzentrum und lagert Lastspitzen des Webshops automatisch in eine Public Cloud aus. Welches Bereitstellungsmodell ist das?",
+      "options": [
+        "Community Cloud",
+        "Private Cloud",
+        "Multi-Cloud",
+        "Hybrid Cloud"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Kombination aus eigener (privater) Infrastruktur und Public Cloud ist eine Hybrid Cloud. Multi-Cloud meint mehrere Public-Cloud-Anbieter."
+    }
+  ]
+}

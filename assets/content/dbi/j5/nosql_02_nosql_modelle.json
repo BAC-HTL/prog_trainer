@@ -1,0 +1,95 @@
+{
+  "id": "dbi-j5-nosql_02_nosql_modelle",
+  "title": "NoSQL-Modelle: Key-Value, Dokument, Spalten, Graph",
+  "summary": "Die vier großen NoSQL-Familien mit typischen Abfragen und Einsatzgebieten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "NoSQL steht für „Not only SQL“ – Datenbanken, die nicht (nur) mit Tabellen und festem Schema arbeiten. Sie entstanden, weil große Webanwendungen Daten auf sehr viele Server verteilen (horizontal skalieren) und flexible Strukturen speichern wollten. Man unterscheidet vier Familien: Key-Value-, Dokument-, Spaltenfamilien- und Graphdatenbanken. JSON kennst du schon aus dem 3. Jahrgang."
+    },
+    {
+      "type": "text",
+      "content": "Key-Value-Store: Zu einem eindeutigen Schlüssel wird ein Wert gespeichert. Die Datenbank interessiert sich nicht für den Inhalt des Werts – du kannst nur über den Schlüssel zugreifen. Dafür ist das extrem schnell, oft liegen die Daten komplett im RAM. Bekanntes Beispiel: Redis. Typische Einsätze: Sitzungen (Sessions) einer Web-App, Caches, Zähler, Warteschlangen."
+    },
+    {
+      "type": "code",
+      "content": "# redis-cli\n> SET session:4711 anna\nOK\n> EXPIRE session:4711 1800\n(integer) 1\n> GET session:4711\n\"anna\"\n> INCR besucher:heute\n(integer) 1\n> HSET schueler:17 name Anna\n       klasse 5AHIF\n(integer) 2\n> HGET schueler:17 klasse\n\"5AHIF\"\n> GET session:9999\n(nil)"
+    },
+    {
+      "type": "text",
+      "content": "Dokumentdatenbank: Speichert Dokumente (JSON bzw. in MongoDB das binäre BSON) in Sammlungen (Collections). Jedes Dokument kann andere Felder haben, Listen und verschachtelte Objekte sind normal. Zusammengehörige Daten (z. B. ein Schüler mit seinen Noten) liegen in einem Dokument, statt auf mehrere Tabellen verteilt zu werden – Joins braucht man dann kaum, dafür werden Daten oft redundant gespeichert. Anders als bei Key-Value kann man nach beliebigen Feldern suchen und sie indizieren."
+    },
+    {
+      "type": "code",
+      "content": "// MongoDB Shell (mongosh)\ndb.schueler.insertOne({\n  name: \"Anna\", klasse: \"5AHIF\",\n  noten: [ { fach: \"DBI\", note: 1 },\n           { fach: \"AM\",  note: 2 } ]\n})\n\ndb.schueler.find(\n  { \"noten.fach\": \"DBI\" },\n  { name: 1, _id: 0 })\n\n// Bedingungen auf DASSELBE\n// Listenelement: $elemMatch\ndb.schueler.find({ noten:\n  { $elemMatch: { fach: \"DBI\",\n      note: { $lte: 2 } } } })"
+    },
+    {
+      "type": "text",
+      "content": "Spaltenfamilien-Datenbank (Wide Column Store), z. B. Apache Cassandra oder HBase: Daten liegen in Zeilen, die über einen Partitionsschlüssel auf viele Server verteilt werden; innerhalb einer Partition sind sie nach einem Clustering-Schlüssel sortiert. Sehr gut für riesige Schreiblasten wie Sensordaten oder Logs. Die Tabellen werden nach den geplanten Abfragen entworfen – eine Abfrage ohne Partitionsschlüssel lehnt Cassandra standardmäßig ab. Nicht verwechseln mit spaltenorientierten Analyse-Datenbanken (Column Stores), die jede Spalte getrennt speichern, um Auswertungen zu beschleunigen."
+    },
+    {
+      "type": "code",
+      "content": "-- Cassandra (CQL)\nCREATE TABLE messwerte (\n  sensor text,\n  zeit   timestamp,\n  wert   double,\n  PRIMARY KEY (sensor, zeit)\n) WITH CLUSTERING ORDER BY\n  (zeit DESC);\n\n-- ok: Partitionsschlüssel gegeben\nSELECT zeit, wert FROM messwerte\nWHERE sensor = 'R204' LIMIT 10;\n\n-- ohne sensor: Fehler, außer\n-- mit ALLOW FILTERING (langsam)"
+    },
+    {
+      "type": "text",
+      "content": "Graphdatenbank, z. B. Neo4j: Daten sind Knoten (z. B. Personen) und Kanten (Beziehungen wie FREUND), beide können Eigenschaften haben. Beziehungen sind direkt gespeichert und werden ohne Join verfolgt – ideal für soziale Netze, Empfehlungen („Freunde von Freunden“), Routen oder Betrugserkennung. In SQL bräuchtest du dafür mehrere Self-Joins oder eine rekursive Abfrage. Die Logik einer Freund-von-Freund-Abfrage in Python nachgestellt:"
+    },
+    {
+      "type": "code",
+      "content": "// Neo4j (Cypher)\nMATCH (a:Person {name: 'Anna'})\n  -[:FREUND]->(:Person)\n  -[:FREUND]->(c:Person)\nWHERE c <> a AND NOT EXISTS {\n  (a)-[:FREUND]->(c) }\nRETURN DISTINCT c.name;\n\n# Python\nfreunde = {\n  \"Anna\": [\"Ben\", \"Cem\"],\n  \"Ben\":  [\"Anna\", \"Dora\"],\n  \"Cem\":  [\"Anna\", \"Dora\", \"Emil\"],\n  \"Dora\": [\"Ben\", \"Cem\"],\n  \"Emil\": [\"Cem\"]}\nfof = {c for b in freunde[\"Anna\"]\n         for c in freunde[b]}\nfof -= set(freunde[\"Anna\"]) | {\"Anna\"}\nprint(sorted(fof))  # ['Dora', 'Emil']"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: „Schemalos“ heißt nicht „ohne Struktur“ – das Schema steckt dann im Programmcode, und uneinheitliche Dokumente (mal „klasse“, mal „Klasse“) machen Abfragen falsch. Außerdem: Bei MongoDB treffen zwei getrennte Bedingungen auf Listenfelder auch dann zu, wenn sie von verschiedenen Listenelementen erfüllt werden – für dasselbe Element brauchst du $elemMatch.\n\nZusammenfassung: Key-Value = Zugriff nur über Schlüssel, sehr schnell (Redis). Dokument = flexible JSON-Dokumente mit Abfragen auf Felder (MongoDB). Spaltenfamilie = verteilt über Partitionsschlüssel, schreibstark (Cassandra). Graph = Knoten und Kanten, Beziehungen traversieren (Neo4j)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt der letzte Befehl in redis-cli aus?",
+      "code": "> SET zaehler 10\n> INCR zaehler\n> INCR zaehler\n> GET zaehler",
+      "options": [
+        "\"10\"",
+        "(integer) 2",
+        "\"12\"",
+        "(nil)"
+      ],
+      "correctIndex": 2,
+      "explanation": "INCR erhöht den gespeicherten Wert um 1 und liefert den neuen Wert. Nach zwei INCR steht 12 im Schlüssel; GET liefert den Wert als String \"12\"."
+    },
+    {
+      "question": "Eine Plattform soll „Leute, die du kennen könntest“ über Freundschaftsketten vorschlagen. Welches Modell passt am besten?",
+      "options": [
+        "Key-Value-Store",
+        "Graphdatenbank",
+        "Spaltenfamilien-Datenbank",
+        "Reine CSV-Datei"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Abfrage verfolgt Beziehungen über mehrere Stufen. Graphdatenbanken speichern Kanten direkt und traversieren sie ohne Joins."
+    },
+    {
+      "question": "Welche Aufgabe kann ein reiner Key-Value-Store NICHT effizient lösen?",
+      "options": [
+        "Den Warenkorb zur Session-ID laden",
+        "Einen Zähler erhöhen",
+        "Einen Cache-Eintrag nach 30 Minuten verfallen lassen",
+        "Alle Einträge finden, deren Wert die Klasse 5AHIF enthält"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Wert ist für einen Key-Value-Store undurchsichtig. Suchen nach Inhalten müsste alle Einträge durchgehen – dafür eignen sich Dokument- oder relationale Datenbanken."
+    },
+    {
+      "question": "Welche Namen liefert db.schueler.find({ \"noten.fach\": \"DBI\" }) für diese Dokumente?",
+      "code": "{name:\"Anna\", noten:[{fach:\"DBI\"},\n                    {fach:\"AM\"}]}\n{name:\"Ben\",  noten:[{fach:\"DBI\"}]}\n{name:\"Cem\",  noten:[]}",
+      "options": [
+        "Anna und Ben",
+        "Nur Anna",
+        "Anna, Ben und Cem",
+        "Keine, weil noten eine Liste ist"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Punktnotation durchsucht auch Listen: Das Dokument passt, wenn irgendein Element von noten fach = \"DBI\" hat. Das trifft auf Anna und Ben zu, Cems Liste ist leer."
+    }
+  ]
+}

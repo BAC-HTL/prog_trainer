@@ -1,0 +1,90 @@
+{
+ "id": "syp-j5-systemkonzepte_03_betrieb_wartung",
+ "title": "Betrieb und Wartung",
+ "summary": "Monitoring, Kapazitätsplanung, Patches, Datensicherung und Verfügbarkeit im laufenden Betrieb.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Die Betriebsphase ist die längste im Lebenszyklus eines IT-Systems – oft viele Jahre – und verursacht einen großen Teil der Gesamtkosten (TCO). Ziel des IT-Betriebs ist, dass das System verfügbar, sicher und leistungsfähig bleibt. Grundlage ist das Betriebshandbuch: Installation, Konfiguration, Start/Stopp, Sicherung, Wiederherstellung, Störungsbehebung und Kontakte, so geschrieben, dass eine Vertretung damit arbeiten kann."
+  },
+  {
+   "type": "text",
+   "content": "Monitoring überwacht laufend Kennzahlen wie CPU-Last, Arbeitsspeicher, Plattenfüllgrad, Antwortzeiten, Fehlerraten und ob Dienste erreichbar sind. Für jede Kennzahl gibt es Schwellwerte, z. B. Warnung ab 80 %, kritisch ab 90 %. Aus dem Verlauf kann man vorausrechnen, wann eine Grenze erreicht wird – das ist Kapazitätsmanagement. Besser vorher erweitern als in der Maturawoche eine volle Platte haben."
+  },
+  {
+   "type": "code",
+   "content": "groesse = 10_000   # GB\nbelegt = 7_200     # GB\npro_tag = 20       # GB Zuwachs\nfor grenze in (0.8, 0.9):\n    frei = groesse * grenze - belegt\n    tage = frei / pro_tag\n    print(f\"{grenze:.0%}: {tage:.0f} Tage\")\n\n# Ausgabe:\n# 80%: 40 Tage\n# 90%: 90 Tage"
+  },
+  {
+   "type": "text",
+   "content": "Die Arten der Wartung kennst du schon: korrektiv (Fehler beheben), adaptiv (an die Umgebung anpassen), perfektiv (verbessern), präventiv (vorbeugen). Im Betrieb kommt das Patchmanagement dazu: Sicherheitsupdates für Betriebssystem, Datenbank und Bibliotheken werden regelmäßig eingespielt – zuerst in einer Testumgebung, dann in einem vereinbarten Wartungsfenster, mit Plan für das Zurückrollen. Jede Änderung läuft über das Change Management."
+  },
+  {
+   "type": "text",
+   "content": "Datensicherung im Betrieb: Für jedes System legt man fest, wie viel Datenverlust tolerierbar ist (RPO, Recovery Point Objective) und wie schnell es wieder laufen muss (RTO, Recovery Time Objective). Wird täglich um 22 Uhr gesichert, beträgt der maximale Datenverlust fast 24 Stunden. Sicherungen folgen der 3-2-1-Regel und werden regelmäßig mit einem echten Wiederherstellungstest geprüft – ein ungetestetes Backup ist nur eine Hoffnung."
+  },
+  {
+   "type": "text",
+   "content": "Die Verfügbarkeit eines Gesamtsystems hängt von seinen Komponenten ab. Sind Komponenten in Serie geschaltet (alle werden gebraucht), multipliziert man die Verfügbarkeiten – das Gesamtsystem ist schlechter als jede einzelne Komponente. Sind Komponenten redundant parallel (eine reicht), fällt das System nur aus, wenn alle gleichzeitig ausfallen: A = 1 − (1 − A₁) · (1 − A₂)."
+  },
+  {
+   "type": "code",
+   "content": "web, db, netz = 0.995, 0.999, 0.999\nseriell = web * db * netz\nprint(f\"seriell: {seriell:.2%}\")\nh = (1 - seriell) * 8760\nprint(f\"Ausfall/Jahr: {h:.0f} h\")\n\nweb2 = 1 - (1 - web) ** 2  # 2 Webserver\ngesamt = web2 * db * netz\nprint(f\"redundant: {gesamt:.2%}\")\n\n# Ausgabe:\n# seriell: 99.30%\n# Ausfall/Jahr: 61 h\n# redundant: 99.80%"
+  },
+  {
+   "type": "text",
+   "content": "Jedes System hat ein Lebensende. Hersteller kündigen End of Life (EOL) bzw. das Ende des Supports an; danach gibt es keine Sicherheitsupdates mehr. Der Betrieb muss das rechtzeitig erkennen und Migration oder Ablöse einplanen – inklusive Datenübernahme und sicherer Datenlöschung auf den alten Geräten. Ein aktuelles Inventar (Hardware, Software, Versionen, Lizenzen) ist dafür die Voraussetzung."
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: kein Monitoring, bis sich Benutzer:innen beschweren; Updates direkt im Produktivsystem ohne Test und Rückfallplan; Backups nie wiederherstellen; nur die Verfügbarkeit des Servers betrachten, nicht die der ganzen Kette. Zusammenfassung: Betriebshandbuch, Monitoring mit Schwellwerten, Kapazitätsplanung, Patch- und Change-Management, Datensicherung mit RPO/RTO, Verfügbarkeit seriell multiplizieren, parallel über die Ausfallwahrscheinlichkeiten rechnen, Lebensende rechtzeitig planen."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Eine Platte hat 2 000 GB, belegt sind 1 400 GB, täglich kommen 10 GB dazu. Nach wie vielen Tagen ist die Warnschwelle von 80 % erreicht?",
+   "options": [
+    "60 Tage",
+    "20 Tage",
+    "200 Tage",
+    "140 Tage"
+   ],
+   "correctIndex": 1,
+   "explanation": "80 % von 2 000 GB sind 1 600 GB. Frei bis zur Schwelle: 1 600 − 1 400 = 200 GB. 200 / 10 = 20 Tage."
+  },
+  {
+   "question": "Was gibt der Code aus?",
+   "code": "a = 0.99\nges = 1 - (1 - a) * (1 - a)\nprint(f\"{ges:.2%}\")",
+   "options": [
+    "99.00%",
+    "99.90%",
+    "98.01%",
+    "99.99%"
+   ],
+   "correctIndex": 3,
+   "explanation": "Zwei parallele Komponenten mit je 99 %: 1 − 0,01 · 0,01 = 0,9999 = 99,99 %. 98,01 % wäre die Serienschaltung (0,99 · 0,99)."
+  },
+  {
+   "question": "Gesichert wird jede Nacht um 23:00 Uhr. Um 22:00 Uhr fällt der Server aus und die Daten sind verloren. Wie groß ist der Datenverlust?",
+   "options": [
+    "Rund 23 Stunden",
+    "Rund 1 Stunde",
+    "Kein Datenverlust",
+    "Genau 24 Stunden"
+   ],
+   "correctIndex": 0,
+   "explanation": "Die letzte Sicherung war am Vorabend um 23:00 Uhr. Alles bis 22:00 Uhr – rund 23 Stunden – ist verloren. Das RPO dieser Sicherungsstrategie liegt bei bis zu 24 Stunden."
+  },
+  {
+   "question": "Was ist beim Einspielen eines Sicherheitsupdates auf den Produktivserver der beste Ablauf?",
+   "options": [
+    "Sofort direkt auf dem Produktivserver installieren, Test ist zu langsam",
+    "Gar nicht installieren, solange das System läuft",
+    "Zuerst testen, dann im Wartungsfenster einspielen, mit Rückfallplan und über Change Management",
+    "Nur installieren, wenn sich Benutzer:innen beschweren"
+   ],
+   "correctIndex": 2,
+   "explanation": "Patches werden getestet und geplant eingespielt. Bei kritischen Lücken wird der Ablauf beschleunigt (Notfall-Change), aber nicht übersprungen."
+  }
+ ]
+}

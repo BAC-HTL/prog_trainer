@@ -1,0 +1,90 @@
+{
+ "id": "syp-j5-systemkonzepte_02_systembeschreibung",
+ "title": "Systembeschreibung: Komponenten, Schnittstellen, Betrieb",
+ "summary": "Ein IT-System über Systemkontext, Komponenten, Schnittstellen und Betriebskonzept beschreiben.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Eine Systembeschreibung (oft Teil von Pflichtenheft oder Systemkonzept) beschreibt, woraus ein IT-System besteht, mit wem es Daten austauscht und wie es betrieben wird. Sie richtet sich an Auftraggeber, Entwicklung und IT-Betrieb gleichermaßen. Sie baut auf den Anforderungen und dem Mengengerüst auf und beantwortet die Frage: Wie sieht die Lösung technisch aus? Beispiel in dieser Lektion: ein Raumbuchungssystem für eine HTL."
+  },
+  {
+   "type": "text",
+   "content": "Am Anfang steht der Systemkontext: Das System ist eine Blackbox, rundherum stehen Benutzergruppen und Nachbarsysteme. Die Pfeile zeigen, welche Daten hinein- und hinausfließen. So sieht man sofort die Systemgrenze – was gehört zum Auftrag, was nicht?"
+  },
+  {
+   "type": "code",
+   "content": "Lehrkräfte ---Buchung---->+--------+\nAdmin ------Räume------->| Raum-  |\n                         | buchung|\nStundenplan-             | (HTL)  |\nprogramm  ---Stunden---->|        |\n                         +--------+\nSchul-Login <--Anmeldung---+  |\n(LDAP/AD)                     |\nMailserver <--Bestätigung-----+"
+  },
+  {
+   "type": "text",
+   "content": "Danach zerlegt man das System in Komponenten: Hardware (Server, Clients, Netzwerk), Software (Anwendung, Datenbank, Betriebssystem, Middleware) und Daten. Für jede Komponente beschreibt man Aufgabe, Technologie und wo sie läuft (Verteilungssicht: welcher Server, welche Zone im Netz, Cloud oder lokal). Komponenten sollen eine klare Aufgabe haben – das kennst du aus der Softwarearchitektur."
+  },
+  {
+   "type": "code",
+   "content": "Komponente   Aufgabe       Läuft auf\n-----------  ------------  ----------\nWeb-UI       Buchen, Ansi- Browser\n             cht Kalender\nBackend-API  Regeln, Kon-  VM app01\n             fliktprüfung  (Server-\n                           raum)\nDatenbank    Räume, Bu-    VM db01\n             chungen\nMail-Dienst  Bestätigung   bestehend"
+  },
+  {
+   "type": "text",
+   "content": "Schnittstellen sind die Stellen, an denen das System mit der Außenwelt oder Komponenten miteinander kommunizieren. Man unterscheidet Benutzerschnittstellen (Oberflächen) und technische Schnittstellen (System zu System), intern und extern. Für jede technische Schnittstelle legt man fest: Partner, Richtung, Protokoll, Datenformat, Häufigkeit und Datenmenge, Sicherheit (Authentifizierung, Verschlüsselung), Fehlerbehandlung und Verantwortliche. Viele Projektprobleme entstehen genau an schlecht beschriebenen Schnittstellen."
+  },
+  {
+   "type": "code",
+   "content": "Schnittstelle S2: Stundenplan-Import\nPartner:   Stundenplanprogramm\nRichtung:  Stundenplan -> Buchung\nProtokoll: HTTPS, REST (GET)\nFormat:    JSON, UTF-8\nHäufigk.:  täglich 05:00 Uhr\nMenge:     ca. 2 000 Einträge\nSicherh.:  API-Key, nur Schulnetz\nFehler:    Retry 3x, dann Mail an\n           Admin, alte Daten bleiben\nVerantw.:  IT-Kustodiat der Schule"
+  },
+  {
+   "type": "text",
+   "content": "Das Betriebskonzept legt fest, wie das System im Alltag läuft: Betriebszeiten und Servicezeit (z. B. Mo–Fr 7–18 Uhr betreut), Rollen (wer ist Administrator:in, wer macht den First-Level-Support), Berechtigungskonzept (welche Rolle darf was), Datensicherung und Wiederherstellung, Monitoring, Wartungsfenster für Updates, Notfallvorgehen und Kontakte. Ohne Betriebskonzept funktioniert ein System nur so lange, bis die Person ausfällt, die es aufgesetzt hat."
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: nur die eigene Software beschreiben und Nachbarsysteme vergessen; Schnittstellen nur mit „REST“ beschreiben, ohne Format, Fehlerfall und Verantwortliche; Betrieb erst nach dem Go-live überlegen. Zusammenfassung: Systemkontext zeigt Grenze und Nachbarn, Komponentensicht zeigt Bausteine und wo sie laufen, Schnittstellenbeschreibungen regeln jeden Datenaustausch genau, das Betriebskonzept regelt Rollen, Zeiten, Sicherung, Überwachung und Notfälle."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Was zeigt ein Systemkontextdiagramm in erster Linie?",
+   "options": [
+    "Die Klassen und Methoden der Anwendung",
+    "Die Systemgrenze mit Benutzergruppen, Nachbarsystemen und Datenflüssen",
+    "Den zeitlichen Ablauf des Projekts",
+    "Die Tabellen der Datenbank mit Schlüsseln"
+   ],
+   "correctIndex": 1,
+   "explanation": "Im Kontextdiagramm ist das System eine Blackbox. Gezeigt werden Akteure, Nachbarsysteme und die Datenflüsse über die Systemgrenze."
+  },
+  {
+   "question": "Welche Angabe fehlt in dieser Schnittstellenbeschreibung am dringendsten?",
+   "code": "Partner:   Notenverwaltung\nRichtung:  Noten -> Zeugnisdruck\nProtokoll: HTTPS, REST\nFormat:    JSON\nHäufigk.:  einmal pro Semester\nSicherh.:  OAuth 2.0",
+   "options": [
+    "Die Farbe der Benutzeroberfläche",
+    "Der Name des Projektleiters",
+    "Was passiert, wenn der Import fehlschlägt",
+    "Die Programmiersprache des Partners"
+   ],
+   "correctIndex": 2,
+   "explanation": "Die Fehlerbehandlung fehlt: Was passiert bei Zeitüberschreitung oder ungültigen Daten, und wer wird informiert? Die Sprache des Partnersystems ist für die Schnittstelle egal."
+  },
+  {
+   "question": "Was gehört NICHT in ein Betriebskonzept?",
+   "options": [
+    "Betriebszeiten und Wartungsfenster",
+    "Datensicherung und Wiederherstellung",
+    "Rollen und Berechtigungen im Betrieb",
+    "Die Begründung, warum das Projekt wirtschaftlich ist"
+   ],
+   "correctIndex": 3,
+   "explanation": "Die Wirtschaftlichkeit gehört in den Business Case. Das Betriebskonzept regelt, wie das laufende System betreut, gesichert, überwacht und gewartet wird."
+  },
+  {
+   "question": "Eine Komponentensicht enthält die Spalte „Läuft auf“. Wozu dient diese Angabe?",
+   "options": [
+    "Sie zeigt die Verteilung: auf welchem Server, in welcher Netzzone oder Cloud die Komponente betrieben wird",
+    "Sie ersetzt das Berechtigungskonzept",
+    "Sie gibt an, welche Person die Komponente programmiert",
+    "Sie legt die Lizenz der Komponente fest"
+   ],
+   "correctIndex": 0,
+   "explanation": "Die Verteilungssicht beschreibt, wo Komponenten laufen. Das ist wichtig für Dimensionierung, Netzwerkplanung, Sicherheit und Betrieb."
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+{
+  "id": "pos-j5-theorie-ergonomie_01_wahrnehmung_gestaltung",
+  "title": "Wahrnehmung & visuelle Gestaltung",
+  "summary": "Wie Menschen Oberflächen wahrnehmen und wie Gestaltgesetze, Farbe und Anordnung die Bedienung erleichtern.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Softwareergonomie beschäftigt sich damit, Software an die Menschen anzupassen, die sie benutzen – nicht umgekehrt. Grundlage ist die menschliche Wahrnehmung: Wir lesen eine Oberfläche nicht Pixel für Pixel, sondern erfassen zuerst Gruppen, Formen und Auffälliges. Gute Gestaltung nutzt das, schlechte arbeitet dagegen."
+    },
+    {
+      "type": "text",
+      "content": "Die Gestaltgesetze (aus der Gestaltpsychologie) beschreiben, wie wir Elemente zu Gruppen zusammenfassen. Gesetz der Nähe: Was nah beieinander liegt, gehört zusammen. Gesetz der Ähnlichkeit: Gleich aussehende Elemente (Farbe, Form, Größe) gehören zusammen. Gesetz der Geschlossenheit/gemeinsamen Region: Was von einem Rahmen umschlossen ist, bildet eine Einheit."
+    },
+    {
+      "type": "code",
+      "content": "Schlecht (gleiche Abstände):\nVorname   [______]\nNachname  [______]\nStraße    [______]\nPLZ       [______]\n\nBesser (Nähe + Region):\n+- Person -----------+\n| Vorname  [______]  |\n| Nachname [______]  |\n+--------------------+\n\n+- Adresse ----------+\n| Straße   [______]  |\n| PLZ      [______]  |\n+--------------------+"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Gesetze: Gesetz der guten Fortsetzung (Elemente auf einer Linie oder Kurve werden als zusammengehörig gesehen – daher Ausrichtung an einem Raster), Gesetz der Verbundenheit (durch Linien verbundene Elemente gehören zusammen, z. B. Schritte eines Assistenten) und Gesetz der Prägnanz (einfache, klare Formen werden bevorzugt erkannt). Figur-Grund: Wir trennen Vordergrund von Hintergrund – ein Dialog vor abgedunkeltem Hintergrund wird sofort als Figur erkannt."
+    },
+    {
+      "type": "text",
+      "content": "Farbe, Größe und Kontrast fallen sofort auf. Nutze das sparsam: Wenn alles rot und fett ist, fällt nichts mehr auf. Farbe darf nie die einzige Informationsquelle sein – ein erheblicher Teil der Männer hat eine Rot-Grün-Sehschwäche. Ein Fehlerfeld bekommt daher zusätzlich ein Symbol und einen Text. Farben sollten einheitlich verwendet werden (z. B. rot = Fehler, nie rot = Speichern)."
+    },
+    {
+      "type": "text",
+      "content": "Wie lange es dauert, ein Ziel mit der Maus oder dem Finger zu treffen, beschreibt Fitts’ Gesetz: Die Zeit wächst mit dem Logarithmus von Abstand D durch Zielbreite W. Große, nahe Schaltflächen sind schneller zu treffen. Die Konstanten a und b werden für jedes Eingabegerät gemessen; die Zahlen unten sind Beispielwerte."
+    },
+    {
+      "type": "code",
+      "content": "import math\n\ndef fitts(d, w, a=0.1, b=0.15):\n    # Zeit in Sekunden\n    return a + b * math.log2(d / w + 1)\n\nprint(f\"{fitts(800, 40):.2f} s\")\nprint(f\"{fitts(800, 80):.2f} s\")\nprint(f\"{fitts(200, 40):.2f} s\")\n# 0.76 s  (weit, klein)\n# 0.62 s  (doppelt so breit)\n# 0.49 s  (näher)"
+    },
+    {
+      "type": "text",
+      "content": "Folgerungen aus Fitts’ Gesetz: Häufig genutzte Schaltflächen groß machen und nahe dort platzieren, wo die Hand bzw. der Zeiger meistens ist. Bildschirmränder wirken für die Maus wie unendlich breite Ziele, weil der Zeiger dort stoppt. Am Handy liegen wichtige Aktionen im unteren, mit dem Daumen gut erreichbaren Bereich. Typischer Fehler: winzige Icons ohne Beschriftung, dicht nebeneinander."
+    },
+    {
+      "type": "text",
+      "content": "Weitere Regeln für die Anordnung: Eine klare visuelle Hierarchie (Überschrift → wichtige Aktion → Details), einheitliche Abstände und ein Raster, linksbündige Beschriftungen für schnelles Überfliegen und genügend Weißraum. Menschen können nur wenige Dinge gleichzeitig im Arbeitsgedächtnis halten – zeige nur, was für die aktuelle Aufgabe nötig ist.\n\nZusammenfassung: Gestaltgesetze (Nähe, Ähnlichkeit, Geschlossenheit, gute Fortsetzung, Verbundenheit, Prägnanz) steuern, was als zusammengehörig wahrgenommen wird. Farbe sparsam und nie als einziges Signal einsetzen. Fitts’ Gesetz: große, nahe Ziele sind schneller erreichbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In einem Formular stehen alle Felder mit gleichem Abstand untereinander. Welches Gestaltgesetz nutzt du, um „Person“ und „Adresse“ als Gruppen erkennbar zu machen?",
+      "options": [
+        "Gesetz der Nähe (größerer Abstand zwischen den Gruppen)",
+        "Fitts’ Gesetz",
+        "Gesetz der Erfahrung (Felder alphabetisch sortieren)",
+        "Gesetz der Bewegung"
+      ],
+      "correctIndex": 0,
+      "explanation": "Elemente mit kleinem Abstand werden als Gruppe wahrgenommen. Ein größerer Abstand (oder ein Rahmen – gemeinsame Region) trennt die Gruppen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import math\nd, w = 3, 1\nprint(0 + 0.5 * math.log2(d / w + 1))",
+      "options": [
+        "2.0",
+        "1.0",
+        "0.5",
+        "4.0"
+      ],
+      "correctIndex": 1,
+      "explanation": "D/W + 1 = 3/1 + 1 = 4, log2(4) = 2. Mit a = 0 und b = 0.5 ergibt sich 0.5 · 2 = 1.0."
+    },
+    {
+      "question": "Ein Pflichtfeld wird bei einem Fehler nur rot umrandet. Was ist das Problem?",
+      "options": [
+        "Rot ist für Fehler ungeeignet",
+        "Rahmen dürfen keine Farbe haben",
+        "Farbe ist das einzige Signal – Menschen mit Farbsehschwäche erkennen den Fehler nicht",
+        "Pflichtfelder dürfen keine Fehler anzeigen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Farbe allein reicht nicht. Ergänze ein Symbol und eine Fehlermeldung im Text, z. B. „Bitte gib deine E-Mail-Adresse ein“."
+    },
+    {
+      "question": "Laut Fitts’ Gesetz: Welche Änderung macht eine Schaltfläche am schnellsten erreichbar?",
+      "options": [
+        "Schmaler machen und weiter weg schieben",
+        "Nur die Farbe ändern",
+        "Ein Tooltip hinzufügen",
+        "Breiter machen und näher an die übliche Zeigerposition rücken"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Zeit hängt von D/W ab: kleinerer Abstand D und größere Breite W verringern sie. Farbe und Tooltip ändern daran nichts."
+    }
+  ]
+}

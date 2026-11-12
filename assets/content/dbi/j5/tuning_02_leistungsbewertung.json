@@ -1,0 +1,89 @@
+{
+  "id": "dbi-j5-tuning_02_leistungsbewertung",
+  "title": "Leistung messen: Kennzahlen und Statistiken",
+  "summary": "Welche Kennzahlen die Leistung einer Datenbank beschreiben und warum der Optimierer aktuelle Statistiken braucht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Tuning beginnt mit Messen, nicht mit Raten. Zuerst legst du ein Ziel fest, z. B. „95 % aller Abfragen der Noten-App unter 200 ms“. Dann misst du den Ist-Zustand als Vergleichsbasis (Baseline). Erst danach änderst du etwas – und misst erneut. Ohne Baseline weißt du nie, ob eine Maßnahme geholfen hat."
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Kennzahlen:\n• Antwortzeit (Latenz): wie lange eine Abfrage dauert.\n• Durchsatz: erledigte Transaktionen pro Sekunde (TPS).\n• Auslastung: CPU, Arbeitsspeicher, Datenträger-I/O, Netzwerk.\n• Cache Hit Ratio: Anteil der Seiten, die schon im Puffer lagen.\n• Wartezeiten auf Sperren und Anzahl der Deadlocks.\n• Anzahl der Verbindungen im Vergleich zum Maximum.\n• Tote Zeilen (n_dead_tup) und Wachstum von Tabellen und Indizes."
+    },
+    {
+      "type": "text",
+      "content": "Bei Antwortzeiten ist der Durchschnitt oft irreführend: Ein einziger Ausreißer verzerrt ihn stark. Aussagekräftiger sind der Median und Perzentile: Das 90. Perzentil (p90) ist der Wert, den 90 % der Messungen nicht überschreiten. Ein einfaches Verfahren: Messwerte sortieren und den Wert an Position ⌈0,9 · n⌉ nehmen."
+    },
+    {
+      "type": "code",
+      "content": "import statistics as st\nms = [12, 15, 11, 14, 13,\n      12, 16, 14, 13, 900]\nprint(\"Mittel:\", st.mean(ms))\nprint(\"Median:\", st.median(ms))\ns = sorted(ms)\nprint(\"p90:\", s[int(0.9 * len(s)) - 1])\n# Mittel: 102\n# Median: 13.5\n# p90: 16"
+    },
+    {
+      "type": "text",
+      "content": "Durchsatz und Antwortzeit hängen zusammen: Arbeiten C Clients ohne Pause gleichzeitig, gilt ungefähr TPS ≈ C / mittlere Antwortzeit (Little’s Law). Gemessen wird das mit Lastgeneratoren; bei PostgreSQL ist pgbench dabei. Es legt Testtabellen an (-i, Größe mit -s) und führt dann mit -c Clients für -T Sekunden Transaktionen aus. Die Werte hängen stark von der Hardware ab – vergleiche nur Messungen auf demselben System."
+    },
+    {
+      "type": "code",
+      "content": "$ pgbench -i -s 5 bench\n$ pgbench -c 4 -j 2 -T 10 bench\nnumber of clients: 4\nduration: 10 s\nnumber of transactions actually\n  processed: 20684\nlatency average = 1.933 ms\ntps = 2069.527064\n\n# Probe: 4 / 0.001933 s ≈ 2069 TPS"
+    },
+    {
+      "type": "text",
+      "content": "Auch der Optimierer „misst“: Er schätzt mit Statistiken, wie viele Zeilen eine Bedingung liefert, und wählt danach den Plan. PostgreSQL speichert sie pro Spalte in pg_stats – u. a. Anzahl verschiedener Werte (n_distinct), häufigste Werte mit ihren Anteilen und ein Histogramm. ANALYZE erstellt die Statistiken aus einer Stichprobe neu. Autovacuum macht das automatisch, aber erst nach einer gewissen Menge an Änderungen – nach großen Ladevorgängen (z. B. ETL) startest du ANALYZE besser selbst. SQLite kennt ebenfalls ANALYZE (Ergebnis in sqlite_stat1)."
+    },
+    {
+      "type": "code",
+      "content": "-- 1000 Zeilen, ANALYZE, dann\n-- 100 000 neue Zeilen 'Matura'\nEXPLAIN ANALYZE SELECT * FROM anmeldung\nWHERE kurs = 'Matura';\n-- Seq Scan (cost=... rows=1)\n--   (actual ... rows=100000)\n\nANALYZE anmeldung;\n-- Seq Scan (cost=... rows=100014)\n--   (actual ... rows=100000)\n\nSELECT n_distinct, most_common_vals,\n       most_common_freqs\nFROM pg_stats\nWHERE tablename = 'anmeldung'\n  AND attname = 'status';\n-- 2 | {bestaetigt,offen}\n--   | {0.99023336,0.009766666}"
+    },
+    {
+      "type": "text",
+      "content": "Schätzt der Optimierer 1 Zeile statt 100 000, wählt er bei komplexeren Abfragen oft eine ungeeignete Join-Methode oder Join-Reihenfolge – die Abfrage wird um Größenordnungen langsamer. Typische Messfehler: nur auf einer fast leeren Testdatenbank messen, nur den Durchschnitt betrachten, den ersten Lauf (Daten noch nicht im Puffer, „kalter Cache“) mit späteren Läufen vergleichen oder mehrere Dinge gleichzeitig ändern.\n\nZusammenfassung: Ziel festlegen, Baseline messen, ändern, erneut messen. Kennzahlen: Latenz (Median, p90/p95), Durchsatz (TPS), Auslastung, Hit Ratio, Sperren. TPS ≈ Clients / Antwortzeit. ANALYZE hält die Statistiken aktuell, damit der Optimierer richtig schätzt."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Antwortzeiten in ms: 20, 22, 19, 21, 518. Wie groß ist der Mittelwert?",
+      "options": [
+        "21",
+        "20",
+        "120",
+        "518"
+      ],
+      "correctIndex": 2,
+      "explanation": "(20 + 22 + 19 + 21 + 518) / 5 = 600 / 5 = 120 ms. Der Median wäre 21 ms – der eine Ausreißer verzerrt den Mittelwert stark."
+    },
+    {
+      "question": "8 Clients arbeiten ohne Pause, die mittlere Antwortzeit beträgt 4 ms. Welchen Durchsatz erwartest du ungefähr?",
+      "options": [
+        "2000 TPS",
+        "32 TPS",
+        "500 TPS",
+        "250 TPS"
+      ],
+      "correctIndex": 0,
+      "explanation": "TPS ≈ Clients / Antwortzeit = 8 / 0,004 s = 2000 Transaktionen pro Sekunde."
+    },
+    {
+      "question": "Nach dem nächtlichen Import von 2 Millionen Zeilen sind manche Berichte extrem langsam; EXPLAIN ANALYZE zeigt rows=50 geschätzt, aber 1,9 Mio. tatsächlich. Was tust du zuerst?",
+      "options": [
+        "Den Server neu starten",
+        "ANALYZE auf die betroffenen Tabellen ausführen",
+        "Alle Indizes löschen",
+        "shared_buffers verdoppeln"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Statistiken sind veraltet, der Optimierer schätzt falsch. ANALYZE aktualisiert sie; am besten baut man das gleich ans Ende des ETL-Laufs ein."
+    },
+    {
+      "question": "Welche Messmethode ist am wenigsten aussagekräftig?",
+      "options": [
+        "p95 der Antwortzeit über einen Schultag",
+        "Mehrere Läufe nach einer Aufwärmphase vergleichen",
+        "Baseline vor und Messung nach einer einzelnen Änderung",
+        "Eine einzige Abfrage einmal auf einer fast leeren Testdatenbank stoppen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine Einzelmessung auf kaum gefüllten Tabellen sagt nichts über das Verhalten mit echten Datenmengen und Last aus; Pufferzustand und Zufall spielen eine große Rolle."
+    }
+  ]
+}

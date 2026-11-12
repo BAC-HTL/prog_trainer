@@ -1,0 +1,117 @@
+{
+  "id": "dbi-j5-bi_pruefung",
+  "title": "Abschlussprüfung: Data Warehouse & Business Intelligence",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Warum führt man große Auswertungen meist nicht direkt auf der OLTP-Datenbank aus?",
+      "options": [
+        "Weil OLTP-Datenbanken kein SELECT können",
+        "Weil sie die laufenden Transaktionen bremsen und Daten aus mehreren Quellen sowie die Historie fehlen",
+        "Weil OLAP-Abfragen nur in NoSQL funktionieren",
+        "Weil OLTP-Datenbanken immer im RAM liegen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Analysen lesen sehr viele Daten und stören das Tagesgeschäft. Ein DWH integriert zusätzlich mehrere Quellen und bewahrt historische Stände."
+    },
+    {
+      "question": "Welche Aussage über ETL ist richtig?",
+      "options": [
+        "Load bereinigt Dubletten",
+        "Extract berechnet Kennzahlen",
+        "Transform vereinheitlicht und bereinigt Daten, bevor sie geladen werden",
+        "ETL wird nur einmal bei der Installation ausgeführt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Extract liest aus den Quellen, Transform bereinigt und vereinheitlicht, Load schreibt ins DWH – typischerweise regelmäßig und inkrementell."
+    },
+    {
+      "question": "Was ist ein Data Mart?",
+      "options": [
+        "Ein fachlicher Ausschnitt des Data Warehouse für einen Bereich",
+        "Die Staging Area",
+        "Ein Online-Shop für Daten",
+        "Eine Dimensionstabelle"
+      ],
+      "correctIndex": 0,
+      "explanation": "Data Marts stellen einem Fachbereich (z. B. Verkauf oder Personal) einen passenden Ausschnitt bereit."
+    },
+    {
+      "question": "Welche Spalte gehört in die Faktentabelle eines Sternschemas für Buffet-Verkäufe?",
+      "options": [
+        "wochentag",
+        "kategorie",
+        "standort_name",
+        "umsatz"
+      ],
+      "correctIndex": 3,
+      "explanation": "Kennzahlen wie Umsatz oder Menge sind Fakten. Wochentag, Kategorie und Standortname sind beschreibende Attribute der Dimensionen."
+    },
+    {
+      "question": "Wie viele Ergebniszeilen liefert GROUP BY ROLLUP (standort, kategorie), wenn es 3 Standorte und 2 Kategorien gibt und jede Kombination vorkommt?",
+      "options": [
+        "6",
+        "10",
+        "12",
+        "9"
+      ],
+      "correctIndex": 1,
+      "explanation": "Detailzeilen: 3 × 2 = 6, Zwischensummen pro Standort: 3, Gesamtsumme: 1 → 10."
+    },
+    {
+      "question": "Man schränkt den Würfel auf „Jahr = 2026 und Standort = Werkstätte“ ein und betrachtet nur diesen Teilwürfel. Welche Operation ist das?",
+      "options": [
+        "Roll-up",
+        "Drill-down",
+        "Dice",
+        "Pivot"
+      ],
+      "correctIndex": 2,
+      "explanation": "Werden mehrere Dimensionen eingeschränkt, entsteht ein Teilwürfel – Dice. Ein Slice legt nur eine Dimension fest."
+    },
+    {
+      "question": "Welcher Nachteil hat das Schneeflockenschema gegenüber dem Sternschema?",
+      "options": [
+        "Mehr Redundanz in den Dimensionen",
+        "Mehr Joins in den Auswertungen",
+        "Keine Hierarchien möglich",
+        "Keine Faktentabelle"
+      ],
+      "correctIndex": 1,
+      "explanation": "Durch die Normalisierung der Dimensionen sinkt die Redundanz, aber jede Auswertung braucht zusätzliche Joins."
+    },
+    {
+      "question": "Von 20 Warenkörben enthalten 8 Kaffee, 10 Croissant und 6 beide. Wie groß ist die Konfidenz von Kaffee → Croissant?",
+      "options": [
+        "0,30",
+        "0,60",
+        "0,50",
+        "0,75"
+      ],
+      "correctIndex": 3,
+      "explanation": "Support(beide) = 6/20 = 0,3; Support(Kaffee) = 8/20 = 0,4. Konfidenz = 0,3 / 0,4 = 0,75."
+    },
+    {
+      "question": "Wie groß ist der Lift von Kaffee → Croissant mit den Zahlen aus der vorigen Frage?",
+      "options": [
+        "1,5",
+        "0,75",
+        "0,3",
+        "2,0"
+      ],
+      "correctIndex": 0,
+      "explanation": "Lift = Konfidenz / Support(Croissant) = 0,75 / (10/20) = 0,75 / 0,5 = 1,5. Kaffee-Käufer:innen nehmen also überdurchschnittlich oft ein Croissant."
+    },
+    {
+      "question": "Worin unterscheidet sich Clustering von Klassifikation?",
+      "options": [
+        "Clustering braucht Beispiele mit bekannten Klassen",
+        "Klassifikation findet Gruppen ohne Vorgaben",
+        "Clustering findet Gruppen ohne vorgegebene Klassen, Klassifikation lernt aus Beispielen mit bekannter Klasse",
+        "Es gibt keinen Unterschied"
+      ],
+      "correctIndex": 2,
+      "explanation": "Clustering ist unüberwachtes Lernen (keine Klassen vorgegeben), Klassifikation ist überwachtes Lernen (Trainingsdaten mit Klassen)."
+    }
+  ]
+}

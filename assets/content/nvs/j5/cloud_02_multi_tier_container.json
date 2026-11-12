@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j5-cloud_02_multi_tier_container",
+  "title": "Multi-Tier-Architektur, Container & Kubernetes",
+  "summary": "Wie verteilte Anwendungen in Tiers aufgeteilt, in Container verpackt und mit Kubernetes über Pods, Deployments und Services betrieben werden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im 4. Jahrgang hast du die 3-Schichten-Architektur aus Präsentation, Logik und Daten kennengelernt. In der Cloud werden diese Schichten zu Tiers: physisch getrennte Ebenen, jede auf eigenen Instanzen und meist in einem eigenen Subnetz mit eigenen Firewallregeln (Security Groups). Merke den Unterschied: Ein Layer ist eine logische Schicht im Code, ein Tier eine eigene Laufzeitebene im Netz. Eine Multi-Tier-Architektur (n-Tier) ergänzt oft weitere Ebenen wie Load Balancer, Cache oder Message Broker:"
+    },
+    {
+      "type": "code",
+      "content": "          Internet\n             │ HTTPS\n     [ Load Balancer ]      öffentl.\n        │         │\n    [Web 1]   [Web 2]       Web-Tier\n        │         │\n  [App 1] [App 2] [App 3]   App-Tier\n        │         │\n    [Cache]  [DB]──[DB-Replik] Daten"
+    },
+    {
+      "type": "text",
+      "content": "Jedes Tier lässt sich getrennt skalieren und absichern: Nur der Load Balancer ist aus dem Internet erreichbar, die Datenbank nur vom App-Tier. Für die Instanzen im Web- und App-Tier haben sich Container durchgesetzt. Ein Container verpackt eine Anwendung samt Bibliotheken in ein Image, teilt sich aber – anders als eine virtuelle Maschine – den Kernel des Host-Betriebssystems. Dadurch startet er in Sekunden und braucht wenig Speicher; dafür ist die Isolation schwächer als bei einer VM. Images werden in einer Registry abgelegt. Ein Dockerfile beschreibt, wie das Image gebaut wird:"
+    },
+    {
+      "type": "code",
+      "content": "FROM python:3-slim\nWORKDIR /app\nCOPY app.py .\nEXPOSE 8000\nUSER 1000\nCMD [\"python\", \"app.py\"]\n\n# FROM:   Basis-Image\n# COPY:   Datei ins Image\n# EXPOSE: dokumentiert den Port\n# USER:   nicht als root laufen\n# CMD:    Startbefehl"
+    },
+    {
+      "type": "text",
+      "content": "In der Praxis legt man im FROM eine genaue Version fest, damit jeder Build gleich ist. Bei vielen Containern auf vielen Hosts braucht es einen Orchestrator, heute meist Kubernetes. Er verteilt Container auf die Rechner (Nodes) eines Clusters, startet abgestürzte neu (Self-Healing), skaliert und tauscht Versionen schrittweise aus (Rolling Update). Wichtige Begriffe: Ein Pod ist die kleinste Einheit – ein oder mehrere Container mit gemeinsamer IP-Adresse. Ein Deployment beschreibt den gewünschten Zustand (welches Image, wie viele Replikate); Kubernetes vergleicht laufend Soll und Ist und gleicht ab. Ein Service gibt einer Gruppe von Pods einen stabilen Namen und eine stabile IP und verteilt die Anfragen auf sie. Das alles wird deklarativ in YAML beschrieben:"
+    },
+    {
+      "type": "code",
+      "content": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: noten\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: noten\n  template:            # Pod-Vorlage\n    metadata:\n      labels:\n        app: noten\n    spec:\n      containers:\n        - name: noten\n          image: reg.example.com/noten:1.4\n          ports:\n            - containerPort: 8000\n          resources:\n            requests:\n              cpu: 250m\n              memory: 128Mi\n          readinessProbe:\n            httpGet:\n              path: /health\n              port: 8000\n---\napiVersion: v1\nkind: Service\nmetadata:\n  name: noten\nspec:\n  type: ClusterIP\n  selector:\n    app: noten\n  ports:\n    - port: 80          # Service-Port\n      targetPort: 8000  # Container-Port"
+    },
+    {
+      "type": "text",
+      "content": "Lies das YAML genau: Einrückung ist Syntax, Listen beginnen mit „-“. Das Deployment hält 3 Pods mit dem Label app: noten am Laufen; resources.requests sagt dem Scheduler, wie viel CPU (250m = eine Viertel-CPU) und Speicher ein Pod mindestens braucht; die readinessProbe meldet, wann ein Pod Anfragen annehmen darf. Der Service findet seine Pods NICHT über den Namen des Deployments, sondern über den Label-Selector. Typischer Fehler: Selector und Pod-Labels passen nicht zusammen (Tippfehler, Groß-/Kleinschreibung) – dann hat der Service keine Endpunkte und jede Anfrage scheitert, obwohl alle Pods laufen. Der Typ ClusterIP macht den Service nur clusterintern erreichbar; NodePort und LoadBalancer öffnen ihn nach außen."
+    },
+    {
+      "type": "code",
+      "content": "pods = [\n    {\"name\": \"noten-a1\", \"labels\":\n        {\"app\": \"noten\", \"tier\": \"backend\"}},\n    {\"name\": \"noten-b2\", \"labels\":\n        {\"app\": \"noten\", \"tier\": \"backend\"}},\n    {\"name\": \"mensa-c3\", \"labels\":\n        {\"app\": \"mensa\"}},\n]\n\ndef endpoints(selector):\n    return [p[\"name\"] for p in pods\n            if all(p[\"labels\"].get(k) == v\n                   for k, v in selector.items())]\n\nprint(endpoints({\"app\": \"noten\"}))\nprint(endpoints({\"app\": \"Noten\"}))  # Tippfehler\n\n# Ausgabe:\n# ['noten-a1', 'noten-b2']\n# []"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Tiers sind physisch getrennte Ebenen (Load Balancer, Web, App, Daten), jede einzeln skalierbar und in eigener Netzzone. Container teilen den Host-Kernel, starten schnell und werden aus Images gebaut. Kubernetes orchestriert sie: Pod = kleinste Einheit, Deployment = gewünschter Zustand mit Replikaten, Service = stabiler Name und Lastverteilung über Label-Selector. Labels müssen exakt übereinstimmen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was unterscheidet einen Container grundlegend von einer virtuellen Maschine?",
+      "options": [
+        "Ein Container kann nur eine einzige Datei enthalten",
+        "Ein Container hat immer eine öffentliche IP-Adresse",
+        "Ein Container läuft nur in der Public Cloud",
+        "Ein Container teilt sich den Kernel des Host-Betriebssystems"
+      ],
+      "correctIndex": 3,
+      "explanation": "Container nutzen den Kernel des Hosts mit, VMs bringen ein eigenes Betriebssystem samt Kernel mit. Darum starten Container schneller, sind aber schwächer isoliert."
+    },
+    {
+      "question": "Ein Deployment hat replicas: 3. Ein Node fällt aus, auf dem einer der Pods lief. Was macht Kubernetes?",
+      "options": [
+        "Es startet einen neuen Pod auf einem anderen Node, bis wieder 3 laufen",
+        "Es reduziert replicas automatisch auf 2",
+        "Nichts, bis ein Admin den Pod manuell neu startet",
+        "Es stoppt auch die anderen beiden Pods"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Deployment beschreibt den Soll-Zustand. Kubernetes vergleicht laufend Soll und Ist und startet fehlende Pods auf verbleibenden Nodes (Self-Healing)."
+    },
+    {
+      "question": "Die Pods tragen das Label app: noten. Welcher Service-Selector findet sie NICHT?",
+      "options": [
+        "app: noten",
+        "app: Noten",
+        "Beide finden sie",
+        "Keiner findet sie, Services suchen nach Deployment-Namen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Label-Werte werden exakt verglichen, auch Groß-/Kleinschreibung. „Noten“ ≠ „noten“ – der Service hätte keine Endpunkte."
+    },
+    {
+      "question": "Ein Service hat port: 80 und targetPort: 8000. Was bedeutet das?",
+      "options": [
+        "Der Container lauscht auf 80, der Service auf 8000",
+        "Nur Port 8000 ist von außerhalb des Clusters erreichbar",
+        "Der Service nimmt auf Port 80 an und leitet an Port 8000 der Pods weiter",
+        "Die Ports werden zufällig vergeben"
+      ],
+      "correctIndex": 2,
+      "explanation": "port ist der Port des Service, targetPort der Port im Container. Mit Typ ClusterIP ist das Ganze nur clusterintern erreichbar."
+    }
+  ]
+}

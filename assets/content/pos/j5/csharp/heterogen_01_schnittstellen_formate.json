@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-csharp-heterogen_01_schnittstellen_formate",
+  "title": "Schnittstellen und Datenformate",
+  "summary": "JSON, XML, CSV, Encoding und Zeitzonen sicher zwischen Systemen austauschen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Webshop-Backend in Java, eine Auswertung in Python, eine Kassen-App in C#: Solche heterogenen Systeme verstehen einander nur über eine gemeinsame Schnittstelle. Sie legt fest, welches Datenformat verwendet wird, wie Felder heißen und welche Typen sie haben. Das häufigste Format ist JSON. In .NET erledigt das System.Text.Json."
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.Encodings.Web;\nusing System.Text.Json;\n\nvar opt = new JsonSerializerOptions {\n  PropertyNamingPolicy =\n    JsonNamingPolicy.CamelCase,\n  Encoder = JavaScriptEncoder\n    .UnsafeRelaxedJsonEscaping };\nvar s = new Schueler(\"Lena Grün\", 1);\nstring text = JsonSerializer.Serialize(s, opt);\nConsole.WriteLine(text);\n// {\"name\":\"Lena Grün\",\"note\":1}\nvar back = JsonSerializer\n  .Deserialize<Schueler>(text, opt)!;\nConsole.WriteLine(back.Note + 1);  // 2\nvar d = new Dictionary<int, string>\n  { [1] = \"a\" };\nConsole.WriteLine(JsonSerializer.Serialize(d));\n// {\"1\":\"a\"}\n\nrecord Schueler(string Name, int Note);"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: JSON kennt nur Strings, Zahlen, true/false, null, Arrays und Objekte. Schlüssel sind immer Strings – aus 1 wird \"1\". C# verwendet PascalCase, JavaScript-Clients erwarten meist camelCase: Dafür sorgt die PropertyNamingPolicy. Ohne den Encoder würde System.Text.Json „ü“ als \\u00FC escapen – gültig, aber schlecht lesbar."
+    },
+    {
+      "type": "text",
+      "content": "XML ist älter, aber in Behörden, Banken (z. B. SEPA-Überweisungen) und Konfigurationsdateien noch weit verbreitet. Daten stehen in Elementen und Attributen, und mit einem Schema (XSD) kann man streng prüfen, ob ein Dokument gültig ist. Am bequemsten liest du XML mit LINQ to XML (System.Xml.Linq)."
+    },
+    {
+      "type": "code",
+      "content": "using System.Xml.Linq;\n\nvar xml = \"\"\"\n  <klasse name=\"5AHIF\">\n    <schueler note=\"1\">Lena</schueler>\n    <schueler note=\"3\">Jonas</schueler>\n  </klasse>\n  \"\"\";\nvar root = XElement.Parse(xml);\nConsole.WriteLine(root.Attribute(\"name\")?.Value);\nforeach (var s in root.Elements(\"schueler\"))\n  Console.WriteLine(\n    $\"{s.Value} {(int)s.Attribute(\"note\")!}\");\n// 5AHIF\n// Lena 1\n// Jonas 3"
+    },
+    {
+      "type": "text",
+      "content": "CSV ist das einfachste Austauschformat, aber voller Fallen: Ein österreichisches Excel verwendet meist den Strichpunkt als Trennzeichen und das Komma als Dezimalzeichen. Texte mit Trennzeichen stehen in Anführungszeichen – ein simples Split zerreißt sie. .NET hat dafür den TextFieldParser (Namespace Microsoft.VisualBasic.FileIO, funktioniert auch in C#); in Projekten wird oft das NuGet-Paket CsvHelper verwendet."
+    },
+    {
+      "type": "code",
+      "content": "using System.Globalization;\nusing System.Text;\nusing Microsoft.VisualBasic.FileIO;\n\nvar zeile = \"\\\"Huber; Anna\\\";12,50\";\nConsole.WriteLine(zeile.Split(';').Length);\n// 3  -> falsch zerlegt!\nusing var p = new TextFieldParser(\n  new StringReader(zeile));\np.SetDelimiters(\";\");\np.HasFieldsEnclosedInQuotes = true;\nvar f = p.ReadFields()!;\nvar nf = new NumberFormatInfo\n  { NumberDecimalSeparator = \",\" };\nvar betrag = decimal.Parse(f[1], nf);\nConsole.WriteLine(f[0]);  // Huber; Anna\nConsole.WriteLine(betrag == 12.5m); // True\n\nvar b = Encoding.UTF8.GetBytes(\"Jänner\");\nConsole.WriteLine(b.Length);   // 7\nConsole.WriteLine(Encoding.Latin1.GetString(b));\n// JÃ¤nner"
+    },
+    {
+      "type": "text",
+      "content": "Beim Encoding gilt: „ä“ braucht in UTF-8 zwei Bytes. Liest du UTF-8-Bytes als Latin-1, entsteht Zeichensalat („Mojibake“). Gib daher beim Lesen und Schreiben von Dateien das Encoding immer an und tausche Daten in UTF-8 aus. Zeitpunkte gehören als ISO 8601 mit Offset in die Schnittstelle (z. B. 2026-07-01T08:30:00+00:00); intern rechnest du in UTC. In C# ist DateTimeOffset dafür der passende Typ."
+    },
+    {
+      "type": "code",
+      "content": "var t = DateTimeOffset.Parse(\n  \"2026-07-01T08:30:00+00:00\");\nvar tz = TimeZoneInfo\n  .FindSystemTimeZoneById(\"Europe/Vienna\");\nvar wien = TimeZoneInfo.ConvertTime(t, tz);\nConsole.WriteLine(wien.ToString(\"o\"));\n// 2026-07-01T10:30:00.0000000+02:00\nConsole.WriteLine(t == wien);   // True"
+    },
+    {
+      "type": "text",
+      "content": "Binäre Formate wie Protocol Buffers (Protobuf) beschreiben die Daten in einem Schema (.proto) mit Feldnummern; daraus wird Code für viele Sprachen erzeugt (in .NET über das NuGet-Paket Google.Protobuf). Das ist kompakter und schneller als JSON, aber nicht menschenlesbar. Für die Versionierung gilt bei allen Formaten: neue Felder optional hinzufügen, nie die Bedeutung bestehender Felder ändern, und als Empfänger unbekannte Felder ignorieren („Tolerant Reader“ – System.Text.Json tut das standardmäßig).\n\nZusammenfassung: JSON für Web-APIs, XML wo Schemas gefordert sind, CSV nie mit Split, immer UTF-8 und ISO 8601 mit Offset."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "using System.Text.Json;\nConsole.WriteLine(\n  JsonSerializer.Serialize(new N(2)));\nrecord N(int Note);",
+      "options": [
+        "{\"Note\":2}",
+        "{\"note\":2}",
+        "{note:2}",
+        "{\"NOTE\":2}"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ohne JsonSerializerOptions übernimmt System.Text.Json den C#-Eigenschaftsnamen unverändert, also PascalCase. Für camelCase brauchst du PropertyNamingPolicy = JsonNamingPolicy.CamelCase."
+    },
+    {
+      "question": "Eine CSV-Zeile aus Excel lautet \"Huber; Anna\";12,50. Was liefert zeile.Split(';').Length?",
+      "options": [
+        "2",
+        "1",
+        "3",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "Split kennt keine Anführungszeichen und trennt auch beim Strichpunkt innerhalb von \"Huber; Anna\". Es entstehen drei Teile. Ein CSV-Parser wie TextFieldParser oder CsvHelper beachtet das Quoting."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var b = System.Text.Encoding.UTF8\n  .GetBytes(\"Jänner\");\nConsole.WriteLine(b.Length);",
+      "options": [
+        "6",
+        "12",
+        "14",
+        "7"
+      ],
+      "correctIndex": 3,
+      "explanation": "In UTF-8 brauchen ASCII-Zeichen ein Byte, „ä“ braucht zwei. „Jänner“ hat 6 Zeichen, aber 7 Bytes."
+    },
+    {
+      "question": "Deine API liefert Version 2 einer Antwort mit einem neuen Feld \"email\". Welche Änderung bleibt abwärtskompatibel, wenn alte Clients unbekannte Felder ignorieren?",
+      "options": [
+        "Das neue optionale Feld \"email\" hinzufügen",
+        "Das Feld \"name\" in \"fullName\" umbenennen",
+        "Den Typ von \"note\" von Zahl auf String ändern",
+        "Das Feld \"klasse\" entfernen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nur das Hinzufügen eines optionalen Feldes bricht alte Clients nicht. Umbenennen, Typ ändern oder Entfernen sind Breaking Changes."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+ "id": "syp-j5-recht_02_lizenzen_open_source",
+ "title": "Lizenzen und Open Source",
+ "summary": "MIT, Apache, GPL und Copyleft verstehen und Lizenzen auf Kompatibilität prüfen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Hinweis: Diese Lektion vermittelt Grundwissen für den Unterricht und ist keine Rechtsberatung. Im konkreten Fall entscheiden Vertrag, Gesetzeslage und Gerichte – frag im Zweifel Fachleute. Eine Softwarelizenz ist eine Erlaubnis des Rechteinhabers, die Software unter bestimmten Bedingungen zu nutzen – im österreichischen Urheberrecht meist eine Werknutzungsbewilligung. Proprietäre Lizenzen (z. B. Endbenutzer-Lizenzverträge) erlauben meist nur die Nutzung, nicht das Ändern oder Weitergeben. Open-Source-Lizenzen erlauben dagegen, den Quellcode zu nutzen, zu ändern und weiterzugeben – aber unter Bedingungen, die man einhalten muss."
+  },
+  {
+   "type": "text",
+   "content": "Freizügige (permissive) Lizenzen wie MIT, BSD oder Apache 2.0 erlauben fast alles, auch den Einbau in kommerzielle, geschlossene Software. Hauptbedingung: Copyright-Hinweis und Lizenztext bleiben bei allen Kopien erhalten. Apache 2.0 enthält zusätzlich eine ausdrückliche Patentlizenz und verlangt, Änderungen kenntlich zu machen. Auch diese Lern-App steht unter der MIT-Lizenz. Kern der MIT-Lizenz (gekürzt):"
+  },
+  {
+   "type": "code",
+   "content": "Permission is hereby granted,\nfree of charge, to any person\nobtaining a copy of this software\n… to deal in the Software without\nrestriction … subject to the\nfollowing conditions:\n\nThe above copyright notice and\nthis permission notice shall be\nincluded in all copies or\nsubstantial portions of the\nSoftware.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\",\nWITHOUT WARRANTY OF ANY KIND …"
+  },
+  {
+   "type": "text",
+   "content": "Copyleft-Lizenzen verlangen: Wer ein abgeleitetes Werk weitergibt, muss es unter derselben Lizenz weitergeben und den Quellcode zugänglich machen. Die GPL ist das bekannteste Beispiel (starkes Copyleft). Die LGPL ist ein schwaches Copyleft für Bibliotheken: Ein Programm darf eine LGPL-Bibliothek unter Bedingungen verwenden, ohne selbst unter die LGPL zu fallen. Die AGPL erweitert die GPL auf Software, die Nutzer:innen über ein Netzwerk verwenden (z. B. Web-Apps). Wichtig: Copyleft heißt nicht „nicht kommerziell“ – Verkaufen ist erlaubt. Und: Nur wer weitergibt, muss die Bedingungen erfüllen; rein interne Nutzung einer GPL-Software löst keine Pflicht zur Quellcode-Herausgabe aus."
+  },
+  {
+   "type": "code",
+   "content": "Lizenz      Typ        Einbau in\n                       geschlossene\n                       Software?\n----------  ---------  -----------\nMIT, BSD    permissiv  ja (Hinweis\n                       behalten)\nApache 2.0  permissiv  ja (+ Patent-\n                       lizenz)\nLGPL        schwaches  meist ja,\n            Copyleft   Bedingungen\nGPL         starkes    nein, Ganzes\n            Copyleft   muss GPL sein\nAGPL        stark +    nein, auch\n            Netzwerk   bei Web-Apps"
+  },
+  {
+   "type": "text",
+   "content": "Lizenzkompatibilität: Kombinierst du Code mehrerer Lizenzen zu einem Werk, müssen alle Bedingungen gleichzeitig erfüllbar sein. MIT-Code darf in ein GPL-Projekt (das Ganze wird GPL, der MIT-Hinweis bleibt). GPL-Code darf aber nicht in ein MIT- oder proprietäres Projekt, das weitergegeben wird – außer das Gesamtwerk wird GPL. Auch Copyleft-Lizenzen untereinander passen nicht immer: GPLv2-only und GPLv3 sind nicht kompatibel, Apache 2.0 ist mit GPLv3 kompatibel, nicht aber mit GPLv2-only. Diese Funktion prüft stark vereinfacht ein MIT-Projekt; Lizenzen werden mit SPDX-Kennungen angegeben."
+  },
+  {
+   "type": "code",
+   "content": "STARK = {\"GPL-2.0-only\",\n         \"GPL-3.0-only\"}\nSCHWACH = {\"LGPL-3.0-only\"}\n\ndef pruefe(projekt, deps):\n    for name, lz in deps.items():\n        if lz in STARK and lz != projekt:\n            print(name, \"Konflikt\")\n        elif lz in SCHWACH:\n            print(name, \"prüfen\")\n        else:\n            print(name, \"ok\")\n\npruefe(\"MIT\", {\n    \"http-lib\": \"Apache-2.0\",\n    \"pdf-lib\": \"GPL-3.0-only\",\n    \"img-lib\": \"LGPL-3.0-only\",\n    \"util-lib\": \"BSD-3-Clause\"})\n\n# Ausgabe:\n# http-lib ok\n# pdf-lib Konflikt\n# img-lib prüfen\n# util-lib ok"
+  },
+  {
+   "type": "text",
+   "content": "In der Praxis: Jedes Projekt bekommt eine LICENSE-Datei mit seiner Lizenz. Fremde Komponenten werden mit ihrer Lizenz erfasst (SBOM, Software Bill of Materials), und die Lizenzhinweise werden mitgeliefert – Flutter-Apps können etwa mit einer eingebauten Lizenzseite alle Lizenzen der verwendeten Pakete anzeigen. Wer eine Lizenz für eigenen Code wählt, muss die nötigen Rechte haben: Bei einem Teamprojekt müssen alle Urheber:innen zustimmen. Manche Firmen bieten Software unter zwei Lizenzen an (Dual Licensing), z. B. GPL für Open-Source-Projekte und eine kostenpflichtige proprietäre Lizenz für alle anderen."
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: Lizenzhinweise bei MIT-Code löschen; „Open Source = gratis und ohne Bedingungen“; eine GPL-Bibliothek in eine verkaufte, geschlossene App einbauen; Creative-Commons-Lizenzen für Code verwenden (sie sind für Inhalte wie Texte und Bilder gedacht). Zusammenfassung: Permissive Lizenzen (MIT, BSD, Apache) verlangen vor allem den Erhalt der Hinweise, Copyleft-Lizenzen (GPL, AGPL, schwächer LGPL) verlangen bei Weitergabe dieselbe Lizenz und Quellcode. Vor dem Einbau Kompatibilität prüfen und alle Abhängigkeiten dokumentieren."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Du baust eine MIT-lizenzierte Bibliothek in deine kommerzielle, geschlossene App ein. Was musst du beachten?",
+   "options": [
+    "Du musst den Quellcode deiner App veröffentlichen",
+    "Das ist verboten",
+    "Du musst die App gratis anbieten",
+    "Copyright-Hinweis und MIT-Lizenztext der Bibliothek mitliefern"
+   ],
+   "correctIndex": 3,
+   "explanation": "MIT ist permissiv: Einbau in geschlossene Software ist erlaubt, der Copyright-Hinweis und der Lizenztext müssen aber in den Kopien enthalten bleiben."
+  },
+  {
+   "question": "Was gibt die Funktion pruefe aus der Lektion für diese Abhängigkeit aus?",
+   "code": "pruefe(\"GPL-3.0-only\",\n       {\"dbtool\": \"GPL-3.0-only\"})",
+   "options": [
+    "dbtool ok",
+    "dbtool prüfen",
+    "dbtool Konflikt",
+    "Nichts"
+   ],
+   "correctIndex": 0,
+   "explanation": "Das Projekt steht selbst unter GPL-3.0-only. Die Abhängigkeit hat dieselbe Lizenz, also gilt die Bedingung lz != projekt nicht – Ausgabe: dbtool ok."
+  },
+  {
+   "question": "Eine Firma ändert eine GPL-Software und nutzt sie nur intern, ohne sie weiterzugeben. Was gilt?",
+   "options": [
+    "Sie muss den geänderten Code sofort veröffentlichen",
+    "Sie muss Lizenzgebühren zahlen",
+    "Die GPL-Pflichten zur Quellcode-Weitergabe werden ohne Weitergabe nicht ausgelöst",
+    "Interne Änderungen sind bei der GPL verboten"
+   ],
+   "correctIndex": 2,
+   "explanation": "Die Copyleft-Pflichten der GPL hängen an der Weitergabe (Verbreitung). Bei der AGPL kann dagegen schon das Bereitstellen über ein Netzwerk genügen."
+  },
+  {
+   "question": "Welche Kombination ist problematisch?",
+   "options": [
+    "MIT-Code in einem GPLv3-Projekt",
+    "GPLv3-Code in einer verkauften, geschlossenen App",
+    "Apache-2.0-Code in einem GPLv3-Projekt",
+    "BSD-Code in einem MIT-Projekt"
+   ],
+   "correctIndex": 1,
+   "explanation": "GPL-Code verlangt bei Weitergabe, dass das Gesamtwerk unter der GPL steht und der Quellcode verfügbar ist – das widerspricht einer geschlossenen App."
+  }
+ ]
+}

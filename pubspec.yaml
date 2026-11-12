@@ -54,5 +54,11 @@ flutter:
     - assets/content/dbi/j4/
     - assets/content/nvs/j4/
     - assets/content/syp/j4/
+    - assets/content/pos/j5/python/
+    - assets/content/pos/j5/csharp/
+    - assets/content/pos/j5/theorie/
+    - assets/content/dbi/j5/
+    - assets/content/nvs/j5/
+    - assets/content/syp/j5/
     - assets/game/
     - assets/icon/logo_mark.png

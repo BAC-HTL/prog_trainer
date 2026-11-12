@@ -1,0 +1,117 @@
+{
+  "id": "dbi-j5-indizes_pruefung",
+  "title": "Abschlussprüfung: Indizes & Anfrageoptimierung",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "80 000 Zeilen à 250 Byte, Seitengröße 8192 Byte (Seitenkopf vernachlässigt). Wie viele Seiten liest ein Full Table Scan?",
+      "options": [
+        "2500",
+        "2560",
+        "320",
+        "32"
+      ],
+      "correctIndex": 0,
+      "explanation": "8192 / 250 = 32,77 → 32 Zeilen pro Seite. 80 000 / 32 = 2500 Seiten, die ein Scan alle lesen muss."
+    },
+    {
+      "question": "Ein B+-Baum hat Fan-out 200 und indiziert 10 Millionen Zeilen. Wie viele Seiten liest eine Punktsuche inklusive Tabellenzugriff?",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "24"
+      ],
+      "correctIndex": 2,
+      "explanation": "200² = 40 000, 200³ = 8 000 000 < 10 Mio, 200⁴ ≥ 10 Mio → Höhe 4. Dazu 1 Tabellenseite = 5."
+    },
+    {
+      "question": "Welche Aussage über geclusterte Tabellen stimmt?",
+      "options": [
+        "Jede Spalte kann eine eigene Clusterung haben",
+        "PostgreSQL hält eine mit CLUSTER erzeugte Ordnung bei jedem INSERT automatisch aufrecht",
+        "Bereichsabfragen über den Clusterschlüssel lesen besonders wenige Seiten",
+        "Clusterung ersetzt den Primärschlüssel"
+      ],
+      "correctIndex": 2,
+      "explanation": "Benachbarte Schlüssel liegen physisch auf denselben Seiten. Es gibt nur eine Clusterung; PostgreSQLs CLUSTER sortiert nur einmalig."
+    },
+    {
+      "question": "Warum sind die Blätter eines B+-Baums verkettet?",
+      "options": [
+        "Damit Bereichsabfragen und Sortierung ohne erneuten Abstieg von der Wurzel funktionieren",
+        "Damit der Baum balanciert bleibt",
+        "Damit Hashwerte berechnet werden können",
+        "Damit gelöschte Einträge wiederhergestellt werden"
+      ],
+      "correctIndex": 0,
+      "explanation": "Man sucht den Anfang des Bereichs einmal von der Wurzel aus und läuft dann die Blattkette entlang."
+    },
+    {
+      "question": "Für welche Abfrage eignet sich ein Hash-Index?",
+      "options": [
+        "Für WHERE datum > '2026-01-01'",
+        "Für WHERE kundennr = 4711",
+        "Für WHERE name LIKE 'Hu%'",
+        "Für MIN(datum)"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Hash-Index liefert Gleichheitsvergleiche schnell (ein Bucket), verliert aber jede Ordnung – Bereiche, Präfixe, MIN/MAX und Sortierung kann er nicht."
+    },
+    {
+      "question": "Index ix ON noten(fach, schueler_id, datum). Welche Bedingung kann den Index NICHT über ein linkes Präfix nutzen?",
+      "options": [
+        "fach = 'DBI'",
+        "fach = 'DBI' AND schueler_id = 7",
+        "schueler_id = 7 AND datum = '2026-03-01'",
+        "fach = 'DBI' AND schueler_id = 7 AND datum > '2026-01-01'"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ohne fach fehlt die erste Spalte des Index. Alle anderen Varianten beginnen mit fach."
+    },
+    {
+      "question": "Welcher Index hilft bei WHERE upper(email) = 'A@HTL.AT'?",
+      "options": [
+        "CREATE INDEX ON benutzer(email)",
+        "Ein Hash-Index auf email",
+        "Keiner, Funktionen sind nie indizierbar",
+        "CREATE INDEX ON benutzer(upper(email))"
+      ],
+      "correctIndex": 3,
+      "explanation": "Steht eine Funktion auf der Spalte, braucht man einen Ausdrucksindex über genau diesen Ausdruck. Ein normaler Index auf email wird nicht verwendet."
+    },
+    {
+      "question": "PostgreSQL zeigt „Seq Scan“ für WHERE geschlecht = 'w', obwohl es einen Index auf geschlecht gibt. Was ist die plausibelste Erklärung?",
+      "options": [
+        "Der Index ist kaputt",
+        "Die Bedingung trifft einen großen Teil der Tabelle, ein Scan ist billiger",
+        "PostgreSQL nutzt Indizes nur für Primärschlüssel",
+        "EXPLAIN zeigt immer Seq Scan"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei geringer Selektivität (z. B. die Hälfte aller Zeilen) wären die vielen Einzelzugriffe teurer als ein sequenzielles Lesen der ganzen Tabelle."
+    },
+    {
+      "question": "Was zeigt „Buffers: shared hit=4“ in EXPLAIN (ANALYZE, BUFFERS)?",
+      "options": [
+        "4 Seiten wurden gelesen und im Puffer gefunden",
+        "4 Zeilen wurden zurückgegeben",
+        "4 Indizes wurden genutzt",
+        "Die Abfrage dauerte 4 ms"
+      ],
+      "correctIndex": 0,
+      "explanation": "Buffers zählt Seiten. hit bedeutet, dass die Seite schon im Puffer des Servers lag und nicht von der Platte geholt werden musste."
+    },
+    {
+      "question": "Welche Wirkung hat ein zusätzlicher Index auf eine Tabelle mit sehr vielen INSERTs pro Sekunde?",
+      "options": [
+        "INSERTs werden schneller",
+        "Keine, Indizes betreffen nur SELECT",
+        "INSERTs werden langsamer, weil jeder Index mitgepflegt werden muss",
+        "Die Tabelle wird automatisch geclustert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jede neue Zeile muss in jeden Index eingetragen werden. Indizes beschleunigen das Lesen auf Kosten von Schreibzugriffen und Speicher."
+    }
+  ]
+}

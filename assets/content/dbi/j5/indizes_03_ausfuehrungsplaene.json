@@ -1,0 +1,89 @@
+{
+  "id": "dbi-j5-indizes_03_ausfuehrungsplaene",
+  "title": "Ausführungspläne lesen mit EXPLAIN",
+  "summary": "Mit EXPLAIN siehst du, ob das DBMS einen Index nutzt – und warum manchmal nicht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "SQL ist deklarativ: Du sagst, was du willst, nicht wie. Der Optimierer des DBMS erzeugt mehrere mögliche Ausführungspläne (Scan oder Index? Welche Join-Reihenfolge?), schätzt mit Hilfe von Statistiken die Kosten und nimmt den billigsten. Mit EXPLAIN lässt du dir den gewählten Plan anzeigen, ohne raten zu müssen."
+    },
+    {
+      "type": "code",
+      "content": "-- SQLite, 20 000 Schüler:innen\nEXPLAIN QUERY PLAN\nSELECT * FROM schueler\nWHERE nachname = 'Huber1';\n-- SCAN schueler\n\nCREATE INDEX ix_name\n  ON schueler(nachname);\n\nEXPLAIN QUERY PLAN\nSELECT * FROM schueler\nWHERE nachname = 'Huber1';\n-- SEARCH schueler USING INDEX\n--   ix_name (nachname=?)"
+    },
+    {
+      "type": "text",
+      "content": "So liest du die SQLite-Ausgabe:\n• SCAN = ganze Tabelle durchlaufen (Full Table Scan).\n• SEARCH … USING INDEX = gezielte Suche über einen Index.\n• USING COVERING INDEX = alle nötigen Spalten stehen im Index, die Tabelle wird gar nicht gelesen.\n• USE TEMP B-TREE FOR ORDER BY = zusätzliches Sortieren, weil kein Index die Reihenfolge liefert."
+    },
+    {
+      "type": "code",
+      "content": "-- PostgreSQL, 200 000 Zeilen\nEXPLAIN ANALYZE SELECT * FROM schueler\nWHERE nachname = 'Name42';\n\nSeq Scan on schueler\n (cost=0.00..3774.00 rows=40)\n (actual time=0.013..16.673 rows=40)\n Filter: (nachname = 'Name42')\n Rows Removed by Filter: 199960\nExecution Time: 16.700 ms\n\n-- nach CREATE INDEX ix_name ...\nBitmap Heap Scan on schueler\n (cost=4.60..143.84 rows=40)\n -> Bitmap Index Scan on ix_name\n    Index Cond: (nachname='Name42')\nExecution Time: 0.191 ms"
+    },
+    {
+      "type": "text",
+      "content": "In PostgreSQL bedeutet cost=Start..Gesamt die geschätzten Kosten in einer abstrakten Einheit (eine sequenziell gelesene Seite = 1.0). Die 3774 ergeben sich aus 1274 Seiten + 200 000 Zeilen × 0,01 (Zeile verarbeiten) + 200 000 × 0,0025 (Filter prüfen). rows ist die Schätzung, actual … rows die echte Anzahl – weichen sie stark ab, stimmen meist die Statistiken nicht. Häufige Knoten: Seq Scan, Index Scan, Index Only Scan (nur Index nötig) und Bitmap Heap Scan (erst alle Treffer im Index sammeln, dann Seiten der Reihe nach lesen)."
+    },
+    {
+      "type": "text",
+      "content": "Achtung: EXPLAIN ANALYZE führt die Abfrage wirklich aus! Bei UPDATE oder DELETE änderst du damit Daten. Teste so etwas in einer Transaktion: BEGIN; EXPLAIN ANALYZE DELETE …; ROLLBACK;\n\nDer Optimierer nimmt auch nicht immer den Index: Trifft eine Bedingung einen großen Teil der Tabelle (geringe Selektivität), ist ein Scan oft billiger als tausende einzelne Indexzugriffe. Auch kleine Tabellen werden meist einfach gescannt."
+    },
+    {
+      "type": "text",
+      "content": "Ein zusammengesetzter Index wie (klasse, nachname) ist nach der ersten Spalte sortiert, bei gleicher Klasse nach der zweiten – wie ein Telefonbuch nach Ort und dann Name. Er hilft daher bei Bedingungen auf klasse oder auf klasse UND nachname (linkes Präfix), aber nicht sinnvoll bei einer Bedingung nur auf nachname. Die Reihenfolge der Spalten ist also entscheidend!"
+    },
+    {
+      "type": "code",
+      "content": "CREATE INDEX ix_kn\n  ON schueler(klasse, nachname);\n\n-- SQLite\n... WHERE klasse='3AHIF'\n  AND nachname='Huber1'\n-- SEARCH USING INDEX ix_kn\n--   (klasse=? AND nachname=?)\n... WHERE klasse='3AHIF'\n-- SEARCH USING INDEX ix_kn (klasse=?)\n... WHERE nachname='Huber1'\n-- SCAN schueler\n\n-- PostgreSQL: nur nachname\n-- liest den GANZEN Index:\n-- Index Scan using ix_kn\n--   (cost=0.42..2497.07)\n-- mit klasse: (cost=0.42..11.98)"
+    },
+    {
+      "type": "text",
+      "content": "Typische Index-Killer: Eine Funktion auf der Spalte (WHERE lower(nachname) = 'huber') und ein führendes Platzhalterzeichen (LIKE '%er') – in beiden Fällen kann der sortierte Index nicht verwendet werden, das Ergebnis ist ein Scan. Für den ersten Fall gibt es Ausdrucksindizes: CREATE INDEX ix_lower ON schueler(lower(nachname)); Danach meldet SQLite: SEARCH … USING INDEX ix_lower (<expr>=?).\n\nZusammenfassung: EXPLAIN zeigt den Plan, EXPLAIN ANALYZE führt zusätzlich aus und misst. SCAN/Seq Scan = alles lesen, SEARCH/Index Scan = gezielt. Zusammengesetzte Indizes wirken nur über ein linkes Präfix; Funktionen auf Spalten und LIKE '%…' verhindern die Indexnutzung."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Es gibt nur den Index ix ON kurs(lehrer, tag). Bei welcher Abfrage meldet SQLite „SCAN kurs“?",
+      "options": [
+        "WHERE lehrer = 'Huber'",
+        "WHERE lehrer = 'Huber' AND tag = 'Mo'",
+        "WHERE tag = 'Mo'",
+        "WHERE tag = 'Mo' AND lehrer = 'Huber'"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Index ist zuerst nach lehrer sortiert. Ohne Bedingung auf lehrer (linkes Präfix) hilft er nicht – die Reihenfolge der Bedingungen im WHERE ist dagegen egal."
+    },
+    {
+      "question": "Was bedeutet in SQLite „USING COVERING INDEX“?",
+      "options": [
+        "Der Index wird gerade neu aufgebaut",
+        "Alle benötigten Spalten stehen im Index, die Tabelle wird nicht gelesen",
+        "Die Tabelle wird vollständig gescannt",
+        "Der Index deckt nur einen Teil der Zeilen ab"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein abdeckender Index enthält alle Spalten, die die Abfrage braucht. Der Zugriff auf die Tabellenseiten entfällt (in PostgreSQL: Index Only Scan)."
+    },
+    {
+      "question": "Du willst wissen, wie lange ein DELETE dauert, ohne Daten zu verlieren. Was ist richtig?",
+      "options": [
+        "EXPLAIN ANALYZE DELETE … reicht, es wird nichts gelöscht",
+        "EXPLAIN DELETE … zeigt die echte Laufzeit",
+        "EXPLAIN ANALYZE DELETE … innerhalb von BEGIN … ROLLBACK",
+        "Das geht nur mit einem Backup"
+      ],
+      "correctIndex": 2,
+      "explanation": "EXPLAIN ANALYZE führt die Anweisung wirklich aus. In einer Transaktion mit ROLLBACK wird die Änderung wieder verworfen. EXPLAIN allein misst keine Zeit."
+    },
+    {
+      "question": "Ein Plan zeigt „rows=5“ geschätzt, aber „actual … rows=48000“. Was ist die wahrscheinlichste Ursache?",
+      "options": [
+        "Veraltete oder fehlende Statistiken",
+        "Der Index ist zu groß",
+        "Die Seitengröße ist falsch",
+        "EXPLAIN rechnet immer so"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Schätzungen beruhen auf Statistiken über die Datenverteilung. Weichen sie stark ab, wurde meist nach großen Änderungen kein ANALYZE ausgeführt – der Optimierer kann dann einen schlechten Plan wählen."
+    }
+  ]
+}

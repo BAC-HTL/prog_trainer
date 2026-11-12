@@ -1,0 +1,89 @@
+{
+  "id": "dbi-j5-tuning_01_administration_werkzeuge",
+  "title": "Werkzeuge der Datenbankadministration",
+  "summary": "Mit welchen Werkzeugen du einen Datenbankserver verwaltest, konfigurierst und überwachst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Zu den Aufgaben einer Datenbankadministratorin bzw. eines Datenbankadministrators (DBA) gehören: Installation und Updates, Benutzer und Rechte, Datensicherung und Wiederherstellung (3./4. Jahrgang), Überwachung (Monitoring), Wartung und Performance-Tuning. Dafür gibt es drei Arten von Werkzeugen: Kommandozeilen-Clients, grafische Verwaltungsprogramme und die Systemkataloge bzw. Statistiksichten der Datenbank selbst."
+    },
+    {
+      "type": "text",
+      "content": "Kommandozeilen-Clients wie psql (PostgreSQL), mysql bzw. mariadb oder sqlite3 sind auf jedem Server verfügbar, auch über SSH, und lassen sich in Skripte einbauen – etwa für nächtliche Wartung. Grafische Werkzeuge wie pgAdmin, DBeaver oder MySQL Workbench zeigen Schema, Daten, Ausführungspläne und Serverstatus übersichtlich an. Sie sind bequem, aber Wartungsaufgaben sollten trotzdem als Skript reproduzierbar sein."
+    },
+    {
+      "type": "code",
+      "content": "-- psql-Metabefehle\n\\l          Datenbanken auflisten\n\\c c4       mit Datenbank verbinden\n\\dt         Tabellen\n\\di         Indizes\n\\d schueler Aufbau einer Tabelle\n\\x          erweiterte Anzeige\n\\timing on  Laufzeit anzeigen\n\n\\d schueler\n...\nIndexes:\n  \"schueler_pkey\" PRIMARY KEY,\n     btree (id)\n  \"ix_klasse\" btree (klasse) CLUSTER"
+    },
+    {
+      "type": "text",
+      "content": "Die Konfiguration steht in PostgreSQL in der Datei postgresql.conf (Zugriffsregeln in pg_hba.conf). Du kannst Werte auch per SQL mit ALTER SYSTEM ändern – sie landen dann in postgresql.auto.conf. Wichtig ist, wann eine Änderung wirkt: Manche Parameter genügt ein Neuladen (pg_reload_conf()), andere – etwa shared_buffers oder max_connections – brauchen einen Neustart des Servers. Welcher Fall vorliegt, zeigt die Spalte context in pg_settings."
+    },
+    {
+      "type": "code",
+      "content": "SELECT name, setting, unit, context\nFROM pg_settings\nWHERE name IN ('shared_buffers',\n  'work_mem', 'max_connections');\n-- max_connections | 100   |     |\n--   postmaster  (Neustart nötig)\n-- shared_buffers  | 16384 | 8kB |\n--   postmaster\n-- work_mem        | 4096  | kB  |\n--   user  (pro Sitzung änderbar)\n\nALTER SYSTEM\n  SET log_min_duration_statement\n  = '500ms';\nSELECT pg_reload_conf();\n-- neue Sitzung: SHOW ... -> 500ms"
+    },
+    {
+      "type": "text",
+      "content": "Ein wichtiges Monitoring-Werkzeug ist das Server-Log. Mit log_min_duration_statement = '500ms' protokolliert PostgreSQL jede Anweisung, die länger als eine halbe Sekunde dauert – so findest du langsame Abfragen. Noch bequemer ist die Erweiterung pg_stat_statements: Sie sammelt für jede Abfrageform Aufrufzahl und Gesamtzeit. Sie muss in shared_preload_libraries eingetragen werden (Neustart) und danach mit CREATE EXTENSION pg_stat_statements; aktiviert werden."
+    },
+    {
+      "type": "text",
+      "content": "Die Statistiksichten zeigen den aktuellen Zustand: pg_stat_activity listet alle Verbindungen mit Status und laufender Abfrage, pg_stat_user_tables zeigt pro Tabelle u. a. lebende und tote Zeilen und wann zuletzt ANALYZE lief, pg_stat_database Commits, Rollbacks und Pufferzugriffe. Eine hängende Abfrage kannst du mit pg_cancel_backend(pid) abbrechen; pg_terminate_backend(pid) beendet die ganze Verbindung."
+    },
+    {
+      "type": "code",
+      "content": "SELECT pid, usename, state,\n       now() - query_start AS dauer,\n       left(query, 30) AS abfrage\nFROM pg_stat_activity\nWHERE state <> 'idle'\nORDER BY dauer DESC;\n\nSELECT pg_cancel_backend(4125);\n\nSELECT relname, n_live_tup,\n       n_dead_tup, last_analyze\nFROM pg_stat_user_tables;"
+    },
+    {
+      "type": "text",
+      "content": "Zur Wartung gehören in PostgreSQL VACUUM (gibt Platz toter Zeilenversionen frei, die durch MVCC bei UPDATE und DELETE entstehen), ANALYZE (aktualisiert die Statistiken für den Optimierer) und gelegentlich REINDEX. Der Autovacuum-Prozess erledigt VACUUM und ANALYZE normalerweise automatisch – man sollte ihn nicht abschalten. Typischer Fehler: Konfiguration direkt am Produktivserver ändern, ohne die alte Einstellung zu notieren und ohne zu prüfen, ob ein Neustart nötig ist.\n\nZusammenfassung: Kommandozeile für Skripte und Server, GUI für Überblick. Konfiguration über postgresql.conf oder ALTER SYSTEM; context zeigt, ob Reload oder Neustart nötig ist. Langsame Abfragen findest du über das Log und pg_stat_statements, den Ist-Zustand über pg_stat_activity und pg_stat_user_tables."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Du änderst shared_buffers mit ALTER SYSTEM und führst SELECT pg_reload_conf(); aus. Was zeigt SHOW shared_buffers danach?",
+      "options": [
+        "Den neuen Wert",
+        "Weiterhin den alten Wert, bis der Server neu gestartet wird",
+        "Einen Fehler",
+        "NULL"
+      ],
+      "correctIndex": 1,
+      "explanation": "shared_buffers hat den context postmaster und wirkt erst nach einem Neustart. pg_settings zeigt bis dahin pending_restart = true."
+    },
+    {
+      "question": "Welcher psql-Befehl zeigt Spalten und Indizes der Tabelle noten?",
+      "options": [
+        "\\dt noten",
+        "\\l noten",
+        "\\d noten",
+        "\\x noten"
+      ],
+      "correctIndex": 2,
+      "explanation": "\\d tabelle beschreibt eine Tabelle mit Spalten, Typen, Indizes und Constraints. \\dt listet nur Tabellen auf, \\l die Datenbanken."
+    },
+    {
+      "question": "Welche Sicht zeigt, welche Abfragen gerade auf dem Server laufen?",
+      "options": [
+        "pg_stat_user_tables",
+        "pg_settings",
+        "pg_stats",
+        "pg_stat_activity"
+      ],
+      "correctIndex": 3,
+      "explanation": "pg_stat_activity enthält eine Zeile pro Serverprozess mit Benutzer, Status, Startzeit und aktueller Abfrage."
+    },
+    {
+      "question": "Wozu dient log_min_duration_statement = '500ms'?",
+      "options": [
+        "Jede Anweisung, die länger als 500 ms dauert, wird ins Log geschrieben",
+        "Abfragen werden nach 500 ms abgebrochen",
+        "Das Log wird alle 500 ms geleert",
+        "Jede Verbindung darf nur 500 ms dauern"
+      ],
+      "correctIndex": 0,
+      "explanation": "Damit findest du langsame Abfragen. Zum Abbrechen langer Anweisungen gäbe es statement_timeout."
+    }
+  ]
+}

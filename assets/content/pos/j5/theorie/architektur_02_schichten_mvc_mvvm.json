@@ -1,0 +1,94 @@
+{
+  "id": "pos-j5-theorie-architektur_02_schichten_mvc_mvvm",
+  "title": "Schichten, MVC & MVVM",
+  "summary": "Wie Schichtenarchitekturen und die Muster MVC und MVVM Oberfläche, Logik und Daten trennen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Das bekannteste Architekturmuster ist die Schichtenarchitektur. Das System wird in Schichten mit klarer Aufgabe geteilt, klassisch drei: Präsentation (Oberfläche), Geschäftslogik (Regeln) und Datenzugriff (Persistenz). Jede Schicht nutzt nur die Schicht darunter – nie umgekehrt."
+    },
+    {
+      "type": "code",
+      "content": "+---------------------------+\n| Präsentation  (UI, API)   |\n+-------------v-------------+\n| Geschäftslogik (Regeln)   |\n+-------------v-------------+\n| Datenzugriff (Repository) |\n+-------------v-------------+\n          Datenbank"
+    },
+    {
+      "type": "text",
+      "content": "Bei einer strengen Schichtung darf eine Schicht nur die direkt darunterliegende aufrufen, bei einer lockeren auch tiefere. Vorteil: Du kannst eine Schicht austauschen (SQLite gegen PostgreSQL), ohne die Oberfläche anzufassen, und Logik ohne GUI testen. Typischer Fehler: SQL-Befehle direkt im Button-Handler – dann sind Oberfläche und Datenbank fest verschweißt."
+    },
+    {
+      "type": "code",
+      "content": "# Datenzugriff\nclass NotenRepo:\n    def __init__(self):\n        self.daten = {\"Anna\": [1, 2, 2]}\n    def noten(self, name):\n        return self.daten.get(name, [])\n\n# Geschäftslogik\nclass NotenService:\n    def __init__(self, repo):\n        self.repo = repo\n    def schnitt(self, name):\n        n = self.repo.noten(name)\n        return sum(n) / len(n) if n else None\n\n# Präsentation\nsvc = NotenService(NotenRepo())\nprint(f\"Schnitt: {svc.schnitt('Anna'):.2f}\")\n# Schnitt: 1.67"
+    },
+    {
+      "type": "text",
+      "content": "Innerhalb der Präsentation trennt MVC (Model-View-Controller) weiter: Das Model hält Daten und Regeln, die View zeigt sie an, der Controller nimmt Eingaben entgegen, ändert das Model und wählt die passende View. MVC ist bei Web-Frameworks verbreitet (z. B. ASP.NET Core MVC, Ruby on Rails): Eine Anfrage landet beim Controller, der eine View mit Model-Daten rendert."
+    },
+    {
+      "type": "code",
+      "content": "class Model:\n    def __init__(self):\n        self.todos = []\n\nclass View:\n    def zeige(self, todos):\n        for i, t in enumerate(todos, 1):\n            print(f\"{i}. {t}\")\n\nclass Controller:\n    def __init__(self, m, v):\n        self.m, self.v = m, v\n    def neu(self, text):\n        if text.strip():\n            self.m.todos.append(text)\n        self.v.zeige(self.m.todos)\n\nc = Controller(Model(), View())\nc.neu(\"Matura-Projekt\")\nc.neu(\"   \")  # leer: ignoriert\n# 1. Matura-Projekt\n# 1. Matura-Projekt"
+    },
+    {
+      "type": "text",
+      "content": "MVVM (Model-View-ViewModel) stammt aus WPF und wird heute in vielen UI-Frameworks genutzt. Das ViewModel bereitet die Daten für die View auf und bietet Eigenschaften und Befehle an. Die View ist über Data Binding daran gebunden: Ändert sich eine Eigenschaft, meldet das ViewModel das, und die Oberfläche aktualisiert sich selbst. Das ViewModel kennt die View nicht – daher lässt es sich ohne Oberfläche testen. In C# meldet ein ViewModel Änderungen über das Interface INotifyPropertyChanged (siehe zweites Beispiel); WPF, .NET MAUI oder Avalonia werten das beim Binding aus, in XAML etwa mit Text=\"{Binding Name}\"."
+    },
+    {
+      "type": "code",
+      "content": "class ViewModel:\n    def __init__(self):\n        self._name = \"\"\n        self.beobachter = []\n\n    @property\n    def name(self):\n        return self._name\n\n    @name.setter\n    def name(self, wert):\n        self._name = wert\n        for f in self.beobachter:\n            f(\"name\")  # melden\n\n    @property\n    def gruss(self):\n        return f\"Servus, {self._name}!\"\n\nvm = ViewModel()\nvm.beobachter.append(\n    lambda p: print(\"View neu:\", vm.gruss))\nvm.name = \"Lea\"\n# View neu: Servus, Lea!"
+    },
+    {
+      "type": "code",
+      "content": "class MainVm : INotifyPropertyChanged\n{\n  public event\n    PropertyChangedEventHandler?\n    PropertyChanged;\n  string name = \"\";\n  public string Name {\n    get => name;\n    set {\n      name = value;\n      PropertyChanged?.Invoke(this,\n        new(nameof(Name)));\n    }\n  }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Schichten trennen Präsentation, Logik und Daten; Abhängigkeiten zeigen nur nach unten. MVC: Controller verarbeitet Eingaben, Model hält Daten, View zeigt an – typisch im Web. MVVM: ViewModel stellt Eigenschaften bereit, die View bindet sich daran (Data Binding) – typisch bei Desktop- und App-Oberflächen. Gemeinsames Ziel: Logik ohne Oberfläche testen und Teile austauschen können."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welcher Schicht gehört die Regel „Ein Schnitt über 4,5 bedeutet Nicht genügend“ hin?",
+      "options": [
+        "Präsentation",
+        "Geschäftslogik",
+        "Datenzugriff",
+        "In die Datenbank-Tabelle"
+      ],
+      "correctIndex": 1,
+      "explanation": "Fachliche Regeln gehören in die Geschäftslogik. So gelten sie gleich, egal ob die Noten über die App, die Web-Oberfläche oder eine API kommen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "todos = []\ndef zeige():\n    for t in todos:\n        print(t)\ndef neu(text):\n    todos.append(text)\n    zeige()\nneu(\"A\")\nneu(\"B\")",
+      "options": [
+        "A\nB",
+        "A\nA\nB",
+        "1 A\n2 B",
+        "A\nB\nB"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei jedem Aufruf von neu() zeigt die View die gesamte Liste. Nach dem ersten Aufruf: A. Nach dem zweiten: A und B. Insgesamt also A, A, B."
+    },
+    {
+      "question": "Was unterscheidet MVVM wesentlich von MVC?",
+      "options": [
+        "MVVM hat kein Model",
+        "Bei MVVM greift die View direkt auf die Datenbank zu",
+        "Die View bindet sich per Data Binding an das ViewModel, das die View nicht kennt",
+        "MVVM funktioniert nur in Webbrowsern"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das ViewModel stellt Eigenschaften und Befehle bereit und meldet Änderungen. Die View bindet sich daran. Weil das ViewModel keine Referenz auf die View hat, ist es ohne Oberfläche testbar."
+    },
+    {
+      "question": "Finde das Architekturproblem: Ein Button-Handler enthält direkt „cursor.execute('UPDATE noten …')“. Was ist das Hauptproblem?",
+      "options": [
+        "Python kann keine SQL-Befehle in Funktionen ausführen",
+        "Oberfläche und Datenzugriff sind fest gekoppelt – Logik ist ohne GUI weder test- noch austauschbar",
+        "Button-Handler dürfen keine Parameter haben",
+        "UPDATE ist in SQLite verboten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Code funktioniert vielleicht, verletzt aber die Schichtentrennung. Eine Logik- und eine Datenzugriffsschicht würden Test und Austausch ermöglichen."
+    }
+  ]
+}

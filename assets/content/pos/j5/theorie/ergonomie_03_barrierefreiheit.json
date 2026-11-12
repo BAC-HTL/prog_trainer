@@ -1,0 +1,94 @@
+{
+  "id": "pos-j5-theorie-ergonomie_03_barrierefreiheit",
+  "title": "Barrierefreiheit",
+  "summary": "Software für alle zugänglich machen: WCAG-Prinzipien, Kontrastverhältnis, Tastatur und Screenreader.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Barrierefreie Software kann von allen Menschen genutzt werden – auch mit Seh-, Hör-, motorischen oder kognitiven Einschränkungen, dauerhaft oder vorübergehend (gebrochener Arm, grelles Sonnenlicht am Handy). Wichtigster Standard sind die Web Content Accessibility Guidelines (WCAG) des W3C. Sie gelten für Webinhalte, werden aber auch für Apps und Dokumente herangezogen."
+    },
+    {
+      "type": "code",
+      "content": "WCAG – vier Prinzipien (POUR)\n\nWahrnehmbar     Alternativtext für\n(Perceivable)   Bilder, Untertitel,\n                genug Kontrast\nBedienbar       alles per Tastatur,\n(Operable)      genug Zeit, kein\n                Blinken\nVerständlich    klare Sprache,\n(Understand.)   vorhersehbar,\n                Hilfe bei Fehlern\nRobust          korrektes HTML,\n(Robust)        funktioniert mit\n                Screenreadern"
+    },
+    {
+      "type": "text",
+      "content": "Jedes Erfolgskriterium hat eine Konformitätsstufe: A (Minimum), AA (üblicher Zielwert, auf den gesetzliche Vorgaben meist verweisen) und AAA (höchste Stufe). In der EU verlangen Gesetze Barrierefreiheit für Websites und Apps öffentlicher Stellen und zunehmend auch für bestimmte Produkte und Dienstleistungen von Unternehmen (European Accessibility Act, in Österreich u. a. umgesetzt durch das Barrierefreiheitsgesetz). Welche Pflichten im Einzelfall gelten, ist eine Rechtsfrage – das hier ist keine Rechtsberatung."
+    },
+    {
+      "type": "text",
+      "content": "Ein messbares Kriterium ist der Kontrast zwischen Text- und Hintergrundfarbe. Stufe AA verlangt mindestens 4,5:1 für normalen Text und 3:1 für großen Text (ab etwa 18 pt bzw. 14 pt fett); Stufe AAA 7:1 bzw. 4,5:1. Berechnet wird das Verhältnis aus der relativen Leuchtdichte L der beiden Farben: (L_hell + 0,05) / (L_dunkel + 0,05). Grün trägt am meisten zur Helligkeit bei, Blau am wenigsten."
+    },
+    {
+      "type": "code",
+      "content": "def kanal(c):\n    c = c / 255\n    if c <= 0.04045:\n        return c / 12.92\n    return ((c + 0.055) / 1.055) ** 2.4\n\ndef leucht(hexfarbe):\n    h = hexfarbe.lstrip(\"#\")\n    r, g, b = (kanal(int(h[i:i+2], 16))\n               for i in (0, 2, 4))\n    return 0.2126*r + 0.7152*g + 0.0722*b\n\ndef kontrast(f1, f2):\n    a, b = sorted([leucht(f1),\n                   leucht(f2)])\n    return (b + 0.05) / (a + 0.05)\n\nfor f in (\"#000000\", \"#767676\",\n          \"#777777\", \"#FF0000\"):\n    print(f, round(kontrast(\n        f, \"#FFFFFF\"), 2))\n# #000000 21.0\n# #767676 4.54  -> AA ok\n# #777777 4.48  -> AA knapp nicht\n# #FF0000 4.0   -> nur großer Text"
+    },
+    {
+      "type": "text",
+      "content": "Hinweis: Der Grenzwert 0,04045 stammt aus dem sRGB-Standard; ältere WCAG-Texte nennen 0,03928 – auf das Ergebnis hat das praktisch keinen Einfluss. Merke: Schwarz auf Weiß ergibt das Maximum 21:1, gleiche Farben 1:1. Hellgrauer Text auf weißem Grund ist einer der häufigsten Barrierefreiheitsfehler überhaupt."
+    },
+    {
+      "type": "text",
+      "content": "Screenreader lesen die Oberfläche vor – sie brauchen dafür Struktur und Textalternativen. Bilder mit Inhalt brauchen einen Alternativtext (alt), rein dekorative Bilder ein leeres alt=\"\". Eingabefelder brauchen ein verknüpftes Label, Überschriften die richtige Ebene. In Apps gibt es dafür z. B. die Semantics-Angaben in Flutter oder AutomationProperties in WPF."
+    },
+    {
+      "type": "code",
+      "content": "<!-- schlecht -->\n<img src=\"plan.png\">\n<div onclick=\"senden()\">OK</div>\nE-Mail <input id=\"mail\">\n\n<!-- gut -->\n<img src=\"plan.png\"\n     alt=\"Stundenplan 5AHIF\">\n<button type=\"submit\">Senden</button>\n<label for=\"mail\">E-Mail</label>\n<input id=\"mail\" type=\"email\">"
+    },
+    {
+      "type": "code",
+      "content": "from html.parser import HTMLParser\n\nclass AltPruefer(HTMLParser):\n    def __init__(self):\n        super().__init__()\n        self.fehler = []\n    def handle_starttag(self, tag, attrs):\n        if tag == \"img\" and \\\n                \"alt\" not in dict(attrs):\n            self.fehler.append(\n                dict(attrs).get(\"src\"))\n\np = AltPruefer()\np.feed('<img src=\"a.png\" alt=\"Logo\">'\n       '<img src=\"b.png\">'\n       '<img src=\"deko.png\" alt=\"\">')\nprint(p.fehler)\n# ['b.png']"
+    },
+    {
+      "type": "text",
+      "content": "Bedienbarkeit per Tastatur ist Pflicht: Alle Funktionen müssen ohne Maus erreichbar sein, die Tab-Reihenfolge muss logisch sein, und der Fokus muss sichtbar sein. Deshalb echte Buttons statt klickbarer div-Elemente. Automatische Prüfwerkzeuge (z. B. Lighthouse, axe) finden nur einen Teil der Probleme – teste zusätzlich mit Tastatur und Screenreader.\n\nZusammenfassung: WCAG mit den Prinzipien wahrnehmbar, bedienbar, verständlich, robust und den Stufen A/AA/AAA. Kontrast AA: 4,5:1 (großer Text 3:1). Alternativtexte, Labels, Tastaturbedienung und sichtbarer Fokus."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Text in #767676 auf weißem Grund hat das Kontrastverhältnis 4,54:1. Erfüllt er WCAG-Stufe AA für normalen Fließtext?",
+      "options": [
+        "Nein, AA verlangt 7:1",
+        "Ja, AA verlangt mindestens 4,5:1",
+        "Nein, AA verlangt 21:1",
+        "Nur, wenn der Text fett ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "AA verlangt 4,5:1 für normalen Text, 3:1 für großen Text. 7:1 ist die Anforderung für AAA."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def k(l1, l2):\n    hell, dunkel = max(l1, l2), min(l1, l2)\n    return (hell + 0.05) / (dunkel + 0.05)\nprint(round(k(0.3, 0.3), 2))",
+      "options": [
+        "1.0",
+        "21.0",
+        "0.0",
+        "4.5"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zwei gleiche Farben haben dieselbe Leuchtdichte L: (L + 0,05) / (L + 0,05) = 1. Das ist der kleinstmögliche Kontrast."
+    },
+    {
+      "question": "Welches Bild braucht ein leeres alt=\"\" statt eines beschreibenden Alternativtexts?",
+      "options": [
+        "Das Diagramm mit den Notenschnitten",
+        "Das Logo, das zur Startseite verlinkt",
+        "Das Foto eines Bauteils in einer Anleitung",
+        "Eine rein dekorative Trennlinie"
+      ],
+      "correctIndex": 3,
+      "explanation": "Dekorative Bilder tragen keine Information; mit alt=\"\" überspringt sie der Screenreader. Inhaltliche Bilder und verlinkte Logos brauchen einen aussagekräftigen Text."
+    },
+    {
+      "question": "Ein Senden-Knopf ist als <div onclick=\"senden()\"> umgesetzt. Welches WCAG-Prinzip wird vor allem verletzt?",
+      "options": [
+        "Wahrnehmbar – der Text ist zu klein",
+        "Bedienbar – das div ist per Tastatur nicht erreichbar und nicht auslösbar",
+        "Verständlich – der Text ist zu kompliziert",
+        "Keines, das ist barrierefrei"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein div bekommt standardmäßig keinen Tastaturfokus und reagiert nicht auf Enter/Leertaste. Ein echtes <button> bringt das (und die Rolle für Screenreader) mit."
+    }
+  ]
+}

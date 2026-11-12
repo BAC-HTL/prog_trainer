@@ -1,0 +1,94 @@
+{
+  "id": "pos-j5-csharp-heterogen_02_rest_clients_server",
+  "title": "REST-Client und -Server",
+  "summary": "Mit ASP.NET Core Minimal APIs eine REST-API bauen und mit HttpClient darauf zugreifen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "REST (Representational State Transfer) ist der verbreitetste Stil für Web-Schnittstellen. Jede Ressource hat eine URL, z. B. /api/v1/buecher/1. Was mit ihr passieren soll, sagt die HTTP-Methode, das Ergebnis meldet der Statuscode. Der Server merkt sich keinen Sitzungszustand: Jede Anfrage enthält alles Nötige (zustandslos). So können Clients in jeder Sprache – C#, Python, JavaScript – dieselbe API nutzen."
+    },
+    {
+      "type": "code",
+      "content": "Methode  Bedeutung        idempotent\nGET      lesen            ja\nPOST     neu anlegen      nein\nPUT      ganz ersetzen    ja\nPATCH    teilweise ändern nein*\nDELETE   löschen          ja\n\n200 OK          201 Created\n204 No Content  400 Bad Request\n401 Unauth.     403 Forbidden\n404 Not Found   500 Server Error\n* kann idempotent sein, muss aber nicht"
+    },
+    {
+      "type": "text",
+      "content": "Idempotent heißt: Zehnmal dieselbe Anfrage hat dieselbe Wirkung wie einmal. Das ist wichtig, wenn ein Client nach einem Timeout automatisch wiederholt. Für den Server bringt das .NET-SDK ASP.NET Core schon mit: dotnet new web legt ein Projekt mit Sdk=\"Microsoft.NET.Sdk.Web\" an – ohne zusätzliches NuGet-Paket. Mit Minimal APIs ist eine Bücher-API sehr kurz:"
+    },
+    {
+      "type": "code",
+      "content": "var app = WebApplication.Create(args);\nvar buecher = new Dictionary<int, Buch>\n  { [1] = new Buch(1, \"Faust\") };\n\nvar api = app.MapGroup(\"/api/v1/buecher\");\napi.MapGet(\"/\", () => buecher.Values);\napi.MapGet(\"/{id:int}\", (int id) =>\n  buecher.TryGetValue(id, out var b)\n    ? Results.Ok(b)\n    : Results.NotFound(\n        new { error = \"nicht gefunden\" }));\napi.MapPost(\"/\", (NeuesBuch neu) =>\n{\n  if (string.IsNullOrWhiteSpace(neu.Titel))\n    return Results.BadRequest(\n      new { error = \"titel fehlt\" });\n  int id = buecher.Keys.DefaultIfEmpty()\n                       .Max() + 1;\n  var b = new Buch(id, neu.Titel);\n  buecher[id] = b;\n  return Results.Created(\n    $\"/api/v1/buecher/{id}\", b);\n});\n\napp.Run(\"http://127.0.0.1:5000\");\n\nrecord Buch(int Id, string Titel);\nrecord NeuesBuch(string? Titel);"
+    },
+    {
+      "type": "text",
+      "content": "app.Run(\"http://127.0.0.1:5000\") startet den Webserver Kestrel nur auf localhost. Rückgaben werden automatisch zu JSON in camelCase, der Body von POST wird in den Parameter NeuesBuch eingelesen. Results.Created setzt Status 201 und den Location-Header. Achtung: Kestrel bearbeitet Anfragen parallel – im echten Projekt gehört statt Dictionary ein ConcurrentDictionary oder eine Datenbank dahinter. Testen kannst du mit curl:"
+    },
+    {
+      "type": "code",
+      "content": "$ curl http://127.0.0.1:5000/api/v1/buecher/1\n{\"id\":1,\"titel\":\"Faust\"}\n\n$ curl -X POST -d '{\"titel\":\"Woyzeck\"}' \\\n  -H \"Content-Type: application/json\" \\\n  http://127.0.0.1:5000/api/v1/buecher\n{\"id\":2,\"titel\":\"Woyzeck\"}"
+    },
+    {
+      "type": "text",
+      "content": "Als Client dient HttpClient mit den Erweiterungen aus System.Net.Http.Json. Setze einen Timeout und verwende eine HttpClient-Instanz für viele Anfragen (nicht pro Anfrage neu erzeugen). GetFromJsonAsync wirft bei Fehlercodes eine HttpRequestException; mit GetAsync bekommst du die Antwort und entscheidest selbst."
+    },
+    {
+      "type": "code",
+      "content": "using System.Net.Http.Json;\n\nusing var http = new HttpClient {\n  BaseAddress =\n    new Uri(\"http://127.0.0.1:5000/api/v1/\"),\n  Timeout = TimeSpan.FromSeconds(5) };\n\nvar alle = await http\n  .GetFromJsonAsync<List<Buch>>(\"buecher\");\nConsole.WriteLine(alle!.Count);   // 1\n\nvar resp = await http.PostAsJsonAsync(\n  \"buecher\", new { titel = \"Ödipus\" });\nvar neu = await resp.Content\n  .ReadFromJsonAsync<Buch>();\nConsole.WriteLine(\n  $\"{(int)resp.StatusCode} {neu}\");\n// 201 Buch { Id = 2, Titel = Ödipus }\n\nvar r404 = await http.GetAsync(\"buecher/99\");\nConsole.WriteLine(r404.StatusCode);\n// NotFound\ntry { r404.EnsureSuccessStatusCode(); }\ncatch (HttpRequestException e)\n{ Console.WriteLine(e.StatusCode); }\n// NotFound\n\nrecord Buch(int Id, string Titel);"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: 200 statt 201 bei POST zurückgeben, Fehler als 200 mit {\"ok\": false} melden, oder Verben in die URL schreiben (/getBuch?id=1 statt GET /buecher/1). Versioniere die API von Anfang an, z. B. mit /api/v1 im Pfad: Breaking Changes kommen dann in /api/v2, und alte Clients laufen weiter."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ressourcen sind URLs, Methoden sagen was passiert, Statuscodes melden das Ergebnis. Minimal APIs bauen einen Server in wenigen Zeilen, HttpClient mit System.Net.Http.Json ist der passende Client. Timeouts, saubere Statuscodes und eine Versionsnummer in der URL machen die Schnittstelle robust."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welchen Statuscode und welchen Header erzeugt Results.Created(\"/api/v1/buecher/2\", b)?",
+      "options": [
+        "200 und Content-Location",
+        "201 und Location",
+        "204 ohne Header",
+        "302 und Location"
+      ],
+      "correctIndex": 1,
+      "explanation": "Results.Created antwortet mit 201 Created, setzt den Location-Header auf die URL der neuen Ressource und schreibt das Objekt als JSON in den Body."
+    },
+    {
+      "question": "Was gibt dieser Client aus, wenn der Server für /buecher/99 mit 404 antwortet?",
+      "code": "var r = await http.GetAsync(\"buecher/99\");\nConsole.WriteLine(r.StatusCode);",
+      "options": [
+        "NotFound",
+        "Eine HttpRequestException wird geworfen",
+        "null",
+        "OK"
+      ],
+      "correctIndex": 0,
+      "explanation": "GetAsync wirft bei Fehlercodes keine Exception, sondern liefert die Antwort. StatusCode ist HttpStatusCode.NotFound. Erst EnsureSuccessStatusCode() oder GetFromJsonAsync würden werfen."
+    },
+    {
+      "question": "Ein Client schickt eine Anfrage, bekommt einen Timeout und wiederholt sie automatisch. Bei welcher Methode kann das ungewollt doppelte Daten erzeugen?",
+      "options": [
+        "GET",
+        "PUT",
+        "DELETE",
+        "POST"
+      ],
+      "correctIndex": 3,
+      "explanation": "POST ist nicht idempotent: Jede Wiederholung kann ein weiteres Buch anlegen. GET, PUT und DELETE haben bei Wiederholung dieselbe Wirkung wie einmal."
+    },
+    {
+      "question": "Warum liefert der Minimal-API-Server {\"id\":1,\"titel\":\"Faust\"} und nicht {\"Id\":1,\"Titel\":\"Faust\"}?",
+      "options": [
+        "Weil records immer kleingeschrieben serialisiert werden",
+        "Weil curl die Namen umwandelt",
+        "Weil ASP.NET Core standardmäßig camelCase für JSON verwendet",
+        "Weil JSON keine Großbuchstaben erlaubt"
+      ],
+      "correctIndex": 2,
+      "explanation": "ASP.NET Core und die System.Net.Http.Json-Erweiterungen verwenden die Web-Voreinstellungen von System.Text.Json: camelCase beim Schreiben, Groß-/Kleinschreibung egal beim Lesen."
+    }
+  ]
+}

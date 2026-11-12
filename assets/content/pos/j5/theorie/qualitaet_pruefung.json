@@ -1,0 +1,122 @@
+{
+  "id": "pos-j5-theorie-qualitaet_pruefung",
+  "title": "Abschlussprüfung: Softwarequalität & Performance-Tests",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche zyklomatische Komplexität hat diese Funktion?",
+      "code": "def lade(dateien):\n    for d in dateien:\n        if d.endswith(\".csv\"):\n            versuche = 0\n            while versuche < 3:\n                try:\n                    return open(d)\n                except OSError:\n                    versuche += 1\n    return None",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "2"
+      ],
+      "correctIndex": 2,
+      "explanation": "Entscheidungen: for, if, while und except – das sind 4. Plus 1 ergibt 5."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import ast\ncode = \"\"\"\ndef f(xs):\n    if not xs:\n        return 0\n    for x in xs:\n        print(x)\n\"\"\"\nE = (ast.If, ast.For, ast.While)\nn = sum(isinstance(k, E)\n        for k in ast.walk(ast.parse(code)))\nprint(\"Komplexität:\", n + 1)",
+      "options": [
+        "Komplexität: 2",
+        "Komplexität: 4",
+        "Komplexität: 1",
+        "Komplexität: 3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Syntaxbaum enthält ein If- und ein For-Objekt, also 2 Entscheidungen. Plus 1 ergibt 3."
+    },
+    {
+      "question": "Ein Test ruft alle Funktionen auf, enthält aber kein einziges assert. Was passiert?",
+      "options": [
+        "Die Abdeckung steigt, Fehler in den Ergebnissen werden aber nicht erkannt",
+        "Die Abdeckung bleibt bei 0 %",
+        "pytest bricht mit einem Fehler ab",
+        "Der Test findet alle Logikfehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "Abdeckung misst nur, welcher Code ausgeführt wurde. Ohne Prüfungen der Ergebnisse fällt ein falsches Ergebnis nicht auf (nur Abstürze würden auffallen)."
+    },
+    {
+      "question": "coverage.py meldet 30 Anweisungen, davon 6 nicht ausgeführt, und 10 Zweigrichtungen, davon 2 nicht genommen. Welcher Gesamtwert ergibt sich mit Zweigen?",
+      "options": [
+        "80%",
+        "82%",
+        "75%",
+        "90%"
+      ],
+      "correctIndex": 0,
+      "explanation": "(30 − 6 + 10 − 2) / (30 + 10) = 32 / 40 = 80 %."
+    },
+    {
+      "question": "Was meldet ein Linter wie ruff bei diesem Code mit Regel F401?",
+      "code": "import math\n\ndef runden(x):\n    return round(x, 2)",
+      "options": [
+        "Eine Zeile ist zu lang",
+        "Das Modul math wird importiert, aber nie verwendet",
+        "Die Funktion ist zu komplex",
+        "Ein Name ist nicht definiert"
+      ],
+      "correctIndex": 1,
+      "explanation": "F401 (aus pyflakes) meldet unbenutzte Importe. Hier wird math importiert, aber nur round() verwendet."
+    },
+    {
+      "question": "Welche Aussage über statische Analyse ist richtig?",
+      "options": [
+        "Sie ersetzt alle Tests",
+        "Sie kann Fehlalarme liefern und findet nicht alle Logikfehler",
+        "Sie funktioniert nur bei kompilierten Sprachen",
+        "Sie führt den Code mit Testdaten aus"
+      ],
+      "correctIndex": 1,
+      "explanation": "Statische Analyse ist schnell und früh, aber nicht vollständig: Sie meldet manchmal Unproblematisches und erkennt keine fachlich falschen Berechnungen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def schnitt(n):\n    try:\n        return sum(n) / len(n)\n    except:\n        pass\n    return ergebnis\ntry:\n    print(schnitt([]))\nexcept Exception as e:\n    print(type(e).__name__)",
+      "options": [
+        "TypeError",
+        "Fehler",
+        "NameError",
+        "None"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Division durch len([]) = 0 löst ZeroDivisionError aus, das nackte except fängt ihn. Danach wird ergebnis zurückgegeben – den Namen gibt es nicht, also NameError. Genau das hätte ein Linter (F821) vorab gemeldet."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import math\nw = list(range(5, 101, 5))\ndef p(q):\n    rang = math.ceil(q * len(w) / 100)\n    return w[rang - 1]\nprint(f\"p50={p(50)} p95={p(95)}\")",
+      "options": [
+        "p50=50 p95=100",
+        "p50=55 p95=95",
+        "p50=50 p95=95",
+        "p50=60 p95=100"
+      ],
+      "correctIndex": 2,
+      "explanation": "n = 20. p50: Rang = ⌈50 · 20 / 100⌉ = 10, der 10. Wert ist 50. p95: Rang = ⌈95 · 20 / 100⌉ = 19, der 19. Wert ist 95 (100 wäre erst der 20.)."
+    },
+    {
+      "question": "Ein Shop schafft 400 req/s, die mittlere Antwortzeit beträgt 0,5 s. Wie viele Anfragen sind im Mittel gleichzeitig im System?",
+      "options": [
+        "800",
+        "200",
+        "400",
+        "80"
+      ],
+      "correctIndex": 1,
+      "explanation": "Littles Gesetz: N = X · R = 400 · 0,5 = 200."
+    },
+    {
+      "question": "Welcher Test prüft, wie das System auf einen plötzlichen, starken Anstieg der Benutzerzahl reagiert – z. B. wenn um 8:00 Uhr die Maturanoten freigeschaltet werden?",
+      "options": [
+        "Dauertest",
+        "Lasttest mit konstanter Last",
+        "Regressionstest",
+        "Spike-Test"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein Spike-Test simuliert einen plötzlichen Lastsprung. Ein Lasttest prüft die erwartete, gleichmäßige Last, ein Dauertest das Verhalten über lange Zeit."
+    }
+  ]
+}

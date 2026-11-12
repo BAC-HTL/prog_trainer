@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-theorie-qualitaet_02_statische_analyse",
+  "title": "Statische Codeanalyse",
+  "summary": "Fehler und schlechten Stil finden, ohne das Programm auszuführen – mit Lintern, Typprüfern und Compiler-Warnungen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Statische Analyse untersucht Quellcode, ohne ihn auszuführen. Sie findet Fehler früh – noch bevor ein Test läuft: unbenutzte Variablen, Tippfehler in Namen, verdächtige Konstrukte, Stilverstöße, zu hohe Komplexität oder bekannte Sicherheitsmuster. Tests (dynamische Analyse) prüfen dagegen das Verhalten zur Laufzeit. Beides ergänzt sich."
+    },
+    {
+      "type": "code",
+      "content": "Werkzeugarten (Beispiele)\n\nLinter        ruff, pyflakes, ESLint\nTypprüfer     mypy, pyright\nFormatierer   ruff format, black\nSicherheit    bandit, CodeQL\nC#/.NET       Compiler-Warnungen,\n              Roslyn-Analyzer\nPlattform     SonarQube"
+    },
+    {
+      "type": "text",
+      "content": "Dieser kleine Code enthält mehrere typische Fehler. Python startet ihn ohne Murren – die meisten Probleme zeigen sich erst zur Laufzeit oder nie. Ein Linter findet sie in Millisekunden."
+    },
+    {
+      "type": "code",
+      "content": "# noten.py\nimport os\nimport json\n\n\ndef schnitt(noten=[]):\n    if noten == None:\n        return 0\n    try:\n        return sum(noten) / len(noten)\n    except:\n        print(f\"Fehler\")\n    return ergebnis\n\n$ ruff check --select F,E,B noten.py\n(Ausgabe gekürzt)\n1:8   F401 `os` imported but unused\n2:8   F401 `json` imported but unused\n5:19  B006 Do not use mutable data\n      structures for argument defaults\n6:17  E711 Comparison to `None`\n      should be `cond is None`\n10:5  E722 Do not use bare `except`\n11:15 F541 f-string without any\n      placeholders\n12:12 F821 Undefined name `ergebnis`\nFound 7 errors."
+    },
+    {
+      "type": "text",
+      "content": "Die Regelcodes stammen aus bekannten Werkzeugen: F aus pyflakes (echte Fehler wie undefinierte Namen), E aus pycodestyle (Stil nach PEP 8), B aus flake8-bugbear (häufige Fallen). Besonders gefährlich: F821 – ergebnis existiert nicht, das Programm stürzt im Fehlerfall mit NameError ab. B006: Eine Liste als Standardwert wird nur einmal erzeugt und zwischen Aufrufen geteilt. E722: Ein nacktes except fängt sogar Strg+C ab und versteckt Fehler. Mit ruff check --fix behebt ruff einen Teil automatisch."
+    },
+    {
+      "type": "text",
+      "content": "Auch die Komplexität lässt sich statisch prüfen: ruff meldet mit der Regel C901 Funktionen, deren zyklomatische Komplexität einen Grenzwert überschreitet – im Beispiel eine Notenfunktion mit fünf if/elif. Den Grenzwert stellst du in der Projektkonfiguration (pyproject.toml) ein; dort legst du auch fest, welche Regeln gelten – so prüft das ganze Team und die CI-Pipeline nach denselben Regeln."
+    },
+    {
+      "type": "code",
+      "content": "# pyproject.toml\n[tool.ruff.lint]\nselect = [\"F\", \"E\", \"B\", \"C901\"]\n\n[tool.ruff.lint.mccabe]\nmax-complexity = 5\n\n$ ruff check bewerten.py\nC901 `bewerten` is too complex (6 > 5)"
+    },
+    {
+      "type": "text",
+      "content": "In C# übernimmt das der Compiler mit seinen Analyzern. Mit <Nullable>enable</Nullable> warnt er z. B., wenn eine möglicherweise null-wertige Variable verwendet wird. Mit <TreatWarningsAsErrors>true</TreatWarningsAsErrors> schlägt der Build bei jeder Warnung fehl."
+    },
+    {
+      "type": "code",
+      "content": "string? name = Console.ReadLine();\nConsole.WriteLine(name.Length);\nint unbenutzt;\n\n// warning CS8602: Dereference of a\n//   possibly null reference.\n// warning CS0168: The variable\n//   'unbenutzt' is declared but never\n//   used"
+    },
+    {
+      "type": "text",
+      "content": "Grenzen: Statische Analyse meldet auch Fehlalarme (False Positives) und übersieht Logikfehler (Note falsch berechnet). Einzelne Meldungen kannst du begründet unterdrücken (# noqa: F401 bzw. #pragma warning disable), aber nicht pauschal alles abschalten. Am meisten bringt sie automatisch in der CI-Pipeline und im Editor, ergänzt durch Code-Reviews.\n\nZusammenfassung: Statische Analyse prüft Code ohne Ausführung: Linter (ruff, pyflakes), Typprüfer, Komplexitätsregeln, Compiler-Warnungen. Regeln stehen in der Projektkonfiguration und laufen in der CI."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Meldung liefert pyflakes für diesen Code?",
+      "code": "def summe_von(werte):\n    gesamt = 0\n    for w in werte:\n        gesamt += w\n    return summe",
+      "options": [
+        "undefined name 'summe'",
+        "'x' imported but unused",
+        "f-string is missing placeholders",
+        "Keine Meldung"
+      ],
+      "correctIndex": 0,
+      "explanation": "Im return wird summe verwendet, aber nur gesamt definiert – ein Tippfehler, den pyflakes als undefinierten Namen meldet (ruff: F821). Zur Laufzeit gäbe es einen NameError."
+    },
+    {
+      "question": "Was gibt dieser Code aus? (Er zeigt, warum ruff B006 meldet.)",
+      "code": "def merken(x, liste=[]):\n    liste.append(x)\n    return liste\nprint(merken(1))\nprint(merken(1))",
+      "options": [
+        "[1]\n[1]",
+        "[1]\n[1, 1]",
+        "[1, 1]\n[1, 1]",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Standardliste wird nur einmal beim Definieren der Funktion erzeugt. Der zweite Aufruf hängt an dieselbe Liste an."
+    },
+    {
+      "question": "Worin unterscheidet sich statische Analyse von einem Unit-Test?",
+      "options": [
+        "Statische Analyse führt das Programm mehrfach aus",
+        "Unit-Tests finden nur Stilfehler",
+        "Statische Analyse untersucht den Quellcode, ohne ihn auszuführen",
+        "Es gibt keinen Unterschied"
+      ],
+      "correctIndex": 2,
+      "explanation": "Statische Analyse arbeitet am Quelltext, Unit-Tests führen Code aus und prüfen das Verhalten (dynamische Analyse)."
+    },
+    {
+      "question": "Ein Team schaltet alle Linter-Warnungen ab, weil es „zu viele“ sind. Was ist ein besserer Weg?",
+      "options": [
+        "Den Linter nur einmal im Jahr laufen lassen",
+        "Alle Dateien mit # noqa am Anfang versehen",
+        "Nur noch C# verwenden, weil es keine Warnungen gibt",
+        "Ein passendes Regelset in pyproject.toml festlegen, Altlasten schrittweise beheben und einzelne begründete Ausnahmen markieren"
+      ],
+      "correctIndex": 3,
+      "explanation": "Regeln gemeinsam festlegen, in der CI prüfen und Ausnahmen gezielt begründen – so bleibt die Analyse nützlich, ohne zu nerven."
+    }
+  ]
+}

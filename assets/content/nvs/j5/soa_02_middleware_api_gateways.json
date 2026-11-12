@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j5-soa_02_middleware_api_gateways",
+  "title": "Middleware: Message Broker, API-Gateway, Service Registry",
+  "summary": "Wie Message Broker Services zeitlich entkoppeln, warum ein API-Gateway den Einstieg bündelt und wie Services einander über eine Registry finden.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Middleware liegt zwischen Netzwerk und Anwendung und versteckt die Verteilung – das kennst du aus dem 4. Jahrgang (RPC, Message Queues). In serviceorientierten Systemen haben sich drei Bausteine besonders durchgesetzt: der Message Broker für asynchrone Nachrichten, das API-Gateway als gemeinsamer Eingang und die Service Registry, über die Services einander finden. Dazu kommen Anwendungsserver, die Services Querschnittsdienste wie Transaktionen, Verbindungspools und Authentifizierung bereitstellen.\n\nEin Message Broker (z. B. RabbitMQ, Apache Kafka, ActiveMQ) nimmt Nachrichten an, speichert sie zwischen und liefert sie aus. Sender und Empfänger kennen nur den Broker, nicht einander – das ist zeitliche und örtliche Entkopplung. Zwei Grundmuster: Bei einer Queue (Point-to-Point) bekommt jede Nachricht genau EIN Consumer; mehrere Worker teilen sich so die Arbeit. Bei einem Topic (Publish/Subscribe) bekommt JEDER Abonnent eine Kopie:"
+    },
+    {
+      "type": "code",
+      "content": "from collections import deque\n\n# Queue: jede Nachricht genau 1x\nqueue = deque([\"N1\", \"N2\", \"N3\", \"N4\"])\nworker = [\"A\", \"B\"]\ni = 0\nwhile queue:\n    n = queue.popleft()\n    print(worker[i % 2], n)\n    i += 1\n\n# Topic: Kopie an jeden Abonnenten\nabos = {\"Mail\": [], \"Statistik\": []}\ndef publish(msg):\n    for name in abos:\n        abos[name].append(msg)\n\npublish(\"Note 7\")\nfor name, msgs in abos.items():\n    print(name, msgs)\n\n# Ausgabe:\n# A N1\n# B N2\n# A N3\n# B N4\n# Mail ['Note 7']\n# Statistik ['Note 7']"
+    },
+    {
+      "type": "text",
+      "content": "Wichtig ist die Zustellgarantie. At-most-once: höchstens einmal, Nachrichten können verloren gehen. At-least-once: der Broker wiederholt, bis der Consumer bestätigt (Acknowledgement) – dabei können Duplikate entstehen, z. B. wenn die Bestätigung unterwegs verloren geht. Exactly-once ist über das Netz nur mit zusätzlichem Aufwand erreichbar. Die übliche Lösung: at-least-once plus idempotente Consumer, die eine doppelte Nachricht erkennen und nicht noch einmal verarbeiten."
+    },
+    {
+      "type": "code",
+      "content": "erledigt = set()\nkontostand = 0\n\ndef verarbeite(msg):\n    global kontostand\n    if msg[\"id\"] in erledigt:\n        print(\"Duplikat\", msg[\"id\"])\n        return\n    kontostand += msg[\"betrag\"]\n    erledigt.add(msg[\"id\"])\n\n# at-least-once: m2 kommt doppelt\nfor m in [{\"id\": \"m1\", \"betrag\": 20},\n          {\"id\": \"m2\", \"betrag\": 5},\n          {\"id\": \"m2\", \"betrag\": 5}]:\n    verarbeite(m)\nprint(kontostand)\n\n# Ausgabe:\n# Duplikat m2\n# 25"
+    },
+    {
+      "type": "text",
+      "content": "Ein API-Gateway ist der gemeinsame Eingang für alle externen Clients (Web, App). Es leitet Anfragen anhand des Pfads an den passenden Service weiter (Routing) und übernimmt Querschnittsaufgaben: TLS-Terminierung, Authentifizierung (z. B. Token prüfen), Rate Limiting gegen Überlastung, Logging und manchmal das Zusammenfassen mehrerer Antworten. Damit sehen Clients eine einheitliche API, auch wenn dahinter z. B. ein alter Monolith Schritt für Schritt in Services zerlegt wird:"
+    },
+    {
+      "type": "code",
+      "content": "routen = {\n    \"/api/\":          \"monolith:8080\",\n    \"/api/noten/\":    \"noten-svc:8000\",\n    \"/api/mensa/\":    \"mensa-svc:8000\",\n}\n\ndef ziel(pfad):\n    passend = [p for p in routen\n               if pfad.startswith(p)]\n    if not passend:\n        return \"404\"\n    return routen[max(passend, key=len)]\n\nprint(ziel(\"/api/noten/7\"))\nprint(ziel(\"/api/raeume/12\"))\nprint(ziel(\"/login\"))\n\n# Ausgabe:\n# noten-svc:8000\n# monolith:8080\n# 404"
+    },
+    {
+      "type": "text",
+      "content": "Das Gateway wählt den längsten passenden Präfix: /api/noten/7 geht an den neuen Noten-Service, alles andere unter /api/ noch an den Monolithen. Typische Fehler: Das Gateway läuft nur einmal (Single Point of Failure – es braucht Redundanz, wie beim Load Balancer) oder bekommt Geschäftslogik eingebaut und wird so zum neuen Monolithen. Fachliche Regeln gehören in die Services."
+    },
+    {
+      "type": "text",
+      "content": "Services laufen in mehreren Instanzen, deren IP-Adressen sich ändern, wenn Instanzen neu starten oder skaliert werden. Eine Service Registry (z. B. Consul, Eureka; in Kubernetes übernehmen das DNS und Service-Objekte) führt Buch: Instanzen melden sich an und schicken regelmäßig einen Heartbeat. Bleibt dieser länger als die TTL aus, gilt die Instanz als tot. Bei Client-Side Discovery fragt der Client die Registry und wählt selbst eine Instanz, bei Server-Side Discovery erledigt das ein Load Balancer oder das Gateway."
+    },
+    {
+      "type": "code",
+      "content": "TTL = 30   # Sekunden ohne Heartbeat\nregistry = {}   # name -> {adr: zeit}\n\ndef heartbeat(name, adr, t):\n    registry.setdefault(name, {})[adr] = t\n\ndef finde(name, jetzt):\n    return [a for a, t in\n            registry.get(name, {}).items()\n            if jetzt - t <= TTL]\n\nheartbeat(\"noten\", \"10.0.1.5:8000\", 100)\nheartbeat(\"noten\", \"10.0.1.6:8000\", 100)\nheartbeat(\"noten\", \"10.0.1.5:8000\", 125)\nprint(finde(\"noten\", 128))\nprint(finde(\"noten\", 140))\n\n# Ausgabe:\n# ['10.0.1.5:8000', '10.0.1.6:8000']\n# ['10.0.1.5:8000']"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Message Broker entkoppeln Sender und Empfänger; Queue = jede Nachricht an einen Consumer, Topic = Kopie an alle Abonnenten. At-least-once braucht idempotente Consumer. Das API-Gateway ist der redundante, logikfreie Eingang mit Routing, TLS, Authentifizierung und Rate Limiting. Die Service Registry kennt die lebenden Instanzen über Anmeldung und Heartbeats mit TTL."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Drei Worker hängen an derselben Queue. Es kommen 30 Nachrichten an. Wie oft wird jede einzelne Nachricht verarbeitet (bei fehlerfreiem Ablauf)?",
+      "options": [
+        "Dreimal – jeder Worker bekommt eine Kopie",
+        "Einmal – genau ein Worker bekommt sie",
+        "Gar nicht, bis ein Topic angelegt wird",
+        "Zehnmal – 30 geteilt durch 3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei einer Queue (Point-to-Point) geht jede Nachricht an genau einen Consumer; die Worker teilen sich also die 30 Nachrichten. Kopien an alle gibt es beim Topic (Publish/Subscribe)."
+    },
+    {
+      "question": "Ein Broker liefert at-least-once. Was muss der Consumer deshalb sicherstellen?",
+      "options": [
+        "Er muss Nachrichten verschlüsseln",
+        "Er muss jede Nachricht zweimal bestätigen",
+        "Er muss den Broker vor dem Senden fragen, ob er läuft",
+        "Er muss idempotent sein, damit Duplikate keinen Schaden anrichten"
+      ],
+      "correctIndex": 3,
+      "explanation": "At-least-once kann Duplikate erzeugen. Ein idempotenter Consumer erkennt z. B. über die Nachrichten-ID, dass er die Nachricht schon verarbeitet hat."
+    },
+    {
+      "question": "Was gibt ziel(\"/api/noten\") mit der Routingtabelle aus der Lektion aus?",
+      "code": "routen = {\n  \"/api/\": \"monolith:8080\",\n  \"/api/noten/\": \"noten-svc:8000\",\n  \"/api/mensa/\": \"mensa-svc:8000\"}",
+      "options": [
+        "noten-svc:8000",
+        "404",
+        "monolith:8080",
+        "mensa-svc:8000"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Präfix „/api/noten/“ endet mit einem Schrägstrich, „/api/noten“ beginnt also nicht damit. Es passt nur „/api/“, daher geht die Anfrage an den Monolithen – ein typischer Konfigurationsfehler bei Gateways."
+    },
+    {
+      "question": "TTL = 30 s. Instanz A schickte den letzten Heartbeat bei t = 100, Instanz B bei t = 125. Welche Instanzen liefert die Registry bei t = 132?",
+      "options": [
+        "Nur B",
+        "A und B",
+        "Nur A",
+        "Keine"
+      ],
+      "correctIndex": 0,
+      "explanation": "A: 132 − 100 = 32 s > 30 s, gilt als tot. B: 132 − 125 = 7 s ≤ 30 s, lebt. Also nur B."
+    }
+  ]
+}

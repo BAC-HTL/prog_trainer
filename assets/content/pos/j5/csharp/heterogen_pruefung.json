@@ -1,0 +1,120 @@
+{
+  "id": "pos-j5-csharp-heterogen_pruefung",
+  "title": "Abschlussprüfung: Kommunikation heterogener Systeme",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "using System.Text.Json;\nConsole.WriteLine(\n  JsonSerializer.Serialize(new { a = \"ä\" }));",
+      "options": [
+        "{\"a\":\"ä\"}",
+        "{\"A\":\"ä\"}",
+        "{\"a\":\"\\u00E4\"}",
+        "{a:\"ä\"}"
+      ],
+      "correctIndex": 2,
+      "explanation": "System.Text.Json escapt standardmäßig alle Nicht-ASCII-Zeichen als \\uXXXX. Das ist gültiges JSON, ein Client liest wieder „ä“. Lesbarer wird es mit Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping. Der Name a bleibt klein, weil die anonyme Eigenschaft so heißt."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "using System.Text.Json;\nvar p = JsonSerializer.Deserialize<P>(\n  \"\"\"{\"name\":\"A\"}\"\"\")!;\nConsole.WriteLine(p.Name is null);\nrecord P(string? Name);",
+      "options": [
+        "True",
+        "False",
+        "A",
+        "Eine JsonException wird geworfen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ohne Optionen unterscheidet JsonSerializer.Deserialize Groß- und Kleinschreibung. \"name\" passt nicht zu Name, das Feld wird ignoriert und Name bleibt null. Abhilfe: PropertyNameCaseInsensitive = true oder JsonSerializerDefaults.Web."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var t = DateTimeOffset.Parse(\n  \"2026-01-15T10:00:00+01:00\");\nConsole.WriteLine(t.UtcDateTime.Hour);",
+      "options": [
+        "10",
+        "11",
+        "9",
+        "1"
+      ],
+      "correctIndex": 2,
+      "explanation": "+01:00 bedeutet: Die Ortszeit liegt eine Stunde vor UTC. 10:00 Ortszeit ist also 09:00 UTC."
+    },
+    {
+      "question": "Eine Datei wurde in Latin-1 gespeichert und wird mit Encoding.UTF8 gelesen. Was passiert mit „Jänner“?",
+      "options": [
+        "Es wird korrekt „Jänner“ gelesen",
+        "Statt „ä“ erscheint das Ersatzzeichen �",
+        "Es wird „JÃ¤nner“ gelesen",
+        "Es wird immer eine Exception geworfen"
+      ],
+      "correctIndex": 1,
+      "explanation": "„ä“ ist in Latin-1 das einzelne Byte 0xE4. Das ist keine gültige UTF-8-Folge, deshalb setzt der Decoder das Ersatzzeichen U+FFFD (�) ein. „JÃ¤nner“ entsteht im umgekehrten Fall (UTF-8 als Latin-1 gelesen)."
+    },
+    {
+      "question": "In einer .proto-Datei steht string email = 3;. Warum darf die Nummer 3 später nie für ein anderes Feld verwendet werden?",
+      "options": [
+        "Weil Protobuf Felder alphabetisch sortiert",
+        "Weil die Nummer die maximale Länge des Strings angibt",
+        "Weil im Binärformat nur die Feldnummer übertragen wird, nicht der Name – alte Daten würden falsch gelesen",
+        "Weil gRPC sonst kein HTTP/2 verwenden kann"
+      ],
+      "correctIndex": 2,
+      "explanation": "Protobuf kennzeichnet Felder im Binärformat über ihre Nummer. Wird eine Nummer mit neuer Bedeutung wiederverwendet, interpretieren alte Clients oder gespeicherte Daten das Feld falsch."
+    },
+    {
+      "question": "Der Minimal-API-Server aus der Lektion definiert für /api/v1/buecher/{id:int} nur MapGet. Welchen Statuscode liefert DELETE /api/v1/buecher/1?",
+      "options": [
+        "405 Method Not Allowed",
+        "404 Not Found",
+        "200 OK",
+        "500 Internal Server Error"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Route existiert, aber nicht für DELETE. ASP.NET Core antwortet mit 405 Method Not Allowed. Ein 404 käme z. B. bei /api/v1/buecher/abc, weil die Constraint :int nicht passt."
+    },
+    {
+      "question": "Ein Client soll einen bestehenden Stundenplan-Eintrag 42 vollständig ersetzen. Welche Anfrage ist im REST-Stil richtig?",
+      "options": [
+        "POST /api/v1/updateEintrag?id=42",
+        "GET /api/v1/eintraege/42?replace=true",
+        "DELETE /api/v1/eintraege/42 mit neuem Body",
+        "PUT /api/v1/eintraege/42"
+      ],
+      "correctIndex": 3,
+      "explanation": "PUT ersetzt die Ressource unter der angegebenen URL vollständig und ist idempotent. Verben gehören nicht in die URL, und GET darf keine Daten verändern."
+    },
+    {
+      "question": "Drei Tasks lesen mit ReadAllAsync aus demselben Channel<string>. Der Producer schreibt 9 Aufträge. Wie oft wird insgesamt ein Auftrag verarbeitet?",
+      "options": [
+        "27-mal, jeder Task bekommt alle",
+        "9-mal, jeder Auftrag von genau einem Task",
+        "3-mal",
+        "Unbestimmt, Aufträge können verloren gehen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Channel verhält sich wie eine Point-to-Point-Queue: Jedes gelesene Element wird entnommen und geht an genau einen Leser. Kopien an alle gäbe es nur bei Publish/Subscribe."
+    },
+    {
+      "question": "Ein Bestellsystem nutzt einen Broker mit at-least-once-Zustellung. Was muss der Consumer für Zahlungen deshalb unbedingt tun?",
+      "options": [
+        "Jede Nachricht zweimal verarbeiten",
+        "Nachrichten nie bestätigen",
+        "Doppelte Nachrichten erkennen, z. B. über eine eindeutige Nachrichten-ID",
+        "Auf exactly-once umstellen, das ist immer kostenlos"
+      ],
+      "correctIndex": 2,
+      "explanation": "At-least-once heißt, dass eine Nachricht mehrfach ankommen kann (z. B. wenn die Bestätigung verloren geht). Ein idempotenter Consumer verhindert doppelte Abbuchungen."
+    },
+    {
+      "question": "Warum ist es gefährlich, await stub.SchnittAsync(...) genauso zu behandeln wie einen lokalen Methodenaufruf?",
+      "options": [
+        "Weil der Aufruf über das Netz langsam sein, hängen oder ausfallen kann",
+        "Weil Stubs keine Rückgabewerte haben dürfen",
+        "Weil RPC nur Ganzzahlen übertragen kann",
+        "Weil async-Methoden nie Exceptions werfen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Stub versteckt das Netzwerk hinter einem normalen Aufruf. Latenz, Timeouts, Ausfälle und Server-Fehler (z. B. 500) bleiben aber real und müssen behandelt werden."
+    }
+  ]
+}

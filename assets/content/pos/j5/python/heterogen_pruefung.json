@@ -1,0 +1,121 @@
+{
+  "id": "pos-j5-python-heterogen_pruefung",
+  "title": "Abschlussprüfung: Kommunikation heterogener Systeme",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was passiert bei diesem Code?",
+      "code": "import json\nfrom datetime import datetime\nprint(json.dumps(\n    {\"t\": datetime(2026, 1, 1)}))",
+      "options": [
+        "Es wird {\"t\": \"2026-01-01\"} ausgegeben",
+        "Es wird ein Unix-Zeitstempel ausgegeben",
+        "Es wird ein TypeError geworfen",
+        "Es wird {\"t\": null} ausgegeben"
+      ],
+      "correctIndex": 2,
+      "explanation": "datetime ist kein JSON-Typ. json.dumps wirft einen TypeError. Lösung: vorher mit isoformat() in einen ISO-8601-String umwandeln oder dumps(default=...) verwenden."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import json\nprint(json.dumps({\"a\": \"ä\"}))",
+      "options": [
+        "{\"a\": \"ä\"}",
+        "{\"a\": \"\\u00e4\"}",
+        "{'a': 'ä'}",
+        "UnicodeEncodeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Standardmäßig ist ensure_ascii=True: Alle Nicht-ASCII-Zeichen werden als \\uXXXX escapt. Das ist gültiges JSON, ein Client liest wieder „ä“. Lesbarer wird es mit ensure_ascii=False."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "from datetime import datetime, timezone\nt = datetime.fromisoformat(\n    \"2026-01-15T10:00:00+01:00\")\nprint(t.astimezone(timezone.utc).hour)",
+      "options": [
+        "10",
+        "11",
+        "1",
+        "9"
+      ],
+      "correctIndex": 3,
+      "explanation": "+01:00 bedeutet: Die Ortszeit liegt eine Stunde vor UTC. 10:00 Ortszeit ist also 09:00 UTC."
+    },
+    {
+      "question": "Welche Zeile schreibt dieser csv.writer?",
+      "code": "import csv, sys\nw = csv.writer(sys.stdout, delimiter=\";\")\nw.writerow([\"Huber; Anna\", \"12,50\"])",
+      "options": [
+        "\"Huber; Anna\";12,50",
+        "Huber; Anna;12,50",
+        "\"Huber; Anna\";\"12,50\"",
+        "Huber\\; Anna;12,50"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit QUOTE_MINIMAL (Standard) werden nur Felder in Anführungszeichen gesetzt, die das Trennzeichen, Anführungszeichen oder Zeilenumbrüche enthalten. \"12,50\" enthält keinen Strichpunkt und bleibt ohne Anführungszeichen."
+    },
+    {
+      "question": "In einer .proto-Datei steht string email = 3;. Warum darf die Nummer 3 später nie für ein anderes Feld verwendet werden?",
+      "options": [
+        "Weil Protobuf Felder alphabetisch sortiert",
+        "Weil im Binärformat nur die Feldnummer übertragen wird, nicht der Name – alte Daten würden falsch gelesen",
+        "Weil die Nummer die maximale Länge des Strings angibt",
+        "Weil gRPC sonst kein HTTP/2 verwenden kann"
+      ],
+      "correctIndex": 1,
+      "explanation": "Protobuf kennzeichnet Felder im Binärformat über ihre Nummer. Wird eine Nummer mit neuer Bedeutung wiederverwendet, interpretieren alte Clients oder gespeicherte Daten das Feld falsch."
+    },
+    {
+      "question": "Der Flask-Server aus der Lektion definiert für /api/v1/buecher/<int:bid> nur GET. Welchen Statuscode liefert DELETE /api/v1/buecher/1?",
+      "options": [
+        "404 Not Found",
+        "200 OK",
+        "500 Internal Server Error",
+        "405 Method Not Allowed"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die URL existiert, aber nicht für die Methode DELETE. Flask antwortet daher mit 405 Method Not Allowed. 404 käme bei einer unbekannten URL, z. B. /api/v1/buecher/abc, weil der int-Konverter nicht passt."
+    },
+    {
+      "question": "Ein Client soll einen bestehenden Stundenplan-Eintrag 42 vollständig ersetzen. Welche Anfrage ist im REST-Stil richtig?",
+      "options": [
+        "POST /api/v1/updateEintrag?id=42",
+        "PUT /api/v1/eintraege/42",
+        "GET /api/v1/eintraege/42?replace=true",
+        "DELETE /api/v1/eintraege/42 mit neuem Body"
+      ],
+      "correctIndex": 1,
+      "explanation": "PUT ersetzt die Ressource unter der angegebenen URL vollständig und ist idempotent. Verben gehören nicht in die URL, und GET darf keine Daten verändern."
+    },
+    {
+      "question": "Drei Worker-Threads lesen aus derselben queue.Queue. Der Producer legt 9 Aufträge hinein. Wie oft wird insgesamt ein Auftrag verarbeitet (ohne Fehler)?",
+      "options": [
+        "27-mal, jeder Worker bekommt alle",
+        "3-mal",
+        "9-mal, jeder Auftrag von genau einem Worker",
+        "Unbestimmt, Aufträge können verloren gehen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei einer Point-to-Point-Queue entnimmt get() die Nachricht – sie geht an genau einen Consumer. Die 9 Aufträge werden auf die Worker verteilt. Alle Kopien an alle gäbe es nur bei Publish/Subscribe."
+    },
+    {
+      "question": "Ein Bestellsystem nutzt einen Broker mit at-least-once-Zustellung. Was muss der Consumer für Zahlungen deshalb unbedingt tun?",
+      "options": [
+        "Doppelte Nachrichten erkennen, z. B. über eine eindeutige Nachrichten-ID",
+        "Jede Nachricht zweimal verarbeiten",
+        "Auf exactly-once umstellen, das ist immer kostenlos",
+        "Nachrichten nie bestätigen"
+      ],
+      "correctIndex": 0,
+      "explanation": "At-least-once heißt, dass eine Nachricht mehrfach ankommen kann (z. B. wenn die Bestätigung verloren geht). Ein idempotenter Consumer verhindert doppelte Abbuchungen."
+    },
+    {
+      "question": "Warum ist es gefährlich, einen RPC-Aufruf wie proxy.notenschnitt(...) genauso zu behandeln wie einen lokalen Funktionsaufruf?",
+      "options": [
+        "Weil RPC nur Ganzzahlen übertragen kann",
+        "Weil der Aufruf über das Netz langsam sein, hängen oder ausfallen kann",
+        "Weil RPC-Funktionen keine Rückgabewerte haben",
+        "Weil xmlrpc nur in Java funktioniert"
+      ],
+      "correctIndex": 1,
+      "explanation": "RPC versteckt das Netzwerk hinter einem normalen Aufruf. Latenz, Timeouts, Ausfälle und Server-Fehler (Fault) bleiben aber real und müssen behandelt werden."
+    }
+  ]
+}

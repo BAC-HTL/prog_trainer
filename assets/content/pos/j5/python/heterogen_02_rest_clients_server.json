@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-python-heterogen_02_rest_clients_server",
+  "title": "REST-Client und -Server",
+  "summary": "Mit Flask eine REST-API bauen und mit urllib.request darauf zugreifen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "REST (Representational State Transfer) ist der verbreitetste Stil für Web-Schnittstellen. Jede Ressource hat eine URL, z. B. /api/v1/buecher/1. Was mit ihr passieren soll, sagt die HTTP-Methode, das Ergebnis meldet der Statuscode. Der Server merkt sich keinen Sitzungszustand: Jede Anfrage enthält alles Nötige (zustandslos). So können Clients in jeder Sprache – Python, C#, JavaScript – dieselbe API nutzen."
+    },
+    {
+      "type": "code",
+      "content": "Methode  Bedeutung        idempotent\nGET      lesen            ja\nPOST     neu anlegen      nein\nPUT      ganz ersetzen    ja\nPATCH    teilweise ändern nein*\nDELETE   löschen          ja\n\n200 OK          201 Created\n204 No Content  400 Bad Request\n401 Unauth.     403 Forbidden\n404 Not Found   500 Server Error\n* kann idempotent sein, muss aber nicht"
+    },
+    {
+      "type": "text",
+      "content": "Idempotent heißt: Zehnmal dieselbe Anfrage hat dieselbe Wirkung wie einmal. Das ist wichtig, wenn ein Client nach einem Timeout automatisch wiederholt. Für einen eigenen Server reicht im Prinzip das Modul http.server der Standardbibliothek, es ist aber sehr low-level. Bequemer ist das Mikro-Framework Flask (pip install flask). Eine kleine Bücher-API:"
+    },
+    {
+      "type": "code",
+      "content": "from flask import Flask, jsonify, request\n\napp = Flask(__name__)\nbuecher = {1: {\"id\": 1, \"titel\": \"Faust\"}}\n\n@app.get(\"/api/v1/buecher\")\ndef alle():\n    return jsonify(list(buecher.values()))\n\n@app.get(\"/api/v1/buecher/<int:bid>\")\ndef eines(bid):\n    if bid not in buecher:\n        return {\"error\": \"nicht gefunden\"}, 404\n    return buecher[bid]\n\n@app.post(\"/api/v1/buecher\")\ndef neu():\n    daten = request.get_json()\n    if not daten or \"titel\" not in daten:\n        return {\"error\": \"titel fehlt\"}, 400\n    bid = max(buecher, default=0) + 1\n    buecher[bid] = {\"id\": bid,\n                    \"titel\": daten[\"titel\"]}\n    return buecher[bid], 201\n\nif __name__ == \"__main__\":\n    app.run(host=\"127.0.0.1\", port=5000)"
+    },
+    {
+      "type": "text",
+      "content": "Gestartet wird mit python server.py. host=\"127.0.0.1\" bedeutet: nur von localhost erreichbar – zum Entwickeln genau richtig. Gibt eine Funktion ein dict zurück, macht Flask daraus JSON; ein zweiter Wert im Tupel setzt den Statuscode. Zum schnellen Testen eignet sich curl im Terminal:"
+    },
+    {
+      "type": "code",
+      "content": "$ curl http://127.0.0.1:5000/api/v1/buecher/1\n{\"id\":1,\"titel\":\"Faust\"}\n\n$ curl -X POST -d '{\"titel\":\"Woyzeck\"}' \\\n  -H \"Content-Type: application/json\" \\\n  http://127.0.0.1:5000/api/v1/buecher\n{\"id\":2,\"titel\":\"Woyzeck\"}"
+    },
+    {
+      "type": "text",
+      "content": "Als Client genügt urllib.request aus der Standardbibliothek. Wichtig: Gib immer einen Timeout an, setze bei POST den Content-Type und codiere den Body als UTF-8. Bei Statuscodes ab 400 wirft urlopen eine HTTPError-Exception – sie enthält Code und Antwort-Body. (Das beliebte Paket requests ist bequemer, wirft aber erst bei raise_for_status() eine Exception.)"
+    },
+    {
+      "type": "code",
+      "content": "import json\nimport urllib.request\nfrom urllib.error import HTTPError\n\nBASE = \"http://127.0.0.1:5000/api/v1\"\n\nwith urllib.request.urlopen(\n        BASE + \"/buecher\", timeout=5) as r:\n    print(r.status, json.load(r))\n# 200 [{'id': 1, 'titel': 'Faust'}]\n\nreq = urllib.request.Request(\n    BASE + \"/buecher\", method=\"POST\",\n    data=json.dumps({\"titel\": \"Ödipus\"})\n             .encode(\"utf-8\"),\n    headers={\"Content-Type\":\n             \"application/json\"})\nwith urllib.request.urlopen(req) as r:\n    print(r.status, json.load(r))\n# 201 {'id': 2, 'titel': 'Ödipus'}\n\ntry:\n    urllib.request.urlopen(BASE + \"/buecher/99\")\nexcept HTTPError as e:\n    print(e.code, json.load(e))\n# 404 {'error': 'nicht gefunden'}"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: 200 statt 201 bei POST zurückgeben, Fehler als 200 mit {\"ok\": false} melden, oder Verben in die URL schreiben (/getBuch?id=1 statt GET /buecher/1). Versioniere die API von Anfang an, z. B. mit /api/v1 im Pfad: Breaking Changes kommen dann in /api/v2, und alte Clients laufen weiter."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ressourcen sind URLs, Methoden sagen was passiert, Statuscodes melden das Ergebnis. Flask baut Server in wenigen Zeilen, urllib.request ist ein Client ohne Zusatzpaket. Timeouts, saubere Statuscodes und eine Versionsnummer in der URL machen die Schnittstelle robust."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welchen Statuscode sollte ein Server zurückgeben, wenn POST /api/v1/buecher erfolgreich ein neues Buch angelegt hat?",
+      "options": [
+        "200 OK",
+        "204 No Content",
+        "201 Created",
+        "302 Found"
+      ],
+      "correctIndex": 2,
+      "explanation": "201 Created zeigt an, dass eine neue Ressource entstanden ist. Üblicherweise enthält die Antwort das neue Objekt (oft zusätzlich einen Location-Header)."
+    },
+    {
+      "question": "Was passiert bei diesem Aufruf, wenn der Server mit 404 antwortet?",
+      "code": "urllib.request.urlopen(\n    \"http://127.0.0.1:5000/api/v1/buecher/99\")",
+      "options": [
+        "urlopen liefert ein Antwortobjekt mit status 404",
+        "Es wird eine HTTPError-Exception geworfen",
+        "urlopen liefert None",
+        "Das Programm wartet, bis der Timeout abläuft"
+      ],
+      "correctIndex": 1,
+      "explanation": "urllib.request.urlopen wirft bei Statuscodes ab 400 eine urllib.error.HTTPError. Mit e.code und e.read() kommst du an Statuscode und Body."
+    },
+    {
+      "question": "Ein Client schickt eine Anfrage, bekommt einen Timeout und wiederholt sie automatisch. Bei welcher Methode kann das ungewollt doppelte Daten erzeugen?",
+      "options": [
+        "POST",
+        "GET",
+        "PUT",
+        "DELETE"
+      ],
+      "correctIndex": 0,
+      "explanation": "POST ist nicht idempotent: Jede Wiederholung kann ein weiteres Buch anlegen. GET, PUT und DELETE haben bei Wiederholung dieselbe Wirkung wie einmal."
+    },
+    {
+      "question": "Was liefert curl für diese Anfrage an den Flask-Server aus der Lektion?",
+      "code": "curl -X POST -d '{}' \\\n  -H \"Content-Type: application/json\" \\\n  http://127.0.0.1:5000/api/v1/buecher",
+      "options": [
+        "{\"error\": \"titel fehlt\"} mit 404",
+        "Ein neues Buch mit Titel null und 201",
+        "{\"error\": \"titel fehlt\"} mit 400",
+        "500 Internal Server Error"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Body {} ist ein leeres dict, also gilt not daten. Die Funktion neu() liefert das Fehler-dict mit Statuscode 400 Bad Request."
+    }
+  ]
+}

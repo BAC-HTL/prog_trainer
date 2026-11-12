@@ -1,0 +1,119 @@
+{
+  "id": "dbi-j5-nosql_pruefung",
+  "title": "Abschlussprüfung: DBMS-Interna & aktuelle Datenmodelle",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Ein LRU-Puffer hat 3 Rahmen (anfangs leer). Wie viele Treffer gibt es bei dieser Zugriffsfolge?",
+      "code": "1, 2, 3, 4, 1, 2, 3, 4",
+      "options": [
+        "4",
+        "3",
+        "0",
+        "1"
+      ],
+      "correctIndex": 2,
+      "explanation": "Jede Seite wird genau dann verdrängt, kurz bevor sie wieder gebraucht wird (1 wird für 4 verdrängt, 2 für 1 usw.). Das ist der typische Effekt eines Scans, der größer als der Puffer ist."
+    },
+    {
+      "question": "Warum muss eine geänderte (dirty) Seite beim COMMIT nicht sofort in die Tabellendatei geschrieben werden?",
+      "options": [
+        "Weil das WAL auf der Platte ist und nach einem Absturz die Änderung wiederherstellen kann",
+        "Weil der Puffer nie verloren geht",
+        "Weil COMMIT nur Lesezugriffe betrifft",
+        "Weil der Postmaster sie automatisch kopiert"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beim COMMIT wird das Write-Ahead-Log dauerhaft geschrieben. Die Datenseiten schreiben Background Writer und Checkpointer später; ein Recovery spielt fehlende Änderungen aus dem WAL nach."
+    },
+    {
+      "question": "Welche Aussage über PostgreSQLs Prozessmodell stimmt?",
+      "options": [
+        "Alle Verbindungen teilen sich einen einzigen Thread",
+        "Jede Client-Verbindung bekommt einen eigenen Backend-Prozess",
+        "Der Checkpointer bearbeitet die SQL-Abfragen",
+        "Es gibt keine Hintergrundprozesse"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Postmaster erzeugt für jede Verbindung ein Backend. Viele Verbindungen kosten daher spürbar Speicher – ein Grund für Connection Pooling."
+    },
+    {
+      "question": "In einem Key-Value-Store sollen Sitzungen nach 30 Minuten Inaktivität verschwinden. Welcher Redis-Befehl hilft dabei?",
+      "options": [
+        "HGETALL",
+        "INCR",
+        "FLUSHALL",
+        "EXPIRE"
+      ],
+      "correctIndex": 3,
+      "explanation": "EXPIRE setzt eine Ablaufzeit in Sekunden (1800 = 30 Minuten); danach wird der Schlüssel automatisch gelöscht."
+    },
+    {
+      "question": "Welches NoSQL-Modell passt am besten für Millionen Messwerte pro Minute von verteilten Sensoren, die immer pro Sensor und Zeitraum abgefragt werden?",
+      "options": [
+        "Graphdatenbank",
+        "Spaltenfamilien-Datenbank (z. B. Cassandra)",
+        "Key-Value-Store ohne Abfragen",
+        "Eine einzelne Excel-Datei"
+      ],
+      "correctIndex": 1,
+      "explanation": "Wide Column Stores verteilen Daten über den Partitionsschlüssel (Sensor) und sortieren innerhalb der Partition (Zeit) – optimal für hohe Schreiblast und dieses Abfragemuster."
+    },
+    {
+      "question": "Was liefert diese MongoDB-Abfrage für das Dokument {noten: [{fach:\"DBI\", note:4}, {fach:\"AM\", note:1}]}?",
+      "code": "db.schueler.find({\n  \"noten.fach\": \"DBI\",\n  \"noten.note\": { $lte: 2 } })",
+      "options": [
+        "Das Dokument wird gefunden",
+        "Das Dokument wird nicht gefunden",
+        "Ein Syntaxfehler",
+        "Nur das Listenelement mit note 1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ohne $elemMatch dürfen die Bedingungen von verschiedenen Listenelementen erfüllt werden: fach DBI (1. Element) und note ≤ 2 (2. Element) – also Treffer."
+    },
+    {
+      "question": "Welche Aussage zum CAP-Theorem ist richtig?",
+      "options": [
+        "Ein System kann immer C, A und P gleichzeitig garantieren",
+        "Das C in CAP bedeutet dasselbe wie das C in ACID",
+        "Bei einer Netzwerkpartition muss man zwischen Konsistenz und Verfügbarkeit wählen",
+        "CAP gilt nur für relationale Datenbanken auf einem Server"
+      ],
+      "correctIndex": 2,
+      "explanation": "Solange keine Partition vorliegt, geht beides. Fällt die Verbindung zwischen Knoten aus, kann ein Knoten entweder antworten (A) oder auf Konsistenz bestehen (C)."
+    },
+    {
+      "question": "N = 3, W = 1, R = 1. Was ist die Folge?",
+      "options": [
+        "Lesen liefert immer den neuesten Wert",
+        "Es können veraltete Werte gelesen werden, dafür ist das System schnell und verfügbar",
+        "Schreiben ist unmöglich",
+        "Das System wird automatisch CP"
+      ],
+      "correctIndex": 1,
+      "explanation": "R + W = 2 ist nicht größer als N = 3. Leser und Schreiber können verschiedene Knoten erwischen – eventual consistency."
+    },
+    {
+      "question": "Was bedeutet „Soft State“ in BASE?",
+      "options": [
+        "Daten werden nur im RAM gehalten",
+        "Der Zustand kann sich durch den Abgleich der Replikate ändern, auch ohne neue Schreibzugriffe",
+        "Das Schema ist optional",
+        "Transaktionen werden weich abgebrochen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Weil Replikate sich im Hintergrund angleichen, kann eine spätere Leseoperation einen anderen Wert liefern, obwohl inzwischen niemand geschrieben hat."
+    },
+    {
+      "question": "Welche Begründung für NoSQL ist am schwächsten?",
+      "options": [
+        "Wir brauchen extrem schnelle Sessions im RAM",
+        "Unsere Daten sind ein großes Beziehungsnetz mit Abfragen über viele Stufen",
+        "Wir schreiben Millionen Logeinträge pro Minute auf viele Server",
+        "NoSQL ist moderner als SQL"
+      ],
+      "correctIndex": 3,
+      "explanation": "Modernität ist kein fachliches Kriterium. Ohne passendes Zugriffsmuster verliert man Joins, Constraints und Transaktionen, ohne etwas zu gewinnen."
+    }
+  ]
+}

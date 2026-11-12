@@ -1,0 +1,119 @@
+{
+  "id": "pos-j5-csharp-frameworks_pruefung",
+  "title": "Abschlussprüfung: Frameworks entwickeln",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Job j = new MeinJob();\nj.Run();\n\nclass Job\n{\n  public void Run()\n  {\n    Vorher();\n    Console.WriteLine(\"arbeite\");\n    Nachher();\n  }\n  protected virtual void Vorher()\n    => Console.WriteLine(\"start\");\n  protected virtual void Nachher() { }\n}\n\nclass MeinJob : Job\n{\n  protected override void Nachher()\n    => Console.WriteLine(\"fertig\");\n  public new void Run()\n    => Console.WriteLine(\"eigen\");\n}",
+      "options": [
+        "eigen",
+        "start, arbeite, fertig",
+        "start, eigen, fertig",
+        "Compilerfehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "Run ist in Job nicht virtual. MeinJob verdeckt Run nur mit new. Da j den statischen Typ Job hat, wird Job.Run aufgerufen – die Template-Methode des Frameworks läuft, und der überschriebene Hook Nachher gibt „fertig“ aus."
+    },
+    {
+      "question": "Was unterscheidet ein Framework grundlegend von einer Bibliothek?",
+      "options": [
+        "Ein Framework ist immer größer",
+        "Eine Bibliothek darf keine Klassen enthalten",
+        "Ein Framework steuert den Programmablauf und ruft deinen Code auf",
+        "Frameworks gibt es nur für Webanwendungen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Entscheidend ist die Inversion of Control: Bei einer Bibliothek ruft dein Code auf, bei einem Framework ruft das Framework deinen Code an definierten Erweiterungspunkten auf."
+    },
+    {
+      "question": "Welche Version erfüllt die NuGet-Angabe Version=\"[1.4,2.0)\"?",
+      "options": [
+        "1.10.2",
+        "1.3.9",
+        "2.0.0",
+        "0.9.0"
+      ],
+      "correctIndex": 0,
+      "explanation": "[ bedeutet inklusive, ) exklusive. Versionsnummern werden teilweise einzeln verglichen, nicht als Dezimalzahl: 1.10 ist größer als 1.4. 2.0.0 liegt genau auf der ausgeschlossenen Grenze."
+    },
+    {
+      "question": "Deine Bibliothek steht auf Version 0.7.0. Was signalisiert das nach SemVer?",
+      "options": [
+        "Die Bibliothek ist zu 70 % fertig",
+        "Die API ist noch nicht stabil, auch MINOR-Versionen dürfen Breaking Changes enthalten",
+        "Es gibt garantiert keine Breaking Changes mehr",
+        "Nur Fehlerbehebungen sind erlaubt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mit MAJOR 0 gilt die öffentliche API als in Entwicklung. Erst ab 1.0.0 gelten die strengen Kompatibilitätsregeln."
+    },
+    {
+      "question": "Was bewirkt [Obsolete(\"nutze Schnitt\", true)] an einer Methode?",
+      "options": [
+        "Nur eine Warnung beim Kompilieren",
+        "Die Methode wird zur Laufzeit übersprungen",
+        "Eine Exception beim Aufruf zur Laufzeit",
+        "Jeder Aufruf der Methode ist ein Compilerfehler"
+      ],
+      "correctIndex": 3,
+      "explanation": "Mit dem zweiten Argument error: true wird aus der Warnung CS0618 der Fehler CS0619. Üblich ist zuerst eine Warnung über mindestens eine MINOR-Version, dann Fehler oder Entfernen in der nächsten MAJOR-Version."
+    },
+    {
+      "question": "Wann ist zusätzlich zu Schnitt eine Methode TrySchnitt(noten, out double s) sinnvoll?",
+      "options": [
+        "Wenn ungültige Eingaben ein erwartbarer, häufiger Fall sind und Aufrufer:innen ohne try/catch prüfen wollen",
+        "Immer statt Exceptions, Exceptions sind in APIs verboten",
+        "Nur bei async-Methoden",
+        "Wenn die Methode nie fehlschlagen kann"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Try-Muster (wie int.TryParse) eignet sich für erwartbare Fehlschläge, z. B. Benutzereingaben. Für echte Fehler bleibt die Exception-Variante mit aussagekräftiger Meldung."
+    },
+    {
+      "question": "Du willst Schnitt(int[] n) um eine Rundungsoption erweitern, ohne bereits kompilierte Programme zu brechen. Was ist binär kompatibel?",
+      "options": [
+        "Die Signatur auf Schnitt(int[] n, bool runden = false) ändern",
+        "Schnitt in SchnittV2 umbenennen",
+        "Eine Überladung Schnitt(int[] n, bool runden) hinzufügen und die alte Methode behalten",
+        "Den Parametertyp auf List<int> ändern"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine zusätzliche Überladung lässt die alte Signatur bestehen, kompilierte Aufrufer finden sie weiterhin. Ein optionaler Parameter ändert dagegen die Signatur und führt bei alten Programmen zur MissingMethodException."
+    },
+    {
+      "question": "Warum prüft der Plugin-Lader !typ.IsAbstract, bevor er Activator.CreateInstance(typ) aufruft?",
+      "options": [
+        "Weil abstrakte Klassen schneller geladen werden",
+        "Weil von abstrakten Klassen und Interfaces keine Instanzen erzeugt werden können und CreateInstance eine Exception werfen würde",
+        "Weil IsAssignableFrom abstrakte Klassen ignoriert",
+        "Damit nur statische Klassen geladen werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "IsAssignableFrom ist z. B. auch für das Interface selbst oder eine abstrakte Basisklasse wahr. Instanzieren lassen sich aber nur konkrete Klassen."
+    },
+    {
+      "question": "Was gibt dieser Code aus (Microsoft.Extensions.DependencyInjection)?",
+      "code": "var s = new ServiceCollection();\ns.AddSingleton<IExporter, CsvExporter>();\nusing var sp = s.BuildServiceProvider();\nvar a = sp.GetRequiredService<IExporter>();\nvar b = sp.GetRequiredService<IExporter>();\nConsole.WriteLine(ReferenceEquals(a, b));",
+      "options": [
+        "False",
+        "null",
+        "Eine InvalidOperationException",
+        "True"
+      ],
+      "correctIndex": 3,
+      "explanation": "Mit AddSingleton erzeugt der Container genau ein Objekt und liefert es bei jeder Anfrage wieder. a und b sind dieselbe Instanz."
+    },
+    {
+      "question": "Welches Muster widerspricht Dependency Injection?",
+      "options": [
+        "Abhängigkeiten als Konstruktorparameter vom Typ eines Interfaces",
+        "Im Konstruktor new SmtpMailer(\"smtp.schule.at\") aufrufen",
+        "Im Test einen FakeVersand übergeben",
+        "Implementierungen im Container mit AddSingleton registrieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "Wer seine Abhängigkeiten selbst mit new erzeugt, ist fest an die konkrete Klasse gebunden und kann sie im Test nicht austauschen."
+    }
+  ]
+}

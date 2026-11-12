@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j5-nosql_03_cap_einsatz",
+  "title": "CAP, BASE und die Wahl des Datenmodells",
+  "summary": "Warum verteilte Datenbanken Kompromisse eingehen müssen und wann du relational oder NoSQL wählst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele NoSQL-Systeme sind von Anfang an verteilt: Daten werden repliziert (Kopien auf mehreren Knoten, für Ausfallsicherheit) und partitioniert bzw. „gesharded“ (jeder Knoten hält nur einen Teil, für mehr Kapazität). Sobald Daten auf mehreren Rechnern liegen, stellt sich eine Frage: Was passiert, wenn die Knoten sich nicht mehr erreichen können?"
+    },
+    {
+      "type": "text",
+      "content": "Das CAP-Theorem (Eric Brewer) betrachtet drei Eigenschaften:\n• C – Consistency: Jeder Lesezugriff liefert den zuletzt geschriebenen Wert, alle Knoten zeigen dasselbe.\n• A – Availability: Jede Anfrage an einen funktionierenden Knoten bekommt eine Antwort.\n• P – Partition Tolerance: Das System arbeitet weiter, auch wenn das Netz zwischen Knoten unterbrochen ist.\nAussage: Tritt eine Netzwerkpartition auf, kannst du nur C oder A garantieren, nicht beides. Da Partitionen in verteilten Systemen nie ganz auszuschließen sind, wählt man in diesem Fall zwischen CP und AP. Achtung: Das C in CAP ist nicht das C aus ACID (dort: Integritätsbedingungen bleiben erfüllt)."
+    },
+    {
+      "type": "code",
+      "content": "# a, b: zwei Replikate, je .daten={}\npartition = True  # Netz A <-> B weg\n\ndef schreiben(k, key, wert, modus):\n    anderer = b if k is a else a\n    if partition and modus == \"CP\":\n        return \"Fehler: nicht verfügbar\"\n    k.daten[key] = wert\n    if not partition:\n        anderer.daten[key] = wert\n    return \"ok\"\n\nprint(schreiben(a, \"plaetze\", 4, \"CP\"))\n# Fehler: nicht verfügbar\nprint(schreiben(a, \"plaetze\", 4, \"AP\"))\n# ok\nprint(a.daten.get(\"plaetze\"),\n      b.daten.get(\"plaetze\"))\n# 4 None  -> Knoten widersprechen sich"
+    },
+    {
+      "type": "text",
+      "content": "CP verweigert also lieber eine Antwort, als einen veralteten oder widersprüchlichen Stand zu liefern – sinnvoll für Kontostände oder die Reservierung der letzten Plätze bei der Maturaball-Kartenvergabe. AP antwortet immer, die Knoten gleichen sich nach dem Ende der Partition wieder ab – gut für Likes, Aufrufzähler oder einen Social-Media-Feed. Viele Systeme lassen sich übrigens pro Abfrage einstellen, man sollte Produkte daher nicht pauschal in CP oder AP einordnen."
+    },
+    {
+      "type": "text",
+      "content": "Viele NoSQL-Systeme folgen statt ACID dem BASE-Prinzip:\n• Basically Available – das System antwortet grundsätzlich immer.\n• Soft State – der Zustand kann sich ändern, auch ohne neue Schreibzugriffe (durch Abgleich der Replikate).\n• Eventual Consistency – ohne neue Änderungen werden irgendwann alle Replikate gleich.\nDu kennst den Effekt: Ein neues Profilbild ist bei Freund:innen manchmal erst Sekunden später sichtbar."
+    },
+    {
+      "type": "code",
+      "content": "ACID               BASE\n-----------------  ------------------\nstarke Konsistenz  letztendliche\n                   Konsistenz\npessimistisch      optimistisch\n(Sperren, Abbruch) (später abgleichen)\nVerfügbarkeit      Verfügbarkeit\nzweitrangig        hat Vorrang\ntypisch: RDBMS     typisch: verteilte\n                   NoSQL-Systeme"
+    },
+    {
+      "type": "text",
+      "content": "Ein verbreitetes Hilfsmittel ist das Quorum: Es gibt N Replikate, ein Schreibzugriff gilt nach W Bestätigungen als erfolgreich, ein Lesezugriff fragt R Replikate. Gilt R + W > N, überschneiden sich gelesene und zuletzt geschriebene Replikate immer in mindestens einem Knoten – der Leser sieht den neuesten Wert. Mit kleinem R und W wird das System schneller und verfügbarer, aber nur noch letztendlich konsistent."
+    },
+    {
+      "type": "code",
+      "content": "N = 3 Replikate\n\nW=2, R=2: 2+2 = 4 > 3\n  -> Lesen sieht immer neuesten Wert\nW=3, R=1: 3+1 = 4 > 3\n  -> schnelles Lesen, Schreiben\n     braucht ALLE Knoten\nW=1, R=1: 1+1 = 2 <= 3\n  -> veraltete Werte möglich\n     (eventual consistency)"
+    },
+    {
+      "type": "text",
+      "content": "Wann relational, wann NoSQL? Relational (z. B. PostgreSQL) ist die Standardwahl, wenn Daten klar strukturiert sind, es viele Beziehungen und Ad-hoc-Abfragen gibt und Transaktionen wichtig sind – Notenverwaltung, Buchhaltung, Lagerstand. NoSQL lohnt sich bei sehr speziellen Zugriffsmustern: Key-Value für Cache und Sessions, Dokumente für stark wechselnde Strukturen, Spaltenfamilien für riesige verteilte Schreiblasten, Graphen für Beziehungsnetze. Oft kombiniert man mehrere Systeme (Polyglot Persistence). Auch relationale DBMS speichern JSON: In PostgreSQL z. B. mit jsonb und einem GIN-Index – SELECT daten->>'name' FROM schueler_doc WHERE daten @> '{\"klasse\":\"5AHIF\"}';"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: NoSQL wählen, „weil es moderner ist“ oder „weil es skaliert“, obwohl die Datenmenge bequem auf einen Server passt – man verliert dann Joins, Integritätsbedingungen und Transaktionen und muss das im Code nachbauen. Und: Eventual Consistency muss die Anwendung bewusst behandeln.\n\nZusammenfassung: CAP – bei einer Netzwerkpartition entweder Konsistenz (CP) oder Verfügbarkeit (AP). BASE = Basically Available, Soft State, Eventual Consistency. Quorum: R + W > N liefert aktuelle Werte. Relational ist der Normalfall; NoSQL für passende, spezielle Anforderungen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Cluster hat N = 5 Replikate. Welche Einstellung garantiert, dass ein Lesezugriff den zuletzt bestätigten Schreibwert sieht?",
+      "options": [
+        "W = 2, R = 2",
+        "W = 3, R = 3",
+        "W = 1, R = 4",
+        "W = 2, R = 3"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur bei R + W > N überschneiden sich die Mengen sicher. 3 + 3 = 6 > 5. Die anderen ergeben 4 oder 5 und sind nicht größer als 5."
+    },
+    {
+      "question": "Während einer Netzwerkpartition liefert ein Knoten weiterhin Antworten, die aber veraltet sein können. Wie verhält sich das System?",
+      "options": [
+        "CP",
+        "CA",
+        "AP",
+        "ACID"
+      ],
+      "correctIndex": 2,
+      "explanation": "Es bleibt verfügbar (A) und toleriert die Partition (P), verzichtet dafür auf Konsistenz (C)."
+    },
+    {
+      "question": "Wofür steht das E in BASE?",
+      "options": [
+        "Eventual Consistency",
+        "Exclusive Locking",
+        "Error Recovery",
+        "Encrypted Storage"
+      ],
+      "correctIndex": 0,
+      "explanation": "BASE = Basically Available, Soft State, Eventual Consistency: Ohne neue Änderungen werden alle Replikate irgendwann gleich."
+    },
+    {
+      "question": "Die Schule braucht eine neue Notenverwaltung mit Schüler:innen, Klassen, Fächern und Lehrkräften, Auswertungen aller Art und exakten Zeugnisnoten. Welche Wahl ist am sinnvollsten?",
+      "options": [
+        "Key-Value-Store, weil er am schnellsten ist",
+        "Graphdatenbank, weil es Beziehungen gibt",
+        "Spaltenfamilien-Datenbank für Skalierbarkeit",
+        "Relationale Datenbank mit Transaktionen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Klar strukturierte Daten, viele Beziehungen, Ad-hoc-Auswertungen und starke Konsistenz sind genau die Stärken relationaler DBMS. Die Datenmenge einer Schule ist dafür klein."
+    }
+  ]
+}

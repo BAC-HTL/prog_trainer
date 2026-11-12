@@ -1243,7 +1243,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 9
+   "semester": 9,
+   "lessons": [
+    "pos/j5/theorie/architektur_01_architekturbegriff_qualitaet.json",
+    "pos/j5/theorie/architektur_02_schichten_mvc_mvvm.json",
+    "pos/j5/theorie/architektur_03_microkernel_eventdriven.json"
+   ],
+   "exam": "pos/j5/theorie/architektur_pruefung.json"
   },
   {
    "id": "pos-j5-heterogen",
@@ -1255,7 +1261,27 @@
     "programmieren",
     "netzwerke"
    ],
-   "semester": 9
+   "semester": 9,
+   "variants": {
+    "python": {
+     "id": "pos-j5-heterogen-python",
+     "lessons": [
+      "pos/j5/python/heterogen_01_schnittstellen_formate.json",
+      "pos/j5/python/heterogen_02_rest_clients_server.json",
+      "pos/j5/python/heterogen_03_messaging_rpc.json"
+     ],
+     "exam": "pos/j5/python/heterogen_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j5-heterogen-csharp",
+     "lessons": [
+      "pos/j5/csharp/heterogen_01_schnittstellen_formate.json",
+      "pos/j5/csharp/heterogen_02_rest_clients_server.json",
+      "pos/j5/csharp/heterogen_03_messaging_rpc.json"
+     ],
+     "exam": "pos/j5/csharp/heterogen_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j5-deployment",
@@ -1267,7 +1293,13 @@
     "software-engineering",
     "cloud"
    ],
-   "semester": 9
+   "semester": 9,
+   "lessons": [
+    "pos/j5/theorie/deployment_01_internationalisierung.json",
+    "pos/j5/theorie/deployment_02_systemtests.json",
+    "pos/j5/theorie/deployment_03_auslieferung_ci_cd.json"
+   ],
+   "exam": "pos/j5/theorie/deployment_pruefung.json"
   },
   {
    "id": "pos-j5-ergonomie",
@@ -1278,7 +1310,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 10
+   "semester": 10,
+   "lessons": [
+    "pos/j5/theorie/ergonomie_01_wahrnehmung_gestaltung.json",
+    "pos/j5/theorie/ergonomie_02_dialoggestaltung_usability.json",
+    "pos/j5/theorie/ergonomie_03_barrierefreiheit.json"
+   ],
+   "exam": "pos/j5/theorie/ergonomie_pruefung.json"
   },
   {
    "id": "pos-j5-frameworks",
@@ -1290,7 +1328,27 @@
     "programmieren",
     "software-engineering"
    ],
-   "semester": 10
+   "semester": 10,
+   "variants": {
+    "python": {
+     "id": "pos-j5-frameworks-python",
+     "lessons": [
+      "pos/j5/python/frameworks_01_bibliothek_vs_framework.json",
+      "pos/j5/python/frameworks_02_api_design.json",
+      "pos/j5/python/frameworks_03_erweiterbarkeit_plugins.json"
+     ],
+     "exam": "pos/j5/python/frameworks_pruefung.json"
+    },
+    "csharp": {
+     "id": "pos-j5-frameworks-csharp",
+     "lessons": [
+      "pos/j5/csharp/frameworks_01_bibliothek_vs_framework.json",
+      "pos/j5/csharp/frameworks_02_api_design.json",
+      "pos/j5/csharp/frameworks_03_erweiterbarkeit_plugins.json"
+     ],
+     "exam": "pos/j5/csharp/frameworks_pruefung.json"
+    }
+   }
   },
   {
    "id": "pos-j5-qualitaet",
@@ -1301,7 +1359,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 10
+   "semester": 10,
+   "lessons": [
+    "pos/j5/theorie/qualitaet_01_qualitaetsmerkmale_metriken.json",
+    "pos/j5/theorie/qualitaet_02_statische_analyse.json",
+    "pos/j5/theorie/qualitaet_03_last_performance_tests.json"
+   ],
+   "exam": "pos/j5/theorie/qualitaet_pruefung.json"
   },
   {
    "id": "dbi-j1-textverarbeitung",
@@ -1555,7 +1619,13 @@
     "datenbanken",
     "algorithmen"
    ],
-   "semester": 9
+   "semester": 9,
+   "lessons": [
+    "dbi/j5/indizes_01_speicherstrukturen.json",
+    "dbi/j5/indizes_02_indizes_btree_hash.json",
+    "dbi/j5/indizes_03_ausfuehrungsplaene.json"
+   ],
+   "exam": "dbi/j5/indizes_pruefung.json"
   },
   {
    "id": "dbi-j5-nosql",
@@ -1566,7 +1636,13 @@
    "topics": [
     "datenbanken"
    ],
-   "semester": 9
+   "semester": 9,
+   "lessons": [
+    "dbi/j5/nosql_01_dbms_interna.json",
+    "dbi/j5/nosql_02_nosql_modelle.json",
+    "dbi/j5/nosql_03_cap_einsatz.json"
+   ],
+   "exam": "dbi/j5/nosql_pruefung.json"
   },
   {
    "id": "dbi-j5-bi",
@@ -1578,7 +1654,13 @@
     "datenbanken",
     "ki"
    ],
-   "semester": 10
+   "semester": 10,
+   "lessons": [
+    "dbi/j5/bi_01_data_warehouse.json",
+    "dbi/j5/bi_02_olap_sternschema.json",
+    "dbi/j5/bi_03_data_mining.json"
+   ],
+   "exam": "dbi/j5/bi_pruefung.json"
   },
   {
    "id": "dbi-j5-tuning",
@@ -1589,7 +1671,13 @@
    "topics": [
     "datenbanken"
    ],
-   "semester": 10
+   "semester": 10,
+   "lessons": [
+    "dbi/j5/tuning_01_administration_werkzeuge.json",
+    "dbi/j5/tuning_02_leistungsbewertung.json",
+    "dbi/j5/tuning_03_tuning_massnahmen.json"
+   ],
+   "exam": "dbi/j5/tuning_pruefung.json"
   },
   {
    "id": "nvs-j2-grundlagen",
@@ -1810,7 +1898,13 @@
     "netzwerke",
     "software-engineering"
    ],
-   "semester": 9
+   "semester": 9,
+   "lessons": [
+    "nvs/j5/soa_01_serviceorientierung.json",
+    "nvs/j5/soa_02_middleware_api_gateways.json",
+    "nvs/j5/soa_03_enterprise_architektur.json"
+   ],
+   "exam": "nvs/j5/soa_pruefung.json"
   },
   {
    "id": "nvs-j5-cloud",
@@ -1822,7 +1916,13 @@
     "cloud",
     "netzwerke"
    ],
-   "semester": 10
+   "semester": 10,
+   "lessons": [
+    "nvs/j5/cloud_01_cloud_modelle.json",
+    "nvs/j5/cloud_02_multi_tier_container.json",
+    "nvs/j5/cloud_03_skalierung_betrieb.json"
+   ],
+   "exam": "nvs/j5/cloud_pruefung.json"
   },
   {
    "id": "nvs-j5-sicherheitskonzepte",
@@ -1833,7 +1933,13 @@
    "topics": [
     "security"
    ],
-   "semester": 10
+   "semester": 10,
+   "lessons": [
+    "nvs/j5/sicherheitskonzepte_01_risikoanalyse.json",
+    "nvs/j5/sicherheitskonzepte_02_sicherheitskonzept_erstellen.json",
+    "nvs/j5/sicherheitskonzepte_03_notfall_incident_response.json"
+   ],
+   "exam": "nvs/j5/sicherheitskonzepte_pruefung.json"
   },
   {
    "id": "tinf-j1-zahlensysteme",
@@ -2226,7 +2332,13 @@
    "topics": [
     "software-engineering"
    ],
-   "semester": 9
+   "semester": 9,
+   "lessons": [
+    "syp/j5/systemkonzepte_01_systeme_dimensionieren.json",
+    "syp/j5/systemkonzepte_02_systembeschreibung.json",
+    "syp/j5/systemkonzepte_03_betrieb_wartung.json"
+   ],
+   "exam": "syp/j5/systemkonzepte_pruefung.json"
   },
   {
    "id": "syp-j5-beschaffung",
@@ -2238,7 +2350,13 @@
     "projektmanagement",
     "recht"
    ],
-   "semester": 9
+   "semester": 9,
+   "lessons": [
+    "syp/j5/beschaffung_01_business_case.json",
+    "syp/j5/beschaffung_02_pflichtenheft_ausschreibung.json",
+    "syp/j5/beschaffung_03_vergabe_vertraege.json"
+   ],
+   "exam": "syp/j5/beschaffung_pruefung.json"
   },
   {
    "id": "syp-j5-sicherheitsstandards",
@@ -2250,7 +2368,13 @@
     "security",
     "recht"
    ],
-   "semester": 10
+   "semester": 10,
+   "lessons": [
+    "syp/j5/standards_01_sicherheitsrichtlinien.json",
+    "syp/j5/standards_02_dsgvo_grundlagen.json",
+    "syp/j5/standards_03_dsgvo_praxis.json"
+   ],
+   "exam": "syp/j5/standards_pruefung.json"
   },
   {
    "id": "syp-j5-softwarerecht",
@@ -2261,7 +2385,13 @@
    "topics": [
     "recht"
    ],
-   "semester": 10
+   "semester": 10,
+   "lessons": [
+    "syp/j5/recht_01_urheberrecht.json",
+    "syp/j5/recht_02_lizenzen_open_source.json",
+    "syp/j5/recht_03_haftung_compliance.json"
+   ],
+   "exam": "syp/j5/recht_pruefung.json"
   },
   {
    "id": "junior-git-team",

@@ -1,0 +1,118 @@
+{
+  "id": "nvs-j5-cloud_pruefung",
+  "title": "Abschlussprüfung: Multi-Tier-Systeme & Cloud Computing",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welches ist KEIN Merkmal von Cloud Computing nach der NIST-Definition?",
+      "options": [
+        "Schnelle Elastizität",
+        "Gemessene Nutzung",
+        "Selbstbedienung nach Bedarf",
+        "Hardware steht im eigenen Gebäude"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die fünf NIST-Merkmale sind Selbstbedienung, Netzzugriff, Ressourcenpool, Elastizität und gemessene Nutzung. Der Standort der Hardware ist kein Merkmal – auch eine Private Cloud kann im eigenen Haus stehen, ein bloßer eigener Server ist aber noch keine Cloud."
+    },
+    {
+      "question": "Eine Schule mietet eine virtuelle Maschine (IaaS) für ihr Moodle. Wer muss die Sicherheitsupdates des Betriebssystems einspielen?",
+      "options": [
+        "Der Cloud-Anbieter",
+        "Die Schule",
+        "Der Hersteller von Moodle",
+        "Niemand, VMs aktualisieren sich selbst"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei IaaS stellt der Anbieter Hardware und Virtualisierung bereit; Betriebssystem, Updates und Anwendungen liegen beim Kunden."
+    },
+    {
+      "question": "In einem Cloud-Speicher-Bucket liegen Zeugnis-PDFs, die durch eine falsche Freigabe öffentlich lesbar waren. Wer trägt nach dem Shared-Responsibility-Modell die Verantwortung?",
+      "options": [
+        "Der Kunde, denn Konfiguration und Zugriffsrechte auf Daten liegen bei ihm",
+        "Der Anbieter, denn der Speicher gehört ihm",
+        "Beide zu gleichen Teilen, unabhängig von der Ursache",
+        "Niemand, öffentliche Buckets sind Standard"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Anbieter ist für die Sicherheit DER Cloud zuständig, der Kunde für die Sicherheit IN der Cloud – dazu gehören Daten, Zugriffsrechte und die eigene Konfiguration."
+    },
+    {
+      "question": "Mehrere Bundesbehörden teilen sich eine Cloud-Infrastruktur, die nur für sie betrieben wird und ihre gemeinsamen Sicherheitsanforderungen erfüllt. Welches Bereitstellungsmodell ist das?",
+      "options": [
+        "Public Cloud",
+        "Hybrid Cloud",
+        "Community Cloud",
+        "Multi-Cloud"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine Community Cloud dient einer Gruppe von Organisationen mit gleichen Anforderungen."
+    },
+    {
+      "question": "Welcher Nachteil gilt für vertikale, aber nicht für horizontale Skalierung?",
+      "options": [
+        "Die Instanzen müssen zustandslos sein",
+        "Man braucht einen Load Balancer",
+        "Die Last muss auf mehrere Server verteilt werden",
+        "Die größte verfügbare Maschine ist eine harte Obergrenze, und die eine Instanz bleibt ein Single Point of Failure"
+      ],
+      "correctIndex": 3,
+      "explanation": "Vertikal wächst nur eine Maschine – bis zu ihrer Grenze und ohne Redundanz. Zustandslosigkeit und Load Balancer sind Voraussetzungen der horizontalen Skalierung."
+    },
+    {
+      "question": "Was ist in Kubernetes die kleinste Einheit, die gestartet und auf einen Node verteilt wird?",
+      "options": [
+        "Pod",
+        "Container-Image",
+        "Service",
+        "Deployment"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein Pod enthält einen oder mehrere Container mit gemeinsamer IP-Adresse und ist die kleinste planbare Einheit. Ein Deployment verwaltet mehrere Pods."
+    },
+    {
+      "question": "Was passiert beim Anlegen dieses Deployments?",
+      "code": "spec:\n  replicas: 2\n  selector:\n    matchLabels:\n      app: web\n  template:\n    metadata:\n      labels:\n        app: frontend",
+      "options": [
+        "Es entstehen 2 Pods mit dem Label app: frontend",
+        "Kubernetes lehnt das Deployment ab, weil der Selector nicht zu den Labels der Pod-Vorlage passt",
+        "Es entstehen 2 Pods, die aber von keinem Service gefunden werden",
+        "Kubernetes ändert das Label automatisch auf app: web"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei einem Deployment muss spec.selector zu den Labels in spec.template passen, sonst würde es seine eigenen Pods nicht wiederfinden. Die API weist so ein Objekt mit einem Validierungsfehler zurück."
+    },
+    {
+      "question": "Ein HPA hat 5 Replikas bei 84 % CPU, Ziel sind 60 %. Auf wie viele Replikas skaliert er (ohne Min/Max-Grenze)?",
+      "options": [
+        "6",
+        "8",
+        "7",
+        "5"
+      ],
+      "correctIndex": 2,
+      "explanation": "aufrunden(5 · 84 / 60) = aufrunden(7,0) = 7."
+    },
+    {
+      "question": "4 Instanzen laufen rund um die Uhr, 30 Tage lang, zu 0,15 € pro Instanzstunde. Was kosten sie?",
+      "options": [
+        "432 €",
+        "108 €",
+        "576 €",
+        "14,40 €"
+      ],
+      "correctIndex": 0,
+      "explanation": "4 · 24 · 30 = 2880 Instanzstunden; 2880 · 0,15 € = 432 €."
+    },
+    {
+      "question": "Ein Dienst erreicht 99,95 % Verfügbarkeit. Wie viele Stunden Ausfall pro Jahr (8760 h) sind das ungefähr?",
+      "options": [
+        "0,44 h",
+        "4,38 h",
+        "43,8 h",
+        "8,76 h"
+      ],
+      "correctIndex": 1,
+      "explanation": "(1 − 0,9995) · 8760 h = 0,0005 · 8760 h = 4,38 h."
+    }
+  ]
+}

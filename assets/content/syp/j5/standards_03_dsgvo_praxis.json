@@ -1,0 +1,89 @@
+{
+ "id": "syp-j5-standards_03_dsgvo_praxis",
+ "title": "DSGVO in der Praxis",
+ "summary": "Betroffenenrechte umsetzen, Privacy by Design, Auftragsverarbeitung und Datenpannen melden.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Hinweis: keine Rechtsberatung, sondern Grundwissen für die Praxis. Die DSGVO gibt Betroffenen Rechte, die ein System technisch unterstützen muss. Anfragen müssen unverzüglich, spätestens innerhalb eines Monats beantwortet werden; bei komplexen Fällen ist eine Verlängerung um weitere zwei Monate möglich, über die man die Person informieren muss. Grundsätzlich ist das kostenlos. Wer meint, dass seine Rechte verletzt sind, kann sich bei der Datenschutzbehörde beschweren."
+  },
+  {
+   "type": "code",
+   "content": "Betroffenenrechte (DSGVO)\nArt. 13/14 Information\nArt. 15    Auskunft (+ Kopie)\nArt. 16    Berichtigung\nArt. 17    Löschung\nArt. 18    Einschränkung der\n           Verarbeitung\nArt. 20    Datenübertragbarkeit\nArt. 21    Widerspruch\nArt. 22    keine rein automati-\n           sierte Entscheidung\n           mit erheblicher Wirkung"
+  },
+  {
+   "type": "text",
+   "content": "Für Entwickler:innen heißt das: Schon beim Design eine Exportfunktion vorsehen, die alle Daten einer Person sammelt (Auskunft, Übertragbarkeit in einem gängigen, maschinenlesbaren Format wie JSON oder CSV), eine echte Löschfunktion (auch in verknüpften Tabellen, mit Konzept für Logs und Backups) und Berichtigung durch die Nutzer:innen. Das Löschrecht ist nicht absolut: Gesetzliche Aufbewahrungspflichten, z. B. für Rechnungen, gehen vor."
+  },
+  {
+   "type": "code",
+   "content": "import sqlite3, json\ndb = sqlite3.connect(\":memory:\")\ndb.executescript(\"\"\"\nCREATE TABLE person(id INTEGER\n  PRIMARY KEY, name, email);\nCREATE TABLE buchung(person_id,\n  raum, datum);\nINSERT INTO person VALUES\n  (1,'Lisa Huber','lh@x.at'),\n  (2,'Tom Berger','tb@x.at');\nINSERT INTO buchung VALUES\n  (1,'EDV3','2026-11-20'),\n  (2,'EDV1','2026-11-21'),\n  (1,'Aula','2026-12-01');\n\"\"\")\ndef auskunft(pid):\n    n, m = db.execute(\"SELECT name,\"\n      \" email FROM person WHERE id=?\",\n      (pid,)).fetchone()\n    b = db.execute(\"SELECT raum || ' '\"\n      \" || datum FROM buchung WHERE\"\n      \" person_id=? ORDER BY datum\",\n      (pid,)).fetchall()\n    return {\"name\": n, \"email\": m,\n            \"buchungen\": [x[0] for x in b]}\nprint(json.dumps(auskunft(1),\n                 indent=1))\n\n# Ausgabe:\n# {\n#  \"name\": \"Lisa Huber\",\n#  \"email\": \"lh@x.at\",\n#  \"buchungen\": [\n#   \"EDV3 2026-11-20\",\n#   \"Aula 2026-12-01\"\n#  ]\n# }"
+  },
+  {
+   "type": "text",
+   "content": "Art. 25 DSGVO verlangt Datenschutz durch Technikgestaltung (Privacy by Design) und durch datenschutzfreundliche Voreinstellungen (Privacy by Default). Beispiele: nur Pflichtfelder, die wirklich nötig sind; Profile standardmäßig nicht öffentlich; Pseudonymisierung; automatische Löschung nach Ablauf der Frist; Verschlüsselung bei Übertragung und Speicherung; rollenbasierte Berechtigungen. Art. 32 fordert passende technische und organisatorische Maßnahmen (TOMs) nach dem Stand der Technik und dem Risiko."
+  },
+  {
+   "type": "text",
+   "content": "Lässt der Verantwortliche Daten durch einen Dienstleister verarbeiten – Cloud-Hosting, Newsletter-Dienst, externer Support –, ist das Auftragsverarbeitung (Art. 28). Dafür braucht es einen Vertrag (AV-Vertrag): Verarbeitung nur auf Weisung, Vertraulichkeit, angemessene TOMs, weitere Subunternehmer nur mit Genehmigung, Unterstützung bei Betroffenenrechten, Löschung oder Rückgabe am Ende, Kontrollrechte. Liegen Server außerhalb von EU/EWR, sind zusätzliche Garantien für die Übermittlung nötig. Außerdem führt der Verantwortliche ein Verzeichnis der Verarbeitungstätigkeiten (Art. 30) und macht bei voraussichtlich hohem Risiko eine Datenschutz-Folgenabschätzung (Art. 35)."
+  },
+  {
+   "type": "text",
+   "content": "Bei einer Datenpanne (Verletzung des Schutzes personenbezogener Daten – z. B. gestohlener Laptop ohne Verschlüsselung, falsch versendete Notenliste, Datenbank-Leak) meldet der Verantwortliche sie unverzüglich und möglichst binnen 72 Stunden ab Bekanntwerden der Datenschutzbehörde (Art. 33), außer sie führt voraussichtlich zu keinem Risiko. Spätere Meldungen müssen begründet werden. Bei voraussichtlich hohem Risiko werden auch die Betroffenen benachrichtigt (Art. 34). Jede Panne wird intern dokumentiert, auch wenn keine Meldung nötig ist. Auftragsverarbeiter melden Pannen unverzüglich dem Verantwortlichen. Die 72 Stunden laufen auch übers Wochenende."
+  },
+  {
+   "type": "code",
+   "content": "from datetime import datetime, timedelta\nTAG = [\"Mo\", \"Di\", \"Mi\", \"Do\",\n       \"Fr\", \"Sa\", \"So\"]\nbekannt = datetime(2026, 11, 13, 16, 30)\nfrist = bekannt + timedelta(hours=72)\nfor t in (bekannt, frist):\n    print(TAG[t.weekday()], t)\n\n# Ausgabe:\n# Fr 2026-11-13 16:30:00\n# Mo 2026-11-16 16:30:00"
+  },
+  {
+   "type": "text",
+   "content": "Verstöße können teuer werden: Die DSGVO sieht Geldbußen von bis zu 20 Mio. € oder 4 % des weltweiten Jahresumsatzes vor, je nachdem, welcher Betrag höher ist (Art. 83), dazu Schadenersatzansprüche Betroffener (Art. 82). Typische Fehler: keine Exportfunktion; „Löschen“ setzt nur ein Flag; Cloud-Dienst ohne AV-Vertrag; Panne erst nach dem Wochenende bemerken und melden. Zusammenfassung: Betroffenenrechte technisch einplanen (Frist ein Monat), Privacy by Design und by Default, AV-Vertrag nach Art. 28, Verzeichnis nach Art. 30, Pannen binnen 72 h an die DSB melden."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Eine Datenpanne wird am Mittwoch um 9:00 Uhr bekannt. Bis wann soll die Meldung an die Datenschutzbehörde spätestens erfolgen?",
+   "options": [
+    "Freitag 17:00 Uhr (Dienstschluss)",
+    "Montag 9:00 Uhr",
+    "Samstag 9:00 Uhr",
+    "Donnerstag 9:00 Uhr"
+   ],
+   "correctIndex": 2,
+   "explanation": "72 Stunden ab Bekanntwerden: Mittwoch 9:00 + 72 h = Samstag 9:00 Uhr. Das Wochenende zählt mit, gemeldet wird unverzüglich – die 72 h sind das Maximum."
+  },
+  {
+   "question": "Eine Schule lässt ihre Lernplattform von einem externen Anbieter hosten. Was braucht sie dafür nach der DSGVO?",
+   "options": [
+    "Nichts, weil der Anbieter selbst verantwortlich ist",
+    "Einen Auftragsverarbeitungsvertrag nach Art. 28",
+    "Eine Einwilligung jedes Schülers in das Hosting",
+    "Eine Genehmigung der Datenschutzbehörde vor jedem Login"
+   ],
+   "correctIndex": 1,
+   "explanation": "Der Hoster verarbeitet im Auftrag und nach Weisung der Schule. Das regelt ein AV-Vertrag."
+  },
+  {
+   "question": "Welche Funktion unterstützt das Recht auf Datenübertragbarkeit (Art. 20) am besten?",
+   "options": [
+    "Ein Export der eigenen Daten als JSON oder CSV",
+    "Ein Screenshot des Profils",
+    "Ein ausgedrucktes PDF per Post",
+    "Ein Link auf die Datenschutzerklärung"
+   ],
+   "correctIndex": 0,
+   "explanation": "Datenübertragbarkeit verlangt ein strukturiertes, gängiges und maschinenlesbares Format, damit die Daten zu einem anderen Anbieter mitgenommen werden können."
+  },
+  {
+   "question": "Bei der Registrierung ist das Häkchen „Mein Profil ist für alle sichtbar“ schon gesetzt. Gegen welches Prinzip verstößt das?",
+   "options": [
+    "Rechenschaftspflicht",
+    "Richtigkeit",
+    "Datenübertragbarkeit",
+    "Datenschutzfreundliche Voreinstellungen (Privacy by Default)"
+   ],
+   "correctIndex": 3,
+   "explanation": "Nach Art. 25 müssen Voreinstellungen datenschutzfreundlich sein. Öffentlich machen soll die Person aktiv selbst wählen."
+  }
+ ]
+}

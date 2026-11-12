@@ -1,0 +1,89 @@
+{
+  "id": "dbi-j5-indizes_01_speicherstrukturen",
+  "title": "Seiten, Heap und geclusterte Tabellen",
+  "summary": "Wie ein DBMS Tabellen in Seiten auf der Platte ablegt und warum das die Kosten einer Abfrage bestimmt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Tabelle liegt nicht als Zeilenliste im Speicher, sondern in Dateien auf SSD oder Festplatte. Das DBMS liest und schreibt dabei nie einzelne Zeilen, sondern immer ganze Seiten (auch Blöcke genannt). Bei PostgreSQL ist eine Seite standardmäßig 8 KB groß, bei SQLite 4 KB. Wie teuer eine Abfrage ist, misst man deshalb vor allem in Seitenzugriffen (I/Os) – nicht in Zeilen."
+    },
+    {
+      "type": "code",
+      "content": "-- PostgreSQL\nSHOW block_size;        -- 8192\n\nSELECT relpages, reltuples\nFROM pg_class\nWHERE relname = 'schueler';\n-- relpages | reltuples\n--     1274 |    200000\n\n-- SQLite\nPRAGMA page_size;       -- 4096"
+    },
+    {
+      "type": "text",
+      "content": "Im Beispiel belegen 200 000 Schüler:innen 1274 Seiten, also rund 157 Zeilen pro Seite. Für Abschätzungen rechnest du vereinfacht: Zeilen pro Seite = Seitengröße / Zeilengröße (abgerundet, Seitenkopf vernachlässigt) und Seitenanzahl = Zeilen / Zeilen pro Seite (aufgerundet)."
+    },
+    {
+      "type": "text",
+      "content": "Die einfachste Speicherform ist die Heap-Datei: Die Zeilen liegen ohne Ordnung dort, wo gerade Platz ist. Einfügen ist billig – die Zeile kommt in irgendeine Seite mit freiem Platz. Suchen ist teuer: Ohne Hilfsstruktur muss das DBMS alle Seiten lesen. Das nennt man Full Table Scan (in PostgreSQL „Seq Scan“, in SQLite „SCAN“). PostgreSQL speichert jede Tabelle als Heap."
+    },
+    {
+      "type": "code",
+      "content": "100 000 Zeilen à 200 Byte\nSeite 8192 Byte\n\nZeilen/Seite = 8192 / 200\n             = 40 (abgerundet)\nSeiten = 100 000 / 40 = 2500\n\nSuche über Primärschlüssel (Heap):\n  im Schnitt  2500 / 2 = 1250 Seiten\n  schlimmstens         2500 Seiten\nSuche nach nachname = 'Huber':\n  immer alle 2500 Seiten\n  (es kann ja mehrere geben)"
+    },
+    {
+      "type": "text",
+      "content": "Wäre die Datei nach dem Suchschlüssel sortiert, könntest du binär suchen (kennst du aus POS): Bei 2500 Seiten sind das etwa log₂(2500) ≈ 11,3, also rund 12 Seitenzugriffe statt 1250. Der Haken: Beim Einfügen müsste man Zeilen verschieben, damit die Sortierung erhalten bleibt. Rein sortierte Dateien sind daher in der Praxis selten – man nimmt Indizes (nächste Lektion)."
+    },
+    {
+      "type": "text",
+      "content": "Eine geclusterte Tabelle speichert die Zeilen physisch in der Reihenfolge eines Schlüssels – meist als B-Baum über den Primärschlüssel. So arbeiten z. B. SQLite (Tabellen mit rowid bzw. INTEGER PRIMARY KEY) und MySQL/MariaDB mit InnoDB. Vorteil: Zeilen mit benachbarten Schlüsseln liegen auf wenigen Seiten, Bereichsabfragen wie id BETWEEN 100 AND 200 sind sehr schnell. Weil die Zeilen nur in einer Reihenfolge liegen können, gibt es pro Tabelle nur eine Clusterung."
+    },
+    {
+      "type": "code",
+      "content": "-- SQLite: Tabelle ist nach id geclustert\nEXPLAIN QUERY PLAN\nSELECT * FROM schueler WHERE id = 42;\n-- SEARCH schueler USING INTEGER\n--   PRIMARY KEY (rowid=?)\n\n-- PostgreSQL: Heap einmalig sortieren\nCLUSTER schueler USING ix_klasse;\n-- neue Zeilen werden NICHT\n-- einsortiert -> später wiederholen"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: zu glauben, „SELECT * … WHERE id = 42“ liest genau eine Zeile von der Platte. Gelesen wird immer mindestens eine ganze Seite – und ohne passende Struktur sind es alle Seiten. Achte auch darauf: Breite Zeilen (viele oder lange Spalten) bedeuten weniger Zeilen pro Seite und damit mehr Seitenzugriffe beim Scan.\n\nZusammenfassung: DBMS arbeiten mit Seiten (PostgreSQL 8 KB, SQLite 4 KB). Heap = ungeordnet, billiges Einfügen, Suche per Full Table Scan. Sortiert = binäre Suche, aber teures Einfügen. Geclustert = physisch nach einem Schlüssel geordnet, ideal für Bereichsabfragen, nur eine Clusterung pro Tabelle."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Tabelle hat 50 000 Zeilen à 400 Byte, eine Seite hat 8192 Byte (Seitenkopf vernachlässigt). Wie viele Seiten belegt sie?",
+      "options": [
+        "125",
+        "2500",
+        "2560",
+        "20"
+      ],
+      "correctIndex": 1,
+      "explanation": "8192 / 400 = 20,48 → 20 Zeilen pro Seite (abgerundet, angefangene Zeilen passen nicht). 50 000 / 20 = 2500 Seiten."
+    },
+    {
+      "question": "Wie viele Seiten muss ein Full Table Scan auf einer Heap-Tabelle mit 3000 Seiten lesen, um alle Zeilen mit ort = 'Graz' zu finden?",
+      "options": [
+        "1500",
+        "etwa 12",
+        "3000",
+        "nur die Seiten mit Grazer Zeilen"
+      ],
+      "correctIndex": 2,
+      "explanation": "In einem Heap liegen die Zeilen ungeordnet. Ohne Index kann jede Seite einen Treffer enthalten, also müssen alle 3000 Seiten gelesen werden."
+    },
+    {
+      "question": "Wie viele Clusterungen (physische Sortierreihenfolgen) kann eine Tabelle gleichzeitig haben?",
+      "options": [
+        "Eine pro Spalte",
+        "Beliebig viele",
+        "Keine, das DBMS sortiert nie",
+        "Höchstens eine"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Zeilen können physisch nur in einer Reihenfolge liegen. Weitere Zugriffspfade brauchen zusätzliche (nicht geclusterte) Indizes."
+    },
+    {
+      "question": "Was ist der Hauptvorteil einer Heap-Datei gegenüber einer sortierten Datei?",
+      "options": [
+        "Einfügen ist billig, weil nichts verschoben werden muss",
+        "Suchen geht mit binärer Suche",
+        "Bereichsabfragen lesen weniger Seiten",
+        "Sie braucht keine Seiten"
+      ],
+      "correctIndex": 0,
+      "explanation": "Neue Zeilen kommen einfach in eine Seite mit freiem Platz. Dafür muss man beim Suchen ohne Index alle Seiten lesen."
+    }
+  ]
+}
