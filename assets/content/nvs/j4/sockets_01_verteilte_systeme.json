@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j4-sockets_01_verteilte_systeme",
+  "title": "Verteilte Systeme: Eigenschaften & Architekturen",
+  "summary": "Was ein verteiltes System ausmacht und wie Client/Server, Peer-to-Peer und Middleware zusammenspielen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein verteiltes System besteht aus mehreren eigenständigen Rechnern, die über ein Netzwerk Nachrichten austauschen und für die Benutzer:innen wie EIN System wirken. Beispiele aus deinem Alltag: die Lernplattform der Schule, Online-Spiele, Messenger, aber auch diese App, wenn sie Daten mit einem Server abgleicht."
+    },
+    {
+      "type": "text",
+      "content": "Typische Eigenschaften: Die Teile laufen nebenläufig (gleichzeitig), es gibt keine gemeinsame Uhr und keinen gemeinsamen Speicher – nur Nachrichten. Teile können einzeln ausfallen (Teilausfälle), während der Rest weiterläuft. Ziele sind Transparenz (man merkt die Verteilung nicht), Skalierbarkeit (mehr Last durch mehr Rechner bewältigen) und Fehlertoleranz."
+    },
+    {
+      "type": "text",
+      "content": "Typischer Denkfehler beim Entwickeln ist, das Netz wie einen lokalen Funktionsaufruf zu behandeln. Bekannt sind die „Fallacies of Distributed Computing“: falsche Annahmen wie „das Netz ist zuverlässig“, „die Latenz ist null“, „die Bandbreite ist unbegrenzt“ oder „das Netz ist sicher“. Jede Netzwerkanfrage kann verloren gehen, verzögert ankommen oder doppelt ausgeführt werden – dein Programm muss mit Timeouts und Fehlern umgehen."
+    },
+    {
+      "type": "text",
+      "content": "Client/Server ist die häufigste Architektur: Ein Server bietet einen Dienst an und wartet auf Anfragen, Clients stellen Anfragen und bekommen Antworten. Vorteile: zentrale Daten, einfache Verwaltung und Absicherung. Nachteil: Der Server ist ein Single Point of Failure und kann zum Engpass werden. Oft wird die Logik in Schichten (Tiers) verteilt, z. B. Browser – Applikationsserver – Datenbankserver (3-Tier)."
+    },
+    {
+      "type": "text",
+      "content": "Bei Peer-to-Peer (P2P) sind alle Knoten gleichberechtigt und zugleich Client und Server. Beispiele sind BitTorrent oder Teile von Videotelefonie. P2P skaliert gut, weil jeder neue Peer auch Ressourcen mitbringt, ist aber schwerer zu verwalten und abzusichern. Würde jeder Peer direkt mit jedem verbunden (vollvermascht), wächst die Zahl der Verbindungen quadratisch – deshalb kennt in echten P2P-Netzen jeder Knoten nur einige Nachbarn:"
+    },
+    {
+      "type": "code",
+      "content": "def client_server(n):\n    return n          # jeder -> Server\n\ndef p2p_vollvermascht(n):\n    return n * (n - 1) // 2\n\nfor n in [5, 30, 1000]:\n    print(n, client_server(n),\n          p2p_vollvermascht(n))\n\n# Ausgabe:\n# 5 5 10\n# 30 30 435\n# 1000 1000 499500"
+    },
+    {
+      "type": "text",
+      "content": "Middleware ist Software zwischen Betriebssystem/Netzwerk und Anwendung, die die Verteilung versteckt. Bei RPC (Remote Procedure Call, z. B. gRPC) ruft der Client eine Funktion auf, die in Wirklichkeit auf einem anderen Rechner läuft. Nachrichtenorientierte Middleware (Message Broker wie RabbitMQ oder MQTT-Broker) stellt Nachrichten in Warteschlangen zu; Sender und Empfänger müssen dann nicht gleichzeitig online sein (asynchrone Kommunikation)."
+    },
+    {
+      "type": "code",
+      "content": "         Anwendung A    Anwendung B\n              │              │\n         ┌────┴──────────────┴────┐\n         │      Middleware        │\n         │ (RPC, Message Broker)  │\n         └────┬──────────────┬────┘\n          BS + Netz      BS + Netz\n          Rechner 1      Rechner 2"
+    },
+    {
+      "type": "text",
+      "content": "Ganz unten in jeder dieser Architekturen stehen Sockets: Die Programmierschnittstelle, mit der ein Programm über TCP oder UDP Daten sendet und empfängt. In der nächsten Lektion programmierst du damit selbst einen Server."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Verteilte Systeme kommunizieren nur über Nachrichten, laufen nebenläufig und müssen mit Teilausfällen rechnen. Client/Server ist zentral und gut kontrollierbar, P2P dezentral und gut skalierbar. Middleware wie RPC oder Message Broker verbirgt die Netzwerkdetails und ermöglicht synchrone oder asynchrone Kommunikation."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele direkte Verbindungen braucht ein vollvermaschtes P2P-Netz mit 8 Peers?",
+      "options": [
+        "8",
+        "16",
+        "28",
+        "64"
+      ],
+      "correctIndex": 2,
+      "explanation": "n·(n−1)/2 = 8·7/2 = 28. Bei Client/Server wären es nur 8 Verbindungen zum Server."
+    },
+    {
+      "question": "Welche Aussage beschreibt eine typische Eigenschaft verteilter Systeme?",
+      "options": [
+        "Alle Knoten teilen sich denselben Arbeitsspeicher.",
+        "Einzelne Knoten können ausfallen, während andere weiterlaufen.",
+        "Es gibt eine exakt synchrone globale Uhr.",
+        "Netzwerkaufrufe sind so schnell wie lokale Funktionsaufrufe."
+      ],
+      "correctIndex": 1,
+      "explanation": "Teilausfälle sind charakteristisch. Gemeinsamer Speicher, globale Uhr und latenzfreie Aufrufe gibt es nicht – das sind genau die typischen Fehlannahmen."
+    },
+    {
+      "question": "Ein Sensor sendet Messwerte, der Auswerteserver ist aber zeitweise offline. Welche Lösung passt am besten?",
+      "options": [
+        "Ein Message Broker mit Warteschlange",
+        "Ein synchroner RPC-Aufruf ohne Timeout",
+        "Ein vollvermaschtes P2P-Netz",
+        "Die Daten im Sensor löschen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nachrichtenorientierte Middleware puffert Nachrichten; Sender und Empfänger müssen nicht gleichzeitig erreichbar sein. Ein synchroner Aufruf würde blockieren oder fehlschlagen."
+    },
+    {
+      "question": "Was ist ein typischer Nachteil der Client/Server-Architektur?",
+      "options": [
+        "Daten sind schwer zentral zu sichern.",
+        "Clients müssen auch Server sein.",
+        "Die Verwaltung ist besonders aufwendig, weil alle gleichberechtigt sind.",
+        "Der Server kann Single Point of Failure und Engpass sein."
+      ],
+      "correctIndex": 3,
+      "explanation": "Hängt alles an einem Server, ist dessen Ausfall oder Überlastung für alle spürbar. Zentrale Verwaltung und Sicherung sind dagegen Vorteile."
+    }
+  ]
+}

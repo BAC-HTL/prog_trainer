@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-governance_01_ikt_strategie",
+ "title": "IKT-Strategie und IT-Governance",
+ "summary": "Wie eine IKT-Strategie aus der Unternehmensstrategie entsteht und wie IT-Governance sie absichert.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Früher galt die IT oft als reiner Kostenfaktor, der „halt laufen muss“. Heute hängen fast alle Geschäftsprozesse an ihr – vom Webshop bis zur Produktion. Deshalb braucht ein Unternehmen eine IKT-Strategie: einen mittel- bis langfristigen Plan, wie die IT die Unternehmensziele unterstützt. Die Abstimmung zwischen Geschäft und IT nennt man Business-IT-Alignment."
+  },
+  {
+   "type": "code",
+   "content": "Ableitung von oben nach unten\n\n   Vision / Leitbild\n          |\n   Unternehmensstrategie\n          |\n   IKT-Strategie\n   (Ziele, Leitlinien)\n          |\n   IT-Portfolio\n   (Projekte, Services)\n          |\n   Maßnahmen, Budget"
+  },
+  {
+   "type": "text",
+   "content": "Beispiel Schule: Strategisches Ziel „Digitaler Unterricht in allen Klassen“. Daraus folgen IT-Ziele wie „flächendeckendes WLAN“, „eine Lernplattform für alle Fächer“ und „Geräteverwaltung für Schüler-Laptops“. Daraus entstehen Projekte und Services mit Budget und Terminen. Die IT-Ziele werden – wie Projektziele – SMART formuliert, damit man sie messen kann."
+  },
+  {
+   "type": "text",
+   "content": "Typische Inhalte einer IKT-Strategie:\n• IT-Ziele und Kennzahlen\n• Architektur- und Technologieleitlinien (z. B. Standardsoftware vor Eigenentwicklung)\n• Sourcing: was intern, was extern oder aus der Cloud\n• Informationssicherheit und Datenschutz\n• Organisation und Personal der IT\n• Budgetrahmen und Roadmap über mehrere Jahre"
+  },
+  {
+   "type": "text",
+   "content": "IT-Governance ist die Verantwortung der Unternehmensleitung dafür, dass die IT die Unternehmensziele unterstützt, Ressourcen verantwortungsvoll einsetzt und Risiken angemessen steuert. Governance entscheidet und kontrolliert: bewerten, ausrichten, überwachen (Evaluate, Direct, Monitor). Das IT-Management setzt um: planen, aufbauen, betreiben, überwachen. Die Norm ISO/IEC 38500 beschreibt Grundsätze guter IT-Governance."
+  },
+  {
+   "type": "text",
+   "content": "COBIT ist ein verbreitetes Rahmenwerk der Organisation ISACA für Governance und Management der Unternehmens-IT. Es leitet über eine Zielkaskade aus Unternehmenszielen IT-bezogene Ziele ab und beschreibt dazu Prozesse, Verantwortlichkeiten und Reifegrade. COBIT sagt eher, WAS gesteuert und geprüft werden muss; ITIL, das du in der nächsten Lektion kennenlernst, beschreibt detaillierter, WIE IT-Services betrieben werden."
+  },
+  {
+   "type": "text",
+   "content": "Im IT-Portfolio-Management werden alle Vorhaben nach Strategiebeitrag, Nutzen, Kosten und Risiko bewertet und priorisiert, denn das Budget reicht nie für alles. Dabei unterscheidet man Run-Kosten (laufender Betrieb, Wartung, Lizenzen) und Change-Kosten (neue Projekte, Weiterentwicklung). Ein hoher Run-Anteil lässt wenig Spielraum für Innovation."
+  },
+  {
+   "type": "code",
+   "content": "IT-Budget:     2 000 000 € / Jahr\nRun-Anteil:    70 %\n\nRun    = 0,70 · 2 000 000\n       = 1 400 000 €\nChange = 2 000 000 − 1 400 000\n       =   600 000 €\n\nSenkt man Run auf 60 %,\nsteigt Change auf 800 000 €."
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: eine IT-Strategie, die nur aus Technik-Wunschlisten besteht und keinen Bezug zu den Unternehmenszielen hat; Strategien, die einmal geschrieben und nie überprüft werden; oder Governance mit Management verwechseln – die Geschäftsleitung muss nicht Server konfigurieren, aber sie muss entscheiden, welche Risiken sie akzeptiert."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Die IKT-Strategie wird aus der Unternehmensstrategie abgeleitet (Business-IT-Alignment) und legt Ziele, Leitlinien, Sourcing, Sicherheit und Budget fest. IT-Governance (Evaluate, Direct, Monitor) liegt bei der Leitung, IT-Management setzt um. COBIT strukturiert Governance-Ziele, ISO/IEC 38500 gibt Grundsätze vor. Portfolio-Management verteilt das Budget auf Run und Change."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Ein IT-Budget beträgt 1 500 000 €, davon sind 80 % Run-Kosten. Wie viel bleibt für Change?",
+   "options": [
+    "1 200 000 €",
+    "300 000 €",
+    "150 000 €",
+    "80 000 €"
+   ],
+   "correctIndex": 1,
+   "explanation": "Run = 0,8 · 1 500 000 = 1 200 000 €. Change = 1 500 000 − 1 200 000 = 300 000 €."
+  },
+  {
+   "question": "Was beschreibt Business-IT-Alignment?",
+   "options": [
+    "Die Ausrichtung der IT an den Zielen und Prozessen des Unternehmens",
+    "Das Ausrichten der Server im Rack",
+    "Die Auslagerung der IT an einen Dienstleister",
+    "Das Einspielen von Updates"
+   ],
+   "correctIndex": 0,
+   "explanation": "Alignment heißt, dass IT-Ziele aus den Unternehmenszielen abgeleitet werden und diese unterstützen."
+  },
+  {
+   "question": "Welche Tätigkeit gehört zur IT-Governance und nicht zum IT-Management?",
+   "options": [
+    "Server betreiben",
+    "Tickets bearbeiten",
+    "Software installieren",
+    "Festlegen, welche IT-Risiken das Unternehmen akzeptiert, und die Zielerreichung überwachen"
+   ],
+   "correctIndex": 3,
+   "explanation": "Governance bewertet, gibt Richtung vor und überwacht (EDM). Betrieb und Umsetzung sind Aufgaben des Managements."
+  },
+  {
+   "question": "Welche Aussage über COBIT stimmt?",
+   "options": [
+    "COBIT ist eine Programmiersprache",
+    "COBIT ist eine Datenschutzverordnung der EU",
+    "COBIT ist ein Rahmenwerk für Governance und Management der Unternehmens-IT",
+    "COBIT beschreibt nur die Verkabelung von Netzwerken"
+   ],
+   "correctIndex": 2,
+   "explanation": "COBIT (von ISACA) leitet über eine Zielkaskade IT-Ziele aus Unternehmenszielen ab und beschreibt Steuerung und Kontrolle der IT."
+  }
+ ]
+}

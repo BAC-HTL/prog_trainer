@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-zugriff_02_authentifizierung",
+  "title": "Authentifizierung und Passwort-Hashing",
+  "summary": "Du unterscheidest Authentifizierung und Autorisierung, speicherst Passwörter mit Salt und langsamer Hashfunktion (scrypt) und konfigurierst die Anmeldung an PostgreSQL.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Authentifizierung beantwortet „Wer bist du?“ – z. B. durch Benutzername und Passwort. Autorisierung beantwortet „Was darfst du?“ – das sind die Rechte aus der letzten Lektion. Erst nach erfolgreicher Authentifizierung kann das System entscheiden, welche Rechte gelten."
+    },
+    {
+      "type": "text",
+      "content": "Man kann sich mit drei Arten von Faktoren ausweisen: Wissen (Passwort, PIN), Besitz (Handy mit Authenticator-App, Schlüssel, Chipkarte) und Inhärenz bzw. Sein (Fingerabdruck, Gesicht). Mehr-Faktor-Authentifizierung (MFA) kombiniert Faktoren verschiedener Arten. Zwei Passwörter sind keine echte Zwei-Faktor-Authentifizierung – beide sind Wissen."
+    },
+    {
+      "type": "text",
+      "content": "Passwörter darf eine Anwendung nie im Klartext speichern und auch nicht umkehrbar verschlüsseln: Wer die Datenbank stiehlt, hätte sonst alle Passwörter (und weil viele Menschen Passwörter mehrfach verwenden, auch fremde Konten). Gespeichert wird ein Hashwert. Eine kryptografische Hashfunktion ist eine Einwegfunktion: Aus dem Passwort ist der Hash leicht zu berechnen, umgekehrt praktisch unmöglich."
+    },
+    {
+      "type": "code",
+      "content": "import hashlib\nfor pw in [\"passwort\", \"passwort\",\n           \"Passwort\"]:\n    h = hashlib.sha256(pw.encode())\n    print(h.hexdigest()[:16])\n\n# Ausgabe:\n# 33c5ebbb01d608c2\n# 33c5ebbb01d608c2\n# a36c101570cc4410"
+    },
+    {
+      "type": "text",
+      "content": "Ein einfacher SHA-256 reicht aber nicht. Gleiche Passwörter ergeben gleiche Hashes – man sieht sofort, wer dasselbe Passwort hat, und Angreifer verwenden vorberechnete Tabellen (Rainbow Tables). Außerdem ist SHA-256 auf Geschwindigkeit optimiert: Grafikkarten probieren Milliarden Kandidaten pro Sekunde (Brute Force, Wörterbuchangriff)."
+    },
+    {
+      "type": "text",
+      "content": "Die Lösung hat zwei Teile. Salt: Pro Benutzer:in wird ein zufälliger Wert erzeugt, mit dem Passwort gehasht und neben dem Hash gespeichert – gleiche Passwörter ergeben so verschiedene Hashes, und vorberechnete Tabellen werden nutzlos. Langsame Funktion: Passwort-Hashverfahren wie scrypt, Argon2, bcrypt oder PBKDF2 sind absichtlich rechen- (und teilweise speicher-)aufwendig. Bei der Anmeldung merkt man das nicht, beim Durchprobieren von Milliarden Passwörtern sehr wohl."
+    },
+    {
+      "type": "code",
+      "content": "import hashlib, hmac, os\n\ndef hash_pw(pw):\n    salt = os.urandom(16)\n    h = hashlib.scrypt(\n        pw.encode(), salt=salt,\n        n=2**14, r=8, p=1)\n    return salt, h\n\ndef pruefe(pw, salt, h):\n    neu = hashlib.scrypt(\n        pw.encode(), salt=salt,\n        n=2**14, r=8, p=1)\n    return hmac.compare_digest(neu, h)\n\nsalt, h = hash_pw(\"Matura2027!\")\nprint(len(salt), len(h))\nprint(pruefe(\"Matura2027!\", salt, h))\nprint(pruefe(\"matura2027!\", salt, h))\nsalt2, h2 = hash_pw(\"Matura2027!\")\nprint(h == h2)\n\n# Ausgabe:\n# 16 64\n# True\n# False\n# False"
+    },
+    {
+      "type": "text",
+      "content": "In der Tabelle speicherst du salt und hash (oder einen kombinierten String mit den Parametern n, r, p). Zum Prüfen berechnest du den Hash mit demselben Salt neu und vergleichst. hmac.compare_digest vergleicht in konstanter Zeit, sodass sich aus der Antwortzeit nichts ableiten lässt. Das Salt ist nicht geheim; es muss nur zufällig und pro Person verschieden sein. Typische Fehler: ein festes Salt für alle, eigene „Hash-Algorithmen“ erfinden, MD5 oder einfaches SHA verwenden."
+    },
+    {
+      "type": "code",
+      "content": "-- PostgreSQL speichert Rollen-\n-- Passwörter ebenfalls gesalzen:\nSELECT rolpassword FROM pg_authid\n  WHERE rolname = 'huber';\n-- SCRAM-SHA-256$4096:UJeB...\n\n# pg_hba.conf\n# TYPE DB USER ADDRESS METHOD\nlocal all postgres peer\nhostssl schule all 10.0.0.0/8\n  scram-sha-256  # eine Zeile!"
+    },
+    {
+      "type": "text",
+      "content": "PostgreSQL regelt in der Datei pg_hba.conf, wer sich von wo mit welcher Methode anmelden darf. scram-sha-256 prüft das Passwort, ohne es im Klartext über das Netz zu schicken; peer übernimmt bei lokalen Verbindungen den Betriebssystem-Benutzer; trust lässt jede:n ohne Passwort hinein und hat auf echten Servern nichts verloren. hostssl erlaubt die Verbindung nur verschlüsselt.\n\nZusammenfassung: Erst authentifizieren, dann autorisieren. Passwörter mit Salt und einem langsamen Verfahren wie scrypt hashen, in konstanter Zeit vergleichen, und den Datenbankzugang mit pg_hba.conf und starken Methoden absichern."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Schul-App fragt nach Passwort und danach nach einem Code aus einer Authenticator-App am Handy. Welche Faktoren werden kombiniert?",
+      "options": [
+        "Wissen und Besitz",
+        "Wissen und Wissen",
+        "Besitz und Inhärenz",
+        "Wissen und Inhärenz"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Passwort ist Wissen, der Code beweist den Besitz des Handys (bzw. des darin gespeicherten Geheimnisses). Das ist echte Zwei-Faktor-Authentifizierung."
+    },
+    {
+      "question": "Zwei Schülerinnen haben dasselbe Passwort. Was gilt bei korrektem Hashing mit scrypt und zufälligem Salt pro Person?",
+      "options": [
+        "Die gespeicherten Hashes sind gleich.",
+        "Das zweite Passwort wird abgelehnt.",
+        "Die gespeicherten Hashes sind verschieden.",
+        "Die Salts müssen gleich sein, sonst funktioniert die Anmeldung nicht."
+      ],
+      "correctIndex": 2,
+      "explanation": "Unterschiedliche Salts führen zu unterschiedlichen Hashes. So sieht ein Angreifer nicht, wer dasselbe Passwort verwendet."
+    },
+    {
+      "question": "Warum eignet sich ein einfaches hashlib.sha256(passwort) nicht für die Passwortspeicherung?",
+      "options": [
+        "SHA-256 ist umkehrbar.",
+        "SHA-256 gibt es in Python nicht.",
+        "Die Ausgabe ist zu kurz.",
+        "Es ist sehr schnell und ohne Salt – gleiche Passwörter haben gleiche Hashes, Brute Force und Rainbow Tables sind billig."
+      ],
+      "correctIndex": 3,
+      "explanation": "SHA-256 ist nicht umkehrbar, aber für Passwörter zu schnell. Verfahren wie scrypt oder Argon2 sind absichtlich langsam und werden mit Salt verwendet."
+    },
+    {
+      "question": "Was gibt der Code aus (hash_pw und pruefe wie in der Lektion)?",
+      "code": "s, h = hash_pw('Ball2027')\nprint(pruefe('Ball2027', s, h),\n      pruefe('Ball2027',\n             os.urandom(16), h))",
+      "options": [
+        "True True",
+        "True False",
+        "False False",
+        "False True"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der erste Aufruf berechnet mit demselben Salt denselben Hash: True. Mit einem neuen Zufalls-Salt entsteht ein anderer Hash, deshalb schlägt der Vergleich fehl: False."
+    }
+  ]
+}

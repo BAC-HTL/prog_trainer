@@ -32,8 +32,8 @@ Wie man sie installiert, steht unter [Installation](installation.md).
 
 | Stufe | Stand |
 |---|---|
-| 1.–3. Jahrgang | ✅ alle Fächer ausgearbeitet |
-| 4. und 5. Jahrgang | Lehrplan angelegt, Inhalte folgen |
+| 1.–4. Jahrgang | ✅ alle Fächer ausgearbeitet |
+| 5. Jahrgang | Lehrplan angelegt, Inhalte folgen |
 | Junior, Senior, Expert | Module angelegt, Inhalte folgen |
 | Herausforderungen | 24 pro Sprache |
 | Spielmissionen | 16 pro Sprache |

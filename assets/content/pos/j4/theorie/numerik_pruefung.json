@@ -1,0 +1,119 @@
+{
+  "id": "pos-j4-theorie-numerik_pruefung",
+  "title": "Abschlussprüfung: Grundzüge der Numerik",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Wie viele Bits hat die gespeicherte Mantisse einer double-Zahl nach IEEE 754?",
+      "options": [
+        "23",
+        "64",
+        "11",
+        "52"
+      ],
+      "correctIndex": 3,
+      "explanation": "double: 1 Bit Vorzeichen, 11 Bit Exponent, 52 Bit Mantisse (plus verstecktes führendes Bit)."
+    },
+    {
+      "question": "Welchen Wert stellt diese single-Zahl dar (Bias 127)?",
+      "code": "0 10000000 01000000000000000000000",
+      "options": [
+        "1.25",
+        "2.5",
+        "5.0",
+        "-2.5"
+      ],
+      "correctIndex": 1,
+      "explanation": "Vorzeichen 0 → positiv. Exponent 10000000₂ = 128, also E = 128 − 127 = 1. Mantisse 1,01₂ = 1,25. Wert: 1,25 · 2¹ = 2,5."
+    },
+    {
+      "question": "Welche Dezimalzahl ist als double exakt darstellbar?",
+      "options": [
+        "0.375",
+        "0.1",
+        "0.2",
+        "0.3"
+      ],
+      "correctIndex": 0,
+      "explanation": "0,375 = 3/8 hat einen Zweierpotenz-Nenner und ist binär 0,011₂. 0,1, 0,2 und 0,3 haben unendlich viele Binärstellen."
+    },
+    {
+      "question": "Was ist double.Epsilon in C#?",
+      "options": [
+        "Die Maschinengenauigkeit 2⁻⁵² ≈ 2,2 · 10⁻¹⁶",
+        "Die empfohlene Toleranz für Vergleiche",
+        "Die kleinste positive darstellbare double-Zahl (≈ 4,9 · 10⁻³²⁴)",
+        "Der Abstand zwischen zwei beliebigen double-Zahlen"
+      ],
+      "correctIndex": 2,
+      "explanation": "double.Epsilon ist die kleinste positive (denormalisierte) Zahl. Als Vergleichstoleranz ist sie praktisch nutzlos – ein häufiger Fehler."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "x = 0.1 * 3\nprint(x == 0.3, x)",
+      "options": [
+        "True 0.3",
+        "False 0.3",
+        "True 0.30000000000000004",
+        "False 0.30000000000000004"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Rundungsfehler von 0,1 wird mit 3 multipliziert, das Ergebnis liegt eine Stelle neben der gespeicherten 0.3."
+    },
+    {
+      "question": "Warum liefert (1 - math.cos(x)) / x**2 für x = 1e-8 den Wert 0.0 statt ≈ 0,5?",
+      "options": [
+        "Weil x**2 einen Überlauf erzeugt",
+        "Weil math.cos mit Grad statt Bogenmaß rechnet",
+        "Weil die Division durch eine kleine Zahl immer 0 ergibt",
+        "Weil cos(1e-8) auf genau 1.0 gerundet wird und 1 − 1 = 0 ist (Auslöschung)"
+      ],
+      "correctIndex": 3,
+      "explanation": "cos(10⁻⁸) ≈ 1 − 5 · 10⁻¹⁷ liegt näher an 1.0 als an der nächsten double-Zahl darunter. Die Subtraktion löscht alle Information aus. Umformen auf 2·sin²(x/2) behebt das."
+    },
+    {
+      "question": "Warum liefert math.isclose(1e-12, 0.0) den Wert False?",
+      "options": [
+        "Weil 1e-12 als double nicht darstellbar ist",
+        "Weil die relative Toleranz auf den Betrag der größeren Zahl (1e-12) bezogen wird und damit winzig ist",
+        "Weil isclose nur ganze Zahlen vergleicht",
+        "Weil die Standardtoleranz 0 ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "Erlaubt ist eine Abweichung von rel_tol · max(|a|, |b|) = 10⁻⁹ · 10⁻¹² = 10⁻²¹. Für Vergleiche mit 0 braucht man abs_tol."
+    },
+    {
+      "question": "Newton-Verfahren für f(x) = x² − 9 mit Startwert x₀ = 1. Was ist x₂?",
+      "options": [
+        "5",
+        "3.4",
+        "3.0",
+        "4.2"
+      ],
+      "correctIndex": 1,
+      "explanation": "x₁ = 1 − (1 − 9)/(2 · 1) = 1 + 4 = 5. x₂ = 5 − (25 − 9)/(2 · 5) = 5 − 1,6 = 3,4."
+    },
+    {
+      "question": "Die Trapezregel liefert mit n = 10 einen Fehler von 0,004. Welcher Fehler ist mit n = 20 ungefähr zu erwarten?",
+      "options": [
+        "0,002",
+        "0,0005",
+        "0,001",
+        "0,004"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Fehler der Trapezregel ist proportional zu h². Halbiert man h, sinkt der Fehler auf etwa ein Viertel: 0,004 / 4 = 0,001."
+    },
+    {
+      "question": "Was passiert beim Newton-Verfahren für f(x) = x² − 2 mit Startwert x₀ = 0?",
+      "options": [
+        "Es konvergiert gegen −√2",
+        "Es konvergiert gegen √2",
+        "Es bleibt bei 0 stehen",
+        "Division durch 0, weil f′(0) = 0 ist (Python: ZeroDivisionError)"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Tangente bei x = 0 ist waagrecht und hat keine Nullstelle. f(x)/f′(x) = −2/0 löst in Python einen ZeroDivisionError aus."
+    }
+  ]
+}

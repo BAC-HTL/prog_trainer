@@ -1,0 +1,91 @@
+{
+  "id": "pos-j4-python-sync_01_locks_monitore",
+  "title": "Lock, RLock und Monitore",
+  "summary": "Kritische Abschnitte schützen, verschachtelt sperren mit RLock und mit Condition auf Bedingungen warten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Aus dem 3. Jahrgang kennst du threading.Lock: Nur ein Thread kann es gleichzeitig halten, alle anderen warten in acquire(), bis es mit release() freigegeben wird. Mit with lock: passiert beides automatisch – auch bei einer Exception. Ein normales Lock ist aber nicht wiedereintrittsfähig: Versucht derselbe Thread es ein zweites Mal zu sperren, blockiert er sich selbst. Mit acquire(timeout=…) kannst du das gefahrlos zeigen, statt dass das Programm hängt."
+    },
+    {
+      "type": "code",
+      "content": "import threading\n\nlock = threading.Lock()\nlock.acquire()\nprint(lock.acquire(timeout=1))\n# False (nach 1 Sekunde)\n\nr = threading.RLock()\nr.acquire()\nprint(r.acquire(timeout=1))\n# True (sofort)\nr.release()\nr.release()"
+    },
+    {
+      "type": "text",
+      "content": "Ein RLock (reentrant lock) merkt sich, welcher Thread es hält, und zählt mit. Derselbe Thread darf es mehrfach sperren, muss es aber genauso oft freigeben, bevor ein anderer Thread drankommt. Das brauchst du, wenn gesperrte Methoden sich gegenseitig aufrufen – etwa abheben_mit_gebuehr(), das intern abheben() verwendet. Mit einem normalen Lock würde dieser Code für immer hängen."
+    },
+    {
+      "type": "code",
+      "content": "import threading\n\nclass Konto:\n    def __init__(self, stand):\n        self.stand = stand\n        self.lock = threading.RLock()\n\n    def abheben(self, betrag):\n        with self.lock:\n            if betrag > self.stand:\n                raise ValueError(\"zu wenig\")\n            self.stand -= betrag\n\n    def mit_gebuehr(self, betrag):\n        with self.lock:\n            self.abheben(betrag)\n            self.abheben(1)\n\nk = Konto(50)\nk.mit_gebuehr(20)\nprint(k.stand)   # 29"
+    },
+    {
+      "type": "text",
+      "content": "Oft reicht Sperren allein nicht: Ein Thread muss warten, bis eine Bedingung erfüllt ist – etwa bis in der Garage ein Platz frei wird. Dafür gibt es das Monitor-Prinzip: Ein Monitor ist ein Objekt, dessen Daten nur über Methoden unter gegenseitigem Ausschluss verändert werden, kombiniert mit Bedingungsvariablen zum Warten und Benachrichtigen. In Java sind das synchronized, wait() und notify(), in Python threading.Condition. wait() gibt das Lock frei und schläft; nach notify() wacht der Thread auf und holt sich das Lock zurück, bevor wait() zurückkehrt."
+    },
+    {
+      "type": "code",
+      "content": "import threading, time\n\nclass Garage:\n    def __init__(self, plaetze):\n        self.frei = plaetze\n        self.cond = threading.Condition()\n\n    def einfahren(self, auto):\n        with self.cond:\n            while self.frei == 0:\n                print(auto, \"wartet\")\n                self.cond.wait()\n            self.frei -= 1\n            print(auto, \"parkt\")\n\n    def ausfahren(self, auto):\n        with self.cond:\n            self.frei += 1\n            print(auto, \"fährt aus\")\n            self.cond.notify()\n\ng = Garage(1)\ng.einfahren(\"A\")\nt = threading.Thread(target=g.einfahren,\n                     args=(\"B\",))\nt.start()\ntime.sleep(0.5)\ng.ausfahren(\"A\")\nt.join()\n# A parkt\n# B wartet\n# A fährt aus\n# B parkt"
+    },
+    {
+      "type": "text",
+      "content": "Warum while und nicht if? Zwischen notify() und dem Aufwachen kann ein anderer Thread den freien Platz schon wieder belegt haben, und Python erlaubt sogar Aufwachen ohne notify (spurious wakeup). Deshalb wird die Bedingung nach jedem Aufwachen erneut geprüft. cond.wait_for(lambda: self.frei > 0) erledigt diese Schleife für dich. notify() weckt einen wartenden Thread, notify_all() alle. Typischer Fehler: wait() oder notify() aufrufen, ohne das Lock zu halten."
+    },
+    {
+      "type": "code",
+      "content": "import threading\n\nc = threading.Condition()\ntry:\n    c.notify()     # ohne \"with c:\"\nexcept RuntimeError as e:\n    print(\"Fehler:\", e)\n# Fehler: cannot notify on\n# un-acquired lock"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Lock – einfacher gegenseitiger Ausschluss, nicht wiedereintrittsfähig. RLock – derselbe Thread darf mehrfach sperren, muss genauso oft freigeben. Condition – Monitor-Prinzip: unter dem Lock prüfen, mit wait() warten (gibt das Lock frei), mit notify()/notify_all() wecken. Bedingung immer in einer while-Schleife prüfen oder wait_for verwenden. acquire(timeout=…) liefert True/False und eignet sich gut zum Testen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import threading\nl = threading.Lock()\nl.acquire()\nprint(l.acquire(timeout=0.5))",
+      "options": [
+        "True",
+        "False",
+        "Nichts – das Programm hängt für immer",
+        "RuntimeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Lock ist schon vom selben Thread gesperrt. Ein normales Lock ist nicht wiedereintrittsfähig, darum scheitert der zweite Versuch nach 0,5 s und acquire liefert False."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import threading\nr = threading.RLock()\nfor _ in range(3):\n    r.acquire()\nr.release()\nr.release()\n\ndef versuch():\n    print(r.acquire(timeout=0.5))\n\nt = threading.Thread(target=versuch)\nt.start()\nt.join()",
+      "options": [
+        "True, weil RLocks mehrfach gesperrt werden dürfen",
+        "True, weil der Hauptthread schon fertig ist",
+        "RuntimeError",
+        "False, weil der Hauptthread das RLock noch einmal hält"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Hauptthread hat dreimal gesperrt und nur zweimal freigegeben – der Zähler steht noch auf 1. Ein anderer Thread bekommt das RLock erst, wenn es vollständig freigegeben ist."
+    },
+    {
+      "question": "Warum steht cond.wait() in einer while-Schleife statt in einem if?",
+      "options": [
+        "Weil die Bedingung nach dem Aufwachen nicht mehr gelten muss – ein anderer Thread kann zuvorgekommen sein.",
+        "Weil wait() sonst einen SyntaxError auslöst.",
+        "Weil while schneller ist als if.",
+        "Damit der Thread das Lock nie freigibt."
+      ],
+      "correctIndex": 0,
+      "explanation": "Nach dem Aufwachen muss der Thread das Lock erst wieder bekommen. In der Zwischenzeit kann sich der Zustand geändert haben; auch Aufwachen ohne notify ist erlaubt. Deshalb erneut prüfen."
+    },
+    {
+      "question": "Was macht cond.wait() genau?",
+      "options": [
+        "Es wartet aktiv in einer Schleife und hält dabei das Lock.",
+        "Es beendet den Thread, bis notify() einen neuen startet.",
+        "Es gibt das Lock frei, schläft bis zu einem notify() und holt das Lock wieder, bevor es zurückkehrt.",
+        "Es weckt alle anderen wartenden Threads auf."
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur weil wait() das Lock freigibt, kann ein anderer Thread den Zustand ändern und notify() aufrufen. Vor der Rückkehr wird das Lock wieder erworben."
+    }
+  ]
+}

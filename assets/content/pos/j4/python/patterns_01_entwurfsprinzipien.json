@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-python-patterns_01_entwurfsprinzipien",
+  "title": "Entwurfsprinzipien und SOLID",
+  "summary": "Fünf Richtlinien für Klassen, die sich leicht ändern, erweitern und testen lassen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ab einer gewissen Größe entscheidet nicht mehr, ob ein Programm läuft, sondern ob man es noch ändern kann. Entwurfsprinzipien sind Richtlinien dafür. Die bekanntesten fasst das Kürzel SOLID zusammen (geprägt von Robert C. Martin). Design Patterns, die du in den nächsten Lektionen kennenlernst, setzen diese Prinzipien konkret um."
+    },
+    {
+      "type": "text",
+      "content": "S – Single Responsibility Principle: Eine Klasse soll nur einen Grund haben, sich zu ändern. Eine Klasse Zeugnis, die den Schnitt berechnet, HTML erzeugt und in eine Datei schreibt, muss bei jeder Layout-Änderung und bei jedem neuen Speicherort angefasst werden. Besser: Berechnung, Formatierung und Speicherung in eigene Klassen trennen."
+    },
+    {
+      "type": "code",
+      "content": "class Zeugnis:\n    def __init__(self, noten):\n        self.noten = noten\n\n    def schnitt(self):\n        return sum(self.noten) / len(self.noten)\n\nclass HtmlFormat:\n    def formatiere(self, z):\n        s = z.schnitt()\n        return f\"<p>Schnitt {s:.2f}</p>\"\n\nz = Zeugnis([1, 2, 2, 3])\nprint(HtmlFormat().formatiere(z))\n# <p>Schnitt 2.00</p>"
+    },
+    {
+      "type": "text",
+      "content": "O – Open/Closed Principle: Klassen sollen offen für Erweiterung, aber geschlossen für Änderung sein. Eine lange if/elif-Kette (if art == \"schueler\": … elif art == \"senior\": …) musst du bei jedem neuen Tarif ändern – und dabei kannst du Bestehendes kaputt machen. Mit Polymorphie schreibst du für einen neuen Tarif einfach eine neue Klasse."
+    },
+    {
+      "type": "code",
+      "content": "class Tarif:\n    def preis(self, basis):\n        return basis\n\nclass Schueler(Tarif):\n    def preis(self, basis):\n        return basis * 0.5\n\nclass Senior(Tarif):\n    def preis(self, basis):\n        return basis * 0.7\n\nfor t in [Tarif(), Schueler(), Senior()]:\n    print(t.preis(10))\n# 10\n# 5.0\n# 7.0"
+    },
+    {
+      "type": "text",
+      "content": "L – Liskov Substitution Principle: Ein Objekt einer Unterklasse muss überall funktionieren, wo die Oberklasse erwartet wird – ohne Überraschungen. Das klassische Gegenbeispiel: Ein Quadrat „ist ein“ Rechteck, verhält sich aber anders, wenn man nur die Breite ändert. Code, der für Rechtecke korrekt ist, liefert mit einem Quadrat plötzlich falsche Ergebnisse."
+    },
+    {
+      "type": "code",
+      "content": "class Rechteck:\n    def __init__(self, b, h):\n        self.b, self.h = b, h\n    def setze_breite(self, b):\n        self.b = b\n    def flaeche(self):\n        return self.b * self.h\n\nclass Quadrat(Rechteck):\n    def __init__(self, a):\n        super().__init__(a, a)\n    def setze_breite(self, b):\n        self.b = self.h = b\n\ndef test(r):\n    r.setze_breite(5)\n    return r.flaeche()\n\nprint(test(Rechteck(2, 4)))  # 20\nprint(test(Quadrat(4)))      # 25 (!)"
+    },
+    {
+      "type": "text",
+      "content": "I – Interface Segregation: Lieber mehrere kleine Schnittstellen als eine große. Ein einfacher Drucker soll keine Methode faxen() implementieren müssen, nur weil die Schnittstelle „Bürogerät“ sie verlangt. D – Dependency Inversion: Klassen sollen von Abstraktionen abhängen, nicht von konkreten Klassen. In der Praxis übergibst du Abhängigkeiten von außen (Dependency Injection), statt sie in der Klasse selbst zu erzeugen. Dann kannst du im Unit-Test einfach einen Test-Speicher übergeben."
+    },
+    {
+      "type": "code",
+      "content": "from abc import ABC, abstractmethod\n\nclass Speicher(ABC):\n    @abstractmethod\n    def sichern(self, text): ...\n\nclass DateiSpeicher(Speicher):\n    def sichern(self, text):\n        print(\"Datei:\", text)\n\nclass TestSpeicher(Speicher):\n    def __init__(self):\n        self.daten = []\n    def sichern(self, text):\n        self.daten.append(text)\n\nclass Notenservice:\n    def __init__(self, speicher: Speicher):\n        self.speicher = speicher\n    def eintragen(self, name, note):\n        self.speicher.sichern(f\"{name};{note}\")\n\nNotenservice(DateiSpeicher()).eintragen(\"Ana\", 1)\nt = TestSpeicher()\nNotenservice(t).eintragen(\"Ben\", 2)\nprint(t.daten)\n# Datei: Ana;1\n# ['Ben;2']"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Faustregeln: DRY (Don’t Repeat Yourself – Wissen nur an einer Stelle), KISS (Keep It Simple), YAGNI (You Aren’t Gonna Need It – nichts „auf Vorrat“ bauen) und „Komposition vor Vererbung“. Ziel ist lose Kopplung und hohe Kohäsion. Typischer Fehler: Prinzipien dogmatisch anwenden und für ein 50-Zeilen-Skript zehn Klassen bauen. Zusammenfassung: SRP – ein Änderungsgrund; OCP – erweitern statt ändern; LSP – Unterklassen ersetzen Oberklassen sauber; ISP – kleine Schnittstellen; DIP – von Abstraktionen abhängen, Abhängigkeiten übergeben."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Klasse Bericht berechnet Kennzahlen, erzeugt ein PDF und verschickt es per E-Mail. Welches Prinzip wird hier am deutlichsten verletzt?",
+      "options": [
+        "Liskov Substitution Principle",
+        "Interface Segregation Principle",
+        "Single Responsibility Principle",
+        "Open/Closed Principle"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Klasse hat drei Gründe, sich zu ändern (Berechnung, PDF-Layout, Versand). Das widerspricht dem Single Responsibility Principle."
+    },
+    {
+      "question": "Was gibt dieser Code aus (Klassen wie in der Lektion)?",
+      "code": "class Rechteck:\n    def __init__(self, b, h):\n        self.b, self.h = b, h\n    def setze_breite(self, b):\n        self.b = b\n    def flaeche(self):\n        return self.b * self.h\n\nclass Quadrat(Rechteck):\n    def __init__(self, a):\n        super().__init__(a, a)\n    def setze_breite(self, b):\n        self.b = self.h = b\n\nq = Quadrat(6)\nq.setze_breite(3)\nprint(q.flaeche())",
+      "options": [
+        "18",
+        "9",
+        "36",
+        "Einen Fehler"
+      ],
+      "correctIndex": 1,
+      "explanation": "setze_breite(3) setzt beim Quadrat Breite und Höhe auf 3, also 3 · 3 = 9. Ein Rechteck 6 × 6 hätte danach 3 · 6 = 18 – genau dieser Unterschied ist die Verletzung des Liskov-Prinzips."
+    },
+    {
+      "question": "Für jede neue Zahlungsart (Karte, Bar, Gutschein …) musst du if/elif-Ketten in fünf Funktionen erweitern. Welches Prinzip hilft hier am meisten?",
+      "options": [
+        "YAGNI – Zahlungsarten erst später einbauen",
+        "Single Responsibility – alles in eine Klasse Zahlung",
+        "Liskov – Zahlungsarten nicht vererben",
+        "Open/Closed – je Zahlungsart eine eigene Klasse mit gemeinsamer Schnittstelle"
+      ],
+      "correctIndex": 3,
+      "explanation": "Mit einer gemeinsamen Schnittstelle (Polymorphie) wird eine neue Zahlungsart als neue Klasse hinzugefügt, ohne bestehenden Code zu ändern – das ist das Open/Closed Principle."
+    },
+    {
+      "question": "Was beschreibt Dependency Inversion bzw. Dependency Injection am besten?",
+      "options": [
+        "Eine Klasse bekommt ihre Abhängigkeiten (z. B. den Speicher) von außen übergeben und kennt nur deren Schnittstelle.",
+        "Eine Klasse erzeugt alle benötigten Objekte selbst im Konstruktor.",
+        "Unterklassen dürfen Methoden der Oberklasse nicht überschreiben.",
+        "Jede Klasse darf höchstens eine Methode haben."
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Klasse hängt von einer Abstraktion ab (z. B. Speicher) und bekommt die konkrete Implementierung übergeben. Dadurch kann man sie leicht austauschen, etwa im Test."
+    }
+  ]
+}

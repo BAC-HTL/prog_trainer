@@ -1,0 +1,90 @@
+{
+  "id": "pos-j4-python-sync_02_deadlocks",
+  "title": "Deadlocks erkennen und vermeiden",
+  "summary": "Die vier Bedingungen für einen Deadlock, wie man ihn reproduzierbar zeigt und mit fester Lock-Reihenfolge verhindert.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Deadlock (Verklemmung) liegt vor, wenn mehrere Threads jeweils auf eine Ressource warten, die ein anderer von ihnen hält – keiner kommt je weiter. Beispiel Schulbank-App: Thread 1 überweist von Konto A nach B und sperrt zuerst A, dann B. Gleichzeitig überweist Thread 2 von B nach A und sperrt zuerst B, dann A. Hält jeder sein erstes Lock, wartet er ewig auf das zweite."
+    },
+    {
+      "type": "code",
+      "content": "T1: hält A, wartet auf B\nT2: hält B, wartet auf A\n\n   ┌──> B (gehört T2) ──┐\n  T1                    T2\n   └─── A (gehört T1) <─┘\n\nKreis → keiner kommt weiter"
+    },
+    {
+      "type": "text",
+      "content": "Nach Coffman müssen vier Bedingungen gleichzeitig erfüllt sein, damit ein Deadlock entstehen kann: 1. Wechselseitiger Ausschluss – eine Ressource kann nur von einem Thread genutzt werden. 2. Halten und Warten – ein Thread hält Ressourcen und wartet auf weitere. 3. Keine Unterbrechbarkeit (no preemption) – niemand kann einem Thread eine Ressource wegnehmen. 4. Zirkuläres Warten – es gibt einen Kreis von Threads, die aufeinander warten. Bricht man eine einzige Bedingung, ist ein Deadlock unmöglich."
+    },
+    {
+      "type": "text",
+      "content": "Deadlocks sind tückisch, weil sie vom Timing abhängen: Ein Programm läuft hundertmal gut und hängt beim 101. Mal. Zum Zeigen machst du sie reproduzierbar: Eine threading.Barrier sorgt dafür, dass beide Threads ihr erstes Lock sicher halten, bevor sie das zweite anfordern. Und acquire(timeout=1) statt with verhindert, dass dein Programm wirklich für immer hängt – stattdessen meldet es den Deadlock."
+    },
+    {
+      "type": "code",
+      "content": "import threading\n\na = threading.Lock()\nb = threading.Lock()\nsync = threading.Barrier(2)\nerg = {}\n\ndef arbeite(name, erst, dann):\n    with erst:\n        sync.wait()  # beide halten 1. Lock\n        ok = dann.acquire(timeout=1)\n        sync.wait()  # erst dann freigeben\n        if ok:\n            dann.release()\n        erg[name] = ok\n\nt1 = threading.Thread(target=arbeite,\n                      args=(\"T1\", a, b))\nt2 = threading.Thread(target=arbeite,\n                      args=(\"T2\", b, a))\nt1.start(); t2.start()\nt1.join(); t2.join()\nfor n in (\"T1\", \"T2\"):\n    print(n, \"ok\" if erg[n] else\n          \"Deadlock erkannt!\")\n# T1 Deadlock erkannt!\n# T2 Deadlock erkannt!"
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigste Gegenmaßnahme bricht das zirkuläre Warten: Lege eine feste globale Reihenfolge für Locks fest und halte sie überall ein – zum Beispiel immer zuerst das Konto mit der kleineren Kontonummer sperren. Dann kann kein Kreis entstehen, egal in welche Richtung überwiesen wird."
+    },
+    {
+      "type": "code",
+      "content": "import threading\n\nclass Konto:\n    def __init__(self, nr, stand):\n        self.nr = nr\n        self.stand = stand\n        self.lock = threading.Lock()\n\ndef ueberweisen(von, nach, betrag):\n    erst, dann = sorted([von, nach],\n                        key=lambda k: k.nr)\n    with erst.lock:\n        with dann.lock:\n            von.stand -= betrag\n            nach.stand += betrag\n\na, b = Konto(1, 100), Konto(2, 100)\nts = []\nfor _ in range(100):\n    for v, n in [(a, b), (b, a)]:\n        t = threading.Thread(\n            target=ueberweisen,\n            args=(v, n, 1))\n        t.start()\n        ts.append(t)\nfor t in ts:\n    t.join()\nprint(a.stand, b.stand)   # 100 100"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Strategien: Halten und Warten brechen – alle benötigten Locks auf einmal anfordern oder ein einziges gröberes Lock verwenden. Keine Unterbrechbarkeit brechen – mit acquire(timeout=…) versuchen und bei Misserfolg alle gehaltenen Locks freigeben und später neu probieren (Achtung: Livelock, wenn alle Threads immer wieder gleichzeitig zurückweichen). Wechselseitigen Ausschluss vermeiden – Daten gar nicht teilen, sondern über eine Queue austauschen (nächste Lektion). Typischer Fehler: zwei Funktionen mit verschachteltem with a: with b: bzw. with b: with a:."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Deadlock = Kreis von Threads, die auf gegenseitig gehaltene Ressourcen warten. Vier Coffman-Bedingungen: wechselseitiger Ausschluss, Halten und Warten, keine Unterbrechbarkeit, zirkuläres Warten – alle müssen gelten. Reproduzieren mit Barrier, gefahrlos zeigen mit acquire(timeout). Vermeiden vor allem durch eine feste Lock-Reihenfolge; Locks so kurz wie möglich halten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Aussage ist KEINE der vier Coffman-Bedingungen für einen Deadlock?",
+      "options": [
+        "Wechselseitiger Ausschluss",
+        "Zirkuläres Warten",
+        "Halten und Warten",
+        "Alle Threads haben dieselbe Priorität"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die vier Bedingungen sind wechselseitiger Ausschluss, Halten und Warten, keine Unterbrechbarkeit und zirkuläres Warten. Prioritäten spielen dabei keine Rolle."
+    },
+    {
+      "question": "Funktion f1 sperrt mit „with a: with b:“, Funktion f2 mit „with b: with a:“. Beide laufen in eigenen Threads. Was ist die einfachste sichere Lösung?",
+      "options": [
+        "In beiden Funktionen dieselbe Reihenfolge verwenden: zuerst a, dann b",
+        "Statt Lock überall RLock verwenden",
+        "Vor dem zweiten with ein time.sleep(0.1) einbauen",
+        "Die Threads als Daemon-Threads starten"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eine feste Lock-Reihenfolge verhindert zirkuläres Warten. RLock hilft nur bei Mehrfachsperren durch denselben Thread, sleep verschiebt das Problem nur."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import threading\n\nclass Konto:\n    def __init__(self, nr, stand):\n        self.nr = nr\n        self.stand = stand\n        self.lock = threading.Lock()\n\ndef ueberweisen(von, nach, betrag):\n    erst, dann = sorted([von, nach],\n                        key=lambda k: k.nr)\n    with erst.lock:\n        with dann.lock:\n            von.stand -= betrag\n            nach.stand += betrag\n\na, b = Konto(1, 100), Konto(2, 100)\nueberweisen(a, b, 30)\nueberweisen(b, a, 10)\nprint(a.stand, b.stand)",
+      "options": [
+        "70 130",
+        "100 100",
+        "80 120",
+        "120 80"
+      ],
+      "correctIndex": 2,
+      "explanation": "Erst gehen 30 von a nach b (70 / 130), dann 10 von b nach a (80 / 120). Die Sortierung nach Kontonummer ändert nur die Sperr-Reihenfolge, nicht die Richtung der Überweisung."
+    },
+    {
+      "question": "Welche Deadlock-Bedingung wird gebrochen, wenn alle Threads Locks immer nach aufsteigender Kontonummer sperren?",
+      "options": [
+        "Wechselseitiger Ausschluss",
+        "Zirkuläres Warten",
+        "Keine Unterbrechbarkeit",
+        "Halten und Warten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Threads halten weiterhin Locks und warten auf weitere, aber wegen der festen Reihenfolge kann kein Kreis entstehen."
+    }
+  ]
+}

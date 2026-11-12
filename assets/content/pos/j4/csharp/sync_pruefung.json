@@ -1,0 +1,119 @@
+{
+  "id": "pos-j4-csharp-sync_pruefung",
+  "title": "Abschlussprüfung: Thread-Synchronisation",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "object s = new();\nint n = 0;\nvoid F(int t)\n{\n    lock (s)\n    {\n        n++;\n        if (t > 0) F(t - 1);\n    }\n}\nF(2);\nConsole.WriteLine(n);",
+      "options": [
+        "Deadlock – das Programm hängt",
+        "3",
+        "1",
+        "SynchronizationLockException"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Monitor ist wiedereintrittsfähig: Derselbe Thread darf die Sperre, die er schon hält, erneut betreten. F läuft für t = 2, 1, 0 – n wird dreimal erhöht."
+    },
+    {
+      "question": "Warum steht Monitor.Exit in der Langform von lock in einem finally-Block?",
+      "options": [
+        "Weil Exit sonst nicht kompiliert",
+        "Damit Exit schneller ausgeführt wird",
+        "Damit andere Threads vorher geweckt werden",
+        "Damit die Sperre auch bei einer Exception freigegeben wird"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ohne finally bliebe die Sperre nach einer Exception belegt, und alle anderen Threads, die sie brauchen, würden ewig warten."
+    },
+    {
+      "question": "Was ist der Unterschied zwischen Monitor.Pulse und Monitor.PulseAll?",
+      "options": [
+        "Pulse gibt die Sperre frei, PulseAll nicht",
+        "Pulse weckt einen wartenden Thread, PulseAll alle wartenden",
+        "Pulse funktioniert ohne lock, PulseAll nur mit lock",
+        "Es gibt keinen Unterschied"
+      ],
+      "correctIndex": 1,
+      "explanation": "Pulse weckt einen der Threads, die mit Wait auf dieses Objekt warten, PulseAll alle. Beide müssen innerhalb des lock aufgerufen werden."
+    },
+    {
+      "question": "Ein Thread ruft innerhalb von lock (sperre) die Methode Monitor.Wait(sperre) auf, aber kein anderer Thread ruft jemals Pulse auf. Was passiert?",
+      "options": [
+        "Der Thread wartet für immer",
+        "Wait kehrt nach einer Sekunde zurück",
+        "Es gibt eine SynchronizationLockException",
+        "Wait wirft eine TimeoutException"
+      ],
+      "correctIndex": 0,
+      "explanation": "Wait ohne Timeout wartet, bis ein Pulse kommt. Fehlt der Pulse, schläft der Thread ewig – ein typischer Fehler."
+    },
+    {
+      "question": "Ein Programm sperrt beim Überweisen immer zuerst das Absender- und dann das Empfängerkonto. Wann kann ein Deadlock entstehen?",
+      "options": [
+        "Nie, weil immer zwei Sperren verwendet werden",
+        "Nur, wenn mehr als zwei Konten existieren",
+        "Wenn gleichzeitig von A nach B und von B nach A überwiesen wird",
+        "Nur auf Rechnern mit einem einzigen CPU-Kern"
+      ],
+      "correctIndex": 2,
+      "explanation": "Thread 1 sperrt A und wartet auf B, Thread 2 sperrt B und wartet auf A – zirkuläres Warten. Abhilfe: immer nach Konto-Id geordnet sperren."
+    },
+    {
+      "question": "Durch welche Maßnahme wird die Coffman-Bedingung „Halten und Warten“ gebrochen?",
+      "options": [
+        "Alle Sperren in fester Reihenfolge holen",
+        "Bekommt ein Thread die zweite Sperre nicht (TryEnter mit Timeout), gibt er auch die erste frei",
+        "Mehr Threads starten",
+        "Sperren auf this statt auf ein privates Objekt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Wer aufgibt und seine Sperre freigibt, hält nicht mehr, während er wartet. Die feste Reihenfolge bricht dagegen das zirkuläre Warten."
+    },
+    {
+      "question": "Welcher Aufruf ist korrekt, wenn TryEnter false geliefert hat?",
+      "options": [
+        "Monitor.Exit aufrufen",
+        "Monitor.Pulse aufrufen",
+        "Monitor.Exit NICHT aufrufen, da die Sperre nicht gehalten wird",
+        "Monitor.Wait aufrufen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei false wurde die Sperre nicht erworben. Exit, Pulse oder Wait würden eine SynchronizationLockException auslösen."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "var bc =\n  new BlockingCollection<int>();\nbc.Add(1); bc.Add(2);\nbc.CompleteAdding();\nConsole.Write(bc.IsCompleted+\" \");\nbc.Take(); bc.Take();\nConsole.WriteLine(bc.IsCompleted);",
+      "options": [
+        "True True",
+        "False False",
+        "True False",
+        "False True"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nach CompleteAdding ist die Sammlung zwar für neue Elemente geschlossen, enthält aber noch zwei. IsCompleted ist erst true, wenn sie zusätzlich leer ist."
+    },
+    {
+      "question": "Ein Verbraucher prüft in einer Schleife mit lock, ob eine List<T> Elemente enthält, und macht sonst Thread.Sleep(10). Was ist das Hauptproblem?",
+      "options": [
+        "Es ist ein Kompilierfehler",
+        "Die List<T> wird dadurch sortiert",
+        "Es entsteht garantiert ein Deadlock",
+        "Polling: Es verschwendet CPU-Zeit bzw. reagiert verzögert – eine blockierende Queue ist besser"
+      ],
+      "correctIndex": 3,
+      "explanation": "Aktives Abfragen (Polling) ist ineffizient. BlockingCollection oder Channel lassen den Verbraucher schlafen und wecken ihn genau dann, wenn ein Element kommt."
+    },
+    {
+      "question": "Welche Zeile beendet beim Channel das Schreiben, sodass ReadAllAsync beim Leser endet?",
+      "options": [
+        "kanal.Reader.Complete();",
+        "kanal.Dispose();",
+        "kanal.Writer.Complete();",
+        "kanal.Writer.WriteAsync(null);"
+      ],
+      "correctIndex": 2,
+      "explanation": "Writer.Complete() signalisiert, dass nichts mehr kommt. Sind alle Elemente gelesen, endet die await-foreach-Schleife über ReadAllAsync."
+    }
+  ]
+}

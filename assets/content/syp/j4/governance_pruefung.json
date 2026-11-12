@@ -1,0 +1,117 @@
+{
+ "id": "syp-j4-governance_pruefung",
+ "title": "Abschlussprüfung: IT-Governance & IT-Service-Management",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "Wovon wird eine IKT-Strategie abgeleitet?",
+   "options": [
+    "Von der neuesten Technik am Markt",
+    "Von der Unternehmensstrategie",
+    "Vom Servicekatalog",
+    "Von den Wünschen der IT-Abteilung allein"
+   ],
+   "correctIndex": 1,
+   "explanation": "Business-IT-Alignment: IT-Ziele ergeben sich aus den Unternehmenszielen, nicht umgekehrt."
+  },
+  {
+   "question": "Welche drei Tätigkeiten kennzeichnen IT-Governance nach ISO/IEC 38500?",
+   "options": [
+    "Plan, Build, Run",
+    "Erfassen, Priorisieren, Lösen",
+    "Unfreeze, Change, Refreeze",
+    "Evaluate, Direct, Monitor"
+   ],
+   "correctIndex": 3,
+   "explanation": "Governance bewertet, gibt Richtung vor und überwacht. Plan, Build, Run beschreibt das Management."
+  },
+  {
+   "question": "Ein Unternehmen hat 3 Mio. € IT-Budget mit 75 % Run-Anteil. Es will 1 Mio. € für Change. Auf wie viel Prozent muss der Run-Anteil sinken?",
+   "options": [
+    "Etwa 66,7 %",
+    "50 %",
+    "70 %",
+    "25 %"
+   ],
+   "correctIndex": 0,
+   "explanation": "Run darf nur 3 − 1 = 2 Mio. € betragen: 2 / 3 ≈ 66,7 %."
+  },
+  {
+   "question": "Nach einem Stromausfall startet ein Server nicht. Der Techniker startet ihn händisch, die Ursache (defektes Netzteil) wird später gesucht. Welche zwei ITIL-Praktiken sind beteiligt?",
+   "options": [
+    "Service Request und CAB",
+    "Incident Management, dann Problem Management",
+    "Nur Change Management",
+    "Service Desk und Portfolio-Management"
+   ],
+   "correctIndex": 1,
+   "explanation": "Der händische Neustart stellt den Service wieder her (Incident). Die Ursachensuche ist Problem Management."
+  },
+  {
+   "question": "Was ist der Hauptzweck des Service Desks?",
+   "options": [
+    "Er genehmigt alle Changes",
+    "Er schreibt die IT-Strategie",
+    "Er ist der zentrale Ansprechpunkt (SPOC) für Anwender:innen",
+    "Er entwickelt neue Software"
+   ],
+   "correctIndex": 2,
+   "explanation": "Der Service Desk nimmt alle Meldungen an, löst einfache Fälle und leitet den Rest weiter."
+  },
+  {
+   "question": "Ein freigegebenes Programm wird nach festem Ablauf auf einem Schul-PC installiert. Welche Change-Art ist das?",
+   "options": [
+    "Emergency Change",
+    "Normal Change mit CAB",
+    "Major Incident",
+    "Standard Change"
+   ],
+   "correctIndex": 3,
+   "explanation": "Risikoarme, wiederkehrende, vorab genehmigte Änderungen sind Standard Changes."
+  },
+  {
+   "question": "Welche Aussage über ITIL stimmt?",
+   "options": [
+    "ITIL ist eine Sammlung bewährter Praktiken für IT-Service-Management",
+    "ITIL ist ein Gesetz der EU",
+    "Organisationen werden nach ITIL zertifiziert, nicht nach ISO/IEC 20000",
+    "ITIL beschreibt Programmiersprachen"
+   ],
+   "correctIndex": 0,
+   "explanation": "ITIL ist Best Practice. Organisationen lassen sich nach der Norm ISO/IEC 20000 zertifizieren."
+  },
+  {
+   "question": "Ein SLA gilt Mo–Fr 8–18 Uhr, 20 Arbeitstage im Monat, Ziel 99 %. Wie viel Ausfall ist erlaubt?",
+   "options": [
+    "7,2 h",
+    "2 h",
+    "20 h",
+    "1 h"
+   ],
+   "correctIndex": 1,
+   "explanation": "Servicezeit = 20 · 10 h = 200 h. 1 % von 200 h = 2 h."
+  },
+  {
+   "question": "Zwei Systeme werden nacheinander benötigt, beide 98 % verfügbar. Wie hoch ist die Gesamtverfügbarkeit?",
+   "options": [
+    "98 %",
+    "99,96 %",
+    "96,04 %",
+    "96 % genau, weil 98 − 2"
+   ],
+   "correctIndex": 2,
+   "explanation": "Serienschaltung: 0,98 · 0,98 = 0,9604 = 96,04 %."
+  },
+  {
+   "question": "Im Monat gab es 250 Tickets, 230 wurden innerhalb der Reaktionszeit bearbeitet. Das SLA verlangt 95 %. Was gilt?",
+   "options": [
+    "92 % – SLA verfehlt",
+    "92 % – SLA erfüllt",
+    "95 % – SLA genau erfüllt",
+    "8 % – SLA erfüllt"
+   ],
+   "correctIndex": 0,
+   "explanation": "230 / 250 = 0,92 = 92 %. Das liegt unter 95 %, das Ziel ist verfehlt."
+  }
+ ]
+}

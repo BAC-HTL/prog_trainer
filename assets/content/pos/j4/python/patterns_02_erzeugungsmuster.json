@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-python-patterns_02_erzeugungsmuster",
+  "title": "Erzeugungsmuster: Factory, Singleton, Builder",
+  "summary": "Objekterzeugung kapseln: Fabriken, das umstrittene Singleton und der Builder für komplexe Objekte.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Design Patterns sind bewährte Lösungen für wiederkehrende Entwurfsprobleme. Das Standardwerk der „Gang of Four“ (GoF) beschreibt 23 Muster in drei Gruppen: Erzeugungs-, Struktur- und Verhaltensmuster. Erzeugungsmuster kapseln, wie Objekte entstehen. Die Fabrik (Factory) ist das einfachste: Eine Funktion oder Methode entscheidet, welche Klasse instanziert wird. Der aufrufende Code kennt nur die gemeinsame Schnittstelle."
+    },
+    {
+      "type": "code",
+      "content": "import json\n\nclass CsvExport:\n    def export(self, daten):\n        return \";\".join(daten)\n\nclass JsonExport:\n    def export(self, daten):\n        return json.dumps(daten)\n\nEXPORTE = {\"csv\": CsvExport,\n           \"json\": JsonExport}\n\ndef erzeuge_export(fmt):\n    try:\n        return EXPORTE[fmt]()\n    except KeyError:\n        raise ValueError(f\"unbekannt: {fmt}\")\n\ne = erzeuge_export(\"csv\")\nprint(e.export([\"Ana\", \"Ben\"]))\n# Ana;Ben"
+    },
+    {
+      "type": "text",
+      "content": "Ein neues Format bedeutet: neue Klasse schreiben und im Dictionary eintragen – der restliche Code bleibt gleich. Das ist die „einfache Fabrik“. Bei der GoF-Fabrikmethode (Factory Method) definiert eine Oberklasse eine Methode wie erzeuge_export(), und Unterklassen überschreiben sie, um selbst zu bestimmen, welches Objekt entsteht. Das Singleton soll dagegen garantieren, dass es von einer Klasse genau ein Objekt gibt, etwa für die Konfiguration. In Python lässt sich das über __new__ umsetzen, das vor __init__ das Objekt erzeugt."
+    },
+    {
+      "type": "code",
+      "content": "class Konfig:\n    _instanz = None\n\n    def __new__(cls):\n        if cls._instanz is None:\n            cls._instanz = super().__new__(cls)\n            cls._instanz.werte = {}\n        return cls._instanz\n\na = Konfig()\na.werte[\"db\"] = \"schule.db\"\nb = Konfig()\nprint(a is b)         # True\nprint(b.werte[\"db\"])  # schule.db"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Die Attribute werden in __init__ angelegt. __new__ liefert zwar jedes Mal dasselbe Objekt, aber Python ruft danach bei jedem Konfig() wieder __init__ auf – und das setzt die Werte zurück."
+    },
+    {
+      "type": "code",
+      "content": "class Konfig:\n    _instanz = None\n\n    def __new__(cls):\n        if cls._instanz is None:\n            cls._instanz = super().__new__(cls)\n        return cls._instanz\n\n    def __init__(self):\n        self.werte = {}   # Fehler!\n\na = Konfig()\na.werte[\"db\"] = \"schule.db\"\nb = Konfig()\nprint(a is b)    # True\nprint(a.werte)   # {}"
+    },
+    {
+      "type": "text",
+      "content": "Das Singleton gilt heute oft als Anti-Pattern: Es ist globaler Zustand mit anderem Namen. Abhängigkeiten werden versteckt (man sieht der Klasse nicht an, dass sie Konfig benutzt), Unit-Tests beeinflussen sich gegenseitig, weil der Zustand zwischen Tests erhalten bleibt, und ohne Lock können zwei Threads beim ersten Aufruf gleichzeitig zwei Instanzen erzeugen. In Python ist ein Modul ohnehin nur einmal geladen – eine Variable auf Modulebene reicht meist. Noch besser: das eine Objekt im Hauptprogramm erzeugen und per Dependency Injection übergeben."
+    },
+    {
+      "type": "text",
+      "content": "Der Builder baut ein komplexes Objekt Schritt für Schritt auf. Jede Methode gibt self zurück, dadurch lassen sich die Aufrufe verketten (Fluent Interface). Erst build() liefert das fertige Ergebnis. Achtung: Der Builder ersetzt keine Parameter im SQL – Benutzereingaben gehören weiterhin in Platzhalter (?), wie du es von SQL-Injection kennst."
+    },
+    {
+      "type": "code",
+      "content": "class Abfrage:\n    def __init__(self, tabelle):\n        self.tabelle = tabelle\n        self.bed = []\n        self.sort = None\n\n    def where(self, b):\n        self.bed.append(b)\n        return self\n\n    def order_by(self, spalte):\n        self.sort = spalte\n        return self\n\n    def build(self):\n        sql = f\"SELECT * FROM {self.tabelle}\"\n        if self.bed:\n            sql += \" WHERE \"\n            sql += \" AND \".join(self.bed)\n        if self.sort:\n            sql += f\" ORDER BY {self.sort}\"\n        return sql\n\nsql = (Abfrage(\"schueler\")\n       .where(\"klasse = ?\")\n       .where(\"note < 3\")\n       .order_by(\"name\")\n       .build())\nprint(sql)\n# SELECT * FROM schueler WHERE\n# klasse = ? AND note < 3\n# ORDER BY name   (eine Zeile)"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Factory – Erzeugung an einer Stelle bündeln, Aufrufer kennt nur die Schnittstelle. Singleton – genau eine Instanz; in Python sparsam einsetzen, Modulvariable oder Dependency Injection sind meist besser. Builder – komplexe Objekte schrittweise und lesbar aufbauen. In Python ersetzen Schlüsselwortargumente mit Standardwerten oder dataclasses viele einfache Builder."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Konfig:\n    _i = None\n    def __new__(cls):\n        if cls._i is None:\n            cls._i = super().__new__(cls)\n        return cls._i\n    def __init__(self):\n        self.werte = {}\n\na = Konfig()\na.werte[\"x\"] = 1\nb = Konfig()\nprint(len(b.werte))",
+      "options": [
+        "1",
+        "0",
+        "2",
+        "AttributeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "Konfig() liefert zwar dasselbe Objekt, ruft aber jedes Mal __init__ auf. Beim zweiten Aufruf wird werte wieder auf {} gesetzt, daher ist die Länge 0."
+    },
+    {
+      "question": "Welcher Kritikpunkt am Singleton ist berechtigt?",
+      "options": [
+        "Ein Singleton braucht mehr Speicher als normale Objekte.",
+        "Ein Singleton kann keine Methoden haben.",
+        "Ein Singleton funktioniert in Python grundsätzlich nicht.",
+        "Es versteckt Abhängigkeiten und erschwert Unit-Tests, weil der globale Zustand zwischen Tests erhalten bleibt."
+      ],
+      "correctIndex": 3,
+      "explanation": "Das Singleton ist globaler Zustand: Man sieht Klassen nicht an, dass sie es benutzen, und Tests beeinflussen sich über den gemeinsamen Zustand."
+    },
+    {
+      "question": "Warum geben die Methoden eines Builders wie where() und order_by() self zurück?",
+      "options": [
+        "Damit man die Aufrufe verketten kann: Abfrage(…).where(…).order_by(…).build()",
+        "Damit das Objekt automatisch ein Singleton wird",
+        "Weil Python sonst einen TypeError meldet",
+        "Damit build() nicht mehr aufgerufen werden muss"
+      ],
+      "correctIndex": 0,
+      "explanation": "Gibt jede Methode das Builder-Objekt selbst zurück, kann der nächste Aufruf direkt daran hängen (Fluent Interface)."
+    },
+    {
+      "question": "Was passiert bei erzeuge_export(\"xml\") mit der Fabrik aus der Lektion?",
+      "options": [
+        "Es wird ein CsvExport-Objekt geliefert.",
+        "Es wird None zurückgegeben.",
+        "Es wird ValueError: unbekannt: xml ausgelöst.",
+        "Es wird ein KeyError ausgelöst, der das Programm ohne Meldung beendet."
+      ],
+      "correctIndex": 2,
+      "explanation": "\"xml\" steht nicht im Dictionary. Der KeyError wird abgefangen und in einen ValueError mit verständlicher Meldung umgewandelt."
+    }
+  ]
+}

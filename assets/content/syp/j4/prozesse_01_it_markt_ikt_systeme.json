@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-prozesse_01_it_markt_ikt_systeme",
+ "title": "IT-Markt & betriebliche IKT-Systeme",
+ "summary": "Wer am IT-Markt was anbietet, wofür ERP, CRM und DMS gebraucht werden und wie man Make-or-Buy entscheidet.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Der IT-Markt besteht grob aus drei Bereichen: Hardware (Server, Clients, Netzwerkgeräte), Software (Standard- und Individualsoftware) und IT-Dienstleistungen (Beratung, Entwicklung, Betrieb, Cloud-Services, Schulung). Typische Anbieter sind Hersteller, Softwarehäuser, Systemhäuser (liefern, installieren und betreuen Gesamtlösungen), Distributoren (Großhandel für Händler) und Cloud-Anbieter. Viele HTL-Absolvent:innen landen genau dort – oder in der IT-Abteilung eines Anwenderunternehmens."
+  },
+  {
+   "type": "text",
+   "content": "Standardsoftware wird für viele Kunden gleich entwickelt und über Einstellungen angepasst (Customizing). Individualsoftware wird für genau einen Auftraggeber gebaut. Dazwischen gibt es Erweiterungen: Standardsoftware plus eigene Zusatzmodule. Betriebliche IKT-Systeme (Informations- und Kommunikationstechnik) unterstützen die Geschäftsprozesse eines Unternehmens. Die drei wichtigsten Typen lernst du jetzt kennen: ERP, CRM und DMS."
+  },
+  {
+   "type": "text",
+   "content": "ERP (Enterprise Resource Planning) plant und steuert die Ressourcen eines Unternehmens: Geld, Material, Personal, Maschinen. Typische Module sind Finanzbuchhaltung, Einkauf, Materialwirtschaft/Lager, Produktion, Vertrieb und Personalwesen. Der große Vorteil ist die gemeinsame Datenbasis: Ein Kundenauftrag reduziert automatisch den Lagerbestand, erzeugt eine Rechnung und landet in der Buchhaltung – ohne dass jemand Daten abtippt."
+  },
+  {
+   "type": "text",
+   "content": "CRM (Customer Relationship Management) verwaltet die Beziehung zu Kund:innen: Kontakte, Gesprächsnotizen, Angebote, Verkaufschancen, Marketingkampagnen und Serviceanfragen. Man unterscheidet operatives CRM (tägliche Arbeit im Vertrieb und Service), analytisches CRM (Auswertungen, z. B. welche Kund:innen abwandern) und kommunikatives CRM (Steuerung der Kanäle wie E-Mail, Telefon, Webshop)."
+  },
+  {
+   "type": "text",
+   "content": "Ein DMS (Dokumentenmanagementsystem) verwaltet digitale Dokumente: Erfassen (Scannen, Texterkennung per OCR), Ablegen mit Metadaten (Kunde, Datum, Dokumenttyp), Versionieren, Berechtigungen, Volltextsuche und Freigabe-Workflows. Wichtig ist die revisionssichere Archivierung: Dokumente dürfen nachträglich nicht unbemerkt verändert werden. Buchhaltungsunterlagen müssen in Österreich grundsätzlich sieben Jahre aufbewahrt werden."
+  },
+  {
+   "type": "code",
+   "content": "        Kundenauftrag\n             |\n   +-----+   v    +-----+\n   | CRM |------->| ERP |\n   +-----+ Kunde, +-----+\n           Angebot   |\n                     | Rechnung (PDF)\n                     v\n                  +-----+\n                  | DMS |\n                  +-----+"
+  },
+  {
+   "type": "text",
+   "content": "Make-or-Buy heißt: selbst entwickeln (Make) oder kaufen bzw. mieten (Buy, z. B. Lizenz oder SaaS). Kriterien sind Kosten über die gesamte Nutzungsdauer, Zeit bis zum Einsatz, eigenes Know-how, ob die Funktion zum Kerngeschäft gehört, Anpassbarkeit, Wartung und Abhängigkeit vom Anbieter (Vendor-Lock-in). Faustregel: Was ein Unternehmen vom Mitbewerb unterscheidet, wird eher selbst gebaut; Standardaufgaben wie Buchhaltung eher gekauft. Qualitative Kriterien bewertet man oft mit einer Nutzwertanalyse (gewichtete Punkte)."
+  },
+  {
+   "type": "code",
+   "content": "Make: 60 000 € einmalig\n      +  8 000 € pro Jahr\nBuy:  20 000 € einmalig\n      + 15 000 € pro Jahr\n\nGleich teuer nach x Jahren:\n60 000 + 8 000·x = 20 000 + 15 000·x\n          40 000 = 7 000·x\n               x ≈ 5,7 Jahre"
+  },
+  {
+   "type": "text",
+   "content": "Bei kürzerer Nutzung als 5,7 Jahre ist Buy hier billiger, bei längerer Make. Typischer Fehler: nur die Anschaffung vergleichen (20 000 € gegen 60 000 €) und die laufenden Kosten für Wartung, Lizenzen und Betrieb vergessen. Ebenso oft unterschätzt: der Aufwand für Anpassung, Datenübernahme und Schulung – der fällt bei beiden Varianten an."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Der IT-Markt liefert Hardware, Software und Dienstleistungen. ERP steuert Ressourcen über eine gemeinsame Datenbasis, CRM die Kundenbeziehung, DMS die Dokumente bis zur revisionssicheren Archivierung. Make-or-Buy entscheidet man über Kosten auf die ganze Nutzungsdauer und qualitative Kriterien wie Kerngeschäft, Know-how und Abhängigkeit."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Ein Unternehmen will Kontakte, Angebote und Verkaufschancen zentral verwalten. Welches System passt?",
+   "options": [
+    "ERP",
+    "DMS",
+    "CRM",
+    "CAD"
+   ],
+   "correctIndex": 2,
+   "explanation": "Kundenkontakte und Verkaufschancen sind die Kernaufgabe eines CRM. Das ERP steuert eher Ressourcen wie Lager, Einkauf und Buchhaltung."
+  },
+  {
+   "question": "Make: 50 000 € einmalig + 5 000 €/Jahr. Buy: 10 000 € einmalig + 13 000 €/Jahr. Ab wie vielen Jahren ist Make günstiger?",
+   "options": [
+    "Ab 4 Jahren",
+    "Ab 8 Jahren",
+    "Ab 3 Jahren",
+    "Nach 5 Jahren"
+   ],
+   "correctIndex": 3,
+   "explanation": "50 000 + 5 000·x = 10 000 + 13 000·x ⇒ 40 000 = 8 000·x ⇒ x = 5. Nach 5 Jahren sind beide gleich teuer, danach ist Make günstiger."
+  },
+  {
+   "question": "Was bedeutet „revisionssichere Archivierung“ in einem DMS?",
+   "options": [
+    "Dokumente werden automatisch übersetzt",
+    "Dokumente können nicht unbemerkt verändert oder gelöscht werden",
+    "Jede:r darf jedes Dokument bearbeiten",
+    "Alte Versionen werden sofort gelöscht"
+   ],
+   "correctIndex": 1,
+   "explanation": "Revisionssicher heißt: vollständig, unveränderbar und nachvollziehbar aufbewahrt – wichtig für Aufbewahrungspflichten."
+  },
+  {
+   "question": "Was ist der Hauptvorteil eines integrierten ERP-Systems?",
+   "options": [
+    "Jede Abteilung hat ihre eigene Datenbank",
+    "Es ersetzt alle E-Mails",
+    "Gemeinsame Datenbasis: Daten werden einmal erfasst und überall genutzt",
+    "Es braucht keine Benutzerrechte"
+   ],
+   "correctIndex": 2,
+   "explanation": "Durch die gemeinsame Datenbasis fließt z. B. ein Auftrag automatisch in Lager, Rechnung und Buchhaltung. Getrennte Datenbanken (Datensilos) will man gerade vermeiden."
+  }
+ ]
+}

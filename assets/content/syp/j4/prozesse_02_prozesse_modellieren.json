@@ -1,0 +1,94 @@
+{
+ "id": "syp-j4-prozesse_02_prozesse_modellieren",
+ "title": "Geschäftsprozesse modellieren",
+ "summary": "Geschäftsprozesse mit den BPMN-Grundelementen und als EPK darstellen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Ein Geschäftsprozess ist eine Folge von Aktivitäten, die durch ein Ereignis ausgelöst wird und ein Ergebnis mit Wert für einen Kunden liefert – z. B. „Laptop-Ausleihe in der Schule“ oder „Bestellung bearbeiten“. Man unterscheidet Kernprozesse (schaffen direkt Kundennutzen), Unterstützungsprozesse (z. B. IT-Support, Personalverwaltung) und Managementprozesse (Planung, Steuerung)."
+  },
+  {
+   "type": "text",
+   "content": "Prozesse modelliert man, um sie zu verstehen, Schwachstellen zu finden, mit Fachabteilungen zu reden und um Software oder Automatisierung vorzubereiten. Ein Modell ist dabei bewusst vereinfacht. Der verbreitete Standard dafür ist BPMN (Business Process Model and Notation)."
+  },
+  {
+   "type": "code",
+   "content": "BPMN-Grundelemente\n\n( )   Startereignis (dünner Kreis)\n((O)) Endereignis (dicker Kreis)\n[   ] Aktivität/Task (abgerundet)\n<X>   exklusives Gateway (entweder-oder)\n<+>   paralleles Gateway (und)\n--->  Sequenzfluss (Reihenfolge)\n- ->  Nachrichtenfluss (zw. Pools)"
+  },
+  {
+   "type": "code",
+   "content": "Laptop-Ausleihe\n\n( )->[Antrag prüfen]-><X>\n                      |\n   verfügbar? --------+\n   ja |          nein |\n      v               v\n[Laptop ausgeben] [Absage senden]\n      |               |\n      v               v\n    ((O))           ((O))"
+  },
+  {
+   "type": "text",
+   "content": "Ein exklusives Gateway (Raute mit X) wählt genau einen Weg; die ausgehenden Pfeile tragen Bedingungen wie „ja“/„nein“. Ein paralleles Gateway (Raute mit +) startet alle Wege gleichzeitig und wartet beim Zusammenführen, bis alle fertig sind. Typischer Fehler: parallel öffnen, aber exklusiv zusammenführen – dann läuft der Rest des Prozesses mehrfach los."
+  },
+  {
+   "type": "text",
+   "content": "Pools stehen für Teilnehmer (z. B. Schule und Lieferant), Lanes (Bahnen) teilen einen Pool nach Rollen auf, etwa Schüler:in, Kustos und Administration. So sieht man sofort, wer welche Aktivität erledigt. Innerhalb eines Pools verbindet der Sequenzfluss die Schritte; zwischen Pools fließen nur Nachrichten (gestrichelter Pfeil), denn verschiedene Organisationen steuern sich nicht gegenseitig."
+  },
+  {
+   "type": "text",
+   "content": "Die EPK (ereignisgesteuerte Prozesskette) ist vor allem im deutschsprachigen Raum aus dem ERP-Umfeld bekannt. Sie besteht aus Ereignissen (Sechsecke, ein Zustand: „Antrag ist eingelangt“), Funktionen (abgerundete Rechtecke, eine Tätigkeit: „Antrag prüfen“) und Konnektoren (AND ∧, OR ∨, XOR ×). Regeln: Ereignisse und Funktionen wechseln sich ab, die Kette beginnt und endet mit einem Ereignis."
+  },
+  {
+   "type": "code",
+   "content": "EPK Laptop-Ausleihe\n\n<Antrag ist eingelangt>\n          |\n   [Antrag prüfen]\n          |\n        (XOR)\n       /     \\\n<Laptop frei> <kein Laptop frei>\n      |            |\n[ausgeben]   [Absage senden]\n      |            |\n<ausgegeben>  <abgelehnt>"
+  },
+  {
+   "type": "text",
+   "content": "Wichtige EPK-Regel: Nach einem Ereignis darf kein XOR- oder OR-Split folgen, denn ein Ereignis ist passiv und kann nichts entscheiden. Die Entscheidung trifft immer eine Funktion, danach verzweigt der Konnektor in die möglichen Ergebnis-Ereignisse. Die erweiterte EPK (eEPK) ergänzt Organisationseinheiten und Informationsobjekte, z. B. „Kustos“ oder „Inventarliste“."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Ein Geschäftsprozess läuft vom auslösenden Ereignis bis zum Ergebnis. In BPMN gibt es Start- und Endereignisse, Aktivitäten, Gateways (X = exklusiv, + = parallel), Sequenzfluss innerhalb und Nachrichtenfluss zwischen Pools. Die EPK wechselt Ereignisse und Funktionen ab; Entscheidungen trifft nur eine Funktion."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Welches BPMN-Element verbindet zwei verschiedene Pools, z. B. Schule und Lieferant?",
+   "options": [
+    "Sequenzfluss",
+    "Nachrichtenfluss",
+    "Paralleles Gateway",
+    "Lane"
+   ],
+   "correctIndex": 1,
+   "explanation": "Zwischen Pools gibt es nur Nachrichtenfluss (gestrichelt). Sequenzfluss bleibt innerhalb eines Pools."
+  },
+  {
+   "question": "Was ist an diesem EPK-Ausschnitt falsch?",
+   "code": "<Antrag ist eingelangt>\n          |\n        (XOR)\n       /     \\\n[genehmigen] [ablehnen]",
+   "options": [
+    "Funktionen dürfen nicht auf Ereignisse folgen",
+    "XOR ist in EPKs nicht erlaubt",
+    "Das Ereignis müsste ein Sechseck sein",
+    "Nach einem Ereignis darf kein XOR-Split folgen"
+   ],
+   "correctIndex": 3,
+   "explanation": "Ereignisse sind passiv und können nicht entscheiden. Vor dem XOR-Split muss eine Funktion stehen, z. B. „Antrag prüfen“."
+  },
+  {
+   "question": "Ein paralleles Gateway öffnet zwei Wege. Was passiert beim zusammenführenden parallelen Gateway?",
+   "options": [
+    "Es wartet, bis beide Wege fertig sind",
+    "Es nimmt nur den schnelleren Weg",
+    "Es beendet den Prozess sofort",
+    "Es wählt zufällig einen Weg"
+   ],
+   "correctIndex": 0,
+   "explanation": "Das parallele Gateway synchronisiert: Weiter geht es erst, wenn alle eingehenden Wege angekommen sind."
+  },
+  {
+   "question": "Welche Aussage über eine EPK stimmt?",
+   "options": [
+    "Sie beginnt mit einer Funktion",
+    "Ereignisse beschreiben Tätigkeiten",
+    "Sie beginnt und endet mit einem Ereignis",
+    "Lanes sind Pflicht"
+   ],
+   "correctIndex": 2,
+   "explanation": "Eine EPK startet mit einem auslösenden Ereignis und endet mit Ergebnis-Ereignissen. Tätigkeiten sind Funktionen, Lanes gibt es in BPMN."
+  }
+ ]
+}

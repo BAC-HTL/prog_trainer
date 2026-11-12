@@ -1,0 +1,117 @@
+{
+ "id": "syp-j4-architektur_pruefung",
+ "title": "Abschlussprüfung: IT-Architekturen & Frameworks",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "Eine Web-Anwendung läuft mit Browser, einem Applikationsserver und einem eigenen Datenbankserver. Wie nennt man diese Verteilung?",
+   "options": [
+    "1-Tier",
+    "3-Tier",
+    "Microservices",
+    "Peer-to-Peer"
+   ],
+   "correctIndex": 1,
+   "explanation": "Präsentation (Browser), Logik (App-Server) und Daten (DB-Server) auf drei physischen Ebenen sind eine 3-Tier-Architektur."
+  },
+  {
+   "question": "Drei Services werden nacheinander aufgerufen: 99,8 %, 99,9 % und 99,5 % Verfügbarkeit. Wie hoch ist die Gesamtverfügbarkeit ungefähr?",
+   "options": [
+    "99,5 %",
+    "99,8 %",
+    "99,2 %",
+    "98,2 %"
+   ],
+   "correctIndex": 2,
+   "explanation": "0,998 · 0,999 · 0,995 ≈ 0,992 = 99,2 %. Die Kette ist schlechter als ihr schwächstes Glied."
+  },
+  {
+   "question": "Was ist ein „verteilter Monolith“?",
+   "options": [
+    "Ein Monolith, der auf mehreren Servern gleich läuft",
+    "Ein Monolith mit sauberen Modulen",
+    "Ein Framework von The Open Group",
+    "Microservices, die eng gekoppelt sind, z. B. über eine gemeinsame Datenbank"
+   ],
+   "correctIndex": 3,
+   "explanation": "Eng gekoppelte Services müssen gemeinsam geändert und deployt werden – man hat die Netzwerkkomplexität, aber nicht die Unabhängigkeit."
+  },
+  {
+   "question": "Für welches Projekt ist ein Monolith am ehesten die bessere Wahl?",
+   "options": [
+    "Diplomarbeit mit drei Personen und überschaubarer Last",
+    "Großer Onlinehändler mit 40 Teams",
+    "System, dessen Teile sehr unterschiedlich skaliert werden müssen",
+    "Plattform, deren Teams unabhängig releasen wollen"
+   ],
+   "correctIndex": 0,
+   "explanation": "Kleines Team und geringe Last: Der Zusatzaufwand von Microservices lohnt sich nicht. Die anderen Szenarien sprechen für Microservices."
+  },
+  {
+   "question": "In welcher TOGAF-ADM-Phase wird festgelegt, in welchen Schritten man von der Ist- zur Zielarchitektur kommt?",
+   "options": [
+    "A Architekturvision",
+    "D Technologiearchitektur",
+    "F Migrationsplanung",
+    "B Business-Architektur"
+   ],
+   "correctIndex": 2,
+   "explanation": "Phase F plant die Migration, E identifiziert Lösungsbausteine und Projekte dafür. A–D beschreiben die Architekturen selbst."
+  },
+  {
+   "question": "Wofür ist TOGAF in erster Linie gedacht?",
+   "options": [
+    "Für die Gliederung einer einzelnen Diplomarbeit",
+    "Für Unternehmensarchitektur: Prozesse, Daten, Anwendungen und Technik im ganzen Unternehmen",
+    "Zum Testen von Software",
+    "Als Programmiersprache für Architekturen"
+   ],
+   "correctIndex": 1,
+   "explanation": "TOGAF ist ein Enterprise-Architecture-Framework. Für die Doku eines einzelnen Systems eignet sich arc42."
+  },
+  {
+   "question": "In welchem arc42-Kapitel steht das System als Blackbox mit allen Benutzergruppen und Nachbarsystemen?",
+   "options": [
+    "Kontextabgrenzung",
+    "Bausteinsicht",
+    "Glossar",
+    "Querschnittliche Konzepte"
+   ],
+   "correctIndex": 0,
+   "explanation": "Die Kontextabgrenzung (Kapitel 3) zeigt, was zum System gehört und mit wem es kommuniziert – vergleichbar mit C4 Level 1."
+  },
+  {
+   "question": "Logging und Fehlerbehandlung betreffen fast alle Bausteine. Wohin gehören sie in arc42?",
+   "options": [
+    "Laufzeitsicht",
+    "Risiken und technische Schulden",
+    "Glossar",
+    "Querschnittliche Konzepte"
+   ],
+   "correctIndex": 3,
+   "explanation": "Themen, die viele Bausteine betreffen, beschreibt man einmal zentral unter „Querschnittliche Konzepte“ (Kapitel 8)."
+  },
+  {
+   "question": "Welche Aussage über das C4-Modell stimmt?",
+   "options": [
+    "Container sind immer Docker-Container",
+    "Die Code-Ebene sollte immer händisch gezeichnet werden",
+    "Es zoomt in vier Stufen: Context, Container, Component, Code",
+    "Es ersetzt jede textuelle Doku"
+   ],
+   "correctIndex": 2,
+   "explanation": "C4 zoomt in vier Stufen. Container sind allgemein separat lauffähige Teile; die Code-Ebene wird meist generiert oder weggelassen."
+  },
+  {
+   "question": "Welche Information ist der wichtigste Grund, einen ADR zu schreiben?",
+   "options": [
+    "Das Datum der letzten Code-Änderung",
+    "Warum eine Entscheidung so getroffen wurde und welche Konsequenzen sie hat",
+    "Die Liste aller Klassen",
+    "Die Stundenaufzeichnung des Teams"
+   ],
+   "correctIndex": 1,
+   "explanation": "ADRs bewahren den Kontext und die Begründung. Code zeigt, was gebaut wurde, aber nicht warum."
+  }
+ ]
+}

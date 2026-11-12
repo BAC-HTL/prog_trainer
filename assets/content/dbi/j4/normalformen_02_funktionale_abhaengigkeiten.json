@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-normalformen_02_funktionale_abhaengigkeiten",
+  "title": "Funktionale Abhängigkeiten und Schlüssel",
+  "summary": "Du beschreibst Business Rules als funktionale Abhängigkeiten, berechnest Attributhüllen mit Python und findest damit alle Schlüsselkandidaten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine funktionale Abhängigkeit (FA, englisch functional dependency) X → Y bedeutet: Wenn zwei Zeilen in den Attributen X übereinstimmen, stimmen sie auch in Y überein. Man liest „X bestimmt Y“. Beispiel: sch_nr → name. Zu einer Schülernummer gibt es genau einen Namen. Umgekehrt gilt name → sch_nr nicht, denn zwei Kinder können „Lena Huber“ heißen."
+    },
+    {
+      "type": "code",
+      "content": "noten\nsch_nr|name |klasse|kv    |fach|note\n-----+-----+------+------+----+----\n   1 |Anna |4AHIF |Gruber|DBI | 1\n   1 |Anna |4AHIF |Gruber|POS | 2\n   2 |Ben  |4AHIF |Gruber|DBI | 3\n   3 |Cem  |4BHIF |Wolf  |DBI | 2"
+    },
+    {
+      "type": "code",
+      "content": "Aus den Business Rules:\n  sch_nr        → name, klasse\n  klasse        → kv\n  sch_nr, fach  → note\n\nNICHT gültig:\n  klasse → sch_nr\n  fach   → note"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: FAs kommen aus den Business Rules, nicht aus den Daten! Die Beispieltabelle kann eine FA nur widerlegen (zwei Zeilen mit gleichem X und verschiedenem Y), aber nie beweisen. Dass in den vier Zeilen jeder Name nur einmal vorkommt, heißt nicht, dass name → sch_nr gilt."
+    },
+    {
+      "type": "text",
+      "content": "Aus gegebenen FAs folgen weitere. Die Armstrong-Axiome beschreiben, wie:\n• Reflexivität: Ist Y ⊆ X, dann X → Y (trivial, z. B. sch_nr, fach → fach).\n• Verstärkung: Aus X → Y folgt XZ → YZ.\n• Transitivität: Aus X → Y und Y → Z folgt X → Z.\nBeispiel: sch_nr → klasse und klasse → kv ergibt sch_nr → kv."
+    },
+    {
+      "type": "text",
+      "content": "Praktischer als die Axiome ist die Attributhülle X⁺: alle Attribute, die von X bestimmt werden. Algorithmus: Starte mit X. Suche eine FA, deren linke Seite schon ganz in der Hülle liegt, und füge ihre rechte Seite hinzu. Wiederhole, bis sich nichts mehr ändert."
+    },
+    {
+      "type": "code",
+      "content": "def huelle(x, fds):\n    h = set(x)\n    neu = True\n    while neu:\n        neu = False\n        for l, r in fds:\n            if l <= h and not r <= h:\n                h |= r\n                neu = True\n    return h\n\nF = [\n  ({\"sch_nr\"}, {\"name\", \"klasse\"}),\n  ({\"klasse\"}, {\"kv\"}),\n  ({\"sch_nr\", \"fach\"}, {\"note\"}),\n]\nprint(sorted(huelle({\"sch_nr\"}, F)))\nprint(sorted(huelle({\"sch_nr\", \"fach\"}, F)))\nprint(sorted(huelle({\"klasse\", \"fach\"}, F)))\n\n# Ausgabe:\n# ['klasse', 'kv', 'name', 'sch_nr']\n# ['fach', 'klasse', 'kv', 'name',\n#  'note', 'sch_nr']\n# ['fach', 'klasse', 'kv']"
+    },
+    {
+      "type": "text",
+      "content": "Mit der Hülle findest du Schlüssel: X ist ein Superschlüssel, wenn X⁺ alle Attribute der Relation enthält. Ein Schlüsselkandidat ist ein minimaler Superschlüssel – du kannst kein Attribut weglassen. {sch_nr, fach}⁺ enthält alles, {sch_nr}⁺ fehlen fach und note, {fach}⁺ = {fach}. Also ist {sch_nr, fach} Schlüsselkandidat. Attribute, die in irgendeinem Schlüsselkandidaten vorkommen, heißen Primattribute (hier sch_nr und fach)."
+    },
+    {
+      "type": "text",
+      "content": "Tipp zur Suche: Ein Attribut, das auf keiner rechten Seite vorkommt, muss in jedem Schlüssel stecken (hier sch_nr und fach). Starte mit diesen und erweitere nur, wenn die Hülle noch nicht alles enthält. Eine Relation kann mehrere Schlüsselkandidaten haben; einen davon wählst du als Primärschlüssel. Typischer Fehler: einen Superschlüssel wie {sch_nr, fach, name} für einen Schlüsselkandidaten halten – er ist nicht minimal."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: X → Y heißt „gleiches X ⇒ gleiches Y“. FAs leitest du aus Business Rules ab. Die Attributhülle X⁺ berechnest du schrittweise; enthält sie alle Attribute, ist X Superschlüssel, und ist X zusätzlich minimal, ist X Schlüsselkandidat. Damit kannst du in der nächsten Lektion Normalformen prüfen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Gegeben sind die FAs A → B und B → C. Was ist die Attributhülle {A}⁺?",
+      "options": [
+        "{A, B, C}",
+        "{A, B}",
+        "{A}",
+        "{B, C}"
+      ],
+      "correctIndex": 0,
+      "explanation": "Start mit {A}. A → B fügt B hinzu, danach B → C fügt C hinzu. X selbst ist immer in der Hülle (Reflexivität)."
+    },
+    {
+      "question": "Relation R(A, B, C, D, E) mit A → B, BC → D, D → E. Welche Menge ist der (einzige) Schlüsselkandidat?",
+      "options": [
+        "{A}",
+        "{A, B, C}",
+        "{B, C}",
+        "{A, C}"
+      ],
+      "correctIndex": 3,
+      "explanation": "A und C kommen auf keiner rechten Seite vor, also müssen beide in jedem Schlüssel sein. {A, C}⁺ = {A, B, C, D, E}. {A, B, C} ist auch Superschlüssel, aber nicht minimal."
+    },
+    {
+      "question": "In einer Tabelle mit 200 Zeilen haben alle Schüler:innen verschiedene Namen. Was darfst du daraus schließen?",
+      "options": [
+        "name → sch_nr gilt.",
+        "Nichts Sicheres – FAs folgen aus Business Rules, nicht aus Beispieldaten.",
+        "name ist ein Schlüsselkandidat.",
+        "sch_nr → name gilt nicht."
+      ],
+      "correctIndex": 1,
+      "explanation": "Daten können eine FA nur widerlegen. Ob Namen eindeutig sind, entscheidet die Realität: Zwei Personen können gleich heißen."
+    },
+    {
+      "question": "Was gibt der Aufruf aus (Funktion huelle wie in der Lektion)?",
+      "code": "F = [({'a'}, {'b'}),\n     ({'b', 'c'}, {'d'})]\nprint(sorted(huelle({'a'}, F)))",
+      "options": [
+        "['a', 'b']",
+        "['a', 'b', 'c']",
+        "['a', 'b', 'c', 'd']",
+        "['a']"
+      ],
+      "correctIndex": 0,
+      "explanation": "Aus {a} folgt mit a → b das Attribut b. Für b, c → d fehlt c in der Hülle, deshalb wird d nicht hinzugefügt."
+    }
+  ]
+}

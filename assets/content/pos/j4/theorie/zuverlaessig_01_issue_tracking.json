@@ -1,0 +1,93 @@
+{
+  "id": "pos-j4-theorie-zuverlaessig_01_issue_tracking",
+  "title": "Issue-Tracking und gute Bug-Reports",
+  "summary": "Fehler und Aufgaben nachvollziehbar verwalten – vom Lebenszyklus eines Issues bis zum Bug-Report, mit dem man wirklich arbeiten kann.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "In jedem Projekt, das länger als ein paar Tage läuft, sammeln sich Fehler, Wünsche und Aufgaben. Zettel, Chat-Nachrichten und E-Mails gehen verloren. Ein Issue-Tracker (z. B. GitHub Issues, GitLab Issues oder Jira) verwaltet jedes Anliegen als Issue (Ticket) mit eindeutiger Nummer, Verlauf und Diskussion. So weiß das ganze Team, was offen ist, wer woran arbeitet und warum etwas geändert wurde."
+    },
+    {
+      "type": "text",
+      "content": "Typische Issue-Arten: Bug (Fehler), Feature bzw. Enhancement (neue Funktion, Verbesserung) und Task (Aufgabe, z. B. „Abhängigkeiten aktualisieren“). Wichtige Felder:\n• Titel und Beschreibung\n• Assignee – wer ist zuständig?\n• Labels – z. B. bug, ui, good first issue\n• Meilenstein bzw. Sprint – bis wann?\n• Schweregrad (Severity) und Priorität"
+    },
+    {
+      "type": "text",
+      "content": "Schweregrad und Priorität sind nicht dasselbe: Der Schweregrad sagt, wie schlimm der Fehler technisch ist (Absturz, Datenverlust oder nur ein Tippfehler). Die Priorität sagt, wie dringend er behoben werden soll. Ein Tippfehler im Firmennamen auf der Startseite hat niedrigen Schweregrad, aber hohe Priorität. Ein Absturz in einer kaum genutzten Exportfunktion ist schwer, aber vielleicht nicht dringend."
+    },
+    {
+      "type": "code",
+      "content": "Lebenszyklus eines Bugs:\n\n  Neu ──▶ Bestätigt ──▶ In Arbeit\n   │      (Triage)         │\n   │                       ▼\n   │                  In Review\n   │                       │\n   ▼                       ▼\nAbgelehnt            Gelöst/Getestet\n(Duplikat,                 │\n kein Fehler,              ▼\n wird nicht         Geschlossen\n behoben)                  │\n                 Wiedereröffnet ─┐\n                 (Fehler tritt   │\n                  wieder auf) ◀──┘"
+    },
+    {
+      "type": "text",
+      "content": "Zum Lebenszyklus: Bei der Triage wird ein neues Issue gesichtet – Ist es reproduzierbar? Ein Duplikat? Wie wichtig? Danach wird es zugewiesen und bearbeitet. Den Fix verknüpft man mit dem Issue: Auf GitHub schließt z. B. ein Commit oder Pull Request mit „Fixes #42“ das Issue automatisch, sobald er in den Standard-Branch gemergt wird. Geschlossen wird erst, wenn der Fix überprüft ist. Taucht der Fehler wieder auf, wird das Issue wiedereröffnet statt ein neues anzulegen."
+    },
+    {
+      "type": "text",
+      "content": "Ein guter Bug-Report spart Stunden. Die Entwicklerin muss den Fehler nachstellen können, ohne nachzufragen. Er enthält:\n• aussagekräftigen Titel (was, wo)\n• Schritte zum Reproduzieren\n• erwartetes und tatsächliches Verhalten\n• Umgebung (Version, Betriebssystem, Browser)\n• Fehlermeldung, Log-Auszug oder Screenshot\n• möglichst ein minimales Beispiel\nUnd: ein Fehler pro Issue."
+    },
+    {
+      "type": "code",
+      "content": "Schlecht:\n  Titel: Geht nicht!!!\n  „Der Notenrechner stürzt ab.\n   Bitte schnell fixen.“"
+    },
+    {
+      "type": "code",
+      "content": "Gut:\n  Titel: Absturz bei Durchschnitt\n         ohne eingetragene Noten\n\n  Schritte:\n  1. Neues Fach anlegen\n  2. „Durchschnitt“ klicken\n  Erwartet: Hinweis „keine Noten“\n  Tatsächlich: Programm bricht ab\n  Version: 1.4.2, Windows 11\n\n  Minimal:\n  durchschnitt([])\n  ZeroDivisionError: division by zero\n  (notenrechner.py, Zeile 2)"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler beim Arbeiten mit Issues: mehrere Probleme in ein Issue packen, Issues ohne Kommentar schließen („bei mir geht’s“), Diskussionen in privaten Chats führen statt im Issue, und Duplikate anlegen, statt vorher zu suchen. Ein sauber geführter Tracker ist auch Dokumentation: Noch Jahre später sieht man, warum eine Codezeile so aussieht."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Jedes Anliegen wird ein Issue mit Nummer, Zuständigkeit und Status. Der Lebenszyklus führt von Neu über Triage und Bearbeitung zu Geschlossen – mit der Möglichkeit, wieder zu öffnen. Ein guter Bug-Report ist reproduzierbar, konkret und beschreibt Erwartet vs. Tatsächlich."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Angabe ist in einem Bug-Report am wichtigsten, damit Entwickler den Fehler beheben können?",
+      "options": [
+        "Wie dringend der Fehler für den Melder ist",
+        "Genaue Schritte zum Reproduzieren",
+        "Ein Vorschlag, wie der Code umgeschrieben werden soll",
+        "Der Name der Person, die den Fehler verursacht hat"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ohne reproduzierbare Schritte kann niemand den Fehler zuverlässig nachstellen – und damit weder beheben noch die Behebung prüfen."
+    },
+    {
+      "question": "Auf der Startseite ist der Name der Schule falsch geschrieben. Wie ordnet man das typischerweise ein?",
+      "options": [
+        "Hoher Schweregrad, niedrige Priorität",
+        "Hoher Schweregrad, hohe Priorität",
+        "Niedriger Schweregrad, niedrige Priorität",
+        "Niedriger Schweregrad, hohe Priorität"
+      ],
+      "correctIndex": 3,
+      "explanation": "Technisch ist ein Tippfehler harmlos (niedriger Schweregrad), aber er ist sehr sichtbar und peinlich, also dringend (hohe Priorität)."
+    },
+    {
+      "question": "Ein bereits geschlossener Fehler tritt nach einem Update wieder auf. Was ist das übliche Vorgehen?",
+      "options": [
+        "Das Issue wiedereröffnen und die neuen Informationen ergänzen",
+        "Ein komplett neues Issue ohne Verweis anlegen",
+        "Nichts tun, weil das Issue schon geschlossen ist",
+        "Das alte Issue löschen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Durch das Wiedereröffnen bleibt der Verlauf erhalten – inklusive des alten Fixes, der offenbar nicht ausgereicht hat."
+    },
+    {
+      "question": "Was passiert auf GitHub, wenn ein Pull Request mit der Beschreibung „Fixes #42“ in den Standard-Branch gemergt wird?",
+      "options": [
+        "Issue #42 wird gelöscht",
+        "Der Pull Request wird automatisch abgelehnt",
+        "Issue #42 wird automatisch geschlossen",
+        "Issue #42 bekommt das Label bug"
+      ],
+      "correctIndex": 2,
+      "explanation": "Schlüsselwörter wie fixes, closes oder resolves gefolgt von der Issue-Nummer verknüpfen den Pull Request mit dem Issue und schließen es beim Merge in den Standard-Branch."
+    }
+  ]
+}

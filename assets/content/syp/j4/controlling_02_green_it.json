@@ -1,0 +1,89 @@
+{
+ "id": "syp-j4-controlling_02_green_it",
+ "title": "Green IT",
+ "summary": "Den Energie- und Ressourcenverbrauch der IT über den ganzen Lebenszyklus verstehen und mit Kennzahlen wie PUE senken.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Green IT bedeutet, IT über ihren ganzen Lebenszyklus umwelt- und ressourcenschonend zu gestalten. Man unterscheidet Green in IT (die IT selbst wird sparsamer: Geräte, Rechenzentren, Software) und Green by IT (IT hilft anderswo sparen, z. B. Videokonferenz statt Dienstreise, digitale Formulare statt Papier, intelligente Gebäudesteuerung)."
+  },
+  {
+   "type": "text",
+   "content": "Der Lebenszyklus eines Geräts: Rohstoffgewinnung und Herstellung, Transport, Nutzung, Entsorgung oder Wiederverwendung. Bei Laptops und Smartphones entfällt oft ein großer Teil des CO2-Fußabdrucks schon auf die Herstellung („graue Energie“). Daraus folgt: Ein Gerät länger zu nutzen, zu reparieren oder als Refurbished-Gerät weiterzugeben spart oft mehr als ein sparsameres Neugerät."
+  },
+  {
+   "type": "text",
+   "content": "In der Nutzungsphase zählt der Stromverbrauch. Energie (kWh) = Leistung (kW) × Zeit (h). Ein EDV-Saal mit 30 PCs à 60 W, die durchgehend laufen, verbraucht ein Vielfaches dessen, was nötig ist, wenn sie nur im Unterricht eingeschaltet sind."
+  },
+  {
+   "type": "code",
+   "content": "pcs, watt = 30, 60\n\ndef kwh(stunden_pro_tag, tage):\n    return (pcs * watt * stunden_pro_tag\n            * tage / 1000)\n\nimmer_an = kwh(24, 365)\nunterricht = kwh(10, 200)\nprint(immer_an, unterricht)\n# 15768.0 3600.0\nprint(immer_an - unterricht)\n# 12168.0"
+  },
+  {
+   "type": "text",
+   "content": "Die Ersparnis beträgt 12 168 kWh im Jahr. Mit einem angenommenen Emissionsfaktor von 0,2 kg CO2 pro kWh (der echte Wert hängt stark vom Strommix ab) sind das rund 2 400 kg CO2. Maßnahmen dafür: Energiesparmodus, automatisches Herunterfahren am Abend, Wake-on-LAN für nächtliche Updates statt Dauerbetrieb."
+  },
+  {
+   "type": "text",
+   "content": "Für Rechenzentren gibt es die Kennzahl PUE (Power Usage Effectiveness) = Gesamtenergie des Rechenzentrums / Energie der IT-Geräte. Der Idealwert ist 1,0: Dann ginge die gesamte Energie in Server, Speicher und Netzwerk. Alles darüber ist Overhead für Kühlung, Stromversorgung und Beleuchtung. Typischer Fehler: PUE als Maß für die Effizienz der Server selbst lesen – ein RZ voller schlecht ausgelasteter Server kann trotzdem einen guten PUE haben."
+  },
+  {
+   "type": "code",
+   "content": "PUE\nGesamtenergie RZ:  1 500 000 kWh\nIT-Geräte:         1 000 000 kWh\nPUE = 1 500 000 / 1 000 000 = 1,5\n-> 50 % zusätzlich für Kühlung …\n\nKonsolidierung (Beispielwerte)\nvorher:  20 Server · 300 W = 6 000 W\nnachher:  4 Hosts  · 500 W = 2 000 W"
+  },
+  {
+   "type": "text",
+   "content": "Virtualisierung und Konsolidierung bringen viel: Viele kaum ausgelastete Server werden als virtuelle Maschinen auf wenigen gut ausgelasteten Hosts zusammengefasst. Weitere Hebel: bei der Beschaffung auf Umweltzeichen achten (z. B. Energy Star, Blauer Engel, TCO Certified – Achtung, das ist ein Gütesiegel und nicht die Total Cost of Ownership), Reparierbarkeit und lange Update-Versorgung, Rücknahme von Elektroaltgeräten nach EU-Vorgaben (WEEE) mit sicherer Datenlöschung. Auch Software zählt: effizienter Code, weniger übertragene Daten, komprimierte Bilder (Green Coding)."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Green in IT macht die IT selbst sparsamer, Green by IT spart mit IT anderswo. Der ganze Lebenszyklus zählt – längere Nutzung spart graue Energie. Energie = Leistung × Zeit; Abschalten außerhalb der Nutzungszeit spart viel. PUE = Gesamtenergie RZ / IT-Energie, ideal 1,0. Konsolidierung, umweltgerechte Beschaffung, Wiederverwendung und Green Coding sind wichtige Maßnahmen."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Ein Rechenzentrum verbraucht 1 200 000 kWh, davon 800 000 kWh für IT-Geräte. Wie hoch ist der PUE?",
+   "options": [
+    "0,67",
+    "1,5",
+    "2,0",
+    "1,2"
+   ],
+   "correctIndex": 1,
+   "explanation": "PUE = 1 200 000 / 800 000 = 1,5. 0,67 wäre der Kehrwert – der PUE ist nie kleiner als 1."
+  },
+  {
+   "question": "Ein Server mit 250 W läuft das ganze Jahr (8 760 h). Wie viel Energie verbraucht er?",
+   "options": [
+    "2 190 kWh",
+    "250 kWh",
+    "8 760 kWh",
+    "2 190 000 kWh"
+   ],
+   "correctIndex": 0,
+   "explanation": "0,25 kW · 8 760 h = 2 190 kWh. 2 190 000 wäre das Ergebnis in Wh, nicht in kWh."
+  },
+  {
+   "question": "Was ist ein Beispiel für „Green by IT“?",
+   "options": [
+    "Server mit effizienterem Netzteil",
+    "Kühlung im Rechenzentrum verbessern",
+    "Videokonferenzen ersetzen Dienstreisen",
+    "Bildschirmhelligkeit reduzieren"
+   ],
+   "correctIndex": 2,
+   "explanation": "Green by IT nutzt IT, um außerhalb der IT Ressourcen zu sparen. Die anderen Beispiele machen die IT selbst sparsamer (Green in IT)."
+  },
+  {
+   "question": "Warum kann es ökologisch sinnvoller sein, einen funktionierenden Laptop länger zu nutzen, statt ein sparsameres Neugerät zu kaufen?",
+   "options": [
+    "Neue Geräte verbrauchen immer mehr Strom",
+    "Alte Geräte haben einen besseren PUE",
+    "Weil Laptops keinen Strom verbrauchen",
+    "Weil ein großer Teil des CO2-Fußabdrucks bei der Herstellung entsteht"
+   ],
+   "correctIndex": 3,
+   "explanation": "Die graue Energie der Herstellung fällt beim Neukauf erneut an; längere Nutzung verteilt sie auf mehr Jahre."
+  }
+ ]
+}

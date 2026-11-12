@@ -1,0 +1,119 @@
+{
+  "id": "pos-j4-python-patterns_pruefung",
+  "title": "Abschlussprüfung: Design Patterns",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Eine Klasse Schueler hat die Methoden noten_schnitt(), als_pdf_drucken(), in_db_speichern() und email_senden(). Welche Änderung entspricht dem Single Responsibility Principle am besten?",
+      "options": [
+        "Alle Methoden statisch machen",
+        "Drucken, Speichern und Versand in eigene Klassen auslagern; Schueler behält Daten und Notenberechnung",
+        "Eine Unterklasse SchuelerMitPdf erstellen",
+        "Die Methoden alphabetisch sortieren"
+      ],
+      "correctIndex": 1,
+      "explanation": "SRP verlangt einen einzigen Änderungsgrund pro Klasse. Ausgabe, Persistenz und Versand sind eigene Verantwortlichkeiten."
+    },
+    {
+      "question": "Die Klasse NurLeseListe erbt von list, wirft aber bei append() eine Exception. Code, der eine list erwartet, stürzt damit ab. Welches Prinzip ist verletzt?",
+      "options": [
+        "Open/Closed Principle",
+        "Dependency Inversion Principle",
+        "Liskov Substitution Principle",
+        "DRY"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Objekt der Unterklasse kann nicht überall die Oberklasse ersetzen, weil es ein erwartetes Verhalten (append) verweigert – Verletzung des Liskov-Prinzips."
+    },
+    {
+      "question": "Welche Variante folgt dem Dependency Inversion Principle?",
+      "options": [
+        "Bericht bekommt das Ausgabeobjekt als Konstruktorparameter: __init__(self, ausgabe)",
+        "Bericht erzeugt im Konstruktor self.ausgabe = PdfDrucker()",
+        "Bericht erbt von PdfDrucker",
+        "Bericht legt PdfDrucker() als Klassenattribut an"
+      ],
+      "correctIndex": 0,
+      "explanation": "Nur in der ersten Variante wird die Abhängigkeit von außen übergeben. Bericht kennt keine konkrete Klasse und kann z. B. im Test mit einer Attrappe arbeiten."
+    },
+    {
+      "question": "Welche Zuordnung zu den GoF-Kategorien stimmt?",
+      "options": [
+        "Builder – Strukturmuster, Adapter – Erzeugungsmuster",
+        "Observer – Erzeugungsmuster, Singleton – Verhaltensmuster",
+        "Decorator – Verhaltensmuster, Strategy – Strukturmuster",
+        "Adapter – Strukturmuster, Observer – Verhaltensmuster"
+      ],
+      "correctIndex": 3,
+      "explanation": "Factory, Singleton und Builder sind Erzeugungsmuster, Adapter und Decorator Strukturmuster, Observer und Strategy Verhaltensmuster."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Zaehler:\n    _i = None\n    def __new__(cls):\n        if cls._i is None:\n            cls._i = super().__new__(cls)\n            cls._i.n = 0\n        return cls._i\n    def plus(self):\n        self.n += 1\n\nZaehler().plus()\nZaehler().plus()\nprint(Zaehler().n)",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Alle drei Aufrufe Zaehler() liefern dasselbe Objekt. n wird nur beim ersten Erzeugen in __new__ auf 0 gesetzt (es gibt kein __init__, das zurücksetzt) und dann zweimal erhöht."
+    },
+    {
+      "question": "Zwei Threads rufen zum ersten Mal gleichzeitig Konfig() auf (Singleton mit „if cls._instanz is None“). Was kann passieren?",
+      "options": [
+        "Python verhindert das automatisch durch den GIL, es entsteht immer genau ein Objekt.",
+        "Beide sehen None und erzeugen je ein Objekt – die Prüfung muss mit einem Lock geschützt werden.",
+        "Der zweite Thread bekommt eine Exception.",
+        "Es entsteht gar kein Objekt."
+      ],
+      "correctIndex": 1,
+      "explanation": "Prüfen und Setzen sind nicht atomar. Zwischen „is None“ und der Zuweisung kann der andere Thread drankommen – eine klassische Race Condition. Abhilfe: Lock oder das Objekt beim Programmstart erzeugen."
+    },
+    {
+      "question": "Wann lohnt sich ein Builder am ehesten?",
+      "options": [
+        "Wenn ein Objekt aus vielen optionalen Teilen schrittweise zusammengesetzt wird, z. B. eine Abfrage mit beliebig vielen Bedingungen",
+        "Wenn es von einer Klasse nur ein Objekt geben darf",
+        "Wenn man über Änderungen informiert werden will",
+        "Wenn eine Klasse nur ein Attribut hat"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Builder ist für komplexe, schrittweise aufgebaute Objekte gedacht. Für wenige Parameter genügen in Python Schlüsselwortargumente."
+    },
+    {
+      "question": "Worin unterscheiden sich Adapter und Decorator?",
+      "options": [
+        "Der Adapter ergänzt Verhalten, der Decorator ändert die Schnittstelle.",
+        "Beide sind Erzeugungsmuster und erzeugen neue Objekte.",
+        "Der Decorator funktioniert nur mit Funktionen, der Adapter nur mit Klassen.",
+        "Der Adapter übersetzt eine unpassende Schnittstelle, der Decorator behält die Schnittstelle bei und ergänzt Verhalten."
+      ],
+      "correctIndex": 3,
+      "explanation": "Adapter: andere Form, gleiche Leistung. Decorator: gleiche Form, zusätzliche Leistung – und mehrfach stapelbar."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "def netto(p):\n    return p / 1.2\n\ndef brutto(p):\n    return p\n\nclass Kasse:\n    def __init__(self, s):\n        self.s = s\n    def zeige(self, p):\n        return round(self.s(p), 2)\n\nk = Kasse(netto)\nprint(k.zeige(12))",
+      "options": [
+        "12",
+        "10.0",
+        "14.4",
+        "2.0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Kasse verwendet die Strategie netto: 12 / 1.2 = 10.0."
+    },
+    {
+      "question": "In einer App melden sich Fenster beim Notenbuch als Beobachter an, aber nie wieder ab. Welches Problem entsteht typischerweise?",
+      "options": [
+        "Geschlossene Fenster bleiben über die Beobachterliste im Speicher und werden weiter benachrichtigt.",
+        "Das Notenbuch wird automatisch zum Singleton.",
+        "Neue Noten können nicht mehr eingetragen werden.",
+        "Python entfernt die Beobachter beim Schließen automatisch, es gibt kein Problem."
+      ],
+      "correctIndex": 0,
+      "explanation": "Das Subjekt hält Referenzen auf alle Beobachter. Ohne Abmelden bleiben sie erreichbar (Speicherleck) und reagieren weiter auf Ereignisse."
+    }
+  ]
+}

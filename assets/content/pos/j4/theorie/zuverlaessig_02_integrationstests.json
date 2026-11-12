@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-theorie-zuverlaessig_02_integrationstests",
+  "title": "Integrationstests vs. Unit-Tests",
+  "summary": "Warum Komponenten, die einzeln funktionieren, zusammen trotzdem versagen können – und wie Integrationstests das aufdecken.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Unit-Tests kennst du schon: Sie prüfen die kleinste Einheit (Funktion, Klasse) isoliert. Abhängigkeiten wie Datenbank oder Netzwerk werden durch Fakes oder Mocks ersetzt. Ein Integrationstest prüft dagegen das Zusammenspiel mehrerer Komponenten – oft mit echten Ressourcen wie Datenbank, Dateisystem oder einer Web-API. Darüber gibt es noch System- bzw. End-to-End-Tests, die die ganze Anwendung wie ein Benutzer bedienen."
+    },
+    {
+      "type": "text",
+      "content": "Die Testpyramide beschreibt ein gesundes Verhältnis: viele schnelle Unit-Tests als Basis, weniger Integrationstests in der Mitte, wenige langsame End-to-End-Tests an der Spitze. Je weiter oben, desto realistischer, aber auch langsamer, aufwendiger und bei Fehlschlag schwerer zu deuten."
+    },
+    {
+      "type": "code",
+      "content": "            Unit-Test   Integrationstest\n───────────────────────────────────────\nUmfang      1 Einheit   mehrere Teile\nAbhäng.     Fake/Mock   echt (z. B. DB)\nTempo       ms          langsamer\nFehlerort   genau       grob\nfindet      Logik-      Schnittstellen-,\n            fehler      Konfig-, SQL-\n                        Fehler"
+    },
+    {
+      "type": "text",
+      "content": "Beispiel: Eine Notenverwaltung besteht aus NotenRepo (speichert in SQLite) und Zeugnis (berechnet den Schnitt). Zeugnis bekommt das Repo im Konstruktor übergeben (Dependency Injection). Dadurch kann man im Unit-Test ein Fake-Repo einsetzen und im Integrationstest das echte."
+    },
+    {
+      "type": "code",
+      "content": "class NotenRepo:\n    def __init__(self, db):\n        self.db = db\n        db.execute(\"CREATE TABLE IF NOT\"\n            \" EXISTS noten(fach, note)\")\n    def speichern(self, fach, note):\n        self.db.execute(\"INSERT INTO\"\n            \" noten VALUES (?, ?)\",\n            (fach, note))\n    def noten_von(self, fach):\n        z = self.db.execute(\"SELECT note\"\n            \" FROM noten WHERE fach = ?\",\n            (fach,))\n        return [r[0] for r in z]\n\nclass Zeugnis:\n    def __init__(self, repo):\n        self.repo = repo\n    def schnitt(self, fach):\n        n = self.repo.noten_von(fach)\n        if not n:\n            return None\n        return round(sum(n) / len(n), 1)"
+    },
+    {
+      "type": "code",
+      "content": "# Unit-Test: Zeugnis isoliert\nclass FakeRepo:\n    def noten_von(self, fach):\n        return {\"POS\": [1, 2, 2]}.get(\n            fach, [])\n\ndef test_schnitt_unit():\n    z = Zeugnis(FakeRepo())\n    assert z.schnitt(\"POS\") == 1.7\n    assert z.schnitt(\"AM\") is None\n\n# Integrationstest: echte DB\ndef test_schnitt_integration():\n    db = sqlite3.connect(\":memory:\")\n    repo = NotenRepo(db)\n    repo.speichern(\"POS\", 1)\n    repo.speichern(\"POS\", 2)\n    repo.speichern(\"DBI\", 5)\n    assert Zeugnis(repo).schnitt(\n        \"POS\") == 1.5"
+    },
+    {
+      "type": "text",
+      "content": "Warum braucht man beide? Angenommen, in noten_von fehlt versehentlich das WHERE. Der Unit-Test bleibt grün – er benutzt die echte Abfrage ja gar nicht. Erst der Integrationstest zeigt, dass die DBI-Note mitgezählt wird: (1 + 2 + 5) / 3 ≈ 2,7. Typische Integrationsfehler: falsches SQL, unterschiedliche Annahmen über Datenformate (z. B. Note als Text statt Zahl), fehlende Konfiguration, falsche Reihenfolge von Aufrufen."
+    },
+    {
+      "type": "code",
+      "content": "$ pytest -q\n.F\nE  AssertionError:\n     assert 2.7 == 1.5\nFAILED test_noten.py::\n  test_schnitt_integration\n1 failed, 1 passed"
+    },
+    {
+      "type": "code",
+      "content": "import pytest\n\n@pytest.fixture\ndef repo():\n    db = sqlite3.connect(\":memory:\")\n    yield NotenRepo(db)   # Test läuft\n    db.close()            # Aufräumen\n\n@pytest.mark.integration\ndef test_leeres_fach(repo):\n    assert Zeugnis(repo).schnitt(\n        \"POS\") is None\n\n# pytest.ini: Marker registrieren\n# [pytest]\n# markers =\n#     integration: Tests mit DB\n\n$ pytest -m \"not integration\"\n$ pytest -m integration"
+    },
+    {
+      "type": "text",
+      "content": "Gute Praxis: Jeder Integrationstest bekommt einen frischen, eigenen Zustand – im Beispiel liefert die Fixture für jeden Test eine neue In-Memory-Datenbank und räumt danach auf. Tests dürfen nicht voneinander abhängen. Langsame Integrationstests markiert man, damit man lokal schnell nur die Unit-Tests laufen lassen kann; die CI-Pipeline führt alle aus. Integriert wird am besten inkrementell (Komponente für Komponente) statt „Big Bang“ (alles auf einmal), sonst ist bei einem Fehler unklar, wo er steckt. In C# schreibt man beide Testarten z. B. mit xUnit (NuGet-Paket xunit) als [Fact]-Methoden."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was unterscheidet einen Integrationstest von einem Unit-Test?",
+      "options": [
+        "Integrationstests verwenden kein assert",
+        "Integrationstests prüfen das Zusammenspiel mehrerer Komponenten, oft mit echten Ressourcen",
+        "Integrationstests werden nur einmal vor der Auslieferung ausgeführt",
+        "Integrationstests prüfen nur die Benutzeroberfläche"
+      ],
+      "correctIndex": 1,
+      "explanation": "Unit-Tests prüfen eine Einheit isoliert (mit Fakes), Integrationstests das Zusammenwirken – z. B. Logik plus echte Datenbank."
+    },
+    {
+      "question": "Im Repo fehlt das WHERE in der SELECT-Abfrage. Welcher Test schlägt fehl?",
+      "options": [
+        "Nur der Unit-Test mit FakeRepo",
+        "Beide Tests",
+        "Keiner, weil sqlite3 den Fehler korrigiert",
+        "Nur der Integrationstest mit echter Datenbank"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Unit-Test verwendet das FakeRepo und führt die SQL-Abfrage nie aus. Nur der Integrationstest benutzt das echte NotenRepo."
+    },
+    {
+      "question": "Welches Verhältnis empfiehlt die Testpyramide?",
+      "options": [
+        "Viele Unit-Tests, weniger Integrationstests, wenige End-to-End-Tests",
+        "Gleich viele Tests jeder Art",
+        "Vor allem End-to-End-Tests, weil sie am realistischsten sind",
+        "Nur Integrationstests, weil sie Unit-Tests überflüssig machen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Unit-Tests sind schnell und zeigen den Fehlerort genau. Höhere Testebenen sind realistischer, aber langsamer und aufwendiger – daher weniger davon."
+    },
+    {
+      "question": "Was ist der Zweck dieser pytest-Fixture?",
+      "code": "@pytest.fixture\ndef repo():\n    db = sqlite3.connect(\":memory:\")\n    yield NotenRepo(db)\n    db.close()",
+      "options": [
+        "Sie teilt eine einzige Datenbank zwischen allen Tests",
+        "Sie markiert den Test als Integrationstest",
+        "Jeder Test bekommt eine frische Datenbank, die danach geschlossen wird",
+        "Sie ersetzt die Datenbank durch ein Fake-Objekt"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Fixture läuft standardmäßig für jeden Test neu: Code vor yield bereitet vor, Code nach yield räumt auf. So hängen Tests nicht voneinander ab."
+    }
+  ]
+}

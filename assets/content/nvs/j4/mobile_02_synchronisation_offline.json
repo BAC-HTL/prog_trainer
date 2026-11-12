@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j4-mobile_02_synchronisation_offline",
+  "title": "Offline-Synchronisation & Konflikte",
+  "summary": "Wie mobile Apps offline arbeiten, Änderungen später synchronisieren und Konflikte erkennen und lösen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Am Handy ist die Verbindung oft weg – im Zug, im Keller-Werkraum, im Ausland ohne Datenroaming. Eine Offline-First-App speichert deshalb alle Daten zuerst lokal (z. B. in SQLite oder einem Key-Value-Speicher) und arbeitet immer mit dieser lokalen Kopie. Die Synchronisation mit dem Server passiert im Hintergrund, sobald wieder Netz da ist. Die Benutzer:in muss nie warten."
+    },
+    {
+      "type": "code",
+      "content": "  App-Oberfläche\n       │ liest/schreibt\n  lokale Datenbank\n       │ Änderungen\n  Outbox (Warteschlange)\n       │ sobald online\n  Sync <────────> Server"
+    },
+    {
+      "type": "text",
+      "content": "Ein Sync läuft in zwei Richtungen. Push: Die App schickt alle Einträge aus der Outbox (lokale Änderungen, die noch nicht am Server sind). Pull: Die App holt alle Änderungen seit dem letzten Sync, meist über einen Zeitstempel oder ein Sync-Token vom Server. Weil Verbindungen mitten im Sync abreißen können, bekommt jede Änderung eine eindeutige ID – wird sie erneut gesendet, erkennt der Server sie und legt sie nicht doppelt an (Idempotenz, wie bei REST)."
+    },
+    {
+      "type": "text",
+      "content": "Ein Konflikt entsteht, wenn derselbe Datensatz auf zwei Geräten offline unterschiedlich geändert wurde. Die einfachste Strategie ist Last Write Wins (LWW): Die Änderung mit dem späteren Zeitstempel gewinnt. Das ist einfach, aber gefährlich: Die andere Änderung geht stillschweigend verloren, und Geräteuhren können falsch gehen – ein Handy mit vorgehender Uhr „gewinnt“ dann immer."
+    },
+    {
+      "type": "text",
+      "content": "Besser ist es, Konflikte zuerst zu ERKENNEN. Bei der optimistischen Nebenläufigkeitskontrolle hat jeder Datensatz eine Versionsnummer. Das Gerät schickt mit, auf welcher Version seine Änderung basiert. Stimmt sie nicht mehr mit der Server-Version überein, hat inzwischen jemand anderes geändert – der Server lehnt ab (HTTP 409 Conflict), und die App muss den Konflikt lösen."
+    },
+    {
+      "type": "code",
+      "content": "server = {\"n1\": {\"text\": \"Test Mo\",\n                 \"version\": 1}}\n\ndef push(id, neu, basis_version):\n    akt = server[id]\n    if akt[\"version\"] != basis_version:\n        return \"409 Konflikt\"\n    akt[\"text\"] = neu\n    akt[\"version\"] += 1\n    return f\"200 OK v{akt['version']}\"\n\n# Handy und Laptop hatten beide v1\nprint(push(\"n1\", \"Test Di\", 1))  # Handy\nprint(push(\"n1\", \"Test Mi\", 1))  # Laptop\nprint(server[\"n1\"])\n\n# Ausgabe:\n# 200 OK v2\n# 409 Konflikt\n# {'text': 'Test Di', 'version': 2}"
+    },
+    {
+      "type": "text",
+      "content": "Lösen lässt sich ein Konflikt oft automatisch durch einen Drei-Wege-Vergleich pro Feld: Man vergleicht beide Versionen mit der gemeinsamen Basis. Hat nur eine Seite ein Feld geändert, wird diese Änderung übernommen. Nur wenn beide Seiten dasselbe Feld unterschiedlich geändert haben, bleibt ein echter Konflikt, den z. B. die Benutzer:in entscheidet."
+    },
+    {
+      "type": "code",
+      "content": "def merge(basis, a, b):\n    erg, konflikte = {}, []\n    for k in basis:\n        if a[k] == b[k]:\n            erg[k] = a[k]\n        elif a[k] == basis[k]:\n            erg[k] = b[k]       # nur b änderte\n        elif b[k] == basis[k]:\n            erg[k] = a[k]       # nur a änderte\n        else:\n            erg[k] = basis[k]\n            konflikte.append(k)\n    return erg, konflikte\n\nbasis = {\"fach\": \"NVS\", \"datum\": \"3.2.\",\n         \"raum\": \"E12\"}\nhandy = {\"fach\": \"NVS\", \"datum\": \"5.2.\",\n         \"raum\": \"E12\"}\nlaptop = {\"fach\": \"NVS\", \"datum\": \"4.2.\",\n          \"raum\": \"E14\"}\nprint(merge(basis, handy, laptop))\n\n# Ausgabe:\n# ({'fach': 'NVS', 'datum': '3.2.',\n#   'raum': 'E14'}, ['datum'])"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Punkte: Löschungen werden nicht einfach entfernt, sondern als „gelöscht“ markiert (Tombstone), damit andere Geräte davon erfahren. Für Apps mit gemeinsamer Bearbeitung in Echtzeit gibt es spezielle Datenstrukturen (CRDTs), die sich immer konfliktfrei zusammenführen lassen. Typische Fehler: nur LWW ohne Erkennung, Sync ohne eindeutige Änderungs-IDs (Duplikate) und vergessen, dass auch der Server Änderungen von anderen Geräten hat."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Offline-First heißt lokal speichern, Änderungen in einer Outbox sammeln und im Hintergrund synchronisieren (Push und Pull). Konflikte erkennt man mit Versionsnummern, löst sie per Feld-Merge mit gemeinsamer Basis oder fragt bei echten Konflikten nach. Last Write Wins ist einfach, verliert aber Daten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt der Code aus, wenn der Laptop nach dem 409 die aktuelle Version holt und erneut sendet?",
+      "code": "print(push(\"n1\", \"Test Di\", 1))\nprint(push(\"n1\", \"Test Mi\", 2))",
+      "options": [
+        "200 OK v2 / 409 Konflikt",
+        "200 OK v2 / 200 OK v2",
+        "200 OK v2 / 200 OK v3",
+        "409 Konflikt / 200 OK v3"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die erste Änderung erhöht die Version auf 2. Die zweite basiert jetzt auf Version 2, passt also und erhöht auf 3."
+    },
+    {
+      "question": "Basis: raum = \"E12\". Handy ändert raum auf \"E12\" (unverändert), Laptop auf \"E20\". Was ergibt der Drei-Wege-Merge für raum?",
+      "options": [
+        "E12",
+        "Konflikt",
+        "Der Wert mit dem späteren Zeitstempel",
+        "E20"
+      ],
+      "correctIndex": 3,
+      "explanation": "Nur der Laptop hat das Feld gegenüber der Basis geändert, also wird E20 übernommen – kein Konflikt."
+    },
+    {
+      "question": "Warum ist Last Write Wins mit Gerätezeitstempeln problematisch?",
+      "options": [
+        "Weil eine Änderung ohne Hinweis verloren geht und Geräteuhren falsch gehen können",
+        "Weil es zu viele Konflikte meldet",
+        "Weil es nur mit SQLite funktioniert",
+        "Weil es Internet während der Bearbeitung voraussetzt"
+      ],
+      "correctIndex": 0,
+      "explanation": "LWW meldet keinen Konflikt, sondern verwirft eine Seite. Bei falsch gehenden Uhren gewinnt zudem nicht einmal die tatsächlich spätere Änderung."
+    },
+    {
+      "question": "Ein Sync bricht nach dem Senden, aber vor der Antwort ab. Die App sendet die Änderung erneut. Wie verhindert man ein Duplikat am Server?",
+      "options": [
+        "Gar nicht, Duplikate sind unvermeidbar",
+        "Jede Änderung trägt eine eindeutige ID, die der Server wiedererkennt",
+        "Die App wartet einfach länger",
+        "Man verwendet Last Write Wins"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mit einer eindeutigen Änderungs-ID wird das wiederholte Senden idempotent: Der Server erkennt, dass er die Änderung schon verarbeitet hat."
+    }
+  ]
+}

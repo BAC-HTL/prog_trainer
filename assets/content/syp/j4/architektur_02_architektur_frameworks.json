@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-architektur_02_architektur_frameworks",
+ "title": "Architektur-Frameworks: TOGAF und arc42",
+ "summary": "Mit TOGAF Unternehmensarchitektur planen und mit arc42 Softwarearchitektur strukturiert beschreiben.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Man unterscheidet zwei Ebenen: Die Unternehmensarchitektur (Enterprise Architecture) betrachtet das ganze Unternehmen – Geschäftsprozesse, Daten, Anwendungen und Technik und wie sie zusammenpassen. Die Softwarearchitektur betrachtet ein einzelnes System. Für beide gibt es Frameworks, also bewährte Vorgehensweisen und Vorlagen, damit man nicht jedes Mal bei null beginnt."
+  },
+  {
+   "type": "text",
+   "content": "TOGAF (The Open Group Architecture Framework) ist ein verbreitetes Framework für Unternehmensarchitektur der Organisation The Open Group. Es teilt die Architektur in vier Domänen: Business-Architektur (Prozesse, Organisation), Datenarchitektur, Anwendungsarchitektur und Technologiearchitektur (Infrastruktur). Merkhilfe: BDAT. Daten- und Anwendungsarchitektur bilden zusammen die Informationssystem-Architektur."
+  },
+  {
+   "type": "code",
+   "content": "TOGAF ADM (Zyklus)\n\nPreliminary: Rahmen festlegen\nA  Architekturvision\nB  Business-Architektur\nC  Informationssysteme\n   (Daten + Anwendungen)\nD  Technologiearchitektur\nE  Lösungen & Möglichkeiten\nF  Migrationsplanung\nG  Umsetzungs-Governance\nH  Architektur-Änderungsmgmt.\n\nIm Zentrum: Anforderungsmanagement"
+  },
+  {
+   "type": "text",
+   "content": "Kern von TOGAF ist die ADM (Architecture Development Method), ein Zyklus, der immer wieder durchlaufen wird. A–D beschreiben Ist- und Zielarchitektur je Domäne, E und F planen den Weg dorthin, G überwacht die Umsetzung, H steuert spätere Änderungen. Anforderungen fließen in jede Phase ein. Typischer Fehler: TOGAF als starres Pflichtprogramm sehen – es ist ausdrücklich zum Anpassen (Tailoring) an die eigene Organisation gedacht."
+  },
+  {
+   "type": "text",
+   "content": "arc42 ist eine frei verfügbare Vorlage zur Dokumentation von Software- und Systemarchitekturen. Sie gibt eine feste Gliederung mit 12 Kapiteln vor. So findet jede:r im Team die Information immer am selben Ort. Kapitel dürfen kurz sein oder leer bleiben, wenn sie für das Projekt nicht relevant sind – Ziel ist so viel Doku wie nötig, nicht so viel wie möglich."
+  },
+  {
+   "type": "code",
+   "content": "arc42-Gliederung\n 1 Einführung und Ziele\n 2 Randbedingungen\n 3 Kontextabgrenzung\n 4 Lösungsstrategie\n 5 Bausteinsicht\n 6 Laufzeitsicht\n 7 Verteilungssicht\n 8 Querschnittliche Konzepte\n 9 Architekturentscheidungen\n10 Qualitätsanforderungen\n11 Risiken und techn. Schulden\n12 Glossar"
+  },
+  {
+   "type": "text",
+   "content": "Die drei Sichten sind das Herzstück: Die Bausteinsicht zeigt die statische Zerlegung (Module, Komponenten), die Laufzeitsicht das Zusammenspiel in konkreten Abläufen (z. B. „Login“), die Verteilungssicht, auf welcher Hardware oder Infrastruktur was läuft. Die Kontextabgrenzung zeigt das System als Blackbox mit allen Nachbarsystemen und Benutzergruppen. Querschnittliche Konzepte betreffen viele Bausteine, etwa Logging, Sicherheit oder Fehlerbehandlung."
+  },
+  {
+   "type": "code",
+   "content": "Qualitätsszenario (arc42 Kap. 10)\n\nQuelle:    Schüler:in\nAuslöser:  ruft Stundenplan auf\nUmgebung:  Normalbetrieb, 300\n           gleichzeitige Nutzer:innen\nAntwort:   Plan wird angezeigt\nMaß:       in unter 2 Sekunden"
+  },
+  {
+   "type": "text",
+   "content": "Qualitätsanforderungen wie „schnell“ oder „sicher“ sind ohne Messgröße wertlos. arc42 empfiehlt daher Qualitätsszenarien wie oben: Sie machen Merkmale aus der Qualitätsnorm (Effizienz, Sicherheit, Wartbarkeit …) überprüfbar. TOGAF und arc42 ergänzen sich: TOGAF für die Gesamtlandschaft eines Unternehmens, arc42 für die Dokumentation eines einzelnen Systems darin."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: TOGAF ist ein Framework für Unternehmensarchitektur mit den Domänen Business, Daten, Anwendung und Technologie und dem ADM-Zyklus (Vision A bis Änderungsmanagement H, Anforderungen im Zentrum). arc42 ist eine 12-teilige Vorlage für Softwarearchitektur-Dokumentation mit Kontext-, Baustein-, Laufzeit- und Verteilungssicht sowie messbaren Qualitätsszenarien."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Welche vier Architekturdomänen unterscheidet TOGAF?",
+   "options": [
+    "Business, Daten, Anwendung, Technologie",
+    "Planung, Entwurf, Test, Betrieb",
+    "Präsentation, Logik, Daten, Netzwerk",
+    "Kontext, Container, Komponente, Code"
+   ],
+   "correctIndex": 0,
+   "explanation": "TOGAF unterscheidet Business-, Daten-, Anwendungs- und Technologiearchitektur (BDAT). Kontext/Container/Komponente/Code ist das C4-Modell."
+  },
+  {
+   "question": "In welcher arc42-Sicht beschreibst du, auf welchen Servern und Geräten die Teile deiner Anwendung laufen?",
+   "options": [
+    "Bausteinsicht",
+    "Laufzeitsicht",
+    "Verteilungssicht",
+    "Kontextabgrenzung"
+   ],
+   "correctIndex": 2,
+   "explanation": "Die Verteilungssicht bildet Software auf Infrastruktur ab. Die Bausteinsicht zeigt die statische Zerlegung, die Laufzeitsicht Abläufe."
+  },
+  {
+   "question": "Welche Qualitätsanforderung ist im Sinn von arc42 am besten formuliert?",
+   "options": [
+    "Die App soll schnell sein",
+    "Die App soll benutzerfreundlich und modern sein",
+    "Die App soll so sicher wie möglich sein",
+    "Bei 300 gleichzeitigen Nutzer:innen wird der Stundenplan in unter 2 s angezeigt"
+   ],
+   "correctIndex": 3,
+   "explanation": "Nur die letzte Anforderung ist messbar und damit überprüfbar – so wie ein Qualitätsszenario."
+  },
+  {
+   "question": "Was steht in der TOGAF ADM im Zentrum des Zyklus?",
+   "options": [
+    "Die Technologiearchitektur",
+    "Das Anforderungsmanagement",
+    "Die Migrationsplanung",
+    "Das Glossar"
+   ],
+   "correctIndex": 1,
+   "explanation": "Anforderungen werden in jeder Phase berücksichtigt und laufend verwaltet, daher steht das Anforderungsmanagement im Zentrum."
+  }
+ ]
+}

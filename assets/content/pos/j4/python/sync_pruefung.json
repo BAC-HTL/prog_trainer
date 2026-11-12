@@ -1,0 +1,120 @@
+{
+  "id": "pos-j4-python-sync_pruefung",
+  "title": "Abschlussprüfung: Thread-Synchronisation",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Aussage über Lock und RLock stimmt?",
+      "options": [
+        "Ein RLock darf von beliebigen Threads freigegeben werden.",
+        "Ein RLock darf vom selben Thread mehrfach gesperrt werden und muss genauso oft freigegeben werden.",
+        "Ein Lock zählt mit, wie oft es gesperrt wurde.",
+        "Ein RLock ist immer schneller als ein Lock."
+      ],
+      "correctIndex": 1,
+      "explanation": "Das RLock merkt sich Besitzer und Zähler. Erst wenn der Besitzer es so oft freigegeben hat, wie er es gesperrt hat, ist es wieder frei."
+    },
+    {
+      "question": "Was passiert, wenn man in diesem Code RLock durch Lock ersetzt?",
+      "code": "import threading\nr = threading.RLock()\nwith r:\n    with r:\n        print(\"ok\")",
+      "options": [
+        "Der Thread blockiert sich beim zweiten with selbst – das Programm hängt.",
+        "Es wird weiterhin \"ok\" ausgegeben.",
+        "Python wandelt das Lock automatisch in ein RLock um.",
+        "Es wird sofort ein RuntimeError ausgelöst."
+      ],
+      "correctIndex": 0,
+      "explanation": "Ein normales Lock ist nicht wiedereintrittsfähig. Das innere with wartet auf ein Lock, das derselbe Thread hält – es wird nie freigegeben."
+    },
+    {
+      "question": "Was versteht man unter einem Monitor?",
+      "options": [
+        "Einen Thread, der andere Threads überwacht und beendet",
+        "Ein Werkzeug zur Messung der CPU-Last",
+        "Eine Queue mit begrenzter Größe",
+        "Ein Objekt, dessen Daten nur unter gegenseitigem Ausschluss verändert werden, kombiniert mit Bedingungsvariablen zum Warten und Benachrichtigen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Monitor = gegenseitiger Ausschluss für alle Zugriffe plus Bedingungsvariablen (in Python threading.Condition)."
+    },
+    {
+      "question": "Fünf Threads warten mit cond.wait() auf „Garage hat Platz“. Ein Auto fährt aus und ruft cond.notify_all() auf. Was passiert?",
+      "options": [
+        "Alle fünf parken gleichzeitig.",
+        "Nur der zuerst wartende Thread wacht auf.",
+        "Alle fünf wachen auf, holen nacheinander das Lock; einer parkt, die anderen sehen in der while-Schleife frei == 0 und warten weiter.",
+        "Es passiert nichts, weil notify_all nur bei RLock funktioniert."
+      ],
+      "correctIndex": 2,
+      "explanation": "notify_all weckt alle, aber das Lock bekommt immer nur einer. Dank while-Schleife prüfen die anderen die Bedingung erneut und warten wieder."
+    },
+    {
+      "question": "Ein Thread fordert alle benötigten Locks in einem Schritt an – entweder bekommt er alle oder keines. Welche Deadlock-Bedingung wird dadurch gebrochen?",
+      "options": [
+        "Wechselseitiger Ausschluss",
+        "Halten und Warten",
+        "Zirkuläres Warten",
+        "Keine Unterbrechbarkeit"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Thread hält nie einen Teil der Ressourcen, während er auf den Rest wartet – „Halten und Warten“ ist ausgeschlossen."
+    },
+    {
+      "question": "Threads versuchen ihr zweites Lock mit acquire(timeout=…), geben bei Misserfolg alles frei und probieren sofort erneut. Welche Gefahr besteht?",
+      "options": [
+        "Livelock: Die Threads weichen immer wieder gleichzeitig zurück und kommen trotzdem nicht voran.",
+        "Ein Deadlock ist dann garantiert.",
+        "Die Locks werden dabei automatisch zu RLocks.",
+        "Es entsteht eine Race Condition beim Freigeben."
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Threads sind aktiv, blockieren sich aber durch symmetrisches Verhalten gegenseitig. Abhilfe: zufällige Wartezeit vor dem nächsten Versuch."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import queue\nq = queue.Queue()\nfor x in \"ABC\":\n    q.put(x)\nq.get()\nq.put(\"D\")\nprint(q.get() + q.get() + q.get())",
+      "options": [
+        "ABC",
+        "ABD",
+        "DCB",
+        "BCD"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das erste get() entnimmt A. Danach enthält die Queue B, C, D in dieser Reihenfolge (FIFO)."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import queue\nq = queue.LifoQueue()\nfor x in [1, 2, 3]:\n    q.put(x)\nprint(q.get())",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "[1, 2, 3]"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine LifoQueue arbeitet wie ein Stapel: Das zuletzt eingefügte Element (3) wird zuerst entnommen."
+    },
+    {
+      "question": "Warum verwendet man für Producer-Consumer queue.Queue statt einer normalen Liste?",
+      "options": [
+        "Weil die Queue thread-sicher ist und get()/put() bei leerer bzw. voller Queue von selbst warten",
+        "Weil Listen in Threads nicht verwendet werden dürfen",
+        "Weil eine Queue automatisch Deadlocks auflöst",
+        "Weil eine Queue Elemente sortiert"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Queue kapselt Lock und Bedingungsvariablen. Mit einer Liste müsstest du Sperren und Warten selbst (z. B. mit Condition) implementieren."
+    },
+    {
+      "question": "Ein Verbraucher stürzt mit einer Exception ab. Der Erzeuger legt weiter Elemente in eine Queue(maxsize=5). Was passiert mit dem Erzeuger?",
+      "options": [
+        "Er bekommt dieselbe Exception.",
+        "Sobald 5 Elemente in der Queue liegen, blockiert put() für immer.",
+        "Die Queue verwirft automatisch alte Elemente.",
+        "Er beendet sich sofort."
+      ],
+      "correctIndex": 1,
+      "explanation": "Niemand entnimmt mehr etwas, also bleibt die Queue voll und put() wartet ohne Ende. Darum Fehler im Verbraucher abfangen oder put mit timeout verwenden."
+    }
+  ]
+}

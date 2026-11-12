@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-csharp-patterns_01_entwurfsprinzipien",
+  "title": "Entwurfsprinzipien und SOLID",
+  "summary": "Mit SOLID, DRY und KISS entwirfst du Klassen, die sich leicht ändern, testen und erweitern lassen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Programm, das heute läuft, muss morgen geändert werden: neue Anforderungen, Bugfixes, ein zweites Ausgabeformat. Gutes Design heißt, dass so eine Änderung an möglichst wenigen Stellen nötig ist. Entwurfsprinzipien sind Faustregeln dafür. Die bekanntesten fünf heißen nach ihren Anfangsbuchstaben SOLID."
+    },
+    {
+      "type": "code",
+      "content": "S  Single Responsibility\nO  Open/Closed\nL  Liskov Substitution\nI  Interface Segregation\nD  Dependency Inversion"
+    },
+    {
+      "type": "text",
+      "content": "S – Single Responsibility: Eine Klasse soll nur einen Grund haben, sich zu ändern. Eine Klasse Zeugnis, die Noten berechnet, ein PDF erzeugt UND in die Datenbank speichert, hat drei Gründe. Besser: Notenrechner, ZeugnisDrucker und ZeugnisRepository – jede Klasse eine Aufgabe (hohe Kohäsion)."
+    },
+    {
+      "type": "text",
+      "content": "O – Open/Closed: Offen für Erweiterung, geschlossen für Änderung. Statt für jede neue Rabattart ein weiteres if in eine bestehende Methode zu schreiben, definierst du ein Interface. Eine neue Rabattart ist dann eine neue Klasse – der getestete Code bleibt unverändert."
+    },
+    {
+      "type": "code",
+      "content": "interface IRabatt\n{\n    decimal Anwenden(decimal p);\n}\nclass Schueler : IRabatt\n{\n    public decimal Anwenden(decimal p)\n        => p * 0.8m;\n}\nclass Aktion(decimal minus) : IRabatt\n{\n    public decimal Anwenden(decimal p)\n        => p - minus;\n}\n// 100 → Schueler → Aktion(5) → 75.0"
+    },
+    {
+      "type": "text",
+      "content": "L – Liskov Substitution: Überall, wo ein Objekt der Basisklasse erwartet wird, muss auch ein Objekt der Unterklasse funktionieren, ohne dass sich das Verhalten überraschend ändert. Das Standardbeispiel: Ein Quadrat „ist ein“ Rechteck – aber wenn Quadrat beim Setzen der Breite auch die Höhe ändert, rechnet Code, der mit Rechtecken arbeitet, plötzlich falsch."
+    },
+    {
+      "type": "code",
+      "content": "Rechteck r = new Quadrat();\nr.Breite = 5;\nr.Hoehe = 4;   // setzt auch Breite!\nConsole.WriteLine(r.Flaeche);\n// 16 statt erwarteter 20"
+    },
+    {
+      "type": "text",
+      "content": "I – Interface Segregation: Lieber mehrere kleine Interfaces als ein riesiges. Ein Drucker, der nur drucken kann, soll kein IGeraet mit Scannen() und Faxen() implementieren müssen und dort NotImplementedException werfen. D – Dependency Inversion: Klassen hängen von Abstraktionen (Interfaces) ab, nicht von konkreten Klassen. Die konkrete Abhängigkeit wird von außen übergeben, meist im Konstruktor (Dependency Injection)."
+    },
+    {
+      "type": "code",
+      "content": "interface IAusgabe\n{\n    void Schreibe(string text);\n}\nclass NotenDienst(IAusgabe ausgabe)\n{\n    public void Melde(string n, int note)\n    {\n        if (note == 5)\n            ausgabe.Schreibe(\n                $\"{n}: Frühwarnung!\");\n    }\n}\n// Echt: new NotenDienst(\n//         new KonsolenAusgabe());\n// Test: new NotenDienst(\n//         new FakeAusgabe());"
+    },
+    {
+      "type": "text",
+      "content": "Dazu kommen allgemeine Faustregeln: DRY (Don't Repeat Yourself – Wissen nur an einer Stelle), KISS (Keep It Simple) und YAGNI (You Aren't Gonna Need It – nichts „auf Vorrat“ bauen). Außerdem: Komposition statt Vererbung, wenn „hat ein“ besser passt als „ist ein“. Typischer Fehler: Prinzipien übertreiben – zehn Interfaces für ein Programm mit 50 Zeilen widersprechen KISS. Zusammenfassung: Ziel ist lose Kopplung und hohe Kohäsion; SOLID gibt dir die Werkzeuge dazu, und genau darauf bauen die Design Patterns der nächsten Lektionen auf."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Prinzip ist verletzt, wenn eine Klasse Rechnung sowohl Beträge berechnet als auch E-Mails verschickt?",
+      "options": [
+        "Liskov Substitution",
+        "Single Responsibility",
+        "Interface Segregation",
+        "Open/Closed"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Klasse hat zwei Gründe, sich zu ändern (Berechnungsregeln und E-Mail-Versand) – das verletzt das Single-Responsibility-Prinzip."
+    },
+    {
+      "question": "Was gibt der Code aus, wenn Quadrat beim Setzen von Breite bzw. Hoehe immer beide Seiten setzt?",
+      "code": "Rechteck r = new Quadrat();\nr.Breite = 5;\nr.Hoehe = 4;\nConsole.WriteLine(r.Flaeche);",
+      "options": [
+        "20",
+        "25",
+        "16",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuerst werden beide Seiten 5, dann setzt Hoehe = 4 beide Seiten auf 4. Fläche 4 · 4 = 16. Genau diese Überraschung ist eine Verletzung des Liskov-Prinzips."
+    },
+    {
+      "question": "Du willst eine neue Zahlungsart einführen, ohne die bestehende Klasse Kassa zu ändern. Welches Prinzip unterstützt das?",
+      "options": [
+        "DRY",
+        "YAGNI",
+        "Open/Closed",
+        "Single Responsibility"
+      ],
+      "correctIndex": 2,
+      "explanation": "Open/Closed: Kassa arbeitet mit einem Interface IZahlungsart; die neue Zahlungsart ist eine neue Klasse, die Kassa bleibt unverändert."
+    },
+    {
+      "question": "Warum hilft Dependency Inversion beim Unit-Testen?",
+      "options": [
+        "Weil Interfaces schneller ausgeführt werden",
+        "Weil man im Test eine Fake-Implementierung übergeben kann",
+        "Weil dann keine Konstruktoren nötig sind",
+        "Weil der Compiler die Tests automatisch erzeugt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Hängt die Klasse nur von einem Interface ab, kannst du im Test z. B. eine FakeAusgabe übergeben und prüfen, was geschrieben wurde – ohne Konsole, Datei oder Datenbank."
+    }
+  ]
+}

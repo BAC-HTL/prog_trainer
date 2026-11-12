@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-concurrency_02_serialisierbarkeit_sperren",
+  "title": "Serialisierbarkeit, Sperren und Deadlocks",
+  "summary": "Du prüfst Schedules mit dem Konfliktgraphen auf Serialisierbarkeit, erklärst das Zwei-Phasen-Sperrprotokoll und erkennst und vermeidest Deadlocks.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein serieller Schedule führt die Transaktionen streng nacheinander aus – garantiert korrekt, aber langsam. Ein verzahnter Schedule heißt serialisierbar, wenn er dasselbe Ergebnis hat wie irgendein serieller Schedule derselben Transaktionen. Das ist das Korrektheitskriterium für Nebenläufigkeit: so parallel wie möglich, aber mit „seriellem“ Ergebnis."
+    },
+    {
+      "type": "text",
+      "content": "Zwei Operationen stehen in Konflikt, wenn sie zu verschiedenen Transaktionen gehören, dasselbe Objekt betreffen und mindestens eine davon schreibt (r-w, w-r, w-w). Zwei Lesezugriffe stören sich nie. Die Reihenfolge konfliktbehafteter Operationen bestimmt das Ergebnis; alles andere darf man vertauschen."
+    },
+    {
+      "type": "text",
+      "content": "Für jeden Konflikt „Ti vor Tj“ zeichnest du im Konfliktgraphen (Präzedenzgraph) einen Pfeil Ti → Tj. Hat der Graph keinen Zyklus, ist der Schedule konfliktserialisierbar; eine topologische Sortierung liefert die äquivalente serielle Reihenfolge. Ein Zyklus (T1 → T2 → T1) bedeutet: nicht serialisierbar."
+    },
+    {
+      "type": "code",
+      "content": "def kanten(schedule):\n    ops = [(s[0], s[1], s[3])\n           for s in schedule.split()]\n    k = set()\n    for i, (a1, t1, x1) in enumerate(ops):\n        for a2, t2, x2 in ops[i+1:]:\n            if (t1 != t2 and x1 == x2\n                    and \"w\" in a1 + a2):\n                k.add((t1, t2))\n    return k\n\ndef zyklus(k):\n    while k:\n        ziele = {z for _, z in k}\n        quellen = {q for q, _ in k} - ziele\n        if not quellen:\n            return True\n        k = {(q, z) for q, z in k\n             if q not in quellen}\n    return False\n\nfor s in [\"r1(x) r2(x) w1(x) w2(x)\",\n          \"r1(x) w1(x) r2(x) w2(x)\"]:\n    k = kanten(s)\n    print(sorted(k), zyklus(k))\n\n# Ausgabe:\n# [('1', '2'), ('2', '1')] True\n# [('1', '2')] False"
+    },
+    {
+      "type": "text",
+      "content": "Der erste Schedule ist unser Lost Update aus der letzten Lektion: r1(x) vor w2(x) ergibt T1 → T2, r2(x) vor w1(x) ergibt T2 → T1 – Zyklus, nicht serialisierbar. Der zweite entspricht T1 vor T2. Ein DBMS prüft aber nicht nachträglich Graphen, sondern verhindert schlechte Schedules von vornherein – klassisch mit Sperren (Locks)."
+    },
+    {
+      "type": "code",
+      "content": "Verträglichkeit von Sperren\n\n          hält S   hält X\nwill S     ja       nein\nwill X     nein     nein\n\nS = shared (Lesesperre)\nX = exclusive (Schreibsperre)"
+    },
+    {
+      "type": "text",
+      "content": "Zwei-Phasen-Sperrprotokoll (2PL): Jede Transaktion sperrt ein Objekt vor dem Zugriff und hat zwei Phasen. In der Wachstumsphase darf sie nur Sperren anfordern, in der Schrumpfphase nur freigeben – nach der ersten Freigabe nie wieder eine neue Sperre. 2PL garantiert Konfliktserialisierbarkeit. In der Praxis verwendet man striktes 2PL: Schreibsperren werden erst beim COMMIT oder ROLLBACK freigegeben, sodass niemand uncommittete Daten liest."
+    },
+    {
+      "type": "text",
+      "content": "Sperren haben eine Kehrseite: den Deadlock (Verklemmung). A sperrt Zeile kassa, B sperrt Zeile ausflug; dann will A ausflug und B kassa – beide warten ewig aufeinander. Das DBMS erkennt den Zyklus im Wartegraphen und bricht eine Transaktion (das „Opfer“) ab. In PostgreSQL mit zwei Sitzungen ausprobiert:"
+    },
+    {
+      "type": "code",
+      "content": "A: UPDATE ... 'kassa';     -- ok\nB: UPDATE ... 'ausflug';   -- ok\nA: UPDATE ... 'ausflug';   -- wartet\nB: UPDATE ... 'kassa';     -- wartet\n\n-- nach ca. 1 s (hier bei A):\nERROR:  deadlock detected\nDETAIL:  Process 1371 waits for\n  ShareLock on transaction 802;\n  blocked by process 1372. ...\n\n-- B läuft weiter, A ist\n-- abgebrochen → ROLLBACK, neu"
+    },
+    {
+      "type": "text",
+      "content": "Deadlocks vermeidest du, indem alle Programme Zeilen in derselben Reihenfolge sperren (z. B. immer nach Kontonamen sortiert), Transaktionen kurz halten und benötigte Zeilen gleich zu Beginn mit SELECT … FOR UPDATE sperren. Ganz verhindern kann man sie selten – deshalb muss die Anwendung eine abgebrochene Transaktion wiederholen können.\n\nZusammenfassung: Serialisierbar = gleiches Ergebnis wie seriell; Test über den Konfliktgraphen (zyklenfrei). 2PL mit S- und X-Sperren garantiert Serialisierbarkeit, striktes 2PL hält Schreibsperren bis zum Ende. Deadlocks erkennt das DBMS und bricht ein Opfer ab."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ist der Schedule konfliktserialisierbar?",
+      "code": "r1(x) w2(x) w2(y) r1(y)",
+      "options": [
+        "Ja, äquivalent zu T1, T2",
+        "Nein, der Konfliktgraph hat einen Zyklus",
+        "Ja, äquivalent zu T2, T1",
+        "Ja, weil nur zwei Transaktionen beteiligt sind"
+      ],
+      "correctIndex": 1,
+      "explanation": "r1(x) vor w2(x) ergibt T1 → T2; w2(y) vor r1(y) ergibt T2 → T1. Das ist ein Zyklus."
+    },
+    {
+      "question": "Welche Operationspaare stehen in Konflikt (verschiedene Transaktionen, gleiches Objekt)?",
+      "options": [
+        "Nur w-w",
+        "r-r, r-w, w-r und w-w",
+        "r-w, w-r und w-w",
+        "Nur r-w"
+      ],
+      "correctIndex": 2,
+      "explanation": "Sobald mindestens eine Operation schreibt, kommt es auf die Reihenfolge an. Zwei Lesezugriffe stehen nie in Konflikt."
+    },
+    {
+      "question": "Eine Transaktion gibt die Sperre auf x frei und fordert danach eine Sperre auf y an. Was gilt?",
+      "options": [
+        "Das verletzt 2PL: Nach der ersten Freigabe darf keine neue Sperre angefordert werden.",
+        "Das ist erlaubtes 2PL.",
+        "Das ist nur bei S-Sperren erlaubt.",
+        "Das ist striktes 2PL."
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei 2PL folgt auf die Wachstumsphase die Schrumpfphase; in ihr sind nur noch Freigaben erlaubt."
+    },
+    {
+      "question": "T1 hält eine S-Sperre auf Zeile z. Was passiert, wenn T2 eine S-Sperre und T3 eine X-Sperre auf z anfordert?",
+      "options": [
+        "Beide müssen warten.",
+        "Beide bekommen sie sofort.",
+        "T3 bekommt sie sofort, T2 muss warten.",
+        "T2 bekommt sie sofort, T3 muss warten."
+      ],
+      "correctIndex": 3,
+      "explanation": "Lesesperren sind miteinander verträglich. Eine Schreibsperre ist mit keiner anderen Sperre verträglich, daher wartet T3."
+    }
+  ]
+}

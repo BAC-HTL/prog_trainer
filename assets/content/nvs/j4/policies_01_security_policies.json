@@ -1,0 +1,93 @@
+{
+  "id": "nvs-j4-policies_01_security_policies",
+  "title": "Security Policies & Schutzbedarf",
+  "summary": "Wie eine Sicherheitsrichtlinie aufgebaut ist und wie man den Schutzbedarf von IT-Systemen feststellt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im 3. Jahrgang hast du einzelne Schutzmaßnahmen kennengelernt: Segmentierung, Updates, Least Privilege, Firewall. Damit diese Maßnahmen nicht zufällig zusammengewürfelt werden, braucht eine Organisation eine Security Policy (Sicherheitsrichtlinie): ein verbindliches Dokument, das festlegt, WAS geschützt wird, WARUM, WER verantwortlich ist und welche Regeln für alle gelten."
+    },
+    {
+      "type": "text",
+      "content": "Man unterscheidet meist zwei Ebenen. Die Sicherheitsleitlinie ist kurz, wird von der Leitung (z. B. Direktion oder Geschäftsführung) unterschrieben und beschreibt Ziele und Verantwortung. Darunter stehen konkrete Richtlinien für einzelne Themen: Passwortrichtlinie, Nutzungsrichtlinie (Acceptable Use Policy) für Schul-PCs und WLAN, Backup-Richtlinie, Richtlinie für mobile Geräte, Regeln für Fernzugriff."
+    },
+    {
+      "type": "code",
+      "content": "Aufbau einer Richtlinie\n----------------------\n1. Zweck und Ziele\n2. Geltungsbereich\n   (wer, welche Systeme)\n3. Verantwortlichkeiten / Rollen\n4. Regeln (MUSS / DARF NICHT)\n5. Ausnahmen + wer sie genehmigt\n6. Folgen bei Verstößen\n7. Gültigkeit, Version,\n   nächste Überprüfung"
+    },
+    {
+      "type": "text",
+      "content": "Gute Regeln sind konkret und überprüfbar. „Passwörter müssen sicher sein“ hilft niemandem. Besser: „Admin-Konten verwenden Passwörter mit mindestens 16 Zeichen oder eine Passphrase und zusätzlich einen zweiten Faktor.“ Typischer Fehler: Die Richtlinie wird einmal geschrieben und dann vergessen. Eine Policy lebt im Kreislauf Planen – Umsetzen – Überprüfen – Verbessern (PDCA) und wird regelmäßig sowie nach Vorfällen überarbeitet."
+    },
+    {
+      "type": "text",
+      "content": "Grundlage jeder Policy sind die Schutzziele, die du schon kennst: Vertraulichkeit (nur Berechtigte sehen Daten), Integrität (Daten werden nicht unbemerkt verändert) und Verfügbarkeit (Systeme funktionieren, wenn man sie braucht). Für jedes System fragt man: Was passiert, wenn eines dieser Ziele verletzt wird?"
+    },
+    {
+      "type": "text",
+      "content": "Diese Frage beantwortet die Schutzbedarfsfeststellung, wie sie z. B. der IT-Grundschutz des deutschen BSI beschreibt. Man schätzt die möglichen Schäden (Gesetzesverstöße, Datenschutz, finanzieller Schaden, Ansehen, Beeinträchtigung der Arbeit) und ordnet je Schutzziel eine Kategorie zu: normal, hoch oder sehr hoch. Beispiel: Die Notenverwaltung enthält personenbezogene Daten – Vertraulichkeit und Integrität sind mindestens hoch."
+    },
+    {
+      "type": "text",
+      "content": "Die Anwendungen vererben ihren Schutzbedarf an die Systeme, auf denen sie laufen. Dabei gilt das Maximumprinzip: Ein Server hat den höchsten Schutzbedarf aller Anwendungen auf ihm. Laufen mehrere Systeme mit normalem Bedarf zusammen, kann der Bedarf durch Kumulation trotzdem steigen (z. B. viele kleine Ausfälle auf einmal). Umgekehrt kann er durch Verteilung sinken, etwa wenn ein Dienst redundant auf mehreren Servern läuft."
+    },
+    {
+      "type": "code",
+      "content": "# Maximumprinzip\nstufe = {\"normal\": 1, \"hoch\": 2, \"sehr hoch\": 3}\nname = {v: k for k, v in stufe.items()}\n\nanw = {  # Anwendungen am Schulserver\n  \"Moodle\":      \"normal\",\n  \"Notenverw.\":  \"hoch\",\n  \"Druckserver\": \"normal\",\n}\ns = max(stufe[b] for b in anw.values())\nprint(\"Server:\", name[s])\n\n# Ausgabe:\n# Server: hoch"
+    },
+    {
+      "type": "text",
+      "content": "Aus dem Schutzbedarf folgen die Maßnahmen: Ein System mit hohem Bedarf bekommt z. B. eine eigene Zone hinter der Firewall, Zugriff nur über VPN, verschlüsselte Backups und Monitoring. Die Richtlinie dokumentiert diese Entscheidungen – so ist später nachvollziehbar, warum etwas so gelöst wurde. Bekannte Rahmenwerke dafür sind ISO/IEC 27001 (Informationssicherheits-Managementsystem, ISMS) und der BSI IT-Grundschutz."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Security Policy legt Ziele, Geltungsbereich, Rollen und konkrete Regeln fest und wird regelmäßig überprüft. Der Schutzbedarf wird je Schutzziel (Vertraulichkeit, Integrität, Verfügbarkeit) als normal, hoch oder sehr hoch eingestuft und nach dem Maximumprinzip an Systeme vererbt. Daraus leiten sich die technischen Maßnahmen ab – in den nächsten Lektionen Firewalls und VPNs."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Auf einem Server laufen drei Anwendungen mit dem Schutzbedarf (Vertraulichkeit) normal, sehr hoch und hoch. Welchen Schutzbedarf hat der Server nach dem Maximumprinzip?",
+      "options": [
+        "normal",
+        "hoch",
+        "sehr hoch",
+        "Durchschnitt: hoch"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nach dem Maximumprinzip übernimmt das System den höchsten Schutzbedarf aller Anwendungen, hier also „sehr hoch“. Ein Durchschnitt wird nicht gebildet."
+    },
+    {
+      "question": "Welche Formulierung ist als Regel in einer Passwortrichtlinie am besten geeignet?",
+      "options": [
+        "Passwörter sollen möglichst sicher sein.",
+        "Admin-Konten nutzen mindestens 16 Zeichen und einen zweiten Faktor.",
+        "Jeder entscheidet selbst, wie lang sein Passwort ist.",
+        "Passwörter dürfen nicht zu einfach sein."
+      ],
+      "correctIndex": 1,
+      "explanation": "Regeln müssen konkret und überprüfbar sein. Nur die zweite Formulierung gibt messbare Vorgaben (Länge, zweiter Faktor)."
+    },
+    {
+      "question": "Ein Fehler in der Notenverwaltung verändert unbemerkt einzelne Noten. Welches Schutzziel ist verletzt?",
+      "options": [
+        "Verfügbarkeit",
+        "Vertraulichkeit",
+        "Authentizität des Servers",
+        "Integrität"
+      ],
+      "correctIndex": 3,
+      "explanation": "Integrität bedeutet, dass Daten nicht unbemerkt verändert werden. Die Noten sind weiterhin verfügbar und niemand Unbefugtes hat sie gelesen."
+    },
+    {
+      "question": "Was gehört NICHT in den typischen Aufbau einer Sicherheitsrichtlinie?",
+      "options": [
+        "Die aktuellen Passwörter der Admin-Konten",
+        "Geltungsbereich und Verantwortlichkeiten",
+        "Folgen bei Verstößen",
+        "Datum der nächsten Überprüfung"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eine Richtlinie wird an viele Personen verteilt und enthält Regeln, aber niemals Geheimnisse wie Passwörter. Geltungsbereich, Rollen, Sanktionen und Überprüfung gehören dagegen hinein."
+    }
+  ]
+}

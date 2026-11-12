@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-architektur_03_architektur_dokumentieren",
+ "title": "Architektur dokumentieren: C4 und ADRs",
+ "summary": "Architektur mit dem C4-Modell in vier Zoomstufen zeichnen und Entscheidungen in ADRs festhalten.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Architektur-Doku hat verschiedene Leser:innen: Auftraggeber wollen den Überblick, Entwickler:innen Details, der Betrieb die Verteilung auf Server. Ein Kästchen-und-Pfeile-Bild ohne Legende ist mehrdeutig: Ist der Pfeil ein Aufruf, ein Datenfluss oder eine Abhängigkeit? Das C4-Modell schafft hier Ordnung."
+  },
+  {
+   "type": "text",
+   "content": "Das C4-Modell (von Simon Brown) beschreibt Software in vier Zoomstufen – wie eine Landkarte vom Land bis zur Straße:\n• Context: das System und seine Umgebung (Personen, Nachbarsysteme)\n• Container: die ausführbaren/deploybaren Teile\n• Component: die Bausteine in einem Container\n• Code: Klassen, meist aus der IDE generiert"
+  },
+  {
+   "type": "code",
+   "content": "Level 1 – Systemkontext\n\n  (Schüler:in)\n       | bestellt Essen\n       v\n+---------------+  Zahlung  +------+\n| Mensa-App     |---------->| Bank |\n| [System]      |           +------+\n+---------------+\n       ^\n       | pflegt Speiseplan\n  (Küchenpersonal)"
+  },
+  {
+   "type": "text",
+   "content": "Ein Container im Sinne von C4 ist alles, was separat läuft oder Daten speichert: eine Web-App, eine Mobile App, eine API, eine Datenbank. Typischer Fehler: Container mit Docker-Containern gleichsetzen – das Wort ist älter und allgemeiner. Jedes Kästchen bekommt Name, Technologie und Aufgabe, jeder Pfeil eine Beschriftung, was übertragen wird und wie (z. B. „JSON/HTTPS“)."
+  },
+  {
+   "type": "code",
+   "content": "Level 2 – Container (Mensa-App)\n\n[Mobile App]\n Flutter, Bestellen\n      | JSON/HTTPS\n      v\n[API]\n C#, Bestellungen, Login\n      | SQL\n      v\n[Datenbank]\n relational, Menüs + Bestellungen"
+  },
+  {
+   "type": "text",
+   "content": "Auf Level 3 zerlegt man einen Container in Komponenten, etwa die API in BestellController, BestellService und Repository. Level 4 (Code) zeichnet man selten händisch, weil es schnell veraltet. Faustregel: Context und Container sind für fast jedes Projekt sinnvoll – auch für eure Diplomarbeit –, die tieferen Ebenen nur, wo sie wirklich helfen."
+  },
+  {
+   "type": "text",
+   "content": "Ein ADR (Architecture Decision Record) hält eine einzelne wichtige Architekturentscheidung kurz fest. Verbreitet ist das Format nach Michael Nygard: Titel, Status (vorgeschlagen, akzeptiert, ersetzt …), Kontext (Ausgangslage, Zwänge), Entscheidung und Konsequenzen (positive wie negative). ADRs werden nummeriert und im Repository neben dem Code abgelegt, z. B. unter docs/adr/."
+  },
+  {
+   "type": "code",
+   "content": "# ADR 0003: Modularer Monolith\n\nStatus: akzeptiert\n\nKontext: 3 Entwickler:innen,\n10 Monate Zeit, wenig Last.\n\nEntscheidung: Ein Backend mit\nModulen Menü, Bestellung, Login\nstatt Microservices.\n\nKonsequenzen: + einfacher Betrieb\n+ einfache Transaktionen\n- Skalieren nur als Ganzes"
+  },
+  {
+   "type": "text",
+   "content": "ADRs werden nicht nachträglich umgeschrieben: Ändert sich eine Entscheidung, schreibt man einen neuen ADR und setzt den alten auf „ersetzt durch ADR 0007“. So bleibt nachvollziehbar, warum etwas damals so entschieden wurde – genau das fragt man sich Jahre später. In arc42 gehören ADRs in Kapitel 9, C4-Diagramme passen zur Kontextabgrenzung, Bausteinsicht und Verteilungssicht. Liegt die Doku als Text im Repository, spricht man von Docs-as-Code."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: C4 zoomt von Context über Container und Component bis Code; Container sind separat lauffähige Teile, Pfeile werden immer beschriftet. ADRs dokumentieren je eine Entscheidung mit Kontext, Entscheidung und Konsequenzen und werden nicht geändert, sondern durch neue ersetzt."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Welche C4-Ebene zeigt Mobile App, API und Datenbank als getrennte Kästchen?",
+   "options": [
+    "Context",
+    "Component",
+    "Code",
+    "Container"
+   ],
+   "correctIndex": 3,
+   "explanation": "Separat lauffähige oder datenspeichernde Teile sind Container. Context zeigt das System als Ganzes mit seiner Umgebung."
+  },
+  {
+   "question": "Ein Team entscheidet sich um und ersetzt PostgreSQL durch eine andere Datenbank. Was passiert mit dem alten ADR?",
+   "options": [
+    "Er wird gelöscht",
+    "Er bleibt erhalten und bekommt den Status „ersetzt“, ein neuer ADR beschreibt die neue Entscheidung",
+    "Er wird umgeschrieben, damit er wieder stimmt",
+    "Er wandert ins Glossar"
+   ],
+   "correctIndex": 1,
+   "explanation": "ADRs sind ein Protokoll. Der alte bleibt, damit nachvollziehbar ist, warum früher anders entschieden wurde."
+  },
+  {
+   "question": "Welcher Teil gehört NICHT zum ADR-Format nach Nygard?",
+   "options": [
+    "Kontext",
+    "Konsequenzen",
+    "Stundensatz der Entwickler:innen",
+    "Status"
+   ],
+   "correctIndex": 2,
+   "explanation": "Das Format umfasst Titel, Status, Kontext, Entscheidung und Konsequenzen. Kosten können im Kontext vorkommen, sind aber kein eigener Pflichtteil."
+  },
+  {
+   "question": "Was ist am C4-Diagramm-Pfeil „API → Datenbank“ ohne Beschriftung problematisch?",
+   "options": [
+    "Man weiß nicht, was und wie übertragen wird",
+    "Pfeile sind in C4 verboten",
+    "Die Datenbank muss immer links stehen",
+    "Nichts, Pfeile brauchen keine Beschriftung"
+   ],
+   "correctIndex": 0,
+   "explanation": "C4 verlangt beschriftete Beziehungen, z. B. „liest/schreibt Bestellungen, SQL“. Sonst ist unklar, ob ein Aufruf, ein Datenfluss oder eine Abhängigkeit gemeint ist."
+  }
+ ]
+}

@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-csharp-patterns_02_erzeugungsmuster",
+  "title": "Erzeugungsmuster: Factory, Singleton, Builder",
+  "summary": "Erzeugungsmuster regeln, wie Objekte entstehen – zentral, einmalig oder Schritt für Schritt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Design Pattern (Entwurfsmuster) ist eine bewährte, benannte Lösung für ein wiederkehrendes Entwurfsproblem. Bekannt wurden sie durch das Buch der „Gang of Four“ (GoF), das 23 Muster in drei Gruppen einteilt: Erzeugungs-, Struktur- und Verhaltensmuster. Muster sind kein fertiger Code, sondern eine Idee, die du an dein Problem anpasst. Der gemeinsame Name hilft im Team: „Mach dafür eine Factory“ versteht jede:r."
+    },
+    {
+      "type": "text",
+      "content": "Factory: Der aufrufende Code soll nicht wissen müssen, welche konkrete Klasse er braucht. Eine Fabrik-Methode entscheidet anhand eines Parameters und liefert ein Objekt vom Interface-Typ zurück. Kommt eine neue Form dazu, änderst du nur die Fabrik – nicht jeden Aufrufer."
+    },
+    {
+      "type": "code",
+      "content": "static class FormFactory\n{\n    public static IForm Erzeuge(\n        string art, double m) =>\n        art switch\n        {\n          \"kreis\" => new Kreis(m),\n          \"quadrat\" => new Quadrat(m),\n          _ => throw new\n            ArgumentException(\n              $\"Unbekannt: {art}\")\n        };\n}\n\nIForm f = FormFactory.Erzeuge(\"kreis\", 2);\nConsole.WriteLine(\n    f.Flaeche().ToString(\"F2\")); // 12.57"
+    },
+    {
+      "type": "text",
+      "content": "Singleton: Von einer Klasse soll es genau eine Instanz geben, auf die alle global zugreifen, z. B. eine Konfiguration. Der Konstruktor ist private, die Instanz liegt in einer statischen Property. Mit Lazy<T> wird sie erst beim ersten Zugriff erzeugt – und zwar threadsicher, auch wenn zwei Threads gleichzeitig zugreifen."
+    },
+    {
+      "type": "code",
+      "content": "sealed class Konfig\n{\n    private static readonly\n        Lazy<Konfig> lazy =\n            new(() => new Konfig());\n    public static Konfig Instanz\n        => lazy.Value;\n    private Konfig() { }\n}\n\nvar a = Konfig.Instanz;\nvar b = Konfig.Instanz;\nConsole.WriteLine(\n    ReferenceEquals(a, b)); // True"
+    },
+    {
+      "type": "text",
+      "content": "Kritik am Singleton – er gilt oft als „Anti-Pattern“: Er ist im Grunde eine globale Variable. Jede Klasse kann ihn verwenden, ohne dass es in ihrem Konstruktor sichtbar ist (versteckte Abhängigkeit, verletzt Dependency Inversion). In Unit-Tests lässt er sich kaum durch ein Fake ersetzen, und sein Zustand bleibt zwischen Tests erhalten. Besser: eine einzige Instanz im Hauptprogramm erzeugen und per Konstruktor weitergeben. Typischer Fehler: eine selbstgebaute „if (instanz == null) instanz = new …“-Variante ohne lock – bei mehreren Threads können so zwei Instanzen entstehen."
+    },
+    {
+      "type": "text",
+      "content": "Builder: Ein Objekt hat viele, teils optionale Teile – ein Konstruktor mit zehn Parametern wäre unlesbar. Ein Builder sammelt die Angaben Schritt für Schritt und erzeugt am Ende mit Build() das fertige Objekt. Gibt jede Methode this zurück, kannst du die Aufrufe verketten (Fluent Interface). In Build() prüfst du, ob alles Nötige gesetzt ist."
+    },
+    {
+      "type": "code",
+      "content": "class PizzaBuilder\n{\n    private int groesse;\n    private readonly List<string>\n        belag = new();\n    public PizzaBuilder Groesse(int cm)\n    { groesse = cm; return this; }\n    public PizzaBuilder Mit(string z)\n    { belag.Add(z); return this; }\n    public Pizza Build()\n    {\n        if (groesse <= 0)\n            throw new\n              InvalidOperationException(\n                \"Größe fehlt\");\n        return new Pizza {\n            Groesse = groesse,\n            Belag = new(belag) };\n    }\n}"
+    },
+    {
+      "type": "code",
+      "content": "var pizza = new PizzaBuilder()\n    .Groesse(32)\n    .Mit(\"Schinken\")\n    .Mit(\"Pilze\")\n    .Build();\nConsole.WriteLine(pizza);\n// 32 cm: Schinken, Pilze"
+    },
+    {
+      "type": "text",
+      "content": "Den Builder kennst du schon aus .NET: StringBuilder baut einen string Stück für Stück, ToString() liefert das Ergebnis. Zusammenfassung: Factory versteckt, welche Klasse erzeugt wird. Singleton garantiert genau eine Instanz – sparsam einsetzen, Dependency Injection ist meist besser. Builder baut komplexe Objekte schrittweise und lesbar auf."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welches Muster passt, wenn ein Objekt viele optionale Einstellungen hat und lesbar erzeugt werden soll?",
+      "options": [
+        "Singleton",
+        "Factory",
+        "Builder",
+        "Adapter"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Builder sammelt die Einstellungen schrittweise (oft verkettet) und erzeugt das Objekt am Ende mit Build()."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "var a = Konfig.Instanz;\nvar b = Konfig.Instanz;\nConsole.WriteLine(\n    ReferenceEquals(a, b));",
+      "options": [
+        "False",
+        "True",
+        "Kompilierfehler",
+        "Eine Exception"
+      ],
+      "correctIndex": 1,
+      "explanation": "Instanz liefert über Lazy<T> immer dasselbe Objekt; ReferenceEquals vergleicht die Referenzen – beide zeigen auf dasselbe Objekt."
+    },
+    {
+      "question": "Was ist KEIN typischer Kritikpunkt am Singleton?",
+      "options": [
+        "Er ist schwer durch ein Fake zu ersetzen",
+        "Er versteckt Abhängigkeiten",
+        "Er braucht zwingend Vererbung",
+        "Sein Zustand bleibt zwischen Tests erhalten"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Singleton braucht keine Vererbung (die Klasse ist oft sogar sealed). Die anderen drei Punkte sind die klassischen Kritikpunkte."
+    },
+    {
+      "question": "Warum gibt jede Methode eines Fluent Builders this zurück?",
+      "options": [
+        "Damit der Garbage Collector das Objekt nicht löscht",
+        "Damit man die Aufrufe verketten kann",
+        "Damit Build() nicht mehr nötig ist",
+        "Damit der Builder ein Singleton wird"
+      ],
+      "correctIndex": 1,
+      "explanation": "Weil jede Methode den Builder selbst zurückgibt, kann man direkt die nächste Methode aufrufen: .Groesse(32).Mit(\"Pilze\").Build()."
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "pos-j4-python-parallel_01_parallele_algorithmen",
+  "title": "Parallele Algorithmen mit Prozessen",
+  "summary": "Rechenintensive Aufgaben mit multiprocessing und concurrent.futures auf mehrere Kerne verteilen – und mit Amdahl abschätzen, was das bringt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Aus dem 3. Jahrgang weißt du: Wegen des GIL führt Standard-Python (CPython) Python-Code immer nur in einem Thread gleichzeitig aus. Threads helfen daher beim Warten (Netzwerk, Dateien), nicht bei Rechenarbeit. Für echte Parallelität auf mehreren CPU-Kernen startest du mehrere Prozesse – jeder mit eigenem Interpreter, eigenem GIL und eigenem Speicher. Am bequemsten geht das mit concurrent.futures.ProcessPoolExecutor (intern multiprocessing)."
+    },
+    {
+      "type": "code",
+      "content": "from concurrent.futures import (\n    ProcessPoolExecutor)\n\ndef ist_prim(n):\n    if n < 2:\n        return False\n    i = 2\n    while i * i <= n:\n        if n % i == 0:\n            return False\n        i += 1\n    return True\n\ndef zaehle(bereich):\n    von, bis = bereich\n    return sum(ist_prim(n)\n               for n in range(von, bis))\n\nif __name__ == \"__main__\":\n    teile = [(i, i + 250_000) for i in\n             range(0, 1_000_000, 250_000)]\n    with ProcessPoolExecutor() as ex:\n        erg = list(ex.map(zaehle, teile))\n    print(erg)\n    print(sum(erg))\n# [22044, 19494, 18700, 18260]\n# 78498"
+    },
+    {
+      "type": "text",
+      "content": "Das ist das Grundmuster vieler paralleler Algorithmen: Aufteilen (die Zahlen in vier Bereiche), unabhängig parallel bearbeiten (map) und Zusammenführen (sum). ex.map liefert die Ergebnisse in der Reihenfolge der Eingabe. Wichtig: Der Block if __name__ == \"__main__\": ist Pflicht. Unter Windows und macOS startet jeder neue Prozess einen frischen Interpreter, der dein Modul importiert – ohne diese Abfrage würde jeder Prozess wieder neue Prozesse starten. Außerdem müssen Funktion und Daten mit pickle übertragbar sein; Lambdas oder lokale Funktionen funktionieren nicht."
+    },
+    {
+      "type": "text",
+      "content": "Mit submit() startest du einzelne Aufgaben und bekommst ein Future-Objekt zurück; result() wartet auf das Ergebnis. as_completed() liefert die Futures in der Reihenfolge, in der sie fertig werden. ThreadPoolExecutor hat dieselbe Schnittstelle – ideal für Aufgaben, die hauptsächlich warten, etwa viele Downloads."
+    },
+    {
+      "type": "code",
+      "content": "from concurrent.futures import (\n    ThreadPoolExecutor, as_completed)\nimport time\n\ndef lade(name, dauer):\n    time.sleep(dauer)   # simuliert I/O\n    return name\n\nauftraege = [(\"A\", 0.3), (\"B\", 0.1),\n             (\"C\", 0.2)]\nwith ThreadPoolExecutor(3) as ex:\n    fs = [ex.submit(lade, n, d)\n          for n, d in auftraege]\n    for f in as_completed(fs):\n        print(f.result())\n# B\n# C\n# A"
+    },
+    {
+      "type": "text",
+      "content": "Wie viel bringt Parallelisierung? Das Gesetz von Amdahl: Ist p der parallelisierbare Anteil der Laufzeit und n die Zahl der Prozessoren, dann ist der Speedup S(n) = 1 / ((1 − p) + p / n). Der sequenzielle Rest (1 − p) bremst immer mit – selbst mit unendlich vielen Kernen ist S höchstens 1 / (1 − p)."
+    },
+    {
+      "type": "code",
+      "content": "p = 0.9, n = 4:\nS = 1 / (0.1 + 0.9 / 4)\n  = 1 / (0.1 + 0.225)\n  = 1 / 0.325 ≈ 3.08\n\nGrenze (n → ∞):\nS = 1 / 0.1 = 10\n\ndef amdahl(p, n):\n    return 1 / ((1 - p) + p / n)\n\nfor n in [2, 4, 8, 16, 1000]:\n    print(n, round(amdahl(0.9, n), 2))\n# 2 1.82   4 3.08   8 4.71\n# 16 6.4   1000 9.91"
+    },
+    {
+      "type": "text",
+      "content": "In der Praxis kommt noch Overhead dazu: Prozesse starten und Daten per pickle hin- und herschicken kostet Zeit. Für kleine Aufgaben ist die parallele Version oft langsamer als die sequenzielle – teile darum in wenige große Pakete (bei map hilft der Parameter chunksize). Sinnvoll sind etwa so viele Worker wie CPU-Kerne (os.cpu_count(), Standard bei ProcessPoolExecutor). Typischer Fehler: globale Variablen in Worker-Prozessen ändern – jeder Prozess hat seine eigene Kopie, das Hauptprogramm sieht davon nichts. Gib Ergebnisse immer mit return zurück."
+    },
+    {
+      "type": "code",
+      "content": "from concurrent.futures import (\n    ProcessPoolExecutor)\n\nzaehler = 0\n\ndef erhoehe(_):\n    global zaehler\n    zaehler += 1\n    return zaehler\n\nif __name__ == \"__main__\":\n    with ProcessPoolExecutor(2) as ex:\n        list(ex.map(erhoehe, range(10)))\n    print(zaehler)   # 0 (!)"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Für CPU-lastige Arbeit in Python Prozesse statt Threads verwenden (ProcessPoolExecutor), für wartende Arbeit Threads (ThreadPoolExecutor). Muster: aufteilen – parallel bearbeiten – zusammenführen. Der __main__-Schutz ist Pflicht, Daten müssen picklebar sein, Ergebnisse kommen über return zurück. Amdahl: S(n) = 1 / ((1 − p) + p / n), Obergrenze 1 / (1 − p)."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Programm ist zu 75 % parallelisierbar. Welchen Speedup liefert es nach Amdahl mit 3 Prozessoren?",
+      "options": [
+        "3",
+        "2",
+        "2,25",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "S = 1 / (0,25 + 0,75 / 3) = 1 / (0,25 + 0,25) = 1 / 0,5 = 2."
+    },
+    {
+      "question": "95 % eines Programms sind parallelisierbar. Welchen Speedup kann es nach Amdahl höchstens erreichen, egal wie viele Kerne?",
+      "options": [
+        "95",
+        "5",
+        "100",
+        "20"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Obergrenze ist 1 / (1 − p) = 1 / 0,05 = 20. Der sequenzielle Anteil von 5 % lässt sich nicht beschleunigen."
+    },
+    {
+      "question": "Warum braucht man bei ProcessPoolExecutor den Block if __name__ == \"__main__\":?",
+      "options": [
+        "Weil neue Prozesse (z. B. unter Windows) das Modul importieren und sonst selbst wieder Prozesse starten würden",
+        "Weil Python sonst nur einen Kern verwendet",
+        "Damit der GIL abgeschaltet wird",
+        "Damit die Ergebnisse sortiert zurückkommen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beim Startverfahren „spawn“ importiert jeder Kindprozess das Hauptmodul. Code außerhalb des Schutzblocks würde dort erneut ausgeführt."
+    },
+    {
+      "question": "Ein Programm soll 1000 Webseiten herunterladen und verbringt fast die ganze Zeit mit Warten auf das Netzwerk. Was ist die passende Wahl?",
+      "options": [
+        "ProcessPoolExecutor mit 1000 Prozessen",
+        "Ein einziger Thread, weil der GIL alles andere verhindert",
+        "ThreadPoolExecutor",
+        "Gar keine Nebenläufigkeit, weil Amdahl jeden Speedup verbietet"
+      ],
+      "correctIndex": 2,
+      "explanation": "Beim Warten auf I/O gibt Python den GIL frei – Threads reichen und sind viel leichtgewichtiger als Prozesse."
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j4-sockets_02_tcp_sockets",
+  "title": "TCP-Sockets: Echo-Server und eigenes Protokoll",
+  "summary": "Mit der Socket-API einen TCP-Server und -Client in Python und C# schreiben und ein einfaches Textprotokoll entwerfen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Socket ist ein Kommunikationsendpunkt, bestimmt durch IP-Adresse, Port und Protokoll. TCP-Sockets liefern einen zuverlässigen, geordneten Bytestrom; UDP-Sockets verschicken einzelne Datagramme ohne Garantie. Der Ablauf ist immer gleich: Der Server bindet sich an einen Port und wartet, der Client verbindet sich aktiv."
+    },
+    {
+      "type": "code",
+      "content": "Server              Client\n------              ------\nsocket()            socket()\nbind(ip, port)\nlisten()\naccept()  <-------  connect()\nrecv()    <-------  send()\nsend()    ------->  recv()\nclose()             close()"
+    },
+    {
+      "type": "code",
+      "content": "import socket\n\nHOST, PORT = \"127.0.0.1\", 5000\n\nwith socket.socket(socket.AF_INET,\n                   socket.SOCK_STREAM) as s:\n    s.bind((HOST, PORT))\n    s.listen()\n    print(\"Warte auf Port\", PORT)\n    conn, addr = s.accept()\n    with conn:\n        print(\"Verbunden mit\", addr[0])\n        while True:\n            data = conn.recv(1024)\n            if not data:      # Client weg\n                break\n            conn.sendall(data)\nprint(\"Server beendet\")"
+    },
+    {
+      "type": "code",
+      "content": "import socket\n\nwith socket.create_connection(\n        (\"127.0.0.1\", 5000)) as c:\n    c.sendall(\"Hallo HTL\".encode())\n    antwort = c.recv(1024)\n    print(\"Echo:\", antwort.decode())\n\n# Ausgabe Client:\n# Echo: Hallo HTL\n# Ausgabe Server:\n# Warte auf Port 5000\n# Verbunden mit 127.0.0.1\n# Server beendet"
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Details: Sockets übertragen Bytes, keine Strings – deshalb encode() beim Senden und decode() beim Empfangen. accept() blockiert, bis ein Client kommt, und liefert einen NEUEN Socket für genau diese Verbindung. recv() liefert b'' (leere Bytes), wenn die Gegenseite die Verbindung geschlossen hat – das ist das Abbruchkriterium. Typische Fehler: „Address already in use“ beim schnellen Neustart (Port noch belegt), oder „Connection refused“, wenn der Server noch nicht läuft."
+    },
+    {
+      "type": "text",
+      "content": "TCP ist ein Bytestrom ohne Nachrichtengrenzen: Zwei send()-Aufrufe können in einem recv() ankommen, eine lange Nachricht in mehreren Teilen. Deshalb braucht jede Anwendung ein Protokoll, das festlegt, wo eine Nachricht endet (Framing), z. B. ein Zeilenende \\n oder eine vorangestellte Länge. Außerdem: welche Befehle es gibt, wie Antworten und Fehler aussehen und wer zuerst spricht. Unser Protokoll: eine Zeile pro Befehl, Antwort beginnt mit OK oder ERR."
+    },
+    {
+      "type": "code",
+      "content": "# proto.py\ndef handle(line):\n    teile = line.split()\n    if not teile:\n        return \"ERR leer\"\n    cmd, args = teile[0].upper(), teile[1:]\n    if cmd == \"ADD\" and len(args) == 2:\n        try:\n            a, b = int(args[0]), int(args[1])\n        except ValueError:\n            return \"ERR keine Zahl\"\n        return f\"OK {a + b}\"\n    if cmd == \"PING\":\n        return \"OK PONG\"\n    return \"ERR unbekannt\""
+    },
+    {
+      "type": "code",
+      "content": "import socket\nfrom proto import handle\n\nwith socket.create_server(\n        (\"127.0.0.1\", 5001)) as s:\n    conn, _ = s.accept()\n    with conn, conn.makefile(\"rw\") as f:\n        for line in f:          # je Zeile\n            f.write(handle(line) + \"\\n\")\n            f.flush()\n\n# Client schickt Zeilen, Ausgabe:\n# PING -> OK PONG\n# ADD 3 4 -> OK 7\n# ADD 3 x -> ERR keine Zahl\n# DEL 1 -> ERR unbekannt"
+    },
+    {
+      "type": "text",
+      "content": "makefile() verpackt den Socket als Datei-Objekt: for line in f liest Zeile für Zeile, egal wie TCP die Bytes zerstückelt. In C# heißt der Server TcpListener, der Client TcpClient; gelesen und geschrieben wird über einen NetworkStream. Das Beispiel startet Server und Client im selben Programm (getestet mit .NET 8). Dieser Server bedient nur einen Client – für mehrere gleichzeitig braucht man Threads oder async pro Verbindung."
+    },
+    {
+      "type": "code",
+      "content": "using System.Net;\nusing System.Net.Sockets;\nusing System.Text;\n\nvar listener = new TcpListener(\n    IPAddress.Loopback, 5002);\nlistener.Start();\nTask server = Task.Run(async () =>\n{\n    using TcpClient c =\n        await listener.AcceptTcpClientAsync();\n    NetworkStream s = c.GetStream();\n    byte[] buf = new byte[1024];\n    int n;\n    while ((n = await s.ReadAsync(buf)) > 0)\n        await s.WriteAsync(buf.AsMemory(0, n));\n});\n\n// Client (hier im selben Programm)\nusing (var client = new TcpClient())\n{\n    await client.ConnectAsync(\"127.0.0.1\", 5002);\n    var st = client.GetStream();\n    await st.WriteAsync(\n        Encoding.UTF8.GetBytes(\"Hallo HTL\"));\n    byte[] buf = new byte[1024];\n    int n = await st.ReadAsync(buf);\n    Console.WriteLine(\"Echo: \" +\n        Encoding.UTF8.GetString(buf, 0, n));\n}\nawait server;\nlistener.Stop();\n\n// Ausgabe: Echo: Hallo HTL"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was liefert conn.recv(1024) in Python, nachdem der Client die Verbindung ordnungsgemäß geschlossen hat?",
+      "options": [
+        "None",
+        "b'' (leere Bytes)",
+        "Eine ConnectionError-Exception",
+        "Die letzte Nachricht noch einmal"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein geschlossener TCP-Strom wird mit leeren Bytes signalisiert. Darum prüft der Echo-Server mit if not data: break."
+    },
+    {
+      "question": "Was gibt handle() aus dem Protokoll zurück?",
+      "code": "print(handle(\"add 10 -3\"))",
+      "options": [
+        "ERR unbekannt",
+        "ERR keine Zahl",
+        "OK 7",
+        "OK 13"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Befehl wird mit upper() zu ADD, int(\"-3\") ist gültig, 10 + (−3) = 7. Die Antwort lautet also OK 7."
+    },
+    {
+      "question": "Ein Client sendet schnell hintereinander \"PING\" und \"PING\" ohne Zeilenende, der Server liest mit recv(1024). Was kann passieren?",
+      "options": [
+        "Der Server erhält garantiert zwei getrennte Nachrichten.",
+        "TCP verwirft die zweite Nachricht.",
+        "Die Verbindung wird automatisch geschlossen.",
+        "Der Server erhält b'PINGPING' in einem recv()."
+      ],
+      "correctIndex": 3,
+      "explanation": "TCP kennt keine Nachrichtengrenzen. Ohne Framing (z. B. \\n) kann der Server die beiden Befehle nicht auseinanderhalten."
+    },
+    {
+      "question": "Welche Klasse verwendest du in C#, um auf einem Port auf eingehende TCP-Verbindungen zu warten?",
+      "options": [
+        "TcpListener",
+        "TcpClient",
+        "NetworkStream",
+        "HttpClient"
+      ],
+      "correctIndex": 0,
+      "explanation": "TcpListener bindet sich an Adresse und Port und nimmt mit AcceptTcpClientAsync() Verbindungen an. TcpClient ist die Client-Seite bzw. die angenommene Verbindung."
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-prozesse_03_prozesse_optimieren",
+ "title": "Prozesse optimieren mit Kennzahlen",
+ "summary": "Durchlaufzeit, Prozesseffizienz und Prozesskosten berechnen und Prozesse gezielt verbessern.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Prozessoptimierung soll einen Prozess schneller, billiger oder fehlerärmer machen – oft alles zugleich. Damit das nicht beim Bauchgefühl bleibt, misst man den Ist-Zustand mit Kennzahlen, entwirft einen Soll-Prozess und misst danach erneut. Erst die Zahlen zeigen, ob sich etwas wirklich verbessert hat."
+  },
+  {
+   "type": "text",
+   "content": "Wichtige Prozesskennzahlen:\n• Bearbeitungszeit: Zeit, in der aktiv gearbeitet wird\n• Wartezeit (Liegezeit): Vorgang liegt herum\n• Durchlaufzeit = Bearbeitungszeit + Wartezeit\n• Prozesseffizienz = Bearbeitungszeit / Durchlaufzeit\n• Prozesskosten je Durchlauf (z. B. Bearbeitungszeit × Stundensatz)\n• Fehlerquote = fehlerhafte / alle Durchläufe\n• Durchsatz: erledigte Vorgänge pro Zeiteinheit"
+  },
+  {
+   "type": "code",
+   "content": "Ist: Bestellung Werkstättenmaterial\nSchritt         Bearb.  Warten\nAntrag (Papier)  15 min  480 min\nGenehmigen        5 min  240 min\nIm Shop abtippen 20 min    0 min\n--------------------------------\nSumme            40 min  720 min\nDurchlaufzeit = 760 min"
+  },
+  {
+   "type": "text",
+   "content": "Prozesseffizienz = 40 / 760 ≈ 5,3 %. Der Vorgang liegt also fast die ganze Zeit herum. Das ist typisch für Verwaltungsprozesse. Der häufigste Denkfehler: die Bearbeitung beschleunigen, obwohl die Wartezeit dominiert. Wer das Abtippen von 20 auf 15 min verkürzt, spart nur 5 von 760 Minuten."
+  },
+  {
+   "type": "code",
+   "content": "ist = [(\"Antrag erfassen\", 15, 480),\n       (\"Genehmigen\", 5, 240),\n       (\"Im Shop abtippen\", 20, 0)]\n\ndef kennzahlen(schritte):\n    b = sum(s[1] for s in schritte)\n    w = sum(s[2] for s in schritte)\n    return b, b + w, b / (b + w)\n\nb, d, e = kennzahlen(ist)\nprint(b, d, f\"{e:.1%}\")\n# 40 760 5.3%"
+  },
+  {
+   "type": "text",
+   "content": "Bewährte Optimierungsansätze:\n• Weglassen: unnötige Schritte streichen (z. B. Genehmigung erst ab einem Betrag)\n• Automatisieren: Weiterleitung, Benachrichtigung\n• Medienbrüche beseitigen: kein Abtippen von Papier\n• Parallelisieren: unabhängige Schritte gleichzeitig\n• Zusammenfassen: weniger Übergaben zwischen Personen\n• Engpass beheben: dort ansetzen, wo sich Arbeit staut"
+  },
+  {
+   "type": "code",
+   "content": "Parallelisieren\nA = 30 min, dann B = 20 und C = 40\n\nseriell:   30 + 20 + 40     = 90 min\nparallel:  30 + max(20, 40) = 70 min\n\nDer längste parallele Zweig\nbestimmt die Durchlaufzeit."
+  },
+  {
+   "type": "code",
+   "content": "Soll: Webformular + Schnittstelle\nSchritt         Bearb.  Warten\nWebformular      10 min   60 min\nGenehmigen        5 min    0 min\nÜbertrag. prüfen  5 min    0 min\n--------------------------------\nSumme            20 min   60 min\nDurchlauf 80 min, Effizienz 25 %"
+  },
+  {
+   "type": "text",
+   "content": "Prozesskosten bei einem Stundensatz von 60 €: Ist 40 min → 40 €, Soll 20 min → 20 € je Bestellung. Bei 300 Bestellungen pro Jahr spart das 300 × 20 € = 6 000 € Arbeitszeit. Die Durchlaufzeit sinkt von 760 auf 80 min. Danach geht es im Sinn der kontinuierlichen Verbesserung (PDCA) weiter: messen, Schwachstellen finden, ändern, wieder messen."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Durchlaufzeit = Bearbeitungszeit + Wartezeit, Prozesseffizienz = Bearbeitung / Durchlauf. Prozesskosten ergeben sich aus der Bearbeitungszeit mal Stundensatz. Optimiert wird durch Weglassen, Automatisieren, Medienbrüche beseitigen und Parallelisieren – und zwar dort, wo die meiste Zeit verloren geht, meist bei den Wartezeiten."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Ein Prozess hat 30 min Bearbeitungszeit und 570 min Wartezeit. Wie hoch ist die Prozesseffizienz?",
+   "options": [
+    "5 %",
+    "30 %",
+    "5,3 %",
+    "95 %"
+   ],
+   "correctIndex": 0,
+   "explanation": "Durchlaufzeit = 30 + 570 = 600 min. Effizienz = 30 / 600 = 5 %. 5,3 % wäre fälschlich 30 / 570."
+  },
+  {
+   "question": "Schritt A dauert 20 min, danach laufen B (15 min) und C (25 min) parallel. Wie lang ist die Durchlaufzeit?",
+   "options": [
+    "60 min",
+    "45 min",
+    "40 min",
+    "35 min"
+   ],
+   "correctIndex": 1,
+   "explanation": "20 + max(15, 25) = 45 min. Der längere parallele Zweig bestimmt die Dauer; 60 min wäre die serielle Abarbeitung."
+  },
+  {
+   "question": "Ein Antrag wird ausgedruckt und von der Buchhaltung ins ERP abgetippt. Wie nennt man diese Schwachstelle?",
+   "options": [
+    "Engpass",
+    "Parallelisierung",
+    "Medienbruch",
+    "Durchsatz"
+   ],
+   "correctIndex": 2,
+   "explanation": "Ein Medienbruch ist der Wechsel des Mediums (digital → Papier → digital). Er kostet Zeit und erzeugt Tippfehler."
+  },
+  {
+   "question": "Ein Prozess wird von 50 min auf 30 min Bearbeitungszeit verbessert, Stundensatz 60 €, 600 Durchläufe pro Jahr. Wie viel Arbeitszeit-Kosten spart das jährlich?",
+   "options": [
+    "20 000 €",
+    "1 200 €",
+    "18 000 €",
+    "12 000 €"
+   ],
+   "correctIndex": 3,
+   "explanation": "Ersparnis 20 min = 20 € pro Durchlauf (60 € pro Stunde = 1 € pro Minute). 600 × 20 € = 12 000 €."
+  }
+ ]
+}

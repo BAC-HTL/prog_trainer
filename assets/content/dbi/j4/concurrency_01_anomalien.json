@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-concurrency_01_anomalien",
+  "title": "Mehrbenutzer-Anomalien",
+  "summary": "Du erkennst Lost Update, Dirty Read, Non-Repeatable Read und Phantom an Abläufen zweier gleichzeitiger Transaktionen und beschreibst sie als Schedule.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Am Tag der Anmeldung für die Projektwoche greifen hunderte Schüler:innen gleichzeitig auf die Datenbank zu. Würde das DBMS alle Transaktionen nacheinander ausführen, wäre es viel zu langsam. Also laufen sie verzahnt (nebenläufig). Ohne Schutz entstehen dabei Fehler, die es bei einer einzelnen Person nie gäbe – die Mehrbenutzer-Anomalien."
+    },
+    {
+      "type": "text",
+      "content": "Eine verzahnte Ausführung nennt man Schedule (Ablaufplan). Kurzschreibweise: r1(x) = Transaktion 1 liest x, w2(x) = Transaktion 2 schreibt x, c1 = Commit von T1, a2 = Abbruch (Abort) von T2. Die Beispiele unten wurden mit zwei Sitzungen in PostgreSQL im Standard-Isolationslevel READ COMMITTED ausgeführt (Kassastand anfangs 100)."
+    },
+    {
+      "type": "code",
+      "content": "Lost Update (Anwendung rechnet)\nA                    B\nBEGIN                BEGIN\nSELECT stand → 100\n                     SELECT stand → 100\nUPDATE stand=70\nCOMMIT\n                     UPDATE stand=50\n                     COMMIT\nErgebnis: 50 statt 20\n\nr1(x) r2(x) w1(x) c1 w2(x) c2"
+    },
+    {
+      "type": "text",
+      "content": "Lost Update: Zwei Transaktionen lesen denselben Wert, rechnen jeweils in der Anwendung und schreiben zurück – die zweite überschreibt die Änderung der ersten. A hat 30 € abgebucht, B 50 €; gespeichert ist nur Bs Abbuchung. Abhilfe: im SQL rechnen (UPDATE konto SET stand = stand - 30), die Zeile mit SELECT … FOR UPDATE sperren oder ein höheres Isolationslevel verwenden."
+    },
+    {
+      "type": "code",
+      "content": "Dirty Read\nA                    B\nBEGIN\nUPDATE stand=999\n                     SELECT stand\n                     → 999 ?!\nROLLBACK\n-- B rechnet mit einem Wert,\n-- den es nie gegeben hat.\n\nw1(x) r2(x) a1"
+    },
+    {
+      "type": "text",
+      "content": "Dirty Read: B liest einen Wert, den A geschrieben, aber noch nicht committet hat. Rollt A zurück, hat B mit „schmutzigen“ Daten gearbeitet. In PostgreSQL kann das nicht passieren: Unser B hat im Test 100 gelesen, nicht 999 – sogar mit READ UNCOMMITTED. Andere Systeme erlauben Dirty Reads auf dieser Stufe."
+    },
+    {
+      "type": "code",
+      "content": "Non-Repeatable Read\nA                    B\n                     BEGIN\n                     SELECT stand → 100\nBEGIN\nUPDATE stand=70\nCOMMIT\n                     SELECT stand → 70\n\nr2(x) w1(x) c1 r2(x)"
+    },
+    {
+      "type": "text",
+      "content": "Non-Repeatable Read (nicht wiederholbares Lesen): Innerhalb derselben Transaktion liefert dieselbe Abfrage auf dieselbe Zeile zwei verschiedene Werte, weil dazwischen eine andere Transaktion die Zeile geändert und committet hat. Problematisch etwa, wenn B zuerst prüft „genug Geld?“ und später mit einem anderen Wert weiterrechnet."
+    },
+    {
+      "type": "code",
+      "content": "Phantom\nA                    B\nBEGIN\nSELECT count(*)\n  FROM konto → 3\n                     BEGIN\n                     INSERT INTO konto\n                       VALUES (...)\n                     COMMIT\nSELECT count(*)\n  FROM konto → 4"
+    },
+    {
+      "type": "text",
+      "content": "Phantom: Eine Abfrage mit Bedingung (oder count) liefert beim zweiten Mal zusätzliche (oder fehlende) Zeilen, weil eine andere Transaktion passende Zeilen eingefügt oder gelöscht hat. Unterschied zum Non-Repeatable Read: Dort ändert sich eine bestehende Zeile, hier die Menge der Zeilen.\n\nZusammenfassung: Lost Update – Änderung überschrieben; Dirty Read – Uncommittetes gelesen; Non-Repeatable Read – gleiche Zeile, anderer Wert; Phantom – gleiche Bedingung, andere Zeilenmenge. Wie man sie verhindert, zeigen die nächsten Lektionen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Zwei Lehrkräfte öffnen gleichzeitig dieselbe Note (3) in der Webapp. Die eine speichert 2, die andere kurz danach 4. Die Änderung auf 2 ist verloren. Welche Anomalie ist das?",
+      "options": [
+        "Dirty Read",
+        "Non-Repeatable Read",
+        "Phantom",
+        "Lost Update"
+      ],
+      "correctIndex": 3,
+      "explanation": "Beide lesen denselben Stand, beide schreiben – die zweite Schreiboperation überschreibt die erste. Das ist ein Lost Update."
+    },
+    {
+      "question": "Welche Anomalie zeigt der Schedule?",
+      "code": "w1(x) r2(x) a1 c2",
+      "options": [
+        "Lost Update",
+        "Dirty Read",
+        "Non-Repeatable Read",
+        "Phantom"
+      ],
+      "correctIndex": 1,
+      "explanation": "T2 liest x, nachdem T1 es geschrieben, aber bevor T1 committet hat. T1 bricht danach ab – T2 hat einen nie gültigen Wert gelesen."
+    },
+    {
+      "question": "Kassastand 100. A und B führen im Standardlevel von PostgreSQL gleichzeitig UPDATE konto SET stand = stand - 30 bzw. - 50 aus und committen. Welcher Stand ergibt sich?",
+      "options": [
+        "20",
+        "70",
+        "50",
+        "Ein Fehler, weil zwei Transaktionen dieselbe Zeile ändern"
+      ],
+      "correctIndex": 0,
+      "explanation": "Das UPDATE rechnet in der Datenbank. Die zweite Transaktion wartet auf die Sperre der ersten und liest danach den neuen Wert 70: 70 - 50 = 20. Es geht nichts verloren."
+    },
+    {
+      "question": "Eine Transaktion zählt zweimal die Anmeldungen für den Kletterkurs und erhält erst 11, dann 12, weil dazwischen jemand eine Anmeldung eingefügt und committet hat. Wie heißt das?",
+      "options": [
+        "Lost Update",
+        "Dirty Read",
+        "Phantom",
+        "Deadlock"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Menge der Zeilen, die die Bedingung erfüllen, hat sich durch ein INSERT geändert – ein Phantom."
+    }
+  ]
+}

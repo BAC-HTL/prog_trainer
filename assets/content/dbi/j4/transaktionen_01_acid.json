@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-transaktionen_01_acid",
+  "title": "Transaktionen und ACID",
+  "summary": "Du fasst mehrere SQL-Befehle mit BEGIN, COMMIT, ROLLBACK und SAVEPOINT zu einer Transaktion zusammen und erklärst die ACID-Eigenschaften.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die Klasse überweist 200 € von der Klassenkassa auf das Ausflugskonto. Das sind zwei UPDATEs: abbuchen und gutschreiben. Stürzt der Server genau dazwischen ab, ist das Geld weg – oder doppelt da. Eine Transaktion fasst mehrere Befehle zu einer logischen Einheit zusammen: entweder alle oder keiner."
+    },
+    {
+      "type": "text",
+      "content": "Die vier Eigenschaften einer Transaktion heißen ACID:\n• Atomicity (Atomarität): alles oder nichts.\n• Consistency (Konsistenz): Sie führt von einem konsistenten Zustand in einen konsistenten Zustand – alle Constraints gelten am Ende.\n• Isolation: Parallel laufende Transaktionen stören einander nicht (Details im Modul Concurrency).\n• Durability (Dauerhaftigkeit): Nach dem COMMIT bleiben die Änderungen erhalten, auch bei Stromausfall."
+    },
+    {
+      "type": "code",
+      "content": "BEGIN;          -- Start\nUPDATE konto SET stand = stand - 200\n  WHERE name = 'kassa';\nUPDATE konto SET stand = stand + 200\n  WHERE name = 'ausflug';\nCOMMIT;         -- endgültig\n\n-- oder statt COMMIT:\nROLLBACK;       -- alles zurück"
+    },
+    {
+      "type": "text",
+      "content": "Ohne BEGIN arbeiten die meisten Systeme im Autocommit-Modus: Jeder einzelne Befehl ist seine eigene Transaktion und wird sofort festgeschrieben. Für zusammengehörende Änderungen musst du die Transaktion also selbst klammern. Statt BEGIN kannst du auch das Standard-SQL START TRANSACTION schreiben."
+    },
+    {
+      "type": "code",
+      "content": "import sqlite3\ncon = sqlite3.connect(\n    \":memory:\", isolation_level=None)\ncon.execute(\"\"\"CREATE TABLE konto(\n  name  TEXT PRIMARY KEY,\n  stand INT CHECK (stand >= 0))\"\"\")\ncon.execute(\"\"\"INSERT INTO konto VALUES\n  ('kassa', 300), ('ausflug', 0)\"\"\")\n\ndef ueberweise(betrag):\n    con.execute(\"BEGIN\")\n    try:\n        con.execute(\"\"\"UPDATE konto\n          SET stand = stand + ?\n          WHERE name = 'ausflug'\"\"\",\n          (betrag,))\n        con.execute(\"\"\"UPDATE konto\n          SET stand = stand - ?\n          WHERE name = 'kassa'\"\"\",\n          (betrag,))\n        con.execute(\"COMMIT\")\n    except sqlite3.IntegrityError as e:\n        con.execute(\"ROLLBACK\")\n        print(\"Abbruch:\", e)\n\nueberweise(200)\nueberweise(500)\nprint(con.execute(\n    \"SELECT * FROM konto\").fetchall())\n\n# Ausgabe:\n# Abbruch: CHECK constraint failed:\n#   stand >= 0\n# [('kassa', 100), ('ausflug', 200)]"
+    },
+    {
+      "type": "text",
+      "content": "Die erste Überweisung klappt. Bei der zweiten wird die Gutschrift von 500 € zuerst ausgeführt, dann verletzt die Abbuchung den CHECK. Wichtig: SQLite bricht nur den fehlerhaften Befehl ab, die Transaktion bleibt offen – erst unser ROLLBACK macht auch die Gutschrift rückgängig. PostgreSQL markiert die Transaktion nach einem Fehler als abgebrochen („current transaction is aborted“); ein späteres COMMIT wird dort automatisch zum ROLLBACK. Verlass dich nie darauf, sondern behandle Fehler immer selbst."
+    },
+    {
+      "type": "code",
+      "content": "BEGIN;\nINSERT INTO konto\n  VALUES ('ball', 50);\nSAVEPOINT vor_aenderung;\nUPDATE konto SET stand = 0\n  WHERE name = 'kassa';\nROLLBACK TO vor_aenderung;\nUPDATE konto SET stand = stand - 20\n  WHERE name = 'ball';\nCOMMIT;\n\n-- kassa 100 | ausflug 200 | ball 30"
+    },
+    {
+      "type": "text",
+      "content": "Ein SAVEPOINT ist ein Zwischenstand innerhalb einer Transaktion. ROLLBACK TO savepoint macht nur die Änderungen seit diesem Punkt rückgängig; die Transaktion läuft weiter und muss trotzdem mit COMMIT oder ROLLBACK beendet werden. Praktisch beim Import vieler Datensätze: Ein fehlerhafter Datensatz wird übersprungen, der Rest bleibt."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: BEGIN vergessen (dann ist nach dem ersten UPDATE schon alles festgeschrieben), Transaktionen sehr lange offen halten (z. B. während auf eine Benutzereingabe gewartet wird – das blockiert andere) und Fehler abfangen, ohne ROLLBACK aufzurufen. In Python kannst du auch with con: verwenden: Bei Erfolg wird committet, bei einer Exception zurückgerollt."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Transaktion ist eine Einheit aus mehreren Befehlen mit den ACID-Eigenschaften. BEGIN startet, COMMIT macht dauerhaft, ROLLBACK verwirft, SAVEPOINT und ROLLBACK TO setzen nur einen Teil zurück. Wie Atomarität und Dauerhaftigkeit technisch erreicht werden, siehst du in der nächsten Lektion."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt das Skript aus?",
+      "code": "-- konto: ('a', 100)\nBEGIN;\nUPDATE konto SET stand = stand - 40;\nSAVEPOINT sp;\nUPDATE konto SET stand = 0;\nROLLBACK TO sp;\nCOMMIT;\nSELECT * FROM konto;",
+      "options": [
+        "[('a', 100)]",
+        "[('a', 60)]",
+        "[('a', 40)]",
+        "[('a', 0)]"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nach dem SAVEPOINT wird -40 abgezogen (60), dann auf 0 gesetzt. ROLLBACK TO sp stellt den Stand beim SAVEPOINT wieder her, also 60, und COMMIT macht ihn dauerhaft."
+    },
+    {
+      "question": "Nach dem COMMIT fällt der Strom aus. Beim Neustart sind die Änderungen noch da. Welche ACID-Eigenschaft ist das?",
+      "options": [
+        "Atomicity",
+        "Consistency",
+        "Durability",
+        "Isolation"
+      ],
+      "correctIndex": 2,
+      "explanation": "Durability (Dauerhaftigkeit) garantiert, dass festgeschriebene Änderungen jeden Absturz überleben."
+    },
+    {
+      "question": "In SQLite schlägt innerhalb einer Transaktion das zweite von zwei UPDATEs wegen eines CHECK fehl. Was gilt danach?",
+      "options": [
+        "Das erste UPDATE ist noch wirksam, die Transaktion ist offen – du musst ROLLBACK aufrufen.",
+        "Die Transaktion ist automatisch zurückgerollt.",
+        "Beide UPDATEs sind festgeschrieben.",
+        "Die Datenbank ist gesperrt, bis sie neu gestartet wird."
+      ],
+      "correctIndex": 0,
+      "explanation": "SQLite bricht nur den fehlerhaften Befehl ab. Ohne eigenes ROLLBACK würde ein späteres COMMIT das erste UPDATE festschreiben."
+    },
+    {
+      "question": "Ein Programm führt zwei UPDATEs ohne BEGIN im Autocommit-Modus aus; zwischen den beiden stürzt es ab. Was ist passiert?",
+      "options": [
+        "Nichts wurde gespeichert.",
+        "Die Datenbank rollt beim Neustart beide zurück.",
+        "Beide UPDATEs wurden gespeichert.",
+        "Das erste UPDATE ist festgeschrieben, das zweite fehlt."
+      ],
+      "correctIndex": 3,
+      "explanation": "Im Autocommit-Modus ist jeder Befehl eine eigene Transaktion. Das erste UPDATE war schon committet; die beiden bilden keine Einheit."
+    }
+  ]
+}

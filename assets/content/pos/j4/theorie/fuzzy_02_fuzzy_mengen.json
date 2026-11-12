@@ -1,0 +1,93 @@
+{
+  "id": "pos-j4-theorie-fuzzy_02_fuzzy_mengen",
+  "title": "Fuzzy-Mengen und Zugehörigkeitsfunktionen",
+  "summary": "Unscharfe Mengen mit Zugehörigkeitsgraden zwischen 0 und 1 beschreiben und mit ihnen rechnen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine klassische (scharfe) Menge hat harte Grenzen: Entweder x gehört dazu oder nicht. Legst du „warm“ als „ab 22 °C“ fest, ist 21,9 °C nicht warm, 22,0 °C aber schon – das passt nicht zu unserem Sprachgefühl. Eine Fuzzy-Menge (unscharfe Menge, L. Zadeh 1965) ordnet jedem Element einen Zugehörigkeitsgrad µ(x) zwischen 0 und 1 zu: 0 = gehört nicht dazu, 1 = gehört voll dazu, dazwischen = teilweise."
+    },
+    {
+      "type": "text",
+      "content": "Eine linguistische Variable wie „Raumtemperatur“ hat sprachliche Werte (Terme), z. B. kalt, angenehm und warm. Jeder Term ist eine Fuzzy-Menge mit einer Zugehörigkeitsfunktion. Üblich sind Dreiecke, Trapeze und Rampen, weil man sie leicht rechnen kann:\n• kalt: 1 bis 16 °C, fällt bis 20 °C auf 0\n• angenehm: Dreieck 17 – 21 – 25 °C\n• warm: 0 bis 22 °C, steigt bis 26 °C auf 1"
+    },
+    {
+      "type": "code",
+      "content": "µ\n1.0|kkk         a         www\n   |    k     a   a     w\n0.5|      k a       a w\n   |      a k       w a\n   +------------------------->\n    15  17  19  21  23  25  27 °C\n\nk = kalt, a = angenehm, w = warm"
+    },
+    {
+      "type": "code",
+      "content": "def dreieck(x, a, b, c):\n    if x <= a or x >= c:\n        return 0.0\n    if x <= b:\n        return (x - a) / (b - a)\n    return (c - x) / (c - b)\n\ndef fallend(x, a, b):\n    if x <= a: return 1.0\n    if x >= b: return 0.0\n    return (b - x) / (b - a)\n\ndef steigend(x, a, b):\n    return 1.0 - fallend(x, a, b)"
+    },
+    {
+      "type": "code",
+      "content": "kalt     = lambda t: fallend(t, 16, 20)\nangenehm = lambda t: dreieck(t, 17, 21, 25)\nwarm     = lambda t: steigend(t, 22, 26)\n\n  t  │ kalt  angenehm  warm\n─────┼──────────────────────\n 18  │ 0.5    0.25     0.0\n 19  │ 0.25   0.5      0.0\n 21  │ 0.0    1.0      0.0\n 23  │ 0.0    0.5      0.25\n 24  │ 0.0    0.25     0.5"
+    },
+    {
+      "type": "text",
+      "content": "Nachgerechnet für 19 °C: kalt = (20 − 19) / (20 − 16) = 0,25 und angenehm = (19 − 17) / (21 − 17) = 0,5. Achtung, typischer Denkfehler: Zugehörigkeitsgrade sind keine Wahrscheinlichkeiten und müssen sich nicht auf 1 summieren – bei 18 °C ergibt kalt + angenehm nur 0,75. µ sagt, wie sehr 18 °C „kalt“ ist, nicht, wie wahrscheinlich."
+    },
+    {
+      "type": "text",
+      "content": "Mengenoperationen nach Zadeh – dieselben Formeln wie in der dreiwertigen Logik, nur mit allen Werten von 0 bis 1:\n• Schnitt (UND): µ(A ∩ B) = min(µA, µB)\n• Vereinigung (ODER): µ(A ∪ B) = max(µA, µB)\n• Komplement (NICHT): µ(¬A) = 1 − µA"
+    },
+    {
+      "type": "code",
+      "content": "t = 18\n# kalt = 0.5, angenehm = 0.25\nmin(kalt(t), angenehm(t))  # 0.25\nmax(kalt(t), angenehm(t))  # 0.5\n1 - kalt(t)                # 0.5\n\n# kalt UND NICHT kalt:\nmin(0.5, 1 - 0.5)          # 0.5 (!)"
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Begriffe am Beispiel angenehm:\n• Träger: alle x mit µ(x) > 0 → 17 bis 25 °C (offen)\n• Kern: alle x mit µ(x) = 1 → nur 21 °C\n• α-Schnitt: alle x mit µ(x) ≥ α; für α = 0,5 → [19; 23] °C\nDas letzte Beispiel oben zeigt: A ∩ ¬A ist bei Fuzzy-Mengen nicht leer – „ein bisschen kalt und ein bisschen nicht kalt“ ist erlaubt."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Fuzzy-Mengen ersetzen die harte Grenze durch einen Zugehörigkeitsgrad µ ∈ [0, 1]. Zugehörigkeitsfunktionen (Dreieck, Trapez, Rampe) wählt man nach Fachwissen. Gerechnet wird mit min, max und 1 − µ. Im nächsten Schritt baut man daraus Regeln, die eine Heizung oder einen Lüfter steuern."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welchen Zugehörigkeitsgrad hat 20 °C zu angenehm (Dreieck 17 – 21 – 25)?",
+      "options": [
+        "0.25",
+        "0.5",
+        "0.75",
+        "1.0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Steigende Flanke: (20 − 17) / (21 − 17) = 3 / 4 = 0,75."
+    },
+    {
+      "question": "Bei 24 °C gilt angenehm = 0,25 und warm = 0,5. Welchen Wert hat „angenehm ODER warm“?",
+      "options": [
+        "0.5",
+        "0.75",
+        "0.25",
+        "0.125"
+      ],
+      "correctIndex": 0,
+      "explanation": "ODER (Vereinigung) ist das Maximum: max(0,25; 0,5) = 0,5. Fuzzy-Werte werden nicht addiert."
+    },
+    {
+      "question": "warm steigt von 0 bei 22 °C auf 1 bei 26 °C. Welchen Wert hat „NICHT warm“ bei 23 °C?",
+      "options": [
+        "0.25",
+        "1.0",
+        "0.5",
+        "0.75"
+      ],
+      "correctIndex": 3,
+      "explanation": "warm(23) = (23 − 22) / 4 = 0,25. Das Komplement ist 1 − 0,25 = 0,75."
+    },
+    {
+      "question": "Welche Aussage über Fuzzy-Mengen stimmt?",
+      "options": [
+        "Die Zugehörigkeitsgrade aller Terme müssen sich zu 1 summieren",
+        "Der α-Schnitt für α = 0,5 enthält alle x mit µ(x) ≥ 0,5",
+        "Der Schnitt einer Fuzzy-Menge mit ihrem Komplement ist immer leer",
+        "Der Kern enthält alle x mit µ(x) > 0"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das ist die Definition des α-Schnitts. Die Summe muss nicht 1 sein, A ∩ ¬A kann Werte bis 0,5 haben, und µ(x) > 0 beschreibt den Träger, nicht den Kern."
+    }
+  ]
+}

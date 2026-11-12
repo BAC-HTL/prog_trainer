@@ -1,0 +1,93 @@
+{
+  "id": "pos-j4-csharp-sync_02_deadlocks",
+  "title": "Deadlocks erkennen und vermeiden",
+  "summary": "Wann sich Threads gegenseitig blockieren, wie man das zeigt und wie man es verhindert.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Deadlock (Verklemmung) entsteht, wenn zwei oder mehr Threads jeweils auf eine Ressource warten, die ein anderer von ihnen hält – und keiner gibt nach. Das Programm stürzt nicht ab, es hängt einfach. Bild aus dem Alltag: Zwei Autos stehen auf einer einspurigen Brücke, jedes wartet, dass das andere zurückfährt."
+    },
+    {
+      "type": "code",
+      "content": "object a = new(), b = new();\nvar t1 = new Thread(() => {\n  lock (a) {\n    Thread.Sleep(100);\n    lock (b) { /* ... */ }\n  } });\nvar t2 = new Thread(() => {\n  lock (b) {\n    Thread.Sleep(100);\n    lock (a) { /* ... */ }\n  } });\nt1.Start(); t2.Start();\n// t1 hält a, wartet auf b\n// t2 hält b, wartet auf a\n// → Programm hängt für immer"
+    },
+    {
+      "type": "text",
+      "content": "Ein Deadlock kann nur auftreten, wenn alle vier Coffman-Bedingungen gleichzeitig erfüllt sind: 1) Wechselseitiger Ausschluss – eine Ressource kann nur von einem Thread genutzt werden. 2) Halten und Warten (Hold and Wait) – ein Thread hält eine Ressource und wartet auf eine weitere. 3) Keine Unterbrechbarkeit (No Preemption) – eine Ressource kann einem Thread nicht weggenommen werden. 4) Zirkuläres Warten – es gibt einen Kreis: T1 wartet auf T2, T2 wartet auf T1."
+    },
+    {
+      "type": "text",
+      "content": "Deadlocks sind tückisch, weil sie oft nur selten auftreten – ohne das Thread.Sleep oben hätten die Threads meist Glück. Zum Zeigen und Testen eignet sich Monitor.TryEnter mit Timeout: Bekommt ein Thread die zweite Sperre nicht innerhalb einer Sekunde, gibt er auf, statt ewig zu warten. Das Programm hängt nicht, und der Deadlock wird sichtbar."
+    },
+    {
+      "type": "code",
+      "content": "void Arbeite(string name,\n    object erste, object zweite)\n{\n  lock (erste)\n  {\n    Thread.Sleep(100);\n    if (Monitor.TryEnter(zweite,\n          TimeSpan.FromSeconds(1)))\n    {\n      try { Console.WriteLine(\n              $\"{name}: fertig\"); }\n      finally {\n        Monitor.Exit(zweite); }\n    }\n    else\n      Console.WriteLine(\n        $\"{name}: Deadlock!\");\n  }\n}\n// T1: Arbeite(\"T1\", a, b)\n// T2: Arbeite(\"T2\", b, a)"
+    },
+    {
+      "type": "text",
+      "content": "Startet man T1 mit (a, b) und T2 mit (b, a), meldet mindestens ein Thread „Deadlock!“. Oft ist es nur einer: Sobald er aufgibt, verlässt er seinen lock und gibt seine erste Sperre frei – der andere Thread kommt dann doch noch durch und meldet „fertig“. Genau das ist die Idee des Timeouts: Er bricht die Bedingung „Halten und Warten“ auf. Wichtig: Nur wenn TryEnter true liefert, darf Monitor.Exit aufgerufen werden."
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigste Vermeidungsstrategie ist eine feste Sperr-Reihenfolge. Wenn alle Threads Sperren immer in derselben Reihenfolge holen (erst a, dann b), kann kein Kreis entstehen – Bedingung 4 ist ausgeschlossen. Bei einer Banküberweisung zwischen zwei Konten sperrt man z. B. immer zuerst das Konto mit der kleineren Id, egal in welche Richtung überwiesen wird."
+    },
+    {
+      "type": "code",
+      "content": "static void Ueberweise(\n    Konto von, Konto nach, decimal b)\n{\n    var (x, y) = von.Id < nach.Id\n        ? (von, nach) : (nach, von);\n    lock (x.Sperre)\n    lock (y.Sperre)\n    {\n        von.Stand -= b;\n        nach.Stand += b;\n    }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Regeln: Sperren so kurz wie möglich halten und im lock keine langsamen Aktionen (Datei, Netzwerk, Benutzereingabe) ausführen. Möglichst nur eine Sperre gleichzeitig halten. Im lock keine fremden Methoden oder Events aufrufen, die selbst sperren könnten. Timeouts mit TryEnter verwenden, wo ein Abbruch sinnvoll ist. Typischer Fehler: zu glauben, der Code sei korrekt, weil er im Test hundertmal funktioniert hat – Deadlocks hängen vom Timing ab."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Deadlock braucht alle vier Bedingungen – wechselseitiger Ausschluss, Halten und Warten, keine Unterbrechbarkeit, zirkuläres Warten. Brichst du eine davon, ist er unmöglich. In der Praxis: feste Sperr-Reihenfolge, kurze Sperren und Monitor.TryEnter mit Timeout zum Erkennen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche ist KEINE der vier Coffman-Bedingungen für einen Deadlock?",
+      "options": [
+        "Zirkuläres Warten",
+        "Halten und Warten",
+        "Mehr als zwei CPU-Kerne",
+        "Keine Unterbrechbarkeit"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die vier Bedingungen sind wechselseitiger Ausschluss, Halten und Warten, keine Unterbrechbarkeit und zirkuläres Warten. Die Anzahl der Kerne spielt keine Rolle – Deadlocks gibt es auch auf einem Kern."
+    },
+    {
+      "question": "T1 sperrt a, dann b. T2 sperrt b, dann a. Beide halten ihre erste Sperre ein paar ms lang. Was passiert mit reinem lock (ohne Timeout) meistens?",
+      "options": [
+        "Beide laufen nacheinander durch",
+        "Das Programm hängt für immer",
+        "Es gibt eine SynchronizationLockException",
+        "T2 wird automatisch abgebrochen"
+      ],
+      "correctIndex": 1,
+      "explanation": "T1 hält a und wartet auf b, T2 hält b und wartet auf a. lock wartet ohne Zeitlimit – es entsteht ein Deadlock, das Programm hängt."
+    },
+    {
+      "question": "Welche Bedingung wird durch eine feste Sperr-Reihenfolge (immer zuerst die kleinere Konto-Id) gebrochen?",
+      "options": [
+        "Wechselseitiger Ausschluss",
+        "Keine Unterbrechbarkeit",
+        "Halten und Warten",
+        "Zirkuläres Warten"
+      ],
+      "correctIndex": 3,
+      "explanation": "Wenn alle in derselben Reihenfolge sperren, kann niemand auf eine „frühere“ Sperre warten, die ein anderer hält – ein Kreis ist unmöglich."
+    },
+    {
+      "question": "Was liefert Monitor.TryEnter(obj, TimeSpan.FromSeconds(1)), wenn die Sperre nach einer Sekunde immer noch belegt ist?",
+      "options": [
+        "false",
+        "true",
+        "null",
+        "Es wirft eine TimeoutException"
+      ],
+      "correctIndex": 0,
+      "explanation": "TryEnter liefert false, wenn die Sperre innerhalb der Zeit nicht frei wurde. Dann darf man Monitor.Exit NICHT aufrufen."
+    }
+  ]
+}

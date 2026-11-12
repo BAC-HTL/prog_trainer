@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j4-policies_02_firewalls_vertieft",
+  "title": "Firewalls vertieft: Zonen, NAT, nftables",
+  "summary": "Zonenkonzepte, NAT, Stateful Inspection und echte Regelsätze mit nftables und iptables.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Aus dem 3. Jahrgang kennst du Paketfilter, Stateful Firewalls, First Match, Default Deny und die DMZ. Jetzt setzt du das um, was die Security Policy verlangt: Jede Zone (LAN, DMZ, WAN/Internet, Management, Gäste) bekommt ein eigenes Interface oder VLAN, und für jedes Zonenpaar wird festgelegt, welche Verbindungen in welche Richtung erlaubt sind – eine Zonenmatrix."
+    },
+    {
+      "type": "code",
+      "content": "von \\ nach  WAN    DMZ    LAN\n----------  -----  -----  -----\nWAN         -      443    nein\nDMZ         nein*  -      nein\nLAN         ja     22,443 -\n\n* nur Updates über Proxy"
+    },
+    {
+      "type": "text",
+      "content": "NAT (Network Address Translation) übersetzt Adressen beim Durchgang durch die Firewall. Source-NAT (SNAT, unter Linux oft Masquerade) ersetzt die private Quelladresse durch die öffentliche Adresse der Firewall – so surfen alle LAN-Geräte über eine öffentliche IP. Destination-NAT (DNAT, Port Forwarding) leitet Anfragen an die öffentliche IP auf einen internen Server weiter, z. B. Port 443 auf den Webserver in der DMZ."
+    },
+    {
+      "type": "code",
+      "content": "SNAT (ausgehend):\n10.10.33.7:50123 -> 1.2.3.4:443\n  wird zu\n203.0.113.5:50123 -> 1.2.3.4:443\n\nDNAT (eingehend):\n5.6.7.8:41000 -> 203.0.113.5:443\n  wird zu\n5.6.7.8:41000 -> 10.10.200.10:443"
+    },
+    {
+      "type": "text",
+      "content": "Damit NAT und Stateful Inspection funktionieren, führt die Firewall eine Verbindungstabelle (unter Linux: conntrack). Jede Verbindung hat einen Zustand: new (erstes Paket), established (Antworten wurden gesehen), related (zugehörige Verbindung, z. B. ICMP-Fehlermeldung) oder invalid. Die Antwort auf eine übersetzte Verbindung wird automatisch zurückübersetzt. Wichtig: NAT ist kein Ersatz für eine Firewall – es versteckt Adressen, filtert aber nicht gezielt."
+    },
+    {
+      "type": "text",
+      "content": "Unter Linux ist nftables das aktuelle Werkzeug, iptables das ältere. Ein nftables-Regelsatz besteht aus Tabellen, Ketten (chains) und Regeln. Eine Basiskette hängt an einem Hook: input (Pakete an die Firewall selbst), forward (Pakete, die durchgeroutet werden) oder output. policy drop setzt Default Deny. Das Beispiel wurde mit nft -c (nur prüfen) getestet:"
+    },
+    {
+      "type": "code",
+      "content": "table inet fw {\n chain input {\n  type filter hook input \\\n    priority 0; policy drop;\n  ct state established,related accept\n  ct state invalid drop\n  iif \"lo\" accept\n  ip saddr 10.10.20.0/24 \\\n    tcp dport 22 accept\n }\n chain forward {\n  type filter hook forward \\\n    priority 0; policy drop;\n  ct state established,related accept\n  iifname \"lan\" oifname \"wan\" accept\n  iifname \"wan\" oifname \"dmz\" \\\n    ip daddr 10.10.200.10 \\\n    tcp dport 443 accept\n }\n}\n\ntable ip nat {\n chain pre {\n  type nat hook prerouting \\\n    priority dstnat;\n  iifname \"wan\" tcp dport 443 \\\n    dnat to 10.10.200.10\n }\n chain post {\n  type nat hook postrouting \\\n    priority srcnat;\n  oifname \"wan\" masquerade\n }\n}"
+    },
+    {
+      "type": "text",
+      "content": "So liest du den Regelsatz: Antworten auf erlaubte Verbindungen (established,related) werden ganz oben durchgelassen – das spart Regeln und Rechenzeit. SSH auf die Firewall ist nur aus dem Lehrer-Netz erlaubt. Vom LAN darf alles ins Internet, aus dem Internet nur HTTPS zum DMZ-Webserver. Die nat-Tabelle macht Masquerade nach außen und leitet Port 443 per DNAT in die DMZ. Typischer Fehler: policy drop ohne die established-Regel – dann kommen keine Antworten mehr zurück. Bei Fernwartung sperrst du dich so auch selbst aus."
+    },
+    {
+      "type": "code",
+      "content": "# dasselbe (Auszug) mit iptables\niptables -P FORWARD DROP\niptables -A FORWARD -m conntrack \\\n  --ctstate ESTABLISHED,RELATED \\\n  -j ACCEPT\niptables -A FORWARD -i lan -o wan \\\n  -j ACCEPT\niptables -t nat -A POSTROUTING \\\n  -o wan -j MASQUERADE\niptables -t nat -A PREROUTING \\\n  -i wan -p tcp --dport 443 \\\n  -j DNAT --to-destination \\\n  10.10.200.10"
+    },
+    {
+      "type": "text",
+      "content": "Moderne Next-Generation Firewalls (NGFW) erkennen zusätzlich Anwendungen unabhängig vom Port, ordnen Verkehr Benutzer:innen zu und haben oft ein Intrusion Prevention System (IPS) eingebaut. Eine Web Application Firewall (WAF) arbeitet auf Schicht 7 vor einer Webanwendung und prüft HTTP-Anfragen, z. B. auf SQL-Injection oder Cross-Site Scripting. Zusammenfassung: Zonenmatrix planen, Default Deny, established früh erlauben, SNAT für ausgehend, DNAT für veröffentlichte Dienste – und Regeln immer testen, bevor man sie scharf schaltet."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Schulwebserver in der DMZ (10.10.200.10) soll aus dem Internet über die öffentliche IP der Firewall erreichbar sein. Welche Technik brauchst du?",
+      "options": [
+        "Masquerade (SNAT) auf dem WAN-Interface",
+        "DNAT (Port Forwarding) von Port 443 auf 10.10.200.10",
+        "Eine Regel in der output-Kette",
+        "Nur ct state established accept"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eingehende Anfragen an die öffentliche IP müssen auf die interne Zieladresse umgeschrieben werden – das ist Destination-NAT. SNAT/Masquerade ändert die Quelladresse ausgehender Verbindungen."
+    },
+    {
+      "question": "Was passiert mit dieser input-Kette, wenn ein Admin per SSH aus 10.10.20.5 zugreift?",
+      "code": "chain input {\n type filter hook input \\\n   priority 0; policy drop;\n ip saddr 10.10.20.0/24 \\\n   tcp dport 22 accept\n}",
+      "options": [
+        "Die Verbindung klappt, weil 10.10.20.5 im Netz liegt",
+        "Das erste SYN wird verworfen",
+        "Alle Pakete werden wegen policy drop verworfen",
+        "Die Kette ist ungültig, weil die established-Regel fehlt"
+      ],
+      "correctIndex": 0,
+      "explanation": "10.10.20.5 liegt in 10.10.20.0/24, Zielport 22 passt – jedes eingehende Paket dieser Verbindung trifft die accept-Regel. Die established-Regel fehlt zwar, sie ist aber für die Antworten auf Verbindungen nötig, die die Firewall SELBST aufbaut (z. B. Updates), nicht für diese."
+    },
+    {
+      "question": "Wofür wird eine Web Application Firewall (WAF) vor allem eingesetzt?",
+      "options": [
+        "Für das Routing zwischen VLANs",
+        "Um private Adressen ins Internet zu übersetzen",
+        "Um HTTP-Anfragen an eine Webanwendung auf Angriffe wie SQL-Injection zu prüfen",
+        "Als Ersatz für Backups"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine WAF arbeitet auf Schicht 7 und analysiert HTTP-Inhalte. Routing und NAT sind Aufgaben von Router bzw. Netzwerk-Firewall."
+    },
+    {
+      "question": "Welchen conntrack-Zustand hat das allererste Paket (TCP-SYN) einer neuen Verbindung?",
+      "options": [
+        "established",
+        "related",
+        "invalid",
+        "new"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das erste Paket einer noch unbekannten Verbindung hat den Zustand new. Erst wenn Pakete in beide Richtungen gesehen wurden, gilt die Verbindung als established."
+    }
+  ]
+}

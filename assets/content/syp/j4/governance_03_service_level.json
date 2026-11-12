@@ -1,0 +1,93 @@
+{
+ "id": "syp-j4-governance_03_service_level",
+ "title": "SLAs und Service-Kennzahlen",
+ "summary": "Service Level Agreements verstehen und Verfügbarkeit, Ausfallzeit und Reaktionszeit-Kennzahlen nachrechnen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Ein Service Level Agreement (SLA) ist eine Vereinbarung zwischen IT-Dienstleister und Kunde über die Qualität eines Services. Typische Inhalte: Servicebeschreibung, Servicezeit, Verfügbarkeit, Reaktions- und Lösungszeiten je Priorität, Wartungsfenster, Ansprechpartner, Reporting und Folgen bei Verfehlung. Intern sichert man das über OLAs (Operational Level Agreements zwischen IT-Teams) und gegenüber Lieferanten über Underpinning Contracts (UC) ab."
+  },
+  {
+   "type": "code",
+   "content": "   Kunde\n     |  SLA\n     v\n IT-Dienstleister\n   |           |\n   | OLA       | UC\n   v           v\nNetzwerk-   externer\nteam        Provider"
+  },
+  {
+   "type": "text",
+   "content": "Verfügbarkeit = (vereinbarte Servicezeit − Ausfallzeit) / vereinbarte Servicezeit. Entscheidend ist die vereinbarte Servicezeit: rund um die Uhr (24/7) oder z. B. nur Mo–Fr 7–19 Uhr. Angekündigte Wartungsfenster zählen meist nicht als Ausfall, wenn das SLA es so festlegt."
+  },
+  {
+   "type": "code",
+   "content": "99,9 % in einem Monat (30 Tage, 24/7)\nServicezeit = 30 · 24 · 60\n            = 43 200 min\nAusfall max = 0,1 % · 43 200\n            = 43,2 min\n\nZum Vergleich: 99 % erlaubt\n7,2 Stunden Ausfall pro Monat!"
+  },
+  {
+   "type": "code",
+   "content": "def ausfall_min(prozent, stunden):\n    return (1 - prozent / 100) \\\n        * stunden * 60\n\n# 99,5 %, Mo-Fr 7-19 Uhr, 22 Tage\nh = 22 * 12\nprint(round(ausfall_min(99.5, h), 1))\n# 79.2"
+  },
+  {
+   "type": "text",
+   "content": "Gemessene Verfügbarkeit: Bei 22 Arbeitstagen à 12 h ist die Servicezeit 264 h. Fällt der Service 2 h aus, ist die Verfügbarkeit (264 − 2) / 264 ≈ 99,24 %. Ein SLA mit 99,5 % wäre verfehlt. Fällt dieselbe Störung nachts außerhalb der Servicezeit an, zählt sie nicht. Ein anderer Blick: Verfügbarkeit = MTBF / (MTBF + MTTR) mit der mittleren Zeit zwischen Ausfällen und der mittleren Reparaturzeit. MTBF 500 h, MTTR 5 h ergibt 500 / 505 ≈ 99,0 %."
+  },
+  {
+   "type": "text",
+   "content": "Reaktionszeit ist die Zeit von der Meldung bis zur ersten qualifizierten Bearbeitung, Lösungszeit die Zeit bis zur Wiederherstellung des Services. Beides gilt meist je Priorität und wird nur innerhalb der Servicezeit gezählt. Typischer Fehler: „Reaktionszeit 30 Minuten“ als Versprechen verstehen, dass das Problem in 30 Minuten gelöst ist."
+  },
+  {
+   "type": "code",
+   "content": "SLA-Tabelle (Beispiel)\nPrio  Reaktion  Lösung   Ziel\n1     15 min    4 h      95 %\n2     1 h       8 h      95 %\n3     4 h       3 Tage   90 %\n\nMonat: 200 Tickets\n184 in Reaktionszeit = 92 %\n130 beim 1st Level gelöst = 65 %"
+  },
+  {
+   "type": "text",
+   "content": "Kennzahlen (KPIs) machen die Servicequalität messbar: Verfügbarkeit, Anteil der Tickets innerhalb der Reaktions- und Lösungszeit, Erstlösungsquote (First Contact Resolution), Anzahl wiederkehrender Incidents und Kundenzufriedenheit. Im Beispiel liegt die Einhaltung der Reaktionszeit bei 92 % – ein Ziel von 95 % wäre verfehlt. Vorsicht vor dem „Wassermelonen-Effekt“: Alle KPIs sind außen grün, aber die Nutzer:innen sind innen „rot“, also unzufrieden."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Ein SLA regelt Servicezeit, Verfügbarkeit sowie Reaktions- und Lösungszeiten; OLAs und UCs sichern es intern und extern ab. Verfügbarkeit = (Servicezeit − Ausfall) / Servicezeit, alternativ MTBF / (MTBF + MTTR). 99,9 % bei 24/7 erlaubt etwa 43 min Ausfall im Monat. KPIs wie Einhaltungsquote und Erstlösungsquote messen die Servicequalität."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Ein 24/7-Service hat ein SLA von 99,5 % pro Monat (30 Tage). Wie viel Ausfall ist höchstens erlaubt?",
+   "options": [
+    "3,6 h",
+    "36 min",
+    "7,2 h",
+    "43,2 min"
+   ],
+   "correctIndex": 0,
+   "explanation": "30 · 24 h = 720 h. 0,5 % von 720 h = 3,6 h. 43,2 min wären es bei 99,9 %, 7,2 h bei 99 %."
+  },
+  {
+   "question": "Servicezeit 720 h, gemessener Ausfall 3 h. Wie hoch war die Verfügbarkeit?",
+   "options": [
+    "99,0 %",
+    "99,58 %",
+    "97 %",
+    "99,96 %"
+   ],
+   "correctIndex": 1,
+   "explanation": "(720 − 3) / 720 = 717 / 720 ≈ 0,9958 = 99,58 %."
+  },
+  {
+   "question": "Ein Server hat eine MTBF von 1 000 h und eine MTTR von 4 h. Wie hoch ist die Verfügbarkeit ungefähr?",
+   "options": [
+    "99,6 %",
+    "96 %",
+    "99,96 %",
+    "99,0 %"
+   ],
+   "correctIndex": 0,
+   "explanation": "A = MTBF / (MTBF + MTTR) = 1 000 / 1 004 ≈ 0,996 = 99,6 %."
+  },
+  {
+   "question": "Welche Vereinbarung regelt die Leistung eines externen Internet-Providers gegenüber dem IT-Dienstleister?",
+   "options": [
+    "SLA",
+    "OLA",
+    "Underpinning Contract (UC)",
+    "Servicekatalog"
+   ],
+   "correctIndex": 2,
+   "explanation": "Mit externen Lieferanten schließt man Underpinning Contracts. OLAs gelten zwischen internen Teams, das SLA gegenüber dem Kunden."
+  }
+ ]
+}

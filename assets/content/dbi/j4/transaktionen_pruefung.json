@@ -1,0 +1,118 @@
+{
+  "id": "dbi-j4-transaktionen_pruefung",
+  "title": "Abschlussprüfung: Transaktionen & Recovery",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welche Zeilen enthält t am Ende?",
+      "code": "BEGIN;\nINSERT INTO t VALUES (1);\nSAVEPOINT a;\nINSERT INTO t VALUES (2);\nSAVEPOINT b;\nINSERT INTO t VALUES (3);\nROLLBACK TO a;\nINSERT INTO t VALUES (4);\nCOMMIT;",
+      "options": [
+        "1, 2, 3, 4",
+        "1, 4",
+        "1, 2, 4",
+        "4"
+      ],
+      "correctIndex": 1,
+      "explanation": "ROLLBACK TO a nimmt alles seit SAVEPOINT a zurück, also auch 2 und 3 (der innere Savepoint b ist damit ebenfalls weg). Danach kommen 4 dazu, COMMIT schreibt 1 und 4 fest."
+    },
+    {
+      "question": "Eine Überweisung zieht 200 € ab, die Gutschrift scheitert, und am Ende ist trotzdem nur die Abbuchung gespeichert. Welche ACID-Eigenschaft ist verletzt?",
+      "options": [
+        "Durability",
+        "Isolation",
+        "Atomicity",
+        "Keine"
+      ],
+      "correctIndex": 2,
+      "explanation": "Atomarität heißt „alles oder nichts“. Ein halb ausgeführter Vorgang verletzt sie direkt (und meist auch die Konsistenz)."
+    },
+    {
+      "question": "Was passiert in PostgreSQL, wenn du nach einem Fehler innerhalb einer Transaktion weitere Befehle und dann COMMIT schickst?",
+      "options": [
+        "Weitere Befehle werden mit „current transaction is aborted“ abgelehnt; COMMIT führt zu einem ROLLBACK.",
+        "Die erfolgreichen Befehle werden festgeschrieben.",
+        "Der fehlerhafte Befehl wird automatisch wiederholt.",
+        "Der Server startet neu."
+      ],
+      "correctIndex": 0,
+      "explanation": "PostgreSQL markiert die Transaktion nach einem Fehler als abgebrochen. Erst nach ROLLBACK (oder ROLLBACK TO einem Savepoint) geht es weiter; COMMIT wird als ROLLBACK ausgeführt."
+    },
+    {
+      "question": "Wann darf ein DBMS mit WAL einem Client „COMMIT erfolgreich“ melden?",
+      "options": [
+        "Sobald die Änderungen im Puffer im RAM stehen",
+        "Wenn alle geänderten Datenseiten auf der Platte sind",
+        "Beim nächsten Checkpoint",
+        "Wenn die Log-Einträge der Transaktion inklusive COMMIT-Eintrag dauerhaft gespeichert sind"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das dauerhafte Log reicht, um die Transaktion nach einem Absturz per REDO wiederherzustellen. Die Datenseiten dürfen später geschrieben werden."
+    },
+    {
+      "question": "Log: T1 BEGIN, T1 a 1→2, T2 BEGIN, T2 b 5→6, T1 COMMIT, T2 b 6→7, T3 BEGIN, T3 a 2→3 – Absturz. Welche Werte haben a und b nach der Recovery?",
+      "options": [
+        "a = 3, b = 7",
+        "a = 2, b = 5",
+        "a = 1, b = 5",
+        "a = 2, b = 7"
+      ],
+      "correctIndex": 1,
+      "explanation": "Nur T1 ist committet (a = 2 bleibt per REDO). T2 und T3 werden per UNDO zurückgenommen: b zurück auf 5, a von 3 auf 2."
+    },
+    {
+      "question": "Welche Fehlerart lässt sich nicht allein mit dem Log auf derselben Platte beheben?",
+      "options": [
+        "Medienfehler (Platte defekt)",
+        "Stromausfall",
+        "Transaktionsfehler",
+        "Deadlock"
+      ],
+      "correctIndex": 0,
+      "explanation": "Ist die Platte kaputt, sind Datendateien und Log weg. Dann braucht man eine Datensicherung auf anderem Medium und archivierte Logs."
+    },
+    {
+      "question": "Welche Aussage über logische Sicherungen mit pg_dump stimmt?",
+      "options": [
+        "Sie sind die Grundlage für Point-in-Time-Recovery.",
+        "Sie kopieren die Datendateien inklusive WAL.",
+        "Sie erzeugen eine konsistente, portable Sicherung von Schema und Daten, die mit pg_restore bzw. psql eingespielt wird.",
+        "Sie funktionieren nur bei gestopptem Server."
+      ],
+      "correctIndex": 2,
+      "explanation": "pg_dump liest die Datenbank konsistent im laufenden Betrieb und schreibt Schema und Daten. Für PITR braucht man eine physische Basissicherung plus WAL-Archiv."
+    },
+    {
+      "question": "Ein Webshop für den Schulball verlangt RPO = 5 Minuten. Die Datenbank wird jede Nacht voll gesichert. Reicht das?",
+      "options": [
+        "Nein, bis zu 24 h Daten könnten verloren gehen; nötig sind z. B. WAL-Archivierung oder häufigere Sicherungen.",
+        "Ja, eine Vollsicherung ist immer ausreichend.",
+        "Ja, wenn die Sicherung differenziell ist.",
+        "Nein, RPO betrifft nur die Wiederherstellungsdauer."
+      ],
+      "correctIndex": 0,
+      "explanation": "RPO ist der maximal tolerierbare Datenverlust. Mit nur einer nächtlichen Sicherung können bis zu 24 Stunden fehlen. RTO wäre die Wiederherstellungsdauer."
+    },
+    {
+      "question": "Was ist der Nachteil synchroner gegenüber asynchroner Replikation?",
+      "options": [
+        "Beim Failover gehen Transaktionen verloren.",
+        "Sie ersetzt kein RAID.",
+        "Jedes COMMIT wartet auf den Standby und wird dadurch langsamer.",
+        "Sie funktioniert nur mit inkrementellen Sicherungen."
+      ],
+      "correctIndex": 2,
+      "explanation": "Synchron verhindert Datenverlust beim Failover, kostet aber Latenz, weil der Standby jedes COMMIT bestätigen muss."
+    },
+    {
+      "question": "Warum gilt der Satz „Replikation ist kein Backup“?",
+      "options": [
+        "Weil Replikate nicht lesbar sind",
+        "Weil Replikate immer veraltet sind",
+        "Weil Replikation nur bei SQLite funktioniert",
+        "Weil Fehler wie DROP TABLE oder Verschlüsselung durch Ransomware ebenfalls repliziert werden"
+      ],
+      "correctIndex": 3,
+      "explanation": "Replikation spiegelt jede Änderung – auch fehlerhafte. Ein Backup bewahrt dagegen einen älteren Zustand getrennt auf."
+    }
+  ]
+}

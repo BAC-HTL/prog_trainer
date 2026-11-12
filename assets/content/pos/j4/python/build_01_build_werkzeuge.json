@@ -1,0 +1,94 @@
+{
+  "id": "pos-j4-python-build_01_build_werkzeuge",
+  "title": "Build-Werkzeuge und pyproject.toml",
+  "summary": "Ein Python-Projekt mit pyproject.toml beschreiben und mit python -m build als installierbares Paket bauen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Build-Management heißt: aus dem Quellcode automatisch und reproduzierbar ein auslieferbares Ergebnis erzeugen – Abhängigkeiten auflösen, gegebenenfalls kompilieren, testen und paketieren. In C# erledigt das die dotnet-CLI mit MSBuild und der .csproj-Datei, in Java Maven oder Gradle, in JavaScript npm mit package.json. In Python wird nicht klassisch kompiliert; „Build“ bedeutet vor allem, ein installierbares Paket zu erzeugen. Zentrale Datei dafür ist pyproject.toml."
+    },
+    {
+      "type": "code",
+      "content": "notenrechner/\n├── pyproject.toml\n├── README.md\n├── src/\n│   └── notenrechner/\n│       ├── __init__.py\n│       ├── rechner.py\n│       └── cli.py\n└── tests/\n    └── test_rechner.py"
+    },
+    {
+      "type": "text",
+      "content": "pyproject.toml ist im TOML-Format geschrieben. Der Abschnitt [build-system] legt fest, welches Build-Backend das Paket baut (z. B. setuptools, hatchling oder flit-core) und was es dafür braucht. [project] enthält die Metadaten: Name, Version, Beschreibung, benötigte Python-Version und Abhängigkeiten. Unter [project.scripts] definierst du Befehle, die nach der Installation in der Konsole verfügbar sind. Das src-Layout verhindert, dass du beim Testen versehentlich den lokalen Ordner statt des installierten Pakets importierst."
+    },
+    {
+      "type": "code",
+      "content": "[build-system]\nrequires = [\"setuptools>=61\"]\nbuild-backend = \"setuptools.build_meta\"\n\n[project]\nname = \"notenrechner\"\nversion = \"1.0.0\"\ndescription = \"Notenschnitt berechnen\"\nrequires-python = \">=3.10\"\ndependencies = []\n\n[project.scripts]\nnotenrechner = \"notenrechner.cli:main\""
+    },
+    {
+      "type": "text",
+      "content": "Gebaut wird mit dem Paket build (einmalig pip install build). python -m build legt eine isolierte Umgebung an, installiert dort das Build-Backend und erzeugt im Ordner dist/ zwei Dateien: ein sdist (Source Distribution, .tar.gz) mit dem Quellcode und ein Wheel (.whl), das fertige Installationsformat – technisch ein ZIP-Archiv."
+    },
+    {
+      "type": "code",
+      "content": "$ pip install build\n$ python -m build\n* Creating isolated environment: venv+pip...\n* Building sdist...\n* Building wheel from sdist\n…\nSuccessfully built notenrechner-1.0.0.tar.gz and notenrechner-1.0.0-py3-none-any.whl\n$ ls dist\nnotenrechner-1.0.0-py3-none-any.whl\nnotenrechner-1.0.0.tar.gz"
+    },
+    {
+      "type": "text",
+      "content": "Der Wheel-Name verrät viel: Name-Version-Pythontag-ABItag-Plattform. py3-none-any bedeutet: reines Python 3, keine kompilierten Erweiterungen, läuft auf jeder Plattform. Installiert wird mit pip install dist/…whl – danach steht der Befehl notenrechner zur Verfügung. Während der Entwicklung installierst du mit pip install -e . „editierbar“: Änderungen am Quellcode wirken sofort, ohne neu zu bauen."
+    },
+    {
+      "type": "code",
+      "content": "$ pip install dist/notenrechner-1.0.0-py3-none-any.whl\n$ notenrechner 1 2 2 3\nSchnitt: 2.00\n\n# während der Entwicklung:\n$ pip install -e ."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: dist/ und build/ ins Git-Repository committen – sie gehören in .gitignore, weil sie jederzeit neu erzeugt werden. Die Version nicht erhöhen: pip hält das Paket dann für bereits installiert. Falsches Layout, sodass das Wheel gar keinen Code enthält – mit python -m zipfile -l dist/….whl prüfst du den Inhalt. In echten Projekten läuft der Build automatisch in einer CI-Pipeline bei jedem Push, inklusive Tests."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Build-Management automatisiert den Weg vom Quellcode zum Paket. In Python beschreibt pyproject.toml das Projekt: [build-system] (Backend) und [project] (Metadaten, Abhängigkeiten, Skripte). python -m build erzeugt sdist (.tar.gz) und Wheel (.whl) in dist/. pip install -e . installiert für die Entwicklung editierbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was erzeugt python -m build in einem korrekt eingerichteten Projekt?",
+      "options": [
+        "Eine ausführbare .exe-Datei im Projektordner",
+        "Nur kompilierte .pyc-Dateien in __pycache__",
+        "Ein sdist (.tar.gz) und ein Wheel (.whl) im Ordner dist/",
+        "Eine neue virtuelle Umgebung namens build/"
+      ],
+      "correctIndex": 2,
+      "explanation": "build erzeugt standardmäßig beide Distributionsformate: das Quellarchiv und das installierbare Wheel, abgelegt in dist/."
+    },
+    {
+      "question": "Was bedeutet „py3-none-any“ im Dateinamen notenrechner-1.0.0-py3-none-any.whl?",
+      "options": [
+        "Reines Python 3 ohne kompilierte Erweiterungen, auf jeder Plattform installierbar",
+        "Das Paket hat keine Abhängigkeiten.",
+        "Das Paket funktioniert mit keiner Python-Version.",
+        "Das Paket ist nur für Windows gebaut."
+      ],
+      "correctIndex": 0,
+      "explanation": "Pythontag py3, ABI-Tag none (keine Bindung an eine binäre Schnittstelle) und Plattform any – typisch für reine Python-Pakete."
+    },
+    {
+      "question": "Was bewirkt dieser Eintrag in pyproject.toml?",
+      "code": "[project.scripts]\nnotenrechner = \"notenrechner.cli:main\"",
+      "options": [
+        "Er startet main() bei jedem Import des Pakets.",
+        "Er legt fest, dass das Paket nur über die Kommandozeile installiert werden kann.",
+        "Er benennt das Paket in „cli“ um.",
+        "Nach der Installation gibt es den Konsolenbefehl notenrechner, der main() aus notenrechner.cli aufruft."
+      ],
+      "correctIndex": 3,
+      "explanation": "[project.scripts] erzeugt bei der Installation einen Startbefehl. Links steht der Befehlsname, rechts Modul:Funktion."
+    },
+    {
+      "question": "Wozu dient pip install -e . während der Entwicklung?",
+      "options": [
+        "Es baut ein Wheel und lädt es auf PyPI hoch.",
+        "Es installiert das Projekt editierbar: Änderungen im Quellcode wirken sofort ohne Neuinstallation.",
+        "Es löscht alle installierten Pakete außer dem aktuellen.",
+        "Es erzeugt die Datei pyproject.toml."
+      ],
+      "correctIndex": 1,
+      "explanation": "-e (editable) verlinkt das installierte Paket auf den Quellordner, statt eine Kopie zu installieren."
+    }
+  ]
+}

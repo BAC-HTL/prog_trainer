@@ -1,0 +1,94 @@
+{
+ "id": "syp-j4-controlling_01_it_controlling",
+ "title": "IT-Controlling: TCO, Kosten-Nutzen, Amortisation",
+ "summary": "IT-Investitionen über die Gesamtkosten (TCO) bewerten und Amortisationsdauer und ROI berechnen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "IT-Controlling plant, steuert und kontrolliert die Kosten und den Nutzen der IT. Aufgaben sind Budgetplanung, Soll-Ist-Vergleiche (kennst du aus dem Projektcontrolling), Kennzahlen, die Verrechnung von IT-Leistungen an die Abteilungen und die Bewertung von Investitionen: Lohnt sich das neue System überhaupt?"
+  },
+  {
+   "type": "text",
+   "content": "TCO (Total Cost of Ownership) sind alle Kosten eines IT-Systems über seine gesamte Nutzungsdauer – nicht nur der Kaufpreis. Direkte Kosten: Anschaffung, Lizenzen, Installation, Betrieb, Wartung, Support, Schulung, Entsorgung. Indirekte Kosten: Ausfallzeiten, Zeit, die Anwender:innen mit Selbsthilfe oder gegenseitigem Helfen verbringen. Indirekte Kosten werden leicht übersehen, weil sie in keiner Rechnung stehen."
+  },
+  {
+   "type": "code",
+   "content": "TCO je Arbeitsplatz und Jahr\n(Beispielwerte)\nAnschaffung 1 200 € / 4 J.   300 €\nSoftware, Lizenzen           200 €\nSupport und Betrieb          400 €\nSchulung                     100 €\nAusfall, Selbsthilfe (ind.)  200 €\n---------------------------------\nTCO                        1 200 €\nAnteil Anschaffung: 300/1 200 = 25 %"
+  },
+  {
+   "type": "text",
+   "content": "Eine Kosten-Nutzen-Analyse stellt Kosten und Nutzen gegenüber. Nutzen gibt es in drei Arten: monetär quantifizierbar (z. B. eingesparte Arbeitszeit, weniger Papier), quantifizierbar, aber schwer in Geld umzurechnen (schnellere Auskunft an Kund:innen) und nicht quantifizierbar (Image, Mitarbeiterzufriedenheit). Für die nicht monetären Kriterien nutzt man oft eine Nutzwertanalyse mit gewichteten Punkten."
+  },
+  {
+   "type": "text",
+   "content": "Die statische Amortisationsrechnung fragt: Nach wie vielen Jahren hat sich die Investition durch die Rückflüsse bezahlt gemacht? Bei gleichbleibenden Rückflüssen gilt: Amortisationsdauer = Investition / jährlicher Rückfluss. Der Rückfluss ist die jährliche Einsparung minus die zusätzlichen laufenden Kosten des neuen Systems."
+  },
+  {
+   "type": "code",
+   "content": "Neues Ticketsystem\nInvestition:            30 000 €\nEinsparung pro Jahr:    12 000 €\nlaufende Kosten/Jahr:  − 2 000 €\nRückfluss pro Jahr:     10 000 €\n\nAmortisation = 30 000 / 10 000\n             = 3 Jahre\n\nROI nach 5 Jahren:\n(5 · 10 000 − 30 000) / 30 000\n= 20 000 / 30 000 ≈ 66,7 %"
+  },
+  {
+   "type": "text",
+   "content": "Sind die Rückflüsse nicht jedes Jahr gleich – etwa weil im ersten Jahr noch eingeschult wird –, summiert man sie Jahr für Jahr auf, bis die Investition erreicht ist (Kumulationsrechnung). Das Python-Programm zeigt das: Nach drei Jahren sind 27 000 € zurück, die restlichen 3 000 € kommen im vierten Jahr (3 000 / 12 000 = 0,25), also nach 3,25 Jahren."
+  },
+  {
+   "type": "code",
+   "content": "invest = 30000\nrueckfluss = [6000, 9000, 12000, 12000]\n\nsumme = 0\nfor jahr, r in enumerate(rueckfluss, 1):\n    if summe + r >= invest:\n        rest = (invest - summe) / r\n        print(jahr - 1 + rest)  # 3.25\n        break\n    summe += r"
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: nur den Anschaffungspreis vergleichen statt der TCO; die laufenden Kosten beim Rückfluss vergessen; den ROI ohne Zeitraum angeben. Grenzen der statischen Rechnung: Sie ignoriert, dass Geld heute mehr wert ist als in fünf Jahren (Zinsen), und was nach der Amortisation passiert. Dafür gibt es dynamische Verfahren, die du in Betriebswirtschaft kennenlernst."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Die TCO umfasst direkte und indirekte Kosten über die ganze Nutzungsdauer. Nutzen ist monetär, quantifizierbar oder qualitativ. Amortisationsdauer = Investition / jährlicher Rückfluss (Einsparung minus laufende Kosten), bei ungleichen Rückflüssen kumuliert man. ROI = (Nutzen − Investition) / Investition, immer mit Zeitraum."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Investition 40 000 €, jährliche Einsparung 15 000 €, zusätzliche laufende Kosten 5 000 €. Wie lange dauert die Amortisation?",
+   "options": [
+    "2,7 Jahre",
+    "8 Jahre",
+    "4 Jahre",
+    "2 Jahre"
+   ],
+   "correctIndex": 2,
+   "explanation": "Rückfluss = 15 000 − 5 000 = 10 000 € pro Jahr. 40 000 / 10 000 = 4 Jahre. 2,7 Jahre wären es, wenn man die laufenden Kosten vergisst."
+  },
+  {
+   "question": "Welcher Posten ist ein indirekter TCO-Kostenanteil?",
+   "options": [
+    "Lizenzgebühren",
+    "Kaufpreis der Hardware",
+    "Wartungsvertrag",
+    "Arbeitszeit, die Mitarbeiter:innen bei Ausfällen verlieren"
+   ],
+   "correctIndex": 3,
+   "explanation": "Indirekte Kosten tauchen in keiner Rechnung auf, z. B. Produktivitätsverlust durch Ausfälle oder Selbsthilfe."
+  },
+  {
+   "question": "Was gibt das Programm aus?",
+   "code": "invest = 25000\nr_liste = [10000, 10000, 10000]\nsumme = 0\nfor jahr, r in enumerate(r_liste, 1):\n    if summe + r >= invest:\n        print(jahr - 1 +\n              (invest - summe) / r)\n        break\n    summe += r",
+   "options": [
+    "2.5",
+    "3.0",
+    "2.0",
+    "4.0"
+   ],
+   "correctIndex": 0,
+   "explanation": "Nach Jahr 2 sind 20 000 € zurück, es fehlen 5 000 € von 10 000 € im dritten Jahr: 2 + 0,5 = 2,5."
+  },
+  {
+   "question": "Ein System kostet 50 000 € und bringt über 4 Jahre insgesamt 70 000 € Rückfluss. Wie hoch ist der ROI über diese 4 Jahre?",
+   "options": [
+    "140 %",
+    "40 %",
+    "20 %",
+    "71 %"
+   ],
+   "correctIndex": 1,
+   "explanation": "ROI = (70 000 − 50 000) / 50 000 = 20 000 / 50 000 = 40 %."
+  }
+ ]
+}

@@ -1,0 +1,89 @@
+{
+  "id": "pos-j4-csharp-build_03_dokumentation_generieren",
+  "title": "Dokumentation generieren",
+  "summary": "Mit XML-Dokumentationskommentaren beschreibst du deine API direkt im Code und erzeugst daraus Doku.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wer deine Klassenbibliothek verwendet, will nicht deinen Quellcode lesen, sondern wissen: Was macht die Methode, was bedeuten die Parameter, was kommt zurück, welche Exceptions sind möglich? Das gehört in die API-Dokumentation. Damit sie nicht veraltet, schreibt man sie direkt über den Code – als XML-Dokumentationskommentar mit drei Schrägstrichen ///."
+    },
+    {
+      "type": "code",
+      "content": "/// <summary>\n/// Wandelt Prozent in eine Note um.\n/// </summary>\n/// <param name=\"prozent\">\n/// Erreichte Prozent (0–100).\n/// </param>\n/// <returns>Note von 1 bis 5.</returns>\n/// <exception cref=\n///   \"ArgumentOutOfRangeException\">\n/// Wenn prozent außerhalb 0–100 liegt.\n/// </exception>\npublic static int Note(double prozent)"
+    },
+    {
+      "type": "text",
+      "content": "Die wichtigsten Tags: <summary> – kurze Beschreibung, die die IDE auch beim Tippen anzeigt (IntelliSense). <param name=\"…\"> – ein Parameter, der Name muss exakt stimmen. <returns> – Rückgabewert. <exception cref=\"…\"> – mögliche Exception. Dazu <remarks> für Details, <example> mit <code> für ein Beispiel, <see cref=\"…\"/> als Verweis auf andere Typen. cref-Verweise prüft der Compiler – ein Tippfehler im Klassennamen ergibt eine Warnung."
+    },
+    {
+      "type": "text",
+      "content": "Damit der Compiler aus den Kommentaren eine Datei erzeugt, aktivierst du in der .csproj GenerateDocumentationFile. Beim Build entsteht neben der DLL eine gleichnamige XML-Datei, z. B. NotenLib.xml. Wird die Bibliothek als NuGet-Paket ausgeliefert, liegt die XML-Datei bei, und alle Nutzer:innen sehen deine Beschreibungen in ihrer IDE."
+    },
+    {
+      "type": "code",
+      "content": "<!-- in einer Zeile schreiben -->\n<PropertyGroup>\n <GenerateDocumentationFile>true</GenerateDocumentationFile>\n</PropertyGroup>\n\ndotnet build\n# bin/Debug/net8.0/NotenLib.dll\n# bin/Debug/net8.0/NotenLib.xml"
+    },
+    {
+      "type": "code",
+      "content": "<!-- Auszug, Zeilen umbrochen -->\n<member name=\n  \"M:NotenLib.Notenrechner.Note(\n    System.Double)\">\n  <summary>\n  Wandelt Prozent in eine Note um.\n  </summary>\n  <param name=\"prozent\">…</param>\n  <returns>Note von 1 bis 5.</returns>\n  …\n</member>\n// T: = Typ, M: = Methode,\n// P: = Property, F: = Feld"
+    },
+    {
+      "type": "text",
+      "content": "Der Compiler hilft beim Vollständig-Halten: Ist GenerateDocumentationFile aktiv, warnt er bei jedem öffentlichen Typ oder Member ohne Kommentar (CS1591). Ein falscher Parametername ergibt CS1572 („param-Tag für einen Parameter, den es nicht gibt“) und CS1573 („Parameter ohne param-Tag“). Mit TreatWarningsAsErrors werden daraus Fehler – der Build scheitert, bis die Doku vollständig ist. Typischer Fehler: Kommentare, die nur den Namen wiederholen (/// <summary>Gibt die Note zurück</summary> bei GetNote) – beschreibe stattdessen Bedeutung, Grenzen und Sonderfälle."
+    },
+    {
+      "type": "text",
+      "content": "Die XML-Datei ist kein schönes Handbuch. Daraus eine Website zu machen, ist Aufgabe eines Dokumentationsgenerators. Im .NET-Umfeld verbreitet ist DocFX: Er liest die Projekte bzw. die XML-Kommentare und erzeugt eine statische HTML-Seite mit allen Klassen und Methoden, ergänzt um eigene Markdown-Artikel (z. B. „Erste Schritte“). In Java heißt das Gegenstück Javadoc, in Python gibt es dafür z. B. Sphinx."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: /// leitet einen XML-Dokumentationskommentar ein; summary, param, returns und exception sind die wichtigsten Tags. GenerateDocumentationFile erzeugt beim Build die XML-Datei und meldet fehlende Kommentare mit CS1591. Ein Generator wie DocFX macht daraus eine Website. So bleibt die Dokumentation Teil des Builds – und damit aktuell."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Womit beginnt in C# ein XML-Dokumentationskommentar?",
+      "options": [
+        "//",
+        "/* */",
+        "///",
+        "#"
+      ],
+      "correctIndex": 2,
+      "explanation": "Drei Schrägstriche leiten den XML-Kommentar ein. // und /* */ sind normale Kommentare, die nicht in die Dokumentation übernommen werden."
+    },
+    {
+      "question": "Was erzeugt dotnet build bei aktivem GenerateDocumentationFile in der Bibliothek NotenLib zusätzlich?",
+      "options": [
+        "NotenLib.xml",
+        "NotenLib.html",
+        "NotenLib.md",
+        "NotenLib.pdf"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Compiler schreibt die gesammelten Kommentare in eine XML-Datei mit dem Namen der Assembly. HTML erzeugt erst ein Generator wie DocFX."
+    },
+    {
+      "question": "Welche Warnung erhältst du, wenn eine öffentliche Methode keinen Dokumentationskommentar hat?",
+      "options": [
+        "CS0168",
+        "CS1591",
+        "CS8618",
+        "CS0070"
+      ],
+      "correctIndex": 1,
+      "explanation": "CS1591: „Missing XML comment for publicly visible type or member“. Sie erscheint nur, wenn die Dokumentationsdatei erzeugt wird."
+    },
+    {
+      "question": "Wozu dient DocFX?",
+      "options": [
+        "Es prüft Code auf Deadlocks",
+        "Es lädt NuGet-Pakete herunter",
+        "Es kompiliert C#-Code schneller",
+        "Es erzeugt aus Code-Kommentaren und Markdown eine Dokumentations-Website"
+      ],
+      "correctIndex": 3,
+      "explanation": "DocFX ist ein Dokumentationsgenerator: Er verarbeitet die API-Beschreibungen und eigene Artikel zu einer statischen Website."
+    }
+  ]
+}

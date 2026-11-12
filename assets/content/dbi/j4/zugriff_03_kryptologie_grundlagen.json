@@ -1,0 +1,94 @@
+{
+  "id": "dbi-j4-zugriff_03_kryptologie_grundlagen",
+  "title": "Kryptologie-Grundlagen: Daten verschlüsseln",
+  "summary": "Du unterscheidest symmetrische, asymmetrische und hybride Verschlüsselung, rechnest ein Mini-RSA in Python nach und schützt Datenbankdaten at rest und in transit.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Kryptografie verfolgt drei Schutzziele: Vertraulichkeit (nur Berechtigte können Daten lesen), Integrität (Veränderungen fallen auf) und Authentizität (der Absender ist wirklich der, der er vorgibt zu sein). Hashfunktionen aus der letzten Lektion helfen bei der Integrität; für Vertraulichkeit braucht man Verschlüsselung, die – anders als ein Hash – mit dem passenden Schlüssel umkehrbar ist."
+    },
+    {
+      "type": "text",
+      "content": "Kerckhoffs-Prinzip: Die Sicherheit darf nur von der Geheimhaltung des Schlüssels abhängen, nicht vom Verfahren. Deshalb verwendet man öffentlich geprüfte Standardverfahren wie AES statt selbst erfundener „Geheimalgorithmen“. Eigene Kryptografie zu bauen ist einer der häufigsten Sicherheitsfehler."
+    },
+    {
+      "type": "text",
+      "content": "Symmetrische Verschlüsselung verwendet denselben Schlüssel zum Ver- und Entschlüsseln. Standard ist AES (Advanced Encryption Standard). Sie ist sehr schnell und eignet sich für große Datenmengen wie Festplatten oder Backups. Problem: Wie bekommen beide Seiten den gemeinsamen Schlüssel, ohne dass ihn jemand mitliest (Schlüsselaustauschproblem)?"
+    },
+    {
+      "type": "code",
+      "content": "openssl enc -aes-256-cbc -pbkdf2 \\\n  -in noten.txt -out noten.enc \\\n  -pass pass:Sch00l\n\nopenssl enc -d -aes-256-cbc -pbkdf2 \\\n  -in noten.enc -pass pass:Sch00l\n# Noten 4AHIF\n\nopenssl enc -d -aes-256-cbc -pbkdf2 \\\n  -in noten.enc -pass pass:falsch\n# bad decrypt"
+    },
+    {
+      "type": "text",
+      "content": "Hier wird der AES-Schlüssel mit PBKDF2 aus einem Passwort abgeleitet – dieselbe Idee wie beim Passwort-Hashing. Die Datei beginnt mit Salted__ und dem Salt; der Rest ist ohne Passwort unlesbar. Mit falschem Passwort scheitert das Entschlüsseln (meist mit „bad decrypt“)."
+    },
+    {
+      "type": "text",
+      "content": "Asymmetrische Verschlüsselung löst das Schlüsselproblem mit einem Schlüsselpaar: Der öffentliche Schlüssel (public key) darf jede:r kennen und damit verschlüsseln; entschlüsseln kann nur, wer den privaten Schlüssel (private key) hat. Bekanntestes Verfahren ist RSA. Es beruht darauf, dass man zwei große Primzahlen leicht multiplizieren, das Produkt aber praktisch nicht wieder zerlegen kann. Mit winzigen Zahlen kannst du es nachrechnen:"
+    },
+    {
+      "type": "code",
+      "content": "p, q = 61, 53\nn = p * q             # öffentlich\nphi = (p - 1) * (q - 1)\ne = 17                # öffentlich\nd = pow(e, -1, phi)   # privat\nm = 65                # Nachricht\nc = pow(m, e, n)      # verschlüsseln\nprint(n, d, c, pow(c, d, n))\n\n# Ausgabe:\n# 3233 2753 2790 65"
+    },
+    {
+      "type": "text",
+      "content": "Asymmetrische Verfahren sind viel langsamer als symmetrische. In der Praxis arbeitet man hybrid: Mit asymmetrischer Kryptografie werden die Gegenstelle geprüft (Zertifikat, digitale Signatur) und ein gemeinsamer Sitzungsschlüssel vereinbart; die eigentlichen Daten werden dann symmetrisch (z. B. mit AES) verschlüsselt. Genau so funktioniert TLS – bei HTTPS und bei Datenbankverbindungen. Eine digitale Signatur dreht die Rollen um: Signiert wird mit dem privaten, geprüft mit dem öffentlichen Schlüssel."
+    },
+    {
+      "type": "code",
+      "content": "# in transit: TLS erzwingen\npsql \"host=db.schule.at dbname=schule\n  user=huber sslmode=verify-full\"\n\nSELECT ssl, version\nFROM pg_stat_ssl\nWHERE pid = pg_backend_pid();\n-- t | TLSv1.3"
+    },
+    {
+      "type": "text",
+      "content": "Bei Datenbanken unterscheidet man zwei Situationen. Verschlüsselung in transit schützt Daten auf dem Weg zwischen Anwendung und Server: TLS aktivieren, auf dem Server hostssl in pg_hba.conf, beim Client sslmode=verify-full (prüft Zertifikat und Servernamen; require verschlüsselt nur, prüft aber nicht, mit wem man spricht). Verschlüsselung at rest schützt gespeicherte Daten: verschlüsselte Festplatten oder Dateisysteme, verschlüsselte Backups und für besonders sensible Spalten eine Verschlüsselung in der Anwendung.\n\nTypische Fehler: Schlüssel liegen neben den Daten (z. B. im Git-Repository oder im selben Backup), Backups werden unverschlüsselt in die Cloud kopiert, sslmode=disable „weil es schneller geht“. Zusammenfassung: Symmetrisch (AES) ist schnell, braucht aber einen sicheren Schlüsselaustausch; asymmetrisch (RSA) löst den Austausch mit öffentlichem und privatem Schlüssel; TLS kombiniert beides. Schütze Datenbanken in transit mit TLS und at rest mit Datenträger- und Backup-Verschlüsselung – und den Schlüssel getrennt von den Daten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Anna will Ben eine vertrauliche Nachricht mit RSA schicken. Mit welchem Schlüssel verschlüsselt sie?",
+      "options": [
+        "Mit Bens öffentlichem Schlüssel",
+        "Mit ihrem privaten Schlüssel",
+        "Mit Bens privatem Schlüssel",
+        "Mit ihrem öffentlichen Schlüssel"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bens öffentlicher Schlüssel ist bekannt. Was damit verschlüsselt wurde, kann nur Ben mit seinem privaten Schlüssel entschlüsseln."
+    },
+    {
+      "question": "Mini-RSA mit n = 33 und e = 3. Was ist das Chiffrat der Nachricht m = 4?",
+      "code": "print(pow(4, 3, 33))",
+      "options": [
+        "12",
+        "64",
+        "31",
+        "4"
+      ],
+      "correctIndex": 2,
+      "explanation": "c = m^e mod n = 4³ mod 33 = 64 mod 33 = 31. Mit d = 7 ergibt 31⁷ mod 33 wieder 4."
+    },
+    {
+      "question": "Warum verwendet TLS sowohl asymmetrische als auch symmetrische Verfahren?",
+      "options": [
+        "Weil AES unsicher ist",
+        "Damit doppelt verschlüsselt wird",
+        "Weil RSA nur für Signaturen geeignet ist",
+        "Asymmetrisch für Authentifizierung und Schlüsselvereinbarung, symmetrisch für die schnelle Verschlüsselung der Nutzdaten"
+      ],
+      "correctIndex": 3,
+      "explanation": "Asymmetrische Verfahren lösen das Schlüsselaustauschproblem, sind aber langsam. Die Daten selbst werden daher mit dem vereinbarten symmetrischen Sitzungsschlüssel verschlüsselt."
+    },
+    {
+      "question": "Ein Schulserver-Backup mit allen Noten wird verschlüsselt in die Cloud geladen; der Schlüssel liegt in einer Textdatei im selben Backup. Was ist das Problem?",
+      "options": [
+        "Keines, die Daten sind verschlüsselt.",
+        "Wer das Backup bekommt, hat auch den Schlüssel – die Verschlüsselung at rest ist wirkungslos.",
+        "Cloud-Speicher kann keine verschlüsselten Dateien speichern.",
+        "Das Backup muss zusätzlich mit TLS verschlüsselt werden, dann ist es sicher."
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Schlüssel muss getrennt von den verschlüsselten Daten aufbewahrt werden. Sonst schützt die Verschlüsselung vor niemandem."
+    }
+  ]
+}

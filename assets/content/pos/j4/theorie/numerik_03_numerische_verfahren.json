@@ -1,0 +1,93 @@
+{
+  "id": "pos-j4-theorie-numerik_03_numerische_verfahren",
+  "title": "Bisektion, Newton-Verfahren und Trapezregel",
+  "summary": "Nullstellen und Integrale näherungsweise berechnen – mit Verfahren, die du Schritt für Schritt nachrechnen kannst.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Viele Gleichungen haben keine Lösungsformel (z. B. x = cos x), und viele Integrale lassen sich nicht geschlossen berechnen. Numerische Verfahren nähern die Lösung schrittweise an. Dazu gehören immer ein Abbruchkriterium (Toleranz) und eine Obergrenze für die Schritte. Als Beispiel suchen wir die Nullstelle von f(x) = x² − 2, also √2 ≈ 1,41421356."
+    },
+    {
+      "type": "text",
+      "content": "Bisektion (Intervallhalbierung): Ist f stetig und haben f(a) und f(b) verschiedene Vorzeichen, liegt dazwischen eine Nullstelle (Zwischenwertsatz). Man berechnet die Mitte m, behält die Hälfte mit dem Vorzeichenwechsel und wiederholt. Jeder Schritt halbiert das Intervall – für die Länge 1 und Toleranz 10⁻⁶ braucht man log₂(10⁶) ≈ 19,9, also 20 Schritte."
+    },
+    {
+      "type": "code",
+      "content": "f(x) = x² − 2,  Start [1; 2]\n\n#   a      b      m      f(m)\n1  1      2      1.5    0.25\n2  1      1.5    1.25  −0.4375\n3  1.25   1.5    1.375 −0.109375\n4  1.375  1.5    1.4375 0.0664…\n→ nächstes Intervall [1.375; 1.4375]"
+    },
+    {
+      "type": "code",
+      "content": "def bisektion(f, a, b, tol=1e-6):\n    if f(a) * f(b) > 0:\n        raise ValueError(\n            \"kein Vorzeichenwechsel\")\n    while b - a > tol:\n        m = (a + b) / 2\n        if f(a) * f(m) <= 0:\n            b = m\n        else:\n            a = m\n    return (a + b) / 2\n\nbisektion(lambda x: x*x - 2, 1, 2)\n# 1.4142136573791504 (20 Schritte)"
+    },
+    {
+      "type": "text",
+      "content": "Newton-Verfahren: Man legt im aktuellen Punkt die Tangente an f und nimmt deren Nullstelle als nächsten Wert: xₙ₊₁ = xₙ − f(xₙ) / f′(xₙ). Für x² − 2 ist f′(x) = 2x. Von x₀ = 1: x₁ = 1 − (1 − 2)/2 = 1,5; x₂ = 1,5 − 0,25/3 ≈ 1,41667. Newton konvergiert nahe der Lösung quadratisch – die Zahl richtiger Stellen verdoppelt sich etwa pro Schritt. Nachteile: Man braucht die Ableitung, bei f′(x) = 0 wird durch 0 geteilt, und bei schlechtem Startwert kann das Verfahren divergieren."
+    },
+    {
+      "type": "code",
+      "content": "def newton(f, df, x, tol=1e-12,\n           max_iter=50):\n    for _ in range(max_iter):\n        dx = f(x) / df(x)\n        x -= dx\n        if abs(dx) < tol:\n            return x\n    raise RuntimeError(\"divergiert\")\n\n# x₁ = 1.5\n# x₂ = 1.4166666666666667\n# x₃ = 1.4142156862745099\n# x₄ = 1.4142135623746899\n# x₅ = 1.4142135623730951"
+    },
+    {
+      "type": "text",
+      "content": "Trapezregel: Das Integral von a bis b wird durch n Trapeze der Breite h = (b − a) / n angenähert:\n∫ f dx ≈ h · (f(x₀)/2 + f(x₁) + … + f(xₙ₋₁) + f(xₙ)/2)\nNachgerechnet für ∫₀¹ x² dx (exakt 1/3) mit n = 4, h = 0,25:\n0,25 · (0/2 + 0,0625 + 0,25 + 0,5625 + 1/2) = 0,25 · 1,375 = 0,34375"
+    },
+    {
+      "type": "code",
+      "content": "def trapez(f, a, b, n):\n    h = (b - a) / n\n    s = (f(a) + f(b)) / 2\n    for i in range(1, n):\n        s += f(a + i * h)\n    return h * s\n\n n │ trapez(x², 0, 1, n) │ Fehler\n───┼─────────────────────┼────────\n 1 │ 0.5                 │ 0.1667\n 2 │ 0.375               │ 0.0417\n 4 │ 0.34375             │ 0.0104\n 8 │ 0.3359375           │ 0.0026"
+    },
+    {
+      "type": "text",
+      "content": "In der Tabelle siehst du: Verdoppelt man n, wird der Fehler etwa geviertelt. Der Fehler der Trapezregel ist proportional zu h² (Verfahren 2. Ordnung). Bei x² ist das Ergebnis immer zu groß, weil die Sehnen über der nach oben gekrümmten Kurve liegen."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Bisektion ist langsam, aber sicher (Vorzeichenwechsel vorausgesetzt). Newton ist sehr schnell, braucht aber Ableitung und guten Startwert. Die Trapezregel nähert Integrale an, der Fehler sinkt mit h². Typische Fehler: Abbruch mit f(x) == 0 statt mit Toleranz, kein max_iter (Endlosschleife bei Divergenz), Vorzeichenbedingung der Bisektion nicht prüfen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Bisektion für f(x) = x² − 5 im Intervall [0; 4]. Welches Intervall liegt nach zwei Halbierungsschritten vor?",
+      "options": [
+        "[2; 4]",
+        "[1; 2]",
+        "[3; 4]",
+        "[2; 3]"
+      ],
+      "correctIndex": 3,
+      "explanation": "Schritt 1: m = 2, f(2) = −1 < 0, f(4) = 11 > 0 → [2; 4]. Schritt 2: m = 3, f(3) = 4 > 0 → [2; 3]."
+    },
+    {
+      "question": "Newton-Verfahren für f(x) = x² − 2 mit Startwert x₀ = 2. Was ist x₁?",
+      "options": [
+        "1",
+        "1.5",
+        "1.25",
+        "1.4"
+      ],
+      "correctIndex": 1,
+      "explanation": "x₁ = 2 − f(2)/f′(2) = 2 − 2/4 = 1,5."
+    },
+    {
+      "question": "Welchen Wert liefert die Trapezregel für ∫₀² x² dx mit n = 2?",
+      "options": [
+        "3",
+        "2.5",
+        "2.667",
+        "4"
+      ],
+      "correctIndex": 0,
+      "explanation": "h = 1, Stützstellen 0, 1, 2 mit f = 0, 1, 4: 1 · (0/2 + 1 + 4/2) = 3. Exakt wäre 8/3 ≈ 2,667."
+    },
+    {
+      "question": "Das Startintervall der Bisektion hat die Länge 1. Wie viele Schritte braucht man mindestens, bis die Intervalllänge kleiner als 0,001 ist?",
+      "options": [
+        "3",
+        "100",
+        "10",
+        "1000"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nach k Schritten ist die Länge 1/2ᵏ. 2⁹ = 512 reicht nicht, 2¹⁰ = 1024 > 1000 → 10 Schritte."
+    }
+  ]
+}

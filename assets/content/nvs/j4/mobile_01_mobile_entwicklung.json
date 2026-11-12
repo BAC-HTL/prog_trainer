@@ -1,0 +1,89 @@
+{
+  "id": "nvs-j4-mobile_01_mobile_entwicklung",
+  "title": "Mobile Plattformen & Entwicklungsansätze",
+  "summary": "Native, Cross-Platform- und Web-Apps im Vergleich – am Beispiel von Flutter, mit dem diese App gebaut ist.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Am Handy dominieren zwei Plattformen: Android (Google, viele Hersteller) und iOS/iPadOS (Apple). Native Apps werden für Android meist in Kotlin (früher Java) mit Android Studio entwickelt, für iOS in Swift mit Xcode – dafür braucht man einen Mac. Verteilt werden Apps über App-Stores, die sie vor der Veröffentlichung prüfen; Android erlaubt zusätzlich die Installation von Paketen aus anderen Quellen."
+    },
+    {
+      "type": "text",
+      "content": "Mobile Geräte stellen besondere Anforderungen: kleiner Touch-Bildschirm, begrenzter Akku, wechselnde oder fehlende Netzverbindung (Zug, Keller, Funkloch), Berechtigungen für Kamera, Standort oder Kontakte, die die Benutzer:in erlauben muss. Dazu kommt der App-Lebenszyklus: Das Betriebssystem kann eine App im Hintergrund jederzeit pausieren oder beenden, um Speicher zu sparen – ungespeicherte Daten sind dann weg."
+    },
+    {
+      "type": "code",
+      "content": "Ansatz          Code  Leistung  Look\n--------------  ----  --------  ----------\nNativ           2x    sehr gut  Plattform\nCross-Platform  1x    gut       eigen/nah\nWeb-App / PWA   1x    mittel    Browser"
+    },
+    {
+      "type": "text",
+      "content": "Nativ heißt: zwei getrennte Codebasen, dafür voller Zugriff auf alle Plattformfunktionen und das typische Aussehen. Cross-Platform-Frameworks wie Flutter (Sprache Dart), React Native (JavaScript/TypeScript) oder .NET MAUI (C#) erzeugen aus EINER Codebasis Apps für mehrere Plattformen. Web-Apps laufen im Browser; als Progressive Web App (PWA) lassen sie sich auch installieren und teilweise offline nutzen, haben aber eingeschränkten Zugriff auf die Hardware."
+    },
+    {
+      "type": "text",
+      "content": "Flutter zeichnet die Oberfläche mit einer eigenen Rendering-Engine selbst, statt die Bedienelemente des Betriebssystems zu verwenden. Deshalb sieht eine Flutter-App auf Android und iOS gleich aus. Alles ist ein Widget: Text, Button, Abstände, ganze Seiten. Widgets werden ineinander verschachtelt (Widget-Baum). Ändert sich der Zustand, ruft setState() die build-Methode neu auf und Flutter aktualisiert die Anzeige. Beim Entwickeln zeigt Hot Reload Änderungen ohne Neustart der App."
+    },
+    {
+      "type": "code",
+      "content": "import 'package:flutter/material.dart';\n\nvoid main() => runApp(const MaterialApp(\n    home: Scaffold(body: Zaehler())));\n\nclass Zaehler extends StatefulWidget {\n  const Zaehler({super.key});\n  @override\n  State<Zaehler> createState() =>\n      _ZaehlerState();\n}\n\nclass _ZaehlerState extends State<Zaehler> {\n  int n = 0;\n\n  @override\n  Widget build(BuildContext context) {\n    return Center(\n      child: ElevatedButton(\n        onPressed: () => setState(() => n++),\n        child: Text('Geklickt: $n'),\n      ),\n    );\n  }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Auch die App, mit der du gerade lernst, ist mit Flutter gebaut – ein Code für Android und iOS. Die Lektionen sind JSON-Dateien, die als Assets in der App mitgeliefert werden, und dein Fortschritt wird lokal am Gerät gespeichert. Darum funktioniert sie ohne Server und ohne Anmeldung, auch offline. Python- und C#-Code wird direkt am Handy in einer eingebetteten WebView ausgeführt."
+    },
+    {
+      "type": "text",
+      "content": "Welcher Ansatz passt? Nativ, wenn höchste Leistung oder neueste Plattformfunktionen nötig sind (z. B. aufwendige Spiele, AR) oder ein Team ohnehin für eine Plattform entwickelt. Cross-Platform, wenn ein kleines Team beide Plattformen bedienen will – typisch für Schul- und Firmenprojekte. Web-App, wenn Installation keine Rolle spielt und der Inhalt im Vordergrund steht. Typischer Fehler: zu glauben, Cross-Platform bedeute null Plattformarbeit – Store-Einträge, Berechtigungen und Tests auf echten Geräten braucht man für jede Plattform."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Android und iOS sind die großen Plattformen. Native Apps (Kotlin, Swift) bieten maximale Integration, Cross-Platform (Flutter, React Native, .NET MAUI) spart eine zweite Codebasis, Web-Apps/PWAs brauchen keine Installation. Mobile Apps müssen mit Akku, Berechtigungen, Lebenszyklus und unzuverlässigem Netz umgehen – darum geht es in der nächsten Lektion."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein dreiköpfiges Schulprojektteam will eine App für Android UND iOS mit möglichst wenig doppeltem Code bauen. Welcher Ansatz passt am besten?",
+      "options": [
+        "Zwei native Apps in Kotlin und Swift",
+        "Ein Cross-Platform-Framework wie Flutter",
+        "Nur eine Android-App",
+        "Eine Desktop-Anwendung"
+      ],
+      "correctIndex": 1,
+      "explanation": "Cross-Platform-Frameworks erzeugen aus einer Codebasis Apps für beide Plattformen – ideal für kleine Teams."
+    },
+    {
+      "question": "Was passiert im Flutter-Beispiel, wenn der Button dreimal gedrückt wird?",
+      "options": [
+        "Der Text zeigt „Geklickt: 3“.",
+        "Der Text bleibt bei „Geklickt: 0“, weil n nicht gespeichert wird.",
+        "Die App stürzt ab, weil n final ist.",
+        "Es wird jedes Mal eine neue Seite geöffnet."
+      ],
+      "correctIndex": 0,
+      "explanation": "setState() erhöht n und lässt build() neu laufen; der Text zeigt den aktuellen Wert 3. n ist nicht final, sondern Teil des veränderlichen Zustands."
+    },
+    {
+      "question": "Warum sollte eine mobile App wichtige Eingaben sofort speichern statt erst beim Schließen?",
+      "options": [
+        "Weil Speichern beim Schließen verboten ist",
+        "Weil Flutter sonst nicht kompiliert",
+        "Weil das Betriebssystem eine App im Hintergrund jederzeit beenden kann",
+        "Weil App-Stores das prüfen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Mobile Betriebssysteme beenden Hintergrund-Apps, um Speicher und Akku zu sparen. Ein sauberes „Schließen“ gibt es oft gar nicht."
+    },
+    {
+      "question": "Welche Aussage über Flutter stimmt?",
+      "options": [
+        "Flutter-Apps werden in Kotlin geschrieben.",
+        "Flutter verwendet die nativen Bedienelemente des Betriebssystems.",
+        "Flutter läuft nur im Browser.",
+        "Flutter zeichnet die Oberfläche selbst und verwendet die Sprache Dart."
+      ],
+      "correctIndex": 3,
+      "explanation": "Flutter nutzt Dart und eine eigene Rendering-Engine; dadurch sieht die App auf allen Plattformen gleich aus. React Native dagegen nutzt native Bedienelemente."
+    }
+  ]
+}
