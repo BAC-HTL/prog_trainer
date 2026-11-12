@@ -84,4 +84,44 @@ void main() {
     expect(certificateFileName('C#', 'Arrays & Strings'),
         'zertifikat_csharp_arrays_strings.pdf');
   });
+
+  group('Sichern & Übertragen', () {
+    setUp(() => SharedPreferences.setMockInitialValues({}));
+
+    test('Übertragungscode und Datei stellen den Fortschritt wieder her', () async {
+      final a = await ProgressStore.load();
+      await a.setUserName('Anna');
+      await a.setLanguage('csharp');
+      await a.completeLesson('l1.json');
+      await a.recordMission('python', 'm01', 3);
+      final code = a.exportCode();
+      final file = a.exportJson();
+      expect(code, startsWith('PT1:'));
+
+      for (final backup in [code, file]) {
+        SharedPreferences.setMockInitialValues({});
+        final b = await ProgressStore.load();
+        await b.completeLesson('andere.json');
+        await b.importBackup(backup);
+        expect(b.isLessonCompleted('l1.json'), isTrue);
+        expect(b.isLessonCompleted('andere.json'), isFalse);
+        expect(b.missionStars('python', 'm01'), 3);
+        expect(b.points('python'), 30);
+        expect(b.userName, 'Anna');
+        expect(b.language, 'csharp');
+        // Bleibt nach Neustart erhalten.
+        final c = await ProgressStore.load();
+        expect(c.isLessonCompleted('l1.json'), isTrue);
+      }
+    });
+
+    test('Ungültige Sicherung ändert nichts', () async {
+      final s = await ProgressStore.load();
+      await s.completeLesson('l1.json');
+      for (final bad in ['Hallo', 'PT1:!!!', '{"progress": {}}']) {
+        await expectLater(s.importBackup(bad), throwsFormatException);
+      }
+      expect(s.isLessonCompleted('l1.json'), isTrue);
+    });
+  });
 }

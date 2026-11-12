@@ -2,12 +2,13 @@
 
 ![Prog Trainer Logo](assets/logo.svg){ width="140" align=right }
 
-Eine Handy-App für **Android und iOS** zum Programmierenlernen. Sie fängt bei
+Eine Lern-App für **Android, iOS und den Browser** zum Programmierenlernen. Sie fängt bei
 null an und führt in **Python** und **C#** bis zum Senior-Level.
 
 ## Download
 
-[:material-android: Android (APK)](https://github.com/BAC-HTL/prog_trainer/releases/download/latest/prog_trainer.apk){ .md-button .md-button--primary }
+[:material-web: Im Browser starten](https://bac-htl.github.io/prog_trainer/app/){ .md-button .md-button--primary }
+[:material-android: Android (APK)](https://github.com/BAC-HTL/prog_trainer/releases/download/latest/prog_trainer.apk){ .md-button }
 [:material-apple: iOS (IPA, unsigniert)](https://github.com/BAC-HTL/prog_trainer/releases/download/latest/prog_trainer-unsigned.ipa){ .md-button }
 
 Beide Dateien werden bei jeder Änderung auf `main` automatisch neu gebaut

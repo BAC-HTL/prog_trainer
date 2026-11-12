@@ -1,6 +1,6 @@
 // Stellt window.runCSharp(code, stdin, timeoutMs) bereit.
 // Die eigentliche Arbeit macht worker.js (.NET + Roslyn als WebAssembly).
-const status = document.getElementById('status');
+const status = document.getElementById('status') ?? { textContent: '' };
 let worker = null;
 let ready = null;
 let runs = 0;

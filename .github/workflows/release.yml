@@ -57,6 +57,22 @@ jobs:
           name: ios
           path: prog_trainer-unsigned.ipa
 
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: bash tool/prepare_platforms.sh web
+      - run: flutter pub get
+      - run: flutter build web --release --base-href /prog_trainer/app/
+      - uses: actions/upload-artifact@v5
+        with:
+          name: web
+          path: build/web
+
   release:
     needs: [android, ios]
     runs-on: ubuntu-latest
@@ -80,7 +96,7 @@ jobs:
             --prerelease
 
   docs:
-    needs: [android, ios]
+    needs: [android, ios, web]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -96,6 +112,11 @@ jobs:
           dotnet-version: '8.0.x'
       # C#-Laufzeit (Roslyn + .NET als WebAssembly) für die App
       - run: bash tool/package_csharp_runtime.sh site/csharp
+      # Web-Version der App unter /app/
+      - uses: actions/download-artifact@v5
+        with:
+          name: web
+          path: site/app
       # APK und IPA liegen im Release "latest" – nicht doppelt auf Pages.
       - uses: actions/upload-pages-artifact@v4
         with:

@@ -9,6 +9,7 @@ außerdem Themen wie **Software-Architektur**, **Testing** und
 
 Gebaut mit [Flutter](https://flutter.dev) (Android & iOS).
 
+🌐 **Im Browser:** https://bac-htl.github.io/prog_trainer/app/  
 📖 **Doku & Download:** https://bac-htl.github.io/prog_trainer/  
 📦 **Aktuelle APK:** [Releases → latest](https://github.com/BAC-HTL/prog_trainer/releases/tag/latest)
 
