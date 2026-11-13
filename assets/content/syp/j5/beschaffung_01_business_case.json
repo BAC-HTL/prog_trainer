@@ -1,0 +1,90 @@
+{
+ "id": "syp-j5-beschaffung_01_business_case",
+ "title": "Business Case",
+ "summary": "Investitionen mit Varianten, Kapitalwert und Sensitivitätsanalyse begründen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Ein Business Case ist die Entscheidungsgrundlage für eine Investition: Soll das Unternehmen (oder die Schule) Geld in ein IT-Vorhaben stecken, und welche Variante ist die beste? Er wird vor dem Projektstart geschrieben, richtet sich an die Geschäftsführung bzw. die Entscheider:innen und verbindet die Kostenrechnung aus dem IT-Controlling (TCO, Amortisation) mit Zielen, Varianten und Risiken."
+  },
+  {
+   "type": "text",
+   "content": "Ein typischer Aufbau beginnt mit dem Problem, nicht mit der Lösung. Wichtig ist die Nullvariante: Was passiert, wenn man nichts tut? Erst im Vergleich zu ihr sieht man den echten Nutzen. Jede Annahme (Stundensatz, Anzahl Vorgänge, Zinssatz) wird offen hingeschrieben, damit andere sie prüfen können."
+  },
+  {
+   "type": "code",
+   "content": "Business Case – Gliederung\n1. Ausgangslage und Problem\n2. Ziele (messbar)\n3. Varianten inkl. Nullvariante\n4. Kosten je Variante (TCO)\n5. Nutzen: monetär, quantifi-\n   zierbar, qualitativ\n6. Wirtschaftlichkeit\n7. Risiken und Annahmen\n8. Empfehlung und grober Plan"
+  },
+  {
+   "type": "text",
+   "content": "Beispiel: Eine Firma mit 200 Mitarbeitenden rechnet Dienstreisen auf Papier ab. Eine Software soll das digitalisieren. Annahmen: 6 Abrechnungen pro Person und Jahr, je 20 Minuten Ersparnis, interner Stundensatz 40 €. Einführung 25 000 €, laufende Kosten 4 000 € pro Jahr. Aus den Annahmen wird die Einsparung berechnet und daraus die statische Amortisation."
+  },
+  {
+   "type": "code",
+   "content": "personen, abr, minuten = 200, 6, 20\nstundensatz = 40\nstunden = personen * abr * minuten / 60\nersparnis = stunden * stundensatz\nrueckfluss = ersparnis - 4000\nprint(ersparnis)\nprint(rueckfluss)\namort = 25000 / rueckfluss\nprint(round(amort, 2), \"Jahre\")\n\n# Ausgabe:\n# 16000.0\n# 12000.0\n# 2.08 Jahre"
+  },
+  {
+   "type": "text",
+   "content": "Die statische Amortisation ignoriert, dass Geld in der Zukunft weniger wert ist als heute (man könnte es ja anlegen). Die Kapitalwertmethode (Net Present Value) zinst jeden zukünftigen Rückfluss auf heute ab: Rückfluss im Jahr t geteilt durch (1 + Zinssatz)^t. Kapitalwert = Summe der abgezinsten Rückflüsse − Investition. Ist er positiv, lohnt sich die Investition bei diesem Zinssatz. Weil Annahmen unsicher sind, rechnet man auch pessimistische Szenarien durch (Sensitivitätsanalyse) – hier mit 100 %, 75 % und 50 % der erwarteten Einsparung, 5 Jahre, 5 % Zinsen."
+  },
+  {
+   "type": "code",
+   "content": "def kapitalwert(inv, rf, zins, jahre):\n    return -inv + sum(\n        rf / (1 + zins) ** t\n        for t in range(1, jahre + 1))\n\nfor f in (1.0, 0.75, 0.5):\n    rf = 16000 * f - 4000\n    kw = kapitalwert(25000, rf, 0.05, 5)\n    print(f\"{f:.0%}: {kw:.0f} €\")\n\n# Ausgabe:\n# 100%: 26954 €\n# 75%: 9636 €\n# 50%: -7682 €"
+  },
+  {
+   "type": "text",
+   "content": "Die Sensitivitätsanalyse zeigt: Wird nur die Hälfte der Zeitersparnis erreicht, ist der Kapitalwert negativ – die Investition rechnet sich dann nicht. Daraus folgen Fragen für den Business Case: Wie sicher sind die 20 Minuten? Kann man sie in einem Pilotbetrieb messen? Dazu kommen nicht-monetäre Punkte: weniger Papier, schnellere Auszahlung, weniger Fehler, aber auch Risiken wie Akzeptanzprobleme, Datenschutz oder Abhängigkeit vom Anbieter."
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: keine Nullvariante; nur die Anschaffung statt der TCO; optimistische Annahmen ohne Begründung; eingesparte Arbeitszeit als Geld rechnen, obwohl niemand weniger kostet (die Zeit wird nur für anderes frei – das muss man klar sagen). Zusammenfassung: Der Business Case beschreibt Problem, Ziele, Varianten, Kosten, Nutzen, Wirtschaftlichkeit und Risiken. Der Kapitalwert berücksichtigt den Zeitwert des Geldes, die Sensitivitätsanalyse zeigt, wie robust die Entscheidung ist."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Wozu dient die Nullvariante in einem Business Case?",
+   "options": [
+    "Sie ist immer die billigste und wird deshalb gewählt",
+    "Sie zeigt, was ohne Investition passiert, als Vergleichsbasis für den Nutzen",
+    "Sie ersetzt die Risikoanalyse",
+    "Sie beschreibt die Variante mit null Risiko"
+   ],
+   "correctIndex": 1,
+   "explanation": "Nutzen und Kosten einer Variante werden im Vergleich zur Nullvariante bewertet. Auch Nichtstun kann Kosten verursachen, etwa durch veraltete Systeme."
+  },
+  {
+   "question": "Was gibt der Code aus?",
+   "code": "inv = 10000\nrf = 10000 - 2000\nprint(rf * 4 - inv)",
+   "options": [
+    "21000",
+    "24000",
+    "20000",
+    "22000"
+   ],
+   "correctIndex": 3,
+   "explanation": "Rückfluss pro Jahr: 10 000 − 2 000 = 8 000 €. Über 4 Jahre: 32 000 €, minus Investition 10 000 € = 22 000 € (ohne Abzinsung)."
+  },
+  {
+   "question": "Ein Rückfluss von 11 000 € fällt in einem Jahr an. Wie viel ist er heute wert, wenn mit 10 % abgezinst wird?",
+   "options": [
+    "10 000 €",
+    "9 900 €",
+    "12 100 €",
+    "11 000 €"
+   ],
+   "correctIndex": 0,
+   "explanation": "Abzinsen: 11 000 / 1,1 = 10 000 €. 12 100 € wäre Aufzinsen (11 000 · 1,1)."
+  },
+  {
+   "question": "Bei 100 % der erwarteten Einsparung ist der Kapitalwert positiv, bei 60 % negativ. Was ist die sinnvollste Konsequenz?",
+   "options": [
+    "Das Projekt sofort stoppen",
+    "Die 60 % aus dem Business Case streichen",
+    "Die Einsparungsannahme absichern, z. B. durch Messung in einem Pilotbetrieb",
+    "Den Zinssatz auf 0 % setzen, damit es passt"
+   ],
+   "correctIndex": 2,
+   "explanation": "Die Sensitivitätsanalyse zeigt, dass die Entscheidung an der Einsparungsannahme hängt. Diese Annahme sollte man prüfen, statt das Ergebnis zu schönen."
+  }
+ ]
+}

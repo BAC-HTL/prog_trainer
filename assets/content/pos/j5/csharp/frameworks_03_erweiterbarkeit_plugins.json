@@ -1,0 +1,92 @@
+{
+  "id": "pos-j5-csharp-frameworks_03_erweiterbarkeit_plugins",
+  "title": "Erweiterbarkeit: Plugins und Dependency Injection",
+  "summary": "Frameworks über Interfaces, Plugin-DLLs per Reflection und Dependency Injection erweiterbar machen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein gutes Framework ist offen für Erweiterungen, ohne dass man seinen Code ändern muss – das Open/Closed-Prinzip aus SOLID. Der übliche Weg sind Plugins: Das Framework definiert ein Interface, andere liefern Implementierungen, und das Framework lädt und ruft sie. Beispiel: Eine Noten-App soll Zeugnisdaten in verschiedene Formate exportieren. Die Plugins landen in einer Registry:"
+    },
+    {
+      "type": "code",
+      "content": "var plugins =\n  new Dictionary<string, IExporter>();\nvoid Registriere(IExporter p)\n  => plugins[p.Name] = p;\n\nRegistriere(new CsvExporter());\nvar daten =\n  new List<Eintrag> { new(\"Lena\", 1) };\nforeach (var (name, p) in plugins)\n  Console.WriteLine(\n    $\"{name} -> {p.Export(daten)}\");\n// csv -> Lena;1\n\n\npublic interface IExporter\n{\n  string Name { get; }\n  string Export(IReadOnlyList<Eintrag> d);\n}\npublic record Eintrag(string Name, int Note);\n\npublic class CsvExporter : IExporter\n{\n  public string Name => \"csv\";\n  public string Export(IReadOnlyList<Eintrag> d)\n    => string.Join(\"\\n\",\n         d.Select(e => $\"{e.Name};{e.Note}\"));\n}"
+    },
+    {
+      "type": "text",
+      "content": "Bisher muss aber jemand Registriere aufrufen, und alle Plugins sind mit dem Framework kompiliert. Echte Plugin-Systeme laden Erweiterungen zur Laufzeit: Das Interface liegt in einer eigenen Klassenbibliothek (z. B. Noten.Contracts), Plugins sind separate DLLs, die nur diese Bibliothek referenzieren. Das Framework durchsucht einen Ordner und findet die passenden Klassen per Reflection:"
+    },
+    {
+      "type": "code",
+      "content": "using System.Reflection;\n\nvar plugins = new List<IExporter>();\nvar ordner = Path.Combine(\n  AppContext.BaseDirectory, \"plugins\");\nforeach (var dll in Directory.GetFiles(\n           ordner, \"*.dll\"))\n{\n  var asm = Assembly.LoadFrom(dll);\n  foreach (var typ in asm.GetTypes())\n    if (typeof(IExporter)\n          .IsAssignableFrom(typ)\n        && !typ.IsAbstract)\n      plugins.Add((IExporter)\n        Activator.CreateInstance(typ)!);\n}\nforeach (var p in plugins)\n  Console.WriteLine(\n    $\"{p.Name} -> \" +\n    p.Export([new(\"Lena\", 1)]));\n// pdf -> PDF mit 1 Zeilen"
+    },
+    {
+      "type": "text",
+      "content": "Damit typeof(IExporter).IsAssignableFrom funktioniert, muss das Interface aus genau derselben Contracts-DLL stammen wie im Framework – das Plugin darf keine eigene Kopie mitbringen. Für Plugins mit eigenen Abhängigkeiten oder zum Entladen gibt es AssemblyLoadContext. Die zweite Säule der Erweiterbarkeit ist Dependency Injection (DI): Eine Klasse erzeugt ihre Abhängigkeiten nicht selbst mit new, sondern bekommt sie im Konstruktor übergeben. Dann kann man sie austauschen – im Test etwa einen Fake statt eines echten Mailservers."
+    },
+    {
+      "type": "code",
+      "content": "public interface IVersand\n{\n  void Senden(string an, string text);\n}\n\npublic class Zeugnisdienst(\n  IExporter exporter, IVersand versand)\n{\n  public void Sende(\n    IReadOnlyList<Eintrag> daten, string an)\n    => versand.Senden(an,\n         exporter.Export(daten));\n}\n\n// Im Test: Fake statt Mailserver\npublic class FakeVersand : IVersand\n{\n  public List<string> Gesendet { get; } = [];\n  public void Senden(string an, string text)\n    => Gesendet.Add($\"{an}: {text}\");\n}"
+    },
+    {
+      "type": "text",
+      "content": "Bei großen Anwendungen übernimmt ein DI-Container das Zusammenbauen: Man registriert, welche Klasse für welches Interface gilt, und der Container erzeugt die Objekte samt Konstruktorparametern. In ASP.NET Core ist Microsoft.Extensions.DependencyInjection schon eingebaut (builder.Services), in einer Konsolen-App brauchst du das gleichnamige NuGet-Paket. AddSingleton liefert immer dasselbe Objekt, AddTransient jedes Mal ein neues, AddScoped eines pro Web-Anfrage."
+    },
+    {
+      "type": "code",
+      "content": "using Microsoft.Extensions.DependencyInjection;\n\nvar services = new ServiceCollection();\nservices.AddSingleton<IExporter, CsvExporter>();\nservices.AddSingleton<IVersand, FakeVersand>();\nservices.AddTransient<Zeugnisdienst>();\n\nusing var sp = services.BuildServiceProvider();\nvar dienst = sp\n  .GetRequiredService<Zeugnisdienst>();\ndienst.Sende([new(\"Lena\", 1)], \"eltern@x.at\");\nvar fake = (FakeVersand)sp\n  .GetRequiredService<IVersand>();\nConsole.WriteLine(fake.Gesendet[0]);\n// eltern@x.at: Lena;1"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Abhängigkeiten doch wieder mit new im Inneren erzeugen, statische Klassen und globale Zustände statt Injection, den Container überall direkt abfragen (Service Locator) statt Konstruktorparameter zu verwenden, oder vergessen, eine Abhängigkeit zu registrieren – dann wirft GetRequiredService eine InvalidOperationException.\n\nZusammenfassung: Plugins implementieren ein Interface aus einer gemeinsamen Contracts-Bibliothek, eine Registry oder Reflection macht sie auffindbar, und Dependency Injection macht Klassen austauschbar und testbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code mit der Registry aus der Lektion aus?",
+      "code": "Registriere(new CsvExporter());\nRegistriere(new CsvExporter());\nConsole.WriteLine(plugins.Count);",
+      "options": [
+        "3",
+        "2",
+        "1",
+        "ArgumentException"
+      ],
+      "correctIndex": 2,
+      "explanation": "Der Indexer plugins[p.Name] = p überschreibt einen vorhandenen Eintrag (im Gegensatz zu Add, das eine ArgumentException werfen würde). Beide Objekte haben den Namen \"csv\", es bleibt ein Eintrag."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "var s = new ServiceCollection();\ns.AddTransient<IExporter, CsvExporter>();\nusing var sp = s.BuildServiceProvider();\nvar a = sp.GetRequiredService<IExporter>();\nvar b = sp.GetRequiredService<IExporter>();\nConsole.WriteLine(ReferenceEquals(a, b));",
+      "options": [
+        "True",
+        "False",
+        "Eine InvalidOperationException",
+        "null"
+      ],
+      "correctIndex": 1,
+      "explanation": "Mit AddTransient erzeugt der Container bei jeder Anfrage ein neues Objekt. a und b sind verschiedene Instanzen. Mit AddSingleton wäre das Ergebnis True."
+    },
+    {
+      "question": "Warum liegt das Interface IExporter in einer eigenen Contracts-Bibliothek?",
+      "options": [
+        "Weil Interfaces in C# nicht in Exe-Projekten stehen dürfen",
+        "Damit Plugins schneller laden",
+        "Weil Reflection nur in Klassenbibliotheken funktioniert",
+        "Damit Framework und Plugins denselben Typ referenzieren, ohne dass Plugins das ganze Framework kennen müssen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Framework und Plugins hängen nur von der kleinen Contracts-DLL ab. Der Typ IExporter ist dadurch in beiden derselbe, und IsAssignableFrom erkennt die Plugin-Klassen."
+    },
+    {
+      "question": "Warum ist diese Klasse schwer zu testen?",
+      "code": "class Zeugnisdienst\n{\n  readonly SmtpMailer mail =\n    new(\"smtp.schule.at\");\n  public void Sende(string t, string an)\n    => mail.Send(an, t);\n}",
+      "options": [
+        "Weil sie ihren Mailversand selbst mit new erzeugt und man ihn nicht durch einen Fake ersetzen kann",
+        "Weil sie keine XML-Kommentare hat",
+        "Weil Sende void zurückgibt",
+        "Weil Felder nicht readonly sein dürfen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Abhängigkeit ist fest verdrahtet: Jeder Test würde echte Mails verschicken. Mit Dependency Injection (IVersand als Konstruktorparameter) kann der Test einen Fake übergeben."
+    }
+  ]
+}

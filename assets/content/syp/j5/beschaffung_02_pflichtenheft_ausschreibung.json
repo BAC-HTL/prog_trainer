@@ -1,0 +1,89 @@
+{
+ "id": "syp-j5-beschaffung_02_pflichtenheft_ausschreibung",
+ "title": "Pflichtenheft, Ausschreibung und Angebotsvergleich",
+ "summary": "Lastenheft für Ausschreibungen schreiben, Kriterien festlegen und Angebote per Nutzwertanalyse vergleichen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Aus dem 3. Jahrgang kennst du: Das Lastenheft schreibt der Auftraggeber (was wird gebraucht und wofür?), das Pflichtenheft schreibt der Auftragnehmer (wie wird es umgesetzt?). Bei einer Beschaffung ist das Lastenheft die Basis der Ausschreibung. Es muss so genau sein, dass verschiedene Anbieter vergleichbare Angebote legen können – aber produktneutral, also keine Marke vorschreiben, wenn es nicht sachlich nötig ist."
+  },
+  {
+   "type": "code",
+   "content": "Lastenheft – Gliederung\n1. Ausgangssituation, Ziele\n2. Ist-Zustand, Mengengerüst\n3. Funktionale Anforderungen\n4. Nicht-funktionale Anford.\n   (Leistung, Sicherheit,\n   Datenschutz, Barrierefrei-\n   heit, Verfügbarkeit)\n5. Schnittstellen, Umgebung\n6. Rahmenbedingungen (Termine,\n   Betrieb, Schulung, Support)\n7. Abnahmekriterien"
+  },
+  {
+   "type": "text",
+   "content": "Anforderungen werden priorisiert: Muss-Anforderungen sind K.-o.-Kriterien – wer sie nicht erfüllt, scheidet aus. Soll-Anforderungen sind wichtig und werden bewertet, Kann-Anforderungen sind Zusatzpunkte. Jede Anforderung bekommt eine Nummer, damit Angebot, Pflichtenheft und Abnahmetest darauf verweisen können. Das Pflichtenheft des Auftragnehmers beschreibt dann zu jeder Anforderung die technische Lösung und wird meist Vertragsbestandteil."
+  },
+  {
+   "type": "text",
+   "content": "Eine Ausschreibung läuft in festen Schritten: Bedarf klären, Ausschreibungsunterlagen erstellen (Leistungsbeschreibung, Eignungs- und Zuschlagskriterien mit Gewichtung, Fristen, Vertragsbedingungen), Angebote einholen, formal prüfen, Eignung prüfen, Muss-Kriterien prüfen, bewerten, Zuschlag erteilen. Eignungskriterien betreffen den Bieter (Erfahrung, Referenzen, Personal, wirtschaftliche Leistungsfähigkeit), Zuschlagskriterien das Angebot (Preis, Qualität, Support). Die Gewichtung wird vorher festgelegt und bekanntgegeben – nachträglich ändern ist unfair und bei öffentlichen Vergaben unzulässig."
+  },
+  {
+   "type": "text",
+   "content": "Der Angebotsvergleich erfolgt oft mit einer Nutzwertanalyse. Beispiel: Eine Schule sucht eine Lernplattform. Muss-Kriterium: Betrieb in der EU. Zuschlagskriterien: Preis (TCO über 5 Jahre) 40 %, Funktionen 30 %, Support 20 %, Bedienbarkeit 10 %. Qualitative Kriterien werden mit 0–10 Punkten bewertet. Für den Preis bekommt das günstigste gültige Angebot 10 Punkte, die anderen anteilig: Punkte = 10 · billigster Preis / eigener Preis."
+  },
+  {
+   "type": "code",
+   "content": "Angebot  TCO     Fkt Sup Bed  EU\nA        50 000   8   6   7   ja\nB        40 000   6   8   8   ja\nC        30 000   9   7   9   nein"
+  },
+  {
+   "type": "code",
+   "content": "gew = {\"preis\": .4, \"fkt\": .3,\n       \"sup\": .2, \"bed\": .1}\nang = {\n  \"A\": (50000, 8, 6, 7, True),\n  \"B\": (40000, 6, 8, 8, True),\n  \"C\": (30000, 9, 7, 9, False)}\ngueltig = {k: v for k, v in ang.items()\n           if v[4]}           # K.-o.\nbilligst = min(v[0]\n               for v in gueltig.values())\nfor k, (p, f, s, b, _) in gueltig.items():\n    pp = 10 * billigst / p\n    nw = (gew[\"preis\"] * pp\n          + gew[\"fkt\"] * f\n          + gew[\"sup\"] * s\n          + gew[\"bed\"] * b)\n    print(k, round(nw, 2))\n\n# Ausgabe:\n# A 7.5\n# B 8.2"
+  },
+  {
+   "type": "text",
+   "content": "Angebot C wäre am billigsten und hätte die besten Punkte – scheidet aber wegen des Muss-Kriteriums aus und wird gar nicht bewertet. Deshalb ist B (40 000 €) die Preisbasis, nicht C. B gewinnt mit 8,2 Punkten. Typische Fehler: K.-o.-Kriterien erst nach der Bewertung anwenden; Preispunkte vom ausgeschiedenen Angebot berechnen; Gewichtungen, die nicht 100 % ergeben; Kriterien, die sich überschneiden (dann zählt dasselbe doppelt)."
+  },
+  {
+   "type": "text",
+   "content": "Zusammenfassung: Das Lastenheft ist produktneutral, nummeriert und priorisiert (Muss/Soll/Kann) und enthält Abnahmekriterien. Ausschreibungsunterlagen legen Eignungs- und Zuschlagskriterien samt Gewichtung vorab fest. Bei der Nutzwertanalyse zuerst K.-o.-Kriterien prüfen, dann gewichtete Punkte summieren. Das Ergebnis ist eine nachvollziehbare, dokumentierte Entscheidung."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Welches Kriterium ist ein Eignungskriterium (betrifft den Bieter) und kein Zuschlagskriterium?",
+   "options": [
+    "Drei Referenzprojekte in vergleichbarer Größe",
+    "Preis über 5 Jahre",
+    "Bedienbarkeit der Oberfläche",
+    "Reaktionszeit des Supports laut Angebot"
+   ],
+   "correctIndex": 0,
+   "explanation": "Eignungskriterien prüfen, ob ein Bieter den Auftrag ausführen kann (Referenzen, Personal, Finanzkraft). Preis, Bedienbarkeit und angebotene Reaktionszeit bewerten das Angebot."
+  },
+  {
+   "question": "Gewichtung: Preis 50 %, Qualität 50 %. Angebot X kostet 20 000 € und hat Qualität 6, Angebot Y kostet 25 000 € und hat Qualität 9 (0–10 Punkte, Preispunkte = 10 · billigst / Preis). Wer gewinnt?",
+   "options": [
+    "X mit 8,0 Punkten",
+    "Y mit 8,5 Punkten",
+    "Gleichstand",
+    "X mit 6,0 Punkten"
+   ],
+   "correctIndex": 1,
+   "explanation": "X: Preis 10 Punkte → 0,5 · 10 + 0,5 · 6 = 8,0. Y: Preis 10 · 20 000 / 25 000 = 8 → 0,5 · 8 + 0,5 · 9 = 8,5. Y gewinnt."
+  },
+  {
+   "question": "Ein Angebot erfüllt ein Muss-Kriterium nicht, ist aber mit Abstand das billigste. Was passiert?",
+   "options": [
+    "Es gewinnt, weil der Preis am höchsten gewichtet ist",
+    "Es bekommt einen Punkteabzug",
+    "Es scheidet aus und wird nicht bewertet",
+    "Man ändert das Muss-Kriterium zu einem Soll-Kriterium"
+   ],
+   "correctIndex": 2,
+   "explanation": "Muss-Kriterien sind K.-o.-Kriterien. Wer sie nicht erfüllt, scheidet vor der Bewertung aus. Kriterien nachträglich zu ändern wäre unfair gegenüber den anderen Bietern."
+  },
+  {
+   "question": "Warum soll ein Lastenheft für eine Ausschreibung produktneutral formuliert sein?",
+   "options": [
+    "Damit es kürzer wird",
+    "Weil Marken grundsätzlich verboten sind",
+    "Damit der Auftragnehmer das Pflichtenheft nicht schreiben muss",
+    "Damit mehrere Anbieter mit unterschiedlichen Produkten fair konkurrieren können"
+   ],
+   "correctIndex": 3,
+   "explanation": "Wer eine Marke vorschreibt, schließt Mitbewerber ohne sachlichen Grund aus. Beschrieben wird, was gebraucht wird, nicht welches Produkt."
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+{
+  "id": "dbi-j5-bi_02_olap_sternschema",
+  "title": "Sternschema und OLAP-Operationen",
+  "summary": "Fakten und Dimensionen modellieren und mit Roll-up, Drill-down und Slice auswerten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Für Auswertungen denkt man multidimensional: Es gibt Fakten – messbare Kennzahlen wie Menge oder Umsatz – und Dimensionen, nach denen man sie betrachtet: Zeit, Produkt, Standort. Stell dir einen Würfel (Cube) vor: Jede Achse ist eine Dimension, jede Zelle enthält z. B. den Umsatz „Leberkässemmel, Haupthaus, 12. Jänner“."
+    },
+    {
+      "type": "text",
+      "content": "Im Sternschema wird der Würfel relational abgebildet: In der Mitte steht die Faktentabelle mit Fremdschlüsseln auf alle Dimensionen und den Kennzahlen. Rundherum liegen die Dimensionstabellen mit beschreibenden Attributen und Hierarchien (Tag → Monat → Jahr, Produkt → Kategorie). Die Dimensionen sind bewusst denormalisiert – Redundanz wird für einfache, schnelle Abfragen in Kauf genommen. Wichtig ist die Granularität: Hier ist eine Faktenzeile „ein Produkt an einem Tag an einem Standort“."
+    },
+    {
+      "type": "code",
+      "content": "CREATE TABLE dim_datum (\n  datum_id INTEGER PRIMARY KEY,\n  datum TEXT, monat INTEGER,\n  jahr INTEGER, wochentag TEXT);\nCREATE TABLE dim_produkt (\n  produkt_id INTEGER PRIMARY KEY,\n  name TEXT, kategorie TEXT);\nCREATE TABLE dim_standort (\n  standort_id INTEGER PRIMARY KEY,\n  name TEXT);\nCREATE TABLE fakt_verkauf (\n  datum_id INTEGER\n    REFERENCES dim_datum,\n  produkt_id INTEGER\n    REFERENCES dim_produkt,\n  standort_id INTEGER\n    REFERENCES dim_standort,\n  menge INTEGER,\n  umsatz NUMERIC(8,2));"
+    },
+    {
+      "type": "text",
+      "content": "Beim Schneeflockenschema werden die Dimensionen normalisiert: Die Kategorie wandert z. B. in eine eigene Tabelle dim_kategorie, auf die dim_produkt verweist. Das spart Redundanz und erleichtert Änderungen an Kategorienamen, kostet aber zusätzliche Joins in jeder Auswertung. In der Praxis wird meist das einfachere Sternschema bevorzugt."
+    },
+    {
+      "type": "code",
+      "content": "-- Schneeflocke: Kategorie ausgelagert\nCREATE TABLE dim_kategorie (\n  kategorie_id INTEGER PRIMARY KEY,\n  name TEXT);\n-- dim_produkt_s(produkt_id, name,\n--   kategorie_id -> dim_kategorie)\n\nSELECT k.name, SUM(f.menge)\nFROM fakt_verkauf f\nJOIN dim_produkt_s p\n  ON p.produkt_id = f.produkt_id\nJOIN dim_kategorie k\n  ON k.kategorie_id = p.kategorie_id\nGROUP BY k.name;\n-- Getränke | 50\n-- Speisen  | 130"
+    },
+    {
+      "type": "text",
+      "content": "Die typischen OLAP-Operationen:\n• Roll-up: verdichten, eine Hierarchiestufe hinauf (Tag → Monat).\n• Drill-down: verfeinern, eine Stufe hinunter (Monat → Tag).\n• Slice: eine Dimension auf einen Wert festlegen – eine „Scheibe“ des Würfels (nur Haupthaus).\n• Dice: mehrere Dimensionen einschränken – ein Teilwürfel (Werkstätte und Jänner).\n• Pivot: Achsen vertauschen, z. B. Monate als Spalten statt als Zeilen.\nIn SQL sind das GROUP BY mit mehr oder weniger Attributen und WHERE-Bedingungen."
+    },
+    {
+      "type": "code",
+      "content": "-- Basis: Monat x Kategorie\n-- 1|Getränke|60   1|Speisen|257.5\n-- 2|Getränke|40   2|Speisen|175\n\n-- Roll-up auf Monat\nSELECT d.monat, SUM(f.umsatz)\nFROM fakt_verkauf f JOIN dim_datum d\n  ON d.datum_id = f.datum_id\nGROUP BY d.monat;\n-- 1 | 317.5\n-- 2 | 215\n\n-- Drill-down in den Jänner\n... WHERE d.monat = 1\nGROUP BY d.datum;\n-- 2026-01-12 | 200\n-- 2026-01-13 | 117.5\n\n-- Slice: nur Haupthaus\n... WHERE s.name = 'Haupthaus'\nGROUP BY p.kategorie;\n-- Getränke | 60\n-- Speisen  | 345"
+    },
+    {
+      "type": "text",
+      "content": "Berichte brauchen oft Detailzeilen und Zwischensummen gleichzeitig. PostgreSQL (und andere große DBMS) bieten dafür GROUP BY ROLLUP und CUBE. ROLLUP(a, b) bildet die Gruppen (a, b), (a) und die Gesamtsumme () – also eine Hierarchie. CUBE(a, b) bildet alle Kombinationen: (a, b), (a), (b), (). Bei Summenzeilen steht NULL in der verdichteten Spalte; mit GROUPING(spalte) = 1 erkennst du solche Zeilen. SQLite kennt ROLLUP nicht („no such function: rollup“)."
+    },
+    {
+      "type": "code",
+      "content": "-- PostgreSQL\nSELECT d.monat, p.kategorie,\n       SUM(f.umsatz) AS umsatz\nFROM fakt_verkauf f\nJOIN dim_datum d USING (datum_id)\nJOIN dim_produkt p USING (produkt_id)\nGROUP BY ROLLUP (d.monat, p.kategorie)\nORDER BY d.monat, p.kategorie;\n\n monat | kategorie | umsatz\n-------+-----------+-------\n     1 | Getränke  |  60.00\n     1 | Speisen   | 257.50\n     1 |           | 317.50\n     2 | Getränke  |  40.00\n     2 | Speisen   | 175.00\n     2 |           | 215.00\n       |           | 532.50"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Kennzahlen summieren, die nicht additiv sind (z. B. Lagerstände über die Zeit oder Durchschnittspreise), die Granularität der Faktentabelle nicht festlegen oder NULL-Summenzeilen mit echten NULL-Werten verwechseln (dafür GROUPING()).\n\nZusammenfassung: Faktentabelle mit Kennzahlen und Fremdschlüsseln, Dimensionen mit Hierarchien. Stern = denormalisierte Dimensionen, Schneeflocke = normalisierte. Roll-up verdichtet, Drill-down verfeinert, Slice/Dice schränken ein. ROLLUP liefert hierarchische Zwischensummen, CUBE alle Kombinationen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Gruppierungen (inkl. Gesamtsumme) bildet GROUP BY CUBE (jahr, produkt, standort)?",
+      "options": [
+        "8",
+        "4",
+        "3",
+        "6"
+      ],
+      "correctIndex": 0,
+      "explanation": "CUBE bildet alle Teilmengen der n Spalten: 2³ = 8. ROLLUP mit 3 Spalten wären nur 4: (j,p,s), (j,p), (j), ()."
+    },
+    {
+      "question": "Die Direktion will statt der Monatsumsätze die Umsätze jedes einzelnen Tages im März sehen. Welche OLAP-Operation ist das?",
+      "options": [
+        "Roll-up",
+        "Slice",
+        "Drill-down",
+        "Pivot"
+      ],
+      "correctIndex": 2,
+      "explanation": "Man geht in der Zeithierarchie eine Stufe nach unten (Monat → Tag) – das ist ein Drill-down. Die Einschränkung auf März allein wäre ein Slice."
+    },
+    {
+      "question": "Was liefert die CUBE-Abfrage aus der Lektion in der Zeile mit monat = NULL und kategorie = 'Getränke'?",
+      "options": [
+        "60.00",
+        "40.00",
+        "532.50",
+        "100.00"
+      ],
+      "correctIndex": 3,
+      "explanation": "monat ist verdichtet: Getränke über alle Monate = 60 (Jänner) + 40 (Februar) = 100.00."
+    },
+    {
+      "question": "Die Produktdimension verweist auf eine eigene Tabelle dim_kategorie, diese auf dim_hauptgruppe. Welches Schema liegt vor?",
+      "options": [
+        "Sternschema",
+        "Schneeflockenschema",
+        "Heap-Schema",
+        "Key-Value-Schema"
+      ],
+      "correctIndex": 1,
+      "explanation": "Normalisierte, mehrstufige Dimensionstabellen sind das Kennzeichen des Schneeflockenschemas."
+    }
+  ]
+}

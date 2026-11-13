@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-csharp-frameworks_01_bibliothek_vs_framework",
+  "title": "Bibliothek vs. Framework",
+  "summary": "Inversion of Control verstehen und ein kleines Framework mit Delegates und Hooks bauen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Bibliothek ist eine Sammlung von Klassen und Methoden, die du aufrufst, wann du willst: JsonSerializer.Serialize, Math.Sqrt, File.ReadAllText. Dein Programm behält die Kontrolle über den Ablauf. Bei einem Framework ist es umgekehrt: Das Framework steuert den Ablauf und ruft an den passenden Stellen deinen Code auf. Das nennt man Inversion of Control (IoC) oder das Hollywood-Prinzip: „Don't call us, we call you.“"
+    },
+    {
+      "type": "code",
+      "content": "using System.Text.Json;\n\n// Bibliothek: DU rufst auf\nvar text = JsonSerializer.Serialize(\n  new { note = 1 });\n\n// Framework: ASP.NET Core ruft DICH auf\nvar app = WebApplication.Create();\napp.MapGet(\"/hallo\",\n  () => \"Servus!\");   // nie selbst\n                      // aufgerufen\napp.Run();            // Framework übernimmt"
+    },
+    {
+      "type": "text",
+      "content": "Du kennst schon mehrere Frameworks: ASP.NET Core entscheidet, wann welcher Endpunkt läuft; xUnit findet deine [Fact]-Methoden und führt sie aus; WPF ruft deine Event-Handler. Typische IoC-Mechanismen sind Delegates und Lambdas (Callbacks), Events, Attribute, die per Reflection gefunden werden, und Vererbung mit virtuellen Hook-Methoden. Ein Mini-Framework für Kommandozeilen-Befehle mit Delegate-Registrierung:"
+    },
+    {
+      "type": "code",
+      "content": "class App\n{\n  readonly Dictionary<string,\n    Func<string[], object>> befehle = new();\n\n  public void Befehl(string name,\n    Func<string[], object> handler)\n    => befehle[name] = handler;\n\n  public void Run(IEnumerable<string> eingaben)\n  {\n    foreach (var zeile in eingaben)\n    {\n      var teile = zeile.Split(' ');\n      var args = teile[1..];\n      if (befehle.TryGetValue(teile[0],\n                              out var h))\n        Console.WriteLine(h(args));\n      else\n        Console.WriteLine(\n          $\"Unbekannt: {teile[0]}\");\n    }\n  }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Der Framework-Teil besitzt die Schleife, zerlegt die Eingabe und behandelt unbekannte Befehle. Der Anwendungscode liefert nur noch das, was sich von Programm zu Programm unterscheidet – die einzelnen Befehle als Lambdas:"
+    },
+    {
+      "type": "code",
+      "content": "var app = new App();\napp.Befehl(\"hallo\",\n  a => $\"Servus, {a[0]}!\");\napp.Befehl(\"add\",\n  a => int.Parse(a[0]) + int.Parse(a[1]));\napp.Run([\"hallo Lena\", \"add 2 3\", \"xyz\"]);\n// Servus, Lena!\n// 5\n// Unbekannt: xyz"
+    },
+    {
+      "type": "text",
+      "content": "Der zweite klassische Weg ist das Template-Method-Muster: Eine abstrakte Basisklasse legt den Ablauf in einer Methode fest und ruft abstrakte Methoden auf, die Unterklassen implementieren müssen. Zusätzlich gibt es Hooks – virtual-Methoden mit einer sinnvollen Standard-Implementierung, die man überschreiben kann, aber nicht muss."
+    },
+    {
+      "type": "code",
+      "content": "new CsvImporter().Run(\"a;1\\nb;2\\nkaputt\");\n// 2 von 3\n\nabstract class Importer\n{\n  public void Run(string text)  // fix\n  {\n    var zeilen = Lesen(text);\n    int ok = zeilen.Count(Pruefen);\n    Console.WriteLine(\n      $\"{ok} von {zeilen.Length}\");\n  }\n\n  protected abstract string[] Lesen(\n    string text);\n\n  protected virtual bool Pruefen(\n    string zeile) => true;      // Hook\n}\n\nclass CsvImporter : Importer\n{\n  protected override string[] Lesen(\n    string text) => text.Trim().Split('\\n');\n\n  protected override bool Pruefen(\n    string zeile) => zeile.Contains(';');\n}"
+    },
+    {
+      "type": "text",
+      "content": "Wann lohnt sich ein eigenes Framework? Erst, wenn du denselben Ablauf mehrmals gebaut hast (Faustregel „Rule of Three“) – vorher errätst du die Erweiterungspunkte meist falsch. Typische Fehler: zu viel „Magie“, die niemand versteht, und Frameworks, die interne Details preisgeben. Darum ist Run hier nicht virtual: Der Ablauf bleibt in der Hand des Frameworks. Und jede protected- oder public-Methode ist ein Versprechen – sobald andere darauf aufbauen, kannst du sie kaum noch ändern."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Bibliothek rufst du auf, ein Framework ruft dich auf (Inversion of Control). Frameworks besitzen den Ablauf und bieten Erweiterungspunkte über Delegates, Events, Attribute oder Template Methods mit virtuellen Hooks. Bibliotheken sind flexibler, Frameworks nehmen mehr Arbeit ab, schränken aber auch stärker ein."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welchem Fall liegt Inversion of Control vor?",
+      "options": [
+        "Du rufst Math.Sqrt(16) auf",
+        "xUnit findet deine [Fact]-Methoden und ruft sie auf",
+        "Dein Programm ruft File.ReadAllLines auf",
+        "Du rufst JsonSerializer.Deserialize auf"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei xUnit steuert das Framework den Ablauf: Es sucht die Testmethoden per Reflection und ruft sie auf. In den anderen Fällen ruft dein Code eine Bibliotheksmethode auf."
+    },
+    {
+      "question": "Was gibt dieser Code mit dem Mini-Framework aus der Lektion aus?",
+      "code": "var app = new App();\napp.Befehl(\"doppelt\",\n  a => a[0] + a[0]);\napp.Run([\"doppelt 21\"]);",
+      "options": [
+        "42",
+        "21",
+        "Unbekannt: doppelt",
+        "2121"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das Framework übergibt die Argumente als string[]. a[0] + a[0] verkettet zwei Strings: \"2121\". Für eine Addition müsstest du erst int.Parse aufrufen."
+    },
+    {
+      "question": "Was gibt dieser Code mit der Importer-Basisklasse aus der Lektion aus?",
+      "code": "new Txt().Run(\"a,b,,c\");\n\nclass Txt : Importer\n{\n  protected override string[] Lesen(\n    string text) => text.Split(',');\n}",
+      "options": [
+        "4 von 4",
+        "3 von 4",
+        "Compilerfehler",
+        "0 von 4"
+      ],
+      "correctIndex": 0,
+      "explanation": "Txt überschreibt nur Lesen. Für Pruefen greift der virtuelle Hook mit der Standard-Implementierung, die immer true liefert. Auch der leere String zählt: 4 von 4."
+    },
+    {
+      "question": "Was passiert bei class X : Importer { }?",
+      "options": [
+        "Es kompiliert, Run liefert 0 von 0",
+        "Eine Exception beim Aufruf von Run",
+        "Compilerfehler, weil die abstrakte Methode Lesen nicht implementiert ist",
+        "Es kompiliert, Lesen liefert null"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine nicht-abstrakte Klasse muss alle abstrakten Member der Basisklasse implementieren (Fehler CS0534). Den virtuellen Hook Pruefen muss sie dagegen nicht überschreiben."
+    }
+  ]
+}

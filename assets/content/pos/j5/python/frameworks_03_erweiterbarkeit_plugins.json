@@ -1,0 +1,91 @@
+{
+  "id": "pos-j5-python-frameworks_03_erweiterbarkeit_plugins",
+  "title": "Erweiterbarkeit: Plugins und Dependency Injection",
+  "summary": "Frameworks über Schnittstellen, Registries, Entry Points und Dependency Injection erweiterbar machen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein gutes Framework ist offen für Erweiterungen, ohne dass man seinen Code ändern muss – das Open/Closed-Prinzip aus SOLID. Der übliche Weg sind Plugins: Das Framework definiert eine Schnittstelle, andere liefern Implementierungen, und das Framework lädt und ruft sie. Beispiel: Eine Noten-App soll Zeugnisdaten in verschiedene Formate exportieren. Die Schnittstelle beschreibst du mit typing.Protocol:"
+    },
+    {
+      "type": "code",
+      "content": "import json\nfrom typing import Protocol\n\nclass Exporter(Protocol):\n    name: str\n    def export(self, daten: list[dict]) -> str:\n        ...\n\nclass CsvExporter:\n    name = \"csv\"\n    def export(self, daten):\n        return \"\\n\".join(\n            f\"{d['name']};{d['note']}\"\n            for d in daten)\n\nclass JsonExporter:\n    name = \"json\"\n    def export(self, daten):\n        return json.dumps(daten)"
+    },
+    {
+      "type": "text",
+      "content": "Ein Protocol prüft die Struktur (Duck Typing mit Typprüfung): CsvExporter muss nicht von Exporter erben, es reicht, dass name und export passen. Ein Typprüfer wie mypy meldet Abweichungen; zur Laufzeit prüft Python nichts. Alternativ kannst du eine abstrakte Basisklasse (ABC) verwenden, dann müssen Plugins erben. Das Framework sammelt die Plugins in einer Registry:"
+    },
+    {
+      "type": "code",
+      "content": "plugins: dict[str, Exporter] = {}\n\ndef registriere(p: Exporter):\n    plugins[p.name] = p\n\nregistriere(CsvExporter())\nregistriere(JsonExporter())\n\ndaten = [{\"name\": \"Lena\", \"note\": 1}]\nfor name, p in plugins.items():\n    print(name, \"->\", p.export(daten))\n# csv -> Lena;1\n# json -> [{\"name\": \"Lena\", \"note\": 1}]"
+    },
+    {
+      "type": "text",
+      "content": "Bisher muss aber jemand registriere() aufrufen. Echte Plugin-Systeme finden installierte Erweiterungen selbst – in Python über Entry Points. Ein separates Paket kündigt in seiner pyproject.toml an, welche Klasse es für welche Gruppe anbietet. Nach pip install findet das Framework sie mit importlib.metadata, ohne das Paket zu kennen. So funktionieren z. B. pytest-Plugins."
+    },
+    {
+      "type": "code",
+      "content": "# pyproject.toml des Plugin-Pakets\n[project]\nname = \"notenpdf\"\nversion = \"1.0.0\"\n\n[project.entry-points.\"notenapp.exporter\"]\npdf = \"notenpdf:PdfExporter\"\n\nfrom importlib.metadata import entry_points\n\nfor ep in entry_points(\n        group=\"notenapp.exporter\"):\n    klasse = ep.load()   # importiert!\n    p = klasse()\n    print(ep.name, \"->\", p.export([{}]))\n# pdf -> PDF mit 1 Zeilen"
+    },
+    {
+      "type": "text",
+      "content": "Die zweite Säule der Erweiterbarkeit ist Dependency Injection (DI): Eine Klasse erzeugt ihre Abhängigkeiten nicht selbst, sondern bekommt sie von außen übergeben – meist im Konstruktor. Dann kann man sie austauschen: in Produktion einen echten Mailversand, im Test eine Fake-Funktion. Das ist wieder Inversion of Control, diesmal für das Erzeugen von Objekten."
+    },
+    {
+      "type": "code",
+      "content": "class Zeugnisdienst:\n    def __init__(self, exporter, versand):\n        self.exporter = exporter   # injiziert\n        self.versand = versand     # injiziert\n\n    def sende(self, daten, an):\n        text = self.exporter.export(daten)\n        self.versand(an, text)\n\n# Im Test: Fake statt echtem Mailserver\ngesendet = []\ndienst = Zeugnisdienst(\n    CsvExporter(),\n    lambda an, t: gesendet.append((an, t)))\ndienst.sende(daten, \"eltern@example.at\")\nprint(gesendet)\n# [('eltern@example.at', 'Lena;1')]"
+    },
+    {
+      "type": "text",
+      "content": "Bei großen Anwendungen übernimmt ein DI-Container das Zusammenbauen: Man registriert, welche Implementierung für welche Schnittstelle gilt, und der Container erzeugt die Objekte (z. B. Depends in FastAPI). Typische Fehler: Abhängigkeiten doch wieder intern erzeugen, globale Variablen statt Injection, oder ein Plugin-System ohne Versionsangabe der Schnittstelle.\n\nZusammenfassung: Plugins implementieren eine Schnittstelle (Protocol/ABC), eine Registry oder Entry Points machen sie auffindbar, und Dependency Injection macht Klassen austauschbar und testbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code mit der Registry aus der Lektion aus?",
+      "code": "plugins.clear()\nregistriere(CsvExporter())\nregistriere(CsvExporter())\nregistriere(JsonExporter())\nprint(len(plugins))",
+      "options": [
+        "3",
+        "1",
+        "2",
+        "ValueError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Registry ist ein dict mit dem Plugin-Namen als Schlüssel. Der zweite CsvExporter überschreibt den ersten unter \"csv\". Übrig bleiben \"csv\" und \"json\"."
+    },
+    {
+      "question": "CsvExporter erbt nicht von Exporter(Protocol). Was stimmt?",
+      "options": [
+        "Python wirft beim Erzeugen einen TypeError",
+        "Das ist in Ordnung: Ein Protocol prüft nur die Struktur, ein Typprüfer wie mypy akzeptiert die Klasse",
+        "CsvExporter kann nie als Exporter verwendet werden",
+        "Protocol-Klassen müssen immer mit super() aufgerufen werden"
+      ],
+      "correctIndex": 1,
+      "explanation": "typing.Protocol beschreibt strukturelle Typen: Wer die nötigen Attribute und Methoden hat, passt. Vererbung ist nicht nötig. Zur Laufzeit wird ohnehin nichts geprüft."
+    },
+    {
+      "question": "Wie findet ein Framework Plugins aus Paketen, die es selbst nicht kennt?",
+      "options": [
+        "Es durchsucht die Festplatte nach Dateien mit „plugin“ im Namen",
+        "Die Plugins tragen sich in die pyproject.toml des Frameworks ein",
+        "Gar nicht, Plugins müssen immer in den Framework-Code kopiert werden",
+        "Über Entry Points: Das Plugin-Paket meldet sich in seiner pyproject.toml an, das Framework liest sie mit importlib.metadata.entry_points"
+      ],
+      "correctIndex": 3,
+      "explanation": "Entry Points sind Metadaten installierter Pakete. Das Framework fragt eine Gruppe ab (z. B. \"notenapp.exporter\") und lädt mit ep.load() die angegebene Klasse."
+    },
+    {
+      "question": "Warum ist diese Klasse schwer zu testen?",
+      "code": "class Zeugnisdienst:\n    def __init__(self):\n        self.mail = SmtpMailer(\n            \"smtp.schule.at\")\n\n    def sende(self, text, an):\n        self.mail.send(an, text)",
+      "options": [
+        "Weil sie keine Docstrings hat",
+        "Weil sie ihren Mailversand selbst erzeugt und man ihn nicht durch einen Fake ersetzen kann",
+        "Weil sende keinen Rückgabewert hat",
+        "Weil der Konstruktor keine Parameter hat, was in Python verboten ist"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Abhängigkeit ist fest verdrahtet: Jeder Test würde echte Mails verschicken. Mit Dependency Injection (versand als Konstruktorparameter) kann der Test eine Fake-Funktion übergeben."
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 ## Erledigt
 
 - Lehrplan nach HTL Informatik (1.–5. Jahrgang) plus Junior, Senior, Expert
-- 1.–4. Jahrgang in allen Fächern ausgearbeitet
+- 1.–5. Jahrgang in allen Fächern ausgearbeitet (kompletter HTL-Lehrplan)
 - Filter nach Stufe, Fach und Thema
 - PDF-Zertifikate pro Kapitel
 - Achievements
@@ -14,7 +14,6 @@
 
 ## Als Nächstes
 
-- Inhalte für den **5. Jahrgang**
 - Inhalte für **Junior, Senior und Expert**
 - Python offline: Pyodide in die App packen statt aus dem Internet laden
 - Herausforderungen für höhere Jahrgänge

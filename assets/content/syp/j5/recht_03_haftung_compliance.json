@@ -1,0 +1,94 @@
+{
+ "id": "syp-j5-recht_03_haftung_compliance",
+ "title": "Haftung, Gewährleistung und Compliance",
+ "summary": "Gewährleistung, Garantie und Schadenersatz unterscheiden und Compliance in der Entwicklung umsetzen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Hinweis: Diese Lektion vermittelt Grundwissen für den Unterricht und ist keine Rechtsberatung. Im konkreten Fall entscheiden Vertrag, Gesetzeslage und Gerichte – frag im Zweifel Fachleute. Wenn Software fehlerhaft ist, werden drei Begriffe oft verwechselt: Gewährleistung, Garantie und Schadenersatz. Gewährleistung ist gesetzlich und hängt nicht von Schuld ab – sie greift, wenn die Leistung schon bei der Übergabe mangelhaft war. Eine Garantie ist eine freiwillige Zusage (meist des Herstellers) zu den Bedingungen, die in der Garantieerklärung stehen. Schadenersatz verlangt einen Schaden, ein rechtswidriges und in der Regel schuldhaftes Verhalten (z. B. Fahrlässigkeit) und einen Zusammenhang zwischen beidem."
+  },
+  {
+   "type": "code",
+   "content": "              Grundlage   Schuld\n              ----------  ---------\nGewährleist.  Gesetz      egal\nGarantie      freiwillige laut\n              Zusage      Erklärung\nSchadenersatz Gesetz/     meist\n              Vertrag     nötig\n\nBeispiel: Rechnungs-App rechnet\ndie USt. falsch\n-> Gewährleistung: Fehler beheben\n-> Schadenersatz: Kosten durch\n   falsche Rechnungen, falls der\n   Fehler verschuldet war"
+  },
+  {
+   "type": "text",
+   "content": "Gewährleistung in Österreich: Die Frist beträgt bei beweglichen Sachen in der Regel zwei Jahre. Zuerst kann man Verbesserung (Fehlerbehebung) oder Austausch verlangen; erst wenn das nicht gelingt, Preisminderung oder Wandlung (Rückabwicklung des Vertrags, bei nicht bloß geringfügigen Mängeln). Für Verträge mit Verbraucher:innen gilt seit 2022 das Verbrauchergewährleistungsgesetz (VGG), das ausdrücklich auch digitale Inhalte und Dienstleistungen erfasst und den Unternehmer verpflichtet, für einen angemessenen Zeitraum nötige Aktualisierungen, insbesondere Sicherheitsupdates, bereitzustellen."
+  },
+  {
+   "type": "text",
+   "content": "Haftung (Schadenersatz): Wer als Fachmann oder Fachfrau tätig ist, muss die übliche Sorgfalt seines Fachs einhalten (§ 1299 ABGB, Sachverständigenhaftung) – eine Software-Firma kann sich nicht darauf berufen, Backups oder Eingabeprüfung „nicht gekannt“ zu haben. In Verträgen zwischen Unternehmen wird die Haftung oft beschränkt (z. B. Höchstbetrag, Ausschluss bei leichter Fahrlässigkeit). Für Vorsatz und grobe Fahrlässigkeit lässt sie sich aber in der Regel nicht wirksam ausschließen, und gegenüber Verbraucher:innen sind die Grenzen enger. Für Personen- und bestimmte Sachschäden durch fehlerhafte Produkte gibt es zusätzlich die verschuldensunabhängige Produkthaftung; eine neue EU-Produkthaftungsrichtlinie bezieht Software ausdrücklich ein."
+  },
+  {
+   "type": "text",
+   "content": "Und Open Source? Lizenzen wie MIT oder GPL schließen Gewährleistung und Haftung der Autor:innen weitgehend aus („AS IS“), soweit das rechtlich zulässig ist. Baust du aber eine Open-Source-Bibliothek in ein Produkt ein, das du einem Kunden lieferst, haftest du deinem Kunden gegenüber für dein Produkt – auch für die Fehler der eingebauten Bibliothek. Deshalb gehören Auswahl, Aktualisierung und Prüfung von Abhängigkeiten zur Sorgfalt."
+  },
+  {
+   "type": "text",
+   "content": "Compliance heißt, alle für das Unternehmen geltenden Regeln einzuhalten und das nachweisen zu können. In der Softwareentwicklung betrifft das vor allem: Lizenz-Compliance aller Abhängigkeiten, Datenschutz (DSGVO), Informationssicherheit, Barrierefreiheit (in Österreich gelten für Websites öffentlicher Stellen und für bestimmte Produkte und Dienstleistungen gesetzliche Vorgaben), branchenspezifische Regeln sowie neue EU-Regeln wie die KI-Verordnung oder Sicherheitsanforderungen für Produkte mit digitalen Elementen (Cyber Resilience Act). Dazu kommen interne Regeln wie Coding-Guidelines, Vier-Augen-Prinzip bei Reviews und Freigabeprozesse."
+  },
+  {
+   "type": "code",
+   "content": "Release-Checkliste Compliance\n[ ] Alle Abhängigkeiten mit\n    Lizenz in der SBOM\n[ ] Lizenzen freigegeben,\n    Hinweise mitgeliefert\n[ ] Keine bekannten kritischen\n    Sicherheitslücken\n[ ] Datenschutz geprüft (neue\n    Daten? Rechtsgrundlage?)\n[ ] Barrierefreiheit getestet\n[ ] Review (4-Augen) erfolgt\n[ ] Changelog und Doku aktuell"
+  },
+  {
+   "type": "text",
+   "content": "Viele Prüfungen lassen sich automatisieren und in die CI-Pipeline einbauen: Der Build bricht ab, wenn eine Abhängigkeit eine nicht freigegebene oder unbekannte Lizenz hat. So wird Compliance nicht erst kurz vor der Auslieferung entdeckt."
+  },
+  {
+   "type": "code",
+   "content": "ERLAUBT = {\"MIT\", \"BSD-3-Clause\",\n           \"Apache-2.0\"}\ndeps = [(\"http-lib\", \"Apache-2.0\"),\n        (\"pdf-lib\", \"GPL-3.0-only\"),\n        (\"log-lib\", None)]\nfehler = 0\nfor name, lz in deps:\n    if lz is None:\n        print(f\"{name}: unbekannt\")\n        fehler += 1\n    elif lz not in ERLAUBT:\n        print(f\"{name}: {lz} gesperrt\")\n        fehler += 1\nprint(\"Build:\",\n      \"Abbruch\" if fehler else \"ok\")\n\n# Ausgabe:\n# pdf-lib: GPL-3.0-only gesperrt\n# log-lib: unbekannt\n# Build: Abbruch"
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: Gewährleistung und Garantie verwechseln; glauben, ein Haftungsausschluss im Vertrag schütze vor allem; Open-Source-Komponenten ungeprüft ausliefern; Compliance nur als Aufgabe der Rechtsabteilung sehen. Zusammenfassung: Gewährleistung ist gesetzlich und verschuldensunabhängig (in der Regel zwei Jahre, zuerst Verbesserung oder Austausch), Garantie ist freiwillig, Schadenersatz setzt meist Verschulden voraus. Fachleute haften für die Sorgfalt ihres Fachs. Compliance umfasst Lizenzen, Datenschutz, Sicherheit, Barrierefreiheit und interne Regeln und wird am besten automatisiert geprüft."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Ein Kunde bemerkt einen Monat nach Übergabe, dass die gelieferte App beim Export abstürzt. Der Fehler war von Anfang an im Code. Was kann er zuerst verlangen?",
+   "options": [
+    "Sofort den vollen Kaufpreis zurück",
+    "Verbesserung, also Fehlerbehebung (oder Austausch)",
+    "Nur eine Garantie, wenn der Hersteller eine gegeben hat",
+    "Nichts, weil Software keine Gewährleistung hat"
+   ],
+   "correctIndex": 1,
+   "explanation": "Gewährleistung greift bei Mängeln, die schon bei Übergabe vorhanden waren. Primär gibt es Verbesserung oder Austausch, erst danach Preisminderung oder Wandlung."
+  },
+  {
+   "question": "Was unterscheidet die Garantie von der Gewährleistung?",
+   "options": [
+    "Die Garantie ist gesetzlich vorgeschrieben",
+    "Es gibt keinen Unterschied",
+    "Die Garantie ist eine freiwillige Zusage mit eigenen Bedingungen",
+    "Die Gewährleistung gilt nur bei Verschulden"
+   ],
+   "correctIndex": 2,
+   "explanation": "Die Gewährleistung ergibt sich aus dem Gesetz und hängt nicht von Verschulden ab. Die Garantie ist freiwillig, ihre Bedingungen legt der Garantiegeber fest."
+  },
+  {
+   "question": "Was gibt der Code aus?",
+   "code": "ERLAUBT = {\"MIT\", \"Apache-2.0\"}\ndeps = [(\"x\", \"MIT\")]\nfehler = 0\nfor name, lz in deps:\n    if lz is None or lz not in ERLAUBT:\n        print(f\"{name}: {lz} gesperrt\")\n        fehler += 1\nprint(\"Build:\",\n      \"Abbruch\" if fehler else \"ok\")",
+   "options": [
+    "Build: ok",
+    "Build: Abbruch",
+    "x: unbekannt",
+    "x: MIT gesperrt"
+   ],
+   "correctIndex": 0,
+   "explanation": "Die Lizenz MIT ist in ERLAUBT enthalten, daher wird keine Meldung ausgegeben und fehler bleibt 0."
+  },
+  {
+   "question": "Deine Firma liefert einem Kunden eine Software, die eine MIT-lizenzierte Bibliothek mit einem Fehler enthält. Der Kunde erleidet dadurch einen Schaden. Was stimmt am ehesten?",
+   "options": [
+    "Nur die Autor:innen der Bibliothek haften",
+    "Niemand haftet, weil MIT „AS IS“ sagt",
+    "Der Kunde hätte die Bibliothek selbst prüfen müssen",
+    "Deine Firma ist dem Kunden für ihr Produkt verantwortlich, inklusive eingebauter Komponenten"
+   ],
+   "correctIndex": 3,
+   "explanation": "Der Haftungsausschluss der MIT-Lizenz betrifft das Verhältnis zu den Autor:innen. Gegenüber deinem Kunden bist du für das gelieferte Produkt verantwortlich."
+  }
+ ]
+}

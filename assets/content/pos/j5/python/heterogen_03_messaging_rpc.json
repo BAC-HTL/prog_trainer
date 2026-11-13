@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-python-heterogen_03_messaging_rpc",
+  "title": "Messaging und RPC",
+  "summary": "Message Queues, Publish/Subscribe und entfernte Funktionsaufrufe mit xmlrpc und gRPC.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bei REST wartet der Client, bis der Server antwortet (synchron). Ist der Server gerade nicht erreichbar, scheitert der Aufruf. Bei Messaging schickt der Sender eine Nachricht an einen Vermittler (Message Broker, z. B. RabbitMQ, Apache Kafka oder im IoT-Bereich MQTT-Broker) und arbeitet sofort weiter. Der Empfänger holt die Nachricht ab, wenn er Zeit hat. Das Prinzip kennst du schon vom Producer-Consumer-Muster mit queue.Queue:"
+    },
+    {
+      "type": "code",
+      "content": "import queue, threading\n\nauftraege = queue.Queue()\n\ndef drucker():\n    while True:\n        job = auftraege.get()\n        if job is None:      # Stopp-Signal\n            break\n        print(\"drucke\", job)\n\nt = threading.Thread(target=drucker)\nt.start()\nfor datei in [\"a.pdf\", \"b.pdf\"]:\n    auftraege.put(datei)   # kehrt sofort zurück\nauftraege.put(None)\nt.join()\n# drucke a.pdf\n# drucke b.pdf"
+    },
+    {
+      "type": "text",
+      "content": "Das ist eine Point-to-Point-Queue: Jede Nachricht wird von genau einem Consumer verarbeitet. Laufen mehrere Drucker-Threads, teilen sie sich die Arbeit (Lastverteilung). Bei Publish/Subscribe dagegen bekommt jeder Abonnent eines Themas (Topic) eine Kopie. Der Sender kennt die Empfänger nicht – neue Abonnenten kommen dazu, ohne dass man den Sender ändert. Ein Mini-Broker im Speicher:"
+    },
+    {
+      "type": "code",
+      "content": "from collections import defaultdict\n\nclass Broker:\n    def __init__(self):\n        self.abos = defaultdict(list)\n\n    def subscribe(self, topic, handler):\n        self.abos[topic].append(handler)\n\n    def publish(self, topic, msg):\n        for handler in self.abos[topic]:\n            handler(msg)\n\nb = Broker()\nb.subscribe(\"noten\", lambda m: print(\"App:\", m))\nb.subscribe(\"noten\", lambda m: print(\"Mail:\", m))\nb.publish(\"noten\", \"POS: 1\")\nb.publish(\"termine\", \"Matura\")  # kein Abo\n# App: POS: 1\n# Mail: POS: 1"
+    },
+    {
+      "type": "text",
+      "content": "Echte Broker speichern Nachrichten dauerhaft und bestätigen die Zustellung (Acknowledgement). Dabei gibt es drei Garantien: at-most-once (höchstens einmal, kann verloren gehen), at-least-once (mindestens einmal, kann doppelt kommen) und exactly-once (genau einmal – technisch aufwendig). In der Praxis ist at-least-once üblich. Deshalb müssen Consumer idempotent sein: Sie merken sich z. B. die Nachrichten-ID und ignorieren Duplikate."
+    },
+    {
+      "type": "text",
+      "content": "RPC (Remote Procedure Call) geht einen anderen Weg: Der Client ruft eine Funktion auf, als wäre sie lokal – in Wahrheit läuft sie auf einem anderen Rechner. Ein Stub verpackt Name und Parameter in eine Nachricht und schickt sie übers Netz. Python bringt mit xmlrpc ein einfaches RPC-Protokoll (XML über HTTP) gleich mit:"
+    },
+    {
+      "type": "code",
+      "content": "import threading\nfrom xmlrpc.server import SimpleXMLRPCServer\nfrom xmlrpc.client import ServerProxy\n\ndef notenschnitt(noten):\n    return sum(noten) / len(noten)\n\nsrv = SimpleXMLRPCServer((\"127.0.0.1\", 8000),\n                         logRequests=False)\nsrv.register_function(notenschnitt)\nthreading.Thread(target=srv.serve_forever,\n                 daemon=True).start()\n\n# Client – könnte auch in Java oder C# sein\nproxy = ServerProxy(\"http://127.0.0.1:8000\")\nprint(proxy.notenschnitt([1, 2, 2]))\n# 1.6666666666666667\ntry:\n    proxy.notenschnitt([])\nexcept Exception as e:\n    print(type(e).__name__)   # Fault"
+    },
+    {
+      "type": "text",
+      "content": "Ein Fehler auf dem Server kommt beim Client als Fault-Exception an (hier: Division durch null). Typischer Fehler: zu vergessen, dass ein entfernter Aufruf langsam sein oder ganz ausfallen kann – ein RPC sieht lokal aus, ist es aber nicht. Moderner ist gRPC: Es überträgt Protobuf-Nachrichten über HTTP/2. Dienst und Nachrichten stehen in einer .proto-Datei, aus der Werkzeuge Client- und Server-Code für viele Sprachen erzeugen (in Python das Paket grpcio-tools)."
+    },
+    {
+      "type": "code",
+      "content": "syntax = \"proto3\";\n\nservice Noten {\n  rpc Schnitt (NotenListe)\n      returns (Ergebnis);\n}\nmessage NotenListe {\n  repeated int32 noten = 1;\n}\nmessage Ergebnis {\n  double schnitt = 1;\n}"
+    },
+    {
+      "type": "text",
+      "content": "Für REST-APIs übernimmt OpenAPI (früher Swagger) diese Rolle: eine maschinenlesbare Beschreibung aller Endpunkte, Parameter und Antworten in YAML oder JSON. Daraus lassen sich Dokumentation (Swagger UI), Tests und Clients erzeugen; Frameworks wie FastAPI generieren sie automatisch aus dem Code.\n\nZusammenfassung: Queues entkoppeln Sender und Empfänger zeitlich, Pub/Sub verteilt an viele Abonnenten, Consumer müssen Duplikate vertragen. RPC und gRPC rufen entfernte Funktionen auf, OpenAPI beschreibt REST-Schnittstellen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Zeilen gibt dieser Code mit dem Broker aus der Lektion aus?",
+      "code": "b = Broker()\nb.subscribe(\"noten\", print)\nb.subscribe(\"noten\", print)\nb.subscribe(\"news\", print)\nb.publish(\"noten\", \"x\")\nb.publish(\"news\", \"y\")",
+      "options": [
+        "1",
+        "2",
+        "3",
+        "0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Für \"noten\" gibt es zwei Abonnenten, für \"news\" einen. publish(\"noten\") ruft beide auf, publish(\"news\") einen: zusammen drei Zeilen."
+    },
+    {
+      "question": "Ein Broker liefert at-least-once. Was gibt der idempotente Consumer aus?",
+      "code": "saldo = 0\ngesehen = set()\nnachrichten = [(1, 10), (2, 5), (1, 10)]\nfor mid, betrag in nachrichten:\n    if mid in gesehen:\n        continue\n    gesehen.add(mid)\n    saldo += betrag\nprint(saldo)",
+      "options": [
+        "25",
+        "10",
+        "20",
+        "15"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Nachricht mit ID 1 kommt doppelt an. Der Consumer erkennt das Duplikat über die ID und zählt sie nur einmal: 10 + 5 = 15."
+    },
+    {
+      "question": "Was ist der wesentliche Unterschied zwischen einer Point-to-Point-Queue und Publish/Subscribe?",
+      "options": [
+        "Bei Pub/Sub erhält jeder Abonnent eine Kopie, bei einer Queue verarbeitet genau ein Consumer jede Nachricht",
+        "Pub/Sub ist synchron, Queues sind asynchron",
+        "Queues funktionieren nur mit JSON",
+        "Bei Pub/Sub muss der Sender alle Empfänger kennen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Beide sind asynchron. Eine Queue verteilt Arbeit (jede Nachricht einmal), Pub/Sub verteilt Informationen an alle Interessenten, ohne dass der Sender sie kennt."
+    },
+    {
+      "question": "Welche Aussage über gRPC und OpenAPI stimmt?",
+      "options": [
+        "OpenAPI ist ein binäres Übertragungsprotokoll",
+        "gRPC verwendet Protobuf über HTTP/2, OpenAPI beschreibt REST-Schnittstellen",
+        "gRPC funktioniert nur zwischen Python-Programmen",
+        "OpenAPI ersetzt HTTP"
+      ],
+      "correctIndex": 1,
+      "explanation": "gRPC definiert Dienste in .proto-Dateien und überträgt Protobuf über HTTP/2, sprachübergreifend. OpenAPI ist eine Beschreibungssprache (YAML/JSON) für REST-APIs."
+    }
+  ]
+}

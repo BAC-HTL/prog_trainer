@@ -1,0 +1,94 @@
+{
+  "id": "pos-j5-theorie-architektur_01_architekturbegriff_qualitaet",
+  "title": "Architekturbegriff & Qualitätsziele",
+  "summary": "Was Softwarearchitektur ist, warum Qualitätsziele sie bestimmen und wie man sie messbar macht.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Softwarearchitektur ist die grundlegende Organisation eines Systems: aus welchen Bausteinen (Komponenten, Modulen, Diensten) es besteht, wie diese zusammenhängen und nach welchen Prinzipien es entworfen und weiterentwickelt wird. Architektur sind vor allem die Entscheidungen, die später nur schwer zu ändern sind – etwa „Web-App mit zentralem Server“ statt „Desktop-Programm mit lokaler Datei“."
+    },
+    {
+      "type": "code",
+      "content": "Bausteinsicht: Schul-App\n\n[Handy-App]   [Web-Oberfläche]\n      \\            /\n       v          v\n     [REST-API-Server]\n      |      |       |\n [Stunden- [Noten- [Benutzer-\n   plan]   verw.]   verw.]\n      \\      |       /\n       v     v      v\n       [ Datenbank ]"
+    },
+    {
+      "type": "text",
+      "content": "Welche Funktionen ein System hat (Stundenplan anzeigen, Noten eintragen), sagt wenig über seine Architektur. Die Architektur wird von den Qualitätszielen getrieben – den nicht-funktionalen Anforderungen: Wie schnell, wie sicher, wie leicht änderbar, wie gut bedienbar soll das System sein? Dieselben Funktionen kann man als einfaches Skript oder als verteiltes System bauen."
+    },
+    {
+      "type": "code",
+      "content": "Qualitätsmerkmale nach ISO/IEC 25010\n(Produktqualität, Fassung 2011)\n\n- Funktionale Eignung\n- Leistungseffizienz (Performance)\n- Kompatibilität\n- Gebrauchstauglichkeit (Usability)\n- Zuverlässigkeit\n- Sicherheit (Security)\n- Wartbarkeit\n- Übertragbarkeit (Portabilität)"
+    },
+    {
+      "type": "text",
+      "content": "Die Norm wurde 2023 überarbeitet (u. a. kam Safety, also Betriebssicherheit, dazu, einige Merkmale wurden umbenannt). Für die Praxis wichtiger als die exakte Liste: „Das System soll schnell sein“ ist kein brauchbares Ziel. Ein Qualitätsziel muss überprüfbar sein. Dafür beschreibt man Qualitätsszenarien: Auslöser, Umgebung, erwartete Reaktion und ein messbares Maß."
+    },
+    {
+      "type": "code",
+      "content": "Qualitätsszenario (Leistung)\n\nQuelle:    500 Schüler:innen\nAuslöser:  rufen gleichzeitig den\n           Stundenplan ab\nUmgebung:  Normalbetrieb, 8:00 Uhr\nReaktion:  Plan wird angezeigt\nMaß:       95 % der Anfragen in\n           unter 1 Sekunde\n\nQualitätsszenario (Wartbarkeit)\n\nAuslöser:  neue Notenskala\nReaktion:  nur Modul Notenverw.\n           wird geändert\nMaß:       max. 2 Personentage"
+    },
+    {
+      "type": "text",
+      "content": "Zwei Grundbegriffe begleiten jede Architekturentscheidung: Kopplung (wie stark hängen Bausteine voneinander ab?) und Kohäsion (wie gut passt das zusammen, was in einem Baustein steckt?). Ziel ist lose Kopplung und hohe Kohäsion. Ein Mittel dazu: Ein Baustein bekommt seine Abhängigkeiten von außen übergeben (Dependency Injection), statt sie selbst fest zu erzeugen."
+    },
+    {
+      "type": "code",
+      "content": "class DbRepo:\n    def laden(self):\n        return [\"Anna\", \"Ben\", \"Cem\"]\n\nclass TestRepo:\n    def laden(self):\n        return [\"Testperson\"]\n\nclass Klassenliste:\n    def __init__(self, repo):\n        self.repo = repo  # übergeben\n\n    def anzahl(self):\n        return len(self.repo.laden())\n\nprint(Klassenliste(DbRepo()).anzahl())\n# 3\nprint(Klassenliste(TestRepo()).anzahl())\n# 1"
+    },
+    {
+      "type": "text",
+      "content": "Qualitätsziele widersprechen sich oft, daher sind Architekturentscheidungen immer Abwägungen (Trade-offs): Ein Cache macht schneller, erschwert aber die Aktualität der Daten. Mehr Sicherheitsabfragen verschlechtern die Bedienbarkeit. Viele kleine Dienste erhöhen die Skalierbarkeit, aber auch den Betriebsaufwand. Typischer Fehler: alle Ziele gleich wichtig nehmen. Lege mit dem Auftraggeber die drei bis fünf wichtigsten Ziele fest und priorisiere sie."
+    },
+    {
+      "type": "text",
+      "content": "Wichtige Entscheidungen hält man kurz schriftlich fest, z. B. als Architecture Decision Record (ADR): Kontext, Entscheidung, betrachtete Alternativen und Konsequenzen. So weiß das Team auch in zwei Jahren noch, warum etwas so gebaut wurde.\n\nZusammenfassung: Architektur = Bausteine, Beziehungen und schwer änderbare Entscheidungen. Sie wird von priorisierten, messbaren Qualitätszielen getrieben (ISO 25010, Qualitätsszenarien). Ziel sind lose Kopplung und hohe Kohäsion – jede Entscheidung ist eine dokumentierte Abwägung."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Formulierung ist ein brauchbares, überprüfbares Qualitätsziel?",
+      "options": [
+        "„Die App soll sehr schnell sein.“",
+        "„Die App soll benutzerfreundlich und modern wirken.“",
+        "„Bei 500 gleichzeitigen Abrufen werden 95 % in unter 1 s beantwortet.“",
+        "„Die App soll mit Python programmiert werden.“"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur die dritte Aussage nennt Auslöser, Umgebung und ein messbares Maß – sie ist ein Qualitätsszenario. Die Sprache ist eine technische Randbedingung, kein Qualitätsziel."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class A:\n    def laden(self): return [1, 2, 3]\nclass B:\n    def laden(self): return [9]\nclass Liste:\n    def __init__(self, repo):\n        self.repo = repo\n    def n(self):\n        return len(self.repo.laden())\nprint(Liste(A()).n(), \"und\", Liste(B()).n())",
+      "options": [
+        "3 und 3",
+        "1 und 3",
+        "3 und 1",
+        "AttributeError"
+      ],
+      "correctIndex": 2,
+      "explanation": "Die Klassenliste fragt das übergebene Repository. DbRepo liefert drei, TestRepo ein Element – daher 3 und dann 1."
+    },
+    {
+      "question": "Welches Ziel verfolgt man bei Kopplung und Kohäsion?",
+      "options": [
+        "Lose Kopplung, hohe Kohäsion",
+        "Starke Kopplung, hohe Kohäsion",
+        "Lose Kopplung, niedrige Kohäsion",
+        "Starke Kopplung, niedrige Kohäsion"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bausteine sollen wenig voneinander abhängen (lose Kopplung) und innen gut zusammenpassen (hohe Kohäsion). Dann bleiben Änderungen lokal."
+    },
+    {
+      "question": "Ein Team baut einen Cache ein, damit der Stundenplan schneller lädt. Welche Abwägung entsteht dabei typischerweise?",
+      "options": [
+        "Keine – ein Cache hat nur Vorteile",
+        "Mehr Geschwindigkeit, aber Daten können kurzzeitig veraltet sein",
+        "Mehr Sicherheit, aber schlechtere Bedienbarkeit",
+        "Bessere Portabilität, aber höhere Lizenzkosten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ein Cache liefert gespeicherte Ergebnisse. Ändert sich der Stundenplan, kann der Cache bis zur Aktualisierung alte Daten liefern – ein klassischer Trade-off zwischen Leistung und Aktualität."
+    }
+  ]
+}

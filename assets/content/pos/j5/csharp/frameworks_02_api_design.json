@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-csharp-frameworks_02_api_design",
+  "title": "Gutes API-Design",
+  "summary": "Namen, Fehlerbehandlung, Semantic Versioning und Abwärtskompatibilität für eigene Bibliotheken.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die API (Application Programming Interface) einer Bibliothek ist alles, was andere davon benutzen können: public Klassen, Methoden, Parameter, Exceptions. Gutes API-Design heißt: leicht richtig und schwer falsch zu benutzen. Das beginnt bei Namen: sprechend, ohne Abkürzungen und nach den .NET-Konventionen (PascalCase für Typen und Methoden, Suffix Async für asynchrone Methoden). Was nicht public ist, gehört nicht zur API – mach so wenig wie möglich public."
+    },
+    {
+      "type": "code",
+      "content": "// schlecht: Was ist d? Was heißt true?\ndouble Calc(int[] d, bool f) { ... }\nCalc(noten, true);\n\n// besser: sprechend, klarer Typ\ndouble Schnitt(IReadOnlyList<int> noten,\n               bool runden = false) { ... }\nSchnitt(noten, runden: true);"
+    },
+    {
+      "type": "text",
+      "content": "Benannte Argumente (runden: true) machen Aufrufe mit bool-Parametern lesbar. IReadOnlyList<int> verrät, dass die Methode die Liste nicht verändert, und akzeptiert Arrays wie Listen. Zur Fehlerbehandlung: Gib bei Fehlern nicht -1 oder null zurück, sondern wirf eine Exception mit klarer Meldung. Eine eigene Exception-Hierarchie mit gemeinsamer Basisklasse erlaubt gezieltes Abfangen. Für erwartbare Fehlschläge bietet .NET zusätzlich das Try-Muster (wie int.TryParse):"
+    },
+    {
+      "type": "code",
+      "content": "public class NotenException(string msg)\n  : Exception(msg);\n\npublic class UngueltigeNoteException(int note)\n  : NotenException($\"Note {note} nicht in 1-5\")\n{\n  public int Note { get; } = note;\n}\n\npublic static class Noten\n{\n  public static double Schnitt(\n    IReadOnlyList<int> noten)\n  {\n    ArgumentNullException.ThrowIfNull(noten);\n    if (noten.Count == 0)\n      throw new ArgumentException(\n        \"noten ist leer\", nameof(noten));\n    foreach (var n in noten)\n      if (n is < 1 or > 5)\n        throw new UngueltigeNoteException(n);\n    return noten.Average();\n  }\n\n  public static bool TrySchnitt(\n    IReadOnlyList<int> noten, out double s)\n  {\n    s = 0;\n    if (noten is not { Count: > 0 } ||\n        noten.Any(n => n is < 1 or > 5))\n      return false;\n    s = noten.Average();\n    return true;\n  }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Für falsche Argumente, die keine fachlichen Fehler sind (null, leere Liste), passen die eingebauten Typen ArgumentNullException und ArgumentException. Die eigene Exception trägt zusätzlich Daten (Note), mit denen das aufrufende Programm weiterarbeiten kann:"
+    },
+    {
+      "type": "code",
+      "content": "try\n{\n  Noten.Schnitt([1, 7]);\n}\ncatch (NotenException e)\n{\n  Console.WriteLine($\"{e.Message} | \" +\n    (e as UngueltigeNoteException)?.Note);\n}\n// Note 7 nicht in 1-5 | 7\n\nif (Noten.TrySchnitt([1, 2], out var s))\n  Console.WriteLine(s);   // 1.5"
+    },
+    {
+      "type": "text",
+      "content": "Jede veröffentlichte Version bekommt eine Nummer nach Semantic Versioning (SemVer): MAJOR.MINOR.PATCH. PATCH für Fehlerbehebungen, MINOR für neue, abwärtskompatible Funktionen, MAJOR für Breaking Changes. Versionen 0.x gelten als instabil. NuGet-Pakete verwenden SemVer; mit einem Versionsbereich wie Version=\"[1.4,2.0)\" in der PackageReference bekommst du Fixes und Features, aber keine Brüche."
+    },
+    {
+      "type": "text",
+      "content": "Abwärtskompatibel sind: neue Klassen, neue Methoden, neue Überladungen. Breaking Changes sind: Umbenennen oder Entfernen, neue Pflichtparameter, geänderte Typen. Achtung, .NET-Falle: Auch ein neuer optionaler Parameter ist ein Breaking Change für bereits kompilierte Programme! Der Standardwert wird beim Aufrufer einkompiliert, und die alte Methodensignatur existiert nicht mehr (MissingMethodException). Ergänze lieber eine Überladung. Was weg soll, markierst du zuerst mit [Obsolete]:"
+    },
+    {
+      "type": "code",
+      "content": "public static class NotenAlt\n{\n  [Obsolete(\"Veraltet seit 1.5, \" +\n    \"nutze Noten.Schnitt. Weg in 2.0.\")]\n  public static double Mittel(int[] n)\n    => Noten.Schnitt(n);\n}\n\n// Aufruf von NotenAlt.Mittel(...) ergibt\n// warning CS0618: ... is obsolete:\n// 'Veraltet seit 1.5, nutze ...'"
+    },
+    {
+      "type": "text",
+      "content": "Der Compiler warnt jede:n, der/die Mittel noch verwendet; erst in Version 2.0 verschwindet die Methode. Mit [Obsolete(\"...\", true)] wird aus der Warnung ein Fehler. Zusammenfassung: Sprechende Namen, wenig public, eigene Exception-Hierarchie plus Try-Methoden, SemVer und ein Obsolete-Zeitraum vor jedem Breaking Change machen eine Bibliothek angenehm und sicher benutzbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Deine NuGet-Bibliothek ist in Version 2.3.1. Du fügst eine neue Methode TrySchnitt hinzu. Welche Version ist nach SemVer richtig?",
+      "options": [
+        "2.4.0",
+        "2.3.2",
+        "3.0.0",
+        "2.3.1.1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Eine neue, abwärtskompatible Funktionalität erhöht MINOR und setzt PATCH auf 0: 2.4.0."
+    },
+    {
+      "question": "Was gibt dieser Code mit der Bibliothek aus der Lektion aus?",
+      "code": "try { Noten.Schnitt([]); }\ncatch (NotenException)\n{ Console.WriteLine(\"A\"); }\ncatch (ArgumentException)\n{ Console.WriteLine(\"B\"); }",
+      "options": [
+        "A",
+        "A und B",
+        "Nichts, die Exception wird nicht gefangen",
+        "B"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei einer leeren Liste wirft Schnitt eine ArgumentException. Sie ist keine Unterklasse von NotenException, deshalb greift erst der zweite catch-Block."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "Console.WriteLine(\n  Noten.TrySchnitt([2, 6], out var x)\n  + \" \" + x);",
+      "options": [
+        "True 4",
+        "False 0",
+        "Eine UngueltigeNoteException",
+        "False 4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Note 6 ist ungültig. TrySchnitt wirft keine Exception, sondern liefert false; der out-Parameter wurde vorher auf 0 gesetzt."
+    },
+    {
+      "question": "Version 1.1 deiner Bibliothek ändert Schnitt(int[] n) zu Schnitt(int[] n, bool runden = false). Eine App, die gegen 1.0 kompiliert wurde, bekommt nur die neue DLL. Was passiert?",
+      "options": [
+        "Alles funktioniert, runden ist automatisch false",
+        "Der Compiler der App meldet eine Warnung",
+        "Zur Laufzeit eine MissingMethodException, weil die alte Signatur fehlt",
+        "Die App ruft automatisch die neue Methode mit runden = true auf"
+      ],
+      "correctIndex": 2,
+      "explanation": "Optionale Parameter sind nur für den Quellcode bequem: Der Standardwert wird beim Kompilieren in den Aufrufer geschrieben. Die kompilierte App sucht weiterhin Schnitt(int[]) – die gibt es nicht mehr. Eine zusätzliche Überladung wäre binär kompatibel."
+    }
+  ]
+}

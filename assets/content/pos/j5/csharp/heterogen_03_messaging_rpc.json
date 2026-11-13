@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-csharp-heterogen_03_messaging_rpc",
+  "title": "Messaging und RPC",
+  "summary": "Message Queues, Publish/Subscribe und entfernte Methodenaufrufe mit Stubs und gRPC.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bei REST wartet der Client, bis der Server antwortet (synchron). Ist der Server gerade nicht erreichbar, scheitert der Aufruf. Bei Messaging schickt der Sender eine Nachricht an einen Vermittler (Message Broker, z. B. RabbitMQ, Apache Kafka oder im IoT-Bereich ein MQTT-Broker) und arbeitet sofort weiter. Der Empfänger holt die Nachricht ab, wenn er Zeit hat. Innerhalb eines Programms zeigt ein Channel aus System.Threading.Channels das Prinzip:"
+    },
+    {
+      "type": "code",
+      "content": "using System.Threading.Channels;\n\nvar auftraege = Channel.CreateUnbounded<string>();\n\nvar drucker = Task.Run(async () =>\n{\n  await foreach (var job in\n      auftraege.Reader.ReadAllAsync())\n    Console.WriteLine($\"drucke {job}\");\n});\n\nforeach (var d in new[] { \"a.pdf\", \"b.pdf\" })\n  await auftraege.Writer.WriteAsync(d);\nauftraege.Writer.Complete();  // Stopp-Signal\nawait drucker;\n// drucke a.pdf\n// drucke b.pdf"
+    },
+    {
+      "type": "text",
+      "content": "Das ist eine Point-to-Point-Queue: Jede Nachricht wird von genau einem Consumer verarbeitet. Lesen mehrere Drucker-Tasks aus demselben Channel, teilen sie sich die Arbeit (Lastverteilung). Bei Publish/Subscribe dagegen bekommt jeder Abonnent eines Themas (Topic) eine Kopie. Der Sender kennt die Empfänger nicht – neue Abonnenten kommen dazu, ohne dass man den Sender ändert. Ein Mini-Broker im Speicher:"
+    },
+    {
+      "type": "code",
+      "content": "var b = new Broker();\nb.Subscribe(\"noten\", \n  m => Console.WriteLine($\"App: {m}\"));\nb.Subscribe(\"noten\", \n  m => Console.WriteLine($\"Mail: {m}\"));\nb.Publish(\"noten\", \"POS: 1\");\nb.Publish(\"termine\", \"Matura\");  // kein Abo\n// App: POS: 1\n// Mail: POS: 1\n\nclass Broker\n{\n  readonly Dictionary<string,\n    List<Action<string>>> abos = new();\n\n  public void Subscribe(string topic,\n                        Action<string> h)\n  {\n    if (!abos.TryGetValue(topic, out var l))\n      abos[topic] = l = new();\n    l.Add(h);\n  }\n\n  public void Publish(string topic, string msg)\n  {\n    if (abos.TryGetValue(topic, out var l))\n      foreach (var h in l) h(msg);\n  }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Echte Broker speichern Nachrichten dauerhaft und bestätigen die Zustellung (Acknowledgement). Dabei gibt es drei Garantien: at-most-once (höchstens einmal, kann verloren gehen), at-least-once (mindestens einmal, kann doppelt kommen) und exactly-once (genau einmal – technisch aufwendig). In der Praxis ist at-least-once üblich. Deshalb müssen Consumer idempotent sein: Sie merken sich z. B. die Nachrichten-ID und ignorieren Duplikate."
+    },
+    {
+      "type": "text",
+      "content": "RPC (Remote Procedure Call) geht einen anderen Weg: Der Client ruft eine Methode auf, als wäre sie lokal – in Wahrheit läuft sie auf einem anderen Rechner. Ein Stub verpackt Name und Parameter in eine Nachricht und schickt sie übers Netz. Den Stub kannst du mit dem Wissen aus der REST-Lektion selbst bauen (Projekt mit dotnet new web):"
+    },
+    {
+      "type": "code",
+      "content": "using System.Net.Http.Json;\n\n// Server: eine \"entfernte Funktion\"\nvar app = WebApplication.Create();\napp.MapPost(\"/rpc/notenschnitt\",\n  (int[] noten) => noten.Average());\napp.Urls.Add(\"http://127.0.0.1:5001\");\nawait app.StartAsync();\n\n// Client: der Stub sieht aus wie lokal\nvar stub = new NotenStub(new HttpClient {\n  BaseAddress = new(\"http://127.0.0.1:5001\") });\nConsole.WriteLine(\n  await stub.SchnittAsync([1, 2, 2]));\n// 1.6666666666666667\ntry { await stub.SchnittAsync([]); }\ncatch (HttpRequestException e)\n{ Console.WriteLine(e.StatusCode); }\n// InternalServerError\nawait app.StopAsync();\n\nclass NotenStub(HttpClient http)\n{\n  public async Task<double> SchnittAsync(\n    int[] noten)\n  {\n    var r = await http.PostAsJsonAsync(\n      \"/rpc/notenschnitt\", noten);\n    r.EnsureSuccessStatusCode();\n    return await r.Content\n      .ReadFromJsonAsync<double>();\n  }\n}"
+    },
+    {
+      "type": "text",
+      "content": "Ein Fehler auf dem Server kommt beim Client nur als Statuscode an (hier 500, weil Average bei einem leeren Array eine Exception wirft). Typischer Fehler: zu vergessen, dass ein entfernter Aufruf langsam sein oder ausfallen kann – er sieht lokal aus, ist es aber nicht. Den Stub per Hand zu schreiben ist mühsam. gRPC erzeugt ihn: Dienst und Nachrichten stehen in einer .proto-Datei, übertragen wird Protobuf über HTTP/2. In .NET braucht man dafür NuGet-Pakete (z. B. Grpc.AspNetCore für den Server)."
+    },
+    {
+      "type": "code",
+      "content": "// noten.proto\nsyntax = \"proto3\";\nservice Noten {\n  rpc Schnitt (NotenListe)\n      returns (Ergebnis);\n}\nmessage NotenListe {\n  repeated int32 noten = 1; }\nmessage Ergebnis { double schnitt = 1; }\n\n// C#: Basisklasse wird generiert\nusing Grpc.Core;\nclass NotenService : Noten.NotenBase\n{\n  public override Task<Ergebnis> Schnitt(\n    NotenListe req, ServerCallContext ctx)\n    => Task.FromResult(new Ergebnis\n       { Schnitt = req.Noten.Average() });\n}\n// Program.cs:\n// builder.Services.AddGrpc();\n// app.MapGrpcService<NotenService>();"
+    },
+    {
+      "type": "text",
+      "content": "Für REST-APIs übernimmt OpenAPI (früher Swagger) diese Rolle: eine maschinenlesbare Beschreibung aller Endpunkte, Parameter und Antworten in YAML oder JSON. Daraus lassen sich Dokumentation (Swagger UI), Tests und Clients für andere Sprachen erzeugen. ASP.NET Core kann die Beschreibung mit einem NuGet-Paket automatisch aus den Minimal-API-Endpunkten generieren.\n\nZusammenfassung: Queues entkoppeln Sender und Empfänger zeitlich, Pub/Sub verteilt an viele Abonnenten, Consumer müssen Duplikate vertragen. RPC und gRPC rufen entfernte Methoden auf, OpenAPI beschreibt REST-Schnittstellen."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie viele Zeilen gibt dieser Code mit dem Broker aus der Lektion aus?",
+      "code": "var b = new Broker();\nb.Subscribe(\"noten\", Console.WriteLine);\nb.Subscribe(\"noten\", Console.WriteLine);\nb.Subscribe(\"news\", Console.WriteLine);\nb.Publish(\"noten\", \"x\");\nb.Publish(\"news\", \"y\");",
+      "options": [
+        "1",
+        "2",
+        "0",
+        "3"
+      ],
+      "correctIndex": 3,
+      "explanation": "Für \"noten\" gibt es zwei Abonnenten, für \"news\" einen. Publish(\"noten\") ruft beide auf, Publish(\"news\") einen: zusammen drei Zeilen."
+    },
+    {
+      "question": "Ein Broker liefert at-least-once. Was gibt der idempotente Consumer aus?",
+      "code": "int saldo = 0;\nvar gesehen = new HashSet<int>();\nvar nachrichten = new[] {\n  (Id: 1, Betrag: 10), (Id: 2, Betrag: 5),\n  (Id: 1, Betrag: 10) };\nforeach (var (id, betrag) in nachrichten)\n{\n  if (!gesehen.Add(id)) continue;\n  saldo += betrag;\n}\nConsole.WriteLine(saldo);",
+      "options": [
+        "25",
+        "15",
+        "10",
+        "20"
+      ],
+      "correctIndex": 1,
+      "explanation": "HashSet.Add liefert false, wenn die ID schon enthalten ist. Die doppelte Nachricht mit ID 1 wird übersprungen: 10 + 5 = 15."
+    },
+    {
+      "question": "Was ist der wesentliche Unterschied zwischen einer Point-to-Point-Queue und Publish/Subscribe?",
+      "options": [
+        "Pub/Sub ist synchron, Queues sind asynchron",
+        "Bei Pub/Sub erhält jeder Abonnent eine Kopie, bei einer Queue verarbeitet genau ein Consumer jede Nachricht",
+        "Queues funktionieren nur mit JSON",
+        "Bei Pub/Sub muss der Sender alle Empfänger kennen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beide sind asynchron. Eine Queue verteilt Arbeit (jede Nachricht einmal), Pub/Sub verteilt Informationen an alle Interessenten, ohne dass der Sender sie kennt."
+    },
+    {
+      "question": "Welche Aussage über gRPC und OpenAPI stimmt?",
+      "options": [
+        "gRPC verwendet Protobuf über HTTP/2, OpenAPI beschreibt REST-Schnittstellen",
+        "OpenAPI ist ein binäres Übertragungsprotokoll",
+        "gRPC funktioniert nur zwischen .NET-Programmen",
+        "OpenAPI ersetzt HTTP"
+      ],
+      "correctIndex": 0,
+      "explanation": "gRPC definiert Dienste in .proto-Dateien und überträgt Protobuf über HTTP/2, sprachübergreifend. OpenAPI ist eine Beschreibungssprache (YAML/JSON) für REST-APIs."
+    }
+  ]
+}

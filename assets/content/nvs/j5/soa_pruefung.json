@@ -1,0 +1,118 @@
+{
+  "id": "nvs-j5-soa_pruefung",
+  "title": "Abschlussprüfung: Serviceorientierte Architektur & Middleware",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Welches Prinzip verletzt ein Service, dessen Consumer die interne Klasse „SchuelerEntity“ des Providers als Bibliothek einbinden müssen?",
+      "options": [
+        "Zustandslosigkeit",
+        "Lose Kopplung über einen Vertrag",
+        "Auffindbarkeit",
+        "Wiederverwendbarkeit"
+      ],
+      "correctIndex": 1,
+      "explanation": "Consumer sollen nur vom Vertrag (z. B. OpenAPI) abhängen, nicht von internen Klassen. Sonst zieht jede interne Änderung Anpassungen bei allen Consumern nach sich."
+    },
+    {
+      "question": "Ein Provider benennt in Version 1.3 das Antwortfeld „klasse“ in „klassenname“ um. Was ist die sauberste Lösung?",
+      "options": [
+        "Einfach ausrollen – Tolerant Reader fangen das ab",
+        "Die Consumer bitten, mit KeyErrors zu leben",
+        "Als Breaking Change eine neue Version (z. B. /v2) anbieten und /v1 eine Übergangszeit weiterbetreiben",
+        "Das Feld zusätzlich als Pflichtparameter in der Anfrage verlangen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Umbenennen ist inkompatibel: Ein Tolerant Reader ignoriert zwar unbekannte Felder, vermisst aber das alte. Daher neue Version parallel anbieten, bis alle umgestellt haben."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "abos = {\"A\": [], \"B\": [], \"C\": []}\nfor name in abos:          # publish\n    abos[name].append(\"N1\")\nprint([len(v) for v in abos.values()])",
+      "options": [
+        "[1, 1, 1]",
+        "[3, 0, 0]",
+        "[2, 1, 0]",
+        "[1, 0, 0]"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei Publish/Subscribe bekommt jeder Abonnent eine Kopie jeder Nachricht. Es wurde eine Nachricht veröffentlicht, also hat jeder der drei Abonnenten genau eine."
+    },
+    {
+      "question": "Ein Zahlungs-Consumer bekommt Nachrichten at-least-once. Welche Implementierung verhindert doppelte Abbuchungen am zuverlässigsten?",
+      "options": [
+        "Nachrichten erst nach 5 Sekunden verarbeiten",
+        "Verarbeitete Nachrichten-IDs dauerhaft speichern und Duplikate überspringen",
+        "Auf at-most-once umstellen, damit nie Duplikate kommen",
+        "Den Broker nach jeder Nachricht neu starten"
+      ],
+      "correctIndex": 1,
+      "explanation": "Idempotenz über gespeicherte Nachrichten-IDs ist das Standardmuster. At-most-once vermeidet zwar Duplikate, verliert aber eventuell Zahlungen."
+    },
+    {
+      "question": "Welche Aufgabe gehört NICHT in ein API-Gateway?",
+      "options": [
+        "TLS-Terminierung",
+        "Rate Limiting",
+        "Berechnung der Zeugnisnoten",
+        "Routing nach Pfadpräfix"
+      ],
+      "correctIndex": 2,
+      "explanation": "Fachliche Regeln wie Notenberechnung gehören in den zuständigen Service. Ein Gateway mit Geschäftslogik wird zum neuen Monolithen."
+    },
+    {
+      "question": "Bei welcher Discovery-Variante wählt der aufrufende Service selbst eine Instanz aus der Liste der Registry?",
+      "options": [
+        "Server-Side Discovery",
+        "DNS-Round-Robin am Gateway",
+        "Content-Based Routing",
+        "Client-Side Discovery"
+      ],
+      "correctIndex": 3,
+      "explanation": "Bei Client-Side Discovery holt der Client die Instanzliste und verteilt selbst. Bei Server-Side Discovery übernimmt ein Load Balancer oder das Gateway diese Auswahl."
+    },
+    {
+      "question": "Eine Schule integriert 8 Systeme. Um wie viele Schnittstellen sinkt die Anzahl, wenn statt Punkt-zu-Punkt ein Hub verwendet wird?",
+      "options": [
+        "20",
+        "28",
+        "8",
+        "56"
+      ],
+      "correctIndex": 0,
+      "explanation": "Punkt-zu-Punkt: 8·7/2 = 28. Hub: 8. Ersparnis: 28 − 8 = 20."
+    },
+    {
+      "question": "Ein Lieferant schickt Bestellungen als XML, das ERP erwartet JSON im kanonischen Datenmodell. Welches Muster setzt man ein?",
+      "options": [
+        "Splitter",
+        "Message Translator",
+        "Aggregator",
+        "Dead Letter Channel"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Message Translator wandelt ein Nachrichtenformat in ein anderes um, z. B. ins kanonische Datenmodell."
+    },
+    {
+      "question": "Welcher Integrationsstil bietet sofortige Konsistenz, koppelt die Anwendungen aber am stärksten aneinander?",
+      "options": [
+        "Messaging",
+        "Dateiaustausch",
+        "Gemeinsame Datenbank",
+        "Publish/Subscribe"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei der gemeinsamen Datenbank sehen alle sofort dieselben Daten, aber das Schema wird zum Vertrag aller Beteiligten – jede Änderung betrifft alle."
+    },
+    {
+      "question": "Ein Bestellprozess läuft über Lager, Zahlung und Versand. Die Zahlung schlägt fehl, nachdem das Lager schon reserviert hat. Was ist in einer serviceorientierten Architektur üblich?",
+      "options": [
+        "Ein Rollback der gemeinsamen Datenbanktransaktion aller Services",
+        "Den Fehler ignorieren, das Lager gleicht sich nachts aus",
+        "Den Versand trotzdem starten",
+        "Eine Ausgleichsaktion: Die Lagerreservierung wird wieder storniert"
+      ],
+      "correctIndex": 3,
+      "explanation": "Services haben eigene Daten, eine gemeinsame Transaktion gibt es nicht. Stattdessen werden bereits erledigte Schritte durch Ausgleichsaktionen rückgängig gemacht – egal ob orchestriert oder choreografiert."
+    }
+  ]
+}

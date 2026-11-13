@@ -1,0 +1,90 @@
+{
+  "id": "dbi-j5-bi_03_data_mining",
+  "title": "Data Mining: Assoziationsregeln und Clustering",
+  "summary": "Muster in Daten automatisch finden – Support, Konfidenz und Lift nachrechnen und die Idee von k-Means verstehen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Data Mining heißt, in großen Datenmengen automatisch Muster zu finden, die man nicht schon vorher kennt. Es ist ein Schritt im KDD-Prozess (Knowledge Discovery in Databases): Daten auswählen → bereinigen → passend transformieren → Data Mining → Ergebnisse interpretieren und bewerten. Die Daten kommen typischerweise aus dem Data Warehouse – die ETL-Vorarbeit zahlt sich hier aus."
+    },
+    {
+      "type": "text",
+      "content": "Typische Aufgaben:\n• Assoziationsanalyse: Was wird oft gemeinsam gekauft? (Warenkorbanalyse)\n• Clustering: Datensätze in Gruppen ähnlicher Objekte einteilen, ohne die Gruppen vorher zu kennen (unüberwachtes Lernen).\n• Klassifikation: aus Beispielen mit bekannter Klasse lernen und neue Fälle zuordnen, z. B. mit einem Entscheidungsbaum (überwachtes Lernen).\n• Ausreißererkennung: ungewöhnliche Datensätze finden, z. B. verdächtige Buchungen."
+    },
+    {
+      "type": "text",
+      "content": "Eine Assoziationsregel X → Y bedeutet: „Wer X kauft, kauft oft auch Y.“ Bewertet wird sie mit:\n• Support(X → Y) = Anteil aller Transaktionen, die X und Y enthalten – wie häufig ist die Regel überhaupt?\n• Konfidenz(X → Y) = Support(X ∪ Y) / Support(X) – in wie viel Prozent der Fälle mit X ist auch Y dabei?\n• Lift = Konfidenz(X → Y) / Support(Y) – größer als 1 heißt: X erhöht die Wahrscheinlichkeit für Y; genau 1 heißt: kein Zusammenhang."
+    },
+    {
+      "type": "code",
+      "content": "10 Warenkörbe am Schulbuffet\n 1 Semmel, Eistee\n 2 Semmel, Eistee, Apfel\n 3 Semmel, Kakao\n 4 Golatsche, Kakao\n 5 Semmel, Eistee\n 6 Apfel\n 7 Semmel, Eistee, Golatsche\n 8 Golatsche, Kakao\n 9 Semmel\n10 Eistee\n\nRegel Semmel -> Eistee\nSemmel:          6 Körbe -> 0,6\nEistee:          5 Körbe -> 0,5\nSemmel + Eistee: 4 Körbe -> 0,4\nSupport   = 0,4\nKonfidenz = 0,4 / 0,6 = 0,67\nLift      = 0,67 / 0,5 = 1,33"
+    },
+    {
+      "type": "code",
+      "content": "koerbe = [ # 10 Körbe, s. oben\n    {\"Semmel\", \"Eistee\"}, ...]\nn = len(koerbe)\n\ndef support(menge):  # <= : Teilmenge\n    return sum(menge <= k for k in koerbe) / n\n\ndef konfidenz(x, y):\n    return support(x | y) / support(x)\n\nx, y = {\"Semmel\"}, {\"Eistee\"}\nprint(\"Support:\", support(x | y))\nprint(\"Konfidenz:\", round(konfidenz(x, y), 2))\nprint(\"Lift:\", round(konfidenz(x, y)\n                     / support(y), 2))\n# Support: 0.4\n# Konfidenz: 0.67\n# Lift: 1.33"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: Konfidenz ist nicht symmetrisch! Eistee → Semmel hat Konfidenz 0,4 / 0,5 = 0,8, Semmel → Eistee nur 0,67. Weil es bei vielen Produkten riesig viele mögliche Regeln gibt, legt man Mindestwerte für Support und Konfidenz fest. Der Apriori-Algorithmus nutzt dabei: Jede Teilmenge einer häufigen Menge ist ebenfalls häufig – ist {Apfel} schon selten, muss man {Apfel, Eistee} gar nicht mehr zählen. Und: Eine Regel zeigt ein gemeinsames Auftreten, keinen Grund (Korrelation ist keine Kausalität)."
+    },
+    {
+      "type": "text",
+      "content": "Clustering mit k-Means: Du gibst die Anzahl k der Gruppen vor. Der Algorithmus wählt k Startzentren und wiederholt dann:\n1. Jeden Punkt dem nächstgelegenen Zentrum zuordnen.\n2. Jedes Zentrum auf den Mittelwert seiner Punkte verschieben.\n3. Ändern sich die Zentren nicht mehr, ist er fertig.\nBeispiel: wöchentliche Buffet-Ausgaben von acht Schüler:innen in Euro, k = 2:"
+    },
+    {
+      "type": "code",
+      "content": "werte = [2, 3, 4, 10, 11, 12, 20, 22]\nzentren = [2, 4]        # k = 2, Start\n\nfor runde in range(1, 10):\n    gruppen = [[] for _ in zentren]\n    for w in werte:     # 1. zuordnen\n        abst = [abs(w - z) for z in zentren]\n        i = abst.index(min(abst))\n        gruppen[i].append(w)\n    neu = [round(sum(g) / len(g), 1)\n           for g in gruppen]\n    print(runde, gruppen, neu)\n    if neu == zentren:  # 2. stabil?\n        break\n    zentren = neu       # 3. verschieben\n# 1 [[2, 3], [4, 10, 11, 12, 20, 22]]\n#   [2.5, 13.2]\n# 2 [[2, 3, 4], [10, 11, 12, 20, 22]]\n#   [3.0, 15.0]\n# 3 ... unverändert -> fertig"
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: k blind wählen und schlechte Startwerte nicht bemerken. Mit k = 3 und den Startzentren 2, 11, 21 entstehen die sinnvollen Gruppen {2, 3, 4}, {10, 11, 12}, {20, 22}; mit 2, 4, 10 dagegen {2, 3}, {4}, {10, …, 22} – deshalb startet man mehrmals mit verschiedenen Werten. Außerdem werden oft Merkmale mit ganz unterschiedlichen Größenordnungen nicht skaliert – dann bestimmt nur das Merkmal mit den größten Zahlen die Abstände. Und: Werden personenbezogene Daten ausgewertet, gelten die Regeln des Datenschutzes (DSGVO), etwa Zweckbindung und Datenminimierung.\n\nZusammenfassung: Data Mining findet Muster im KDD-Prozess. Support = wie häufig, Konfidenz = wie verlässlich, Lift > 1 = echter positiver Zusammenhang. k-Means: zuordnen, Mittelwerte bilden, wiederholen bis stabil; k gibt man selbst vor."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie groß ist der Support der Regel Golatsche → Kakao für die 10 Warenkörbe der Lektion?",
+      "options": [
+        "0,3",
+        "0,2",
+        "0,67",
+        "0,5"
+      ],
+      "correctIndex": 1,
+      "explanation": "Golatsche und Kakao kommen gemeinsam in Korb 4 und 8 vor: 2 von 10 = 0,2."
+    },
+    {
+      "question": "Wie groß ist die Konfidenz der Regel Eistee → Semmel?",
+      "options": [
+        "0,4",
+        "0,5",
+        "0,67",
+        "0,8"
+      ],
+      "correctIndex": 3,
+      "explanation": "Support(Eistee ∪ Semmel) = 0,4, Support(Eistee) = 0,5. Konfidenz = 0,4 / 0,5 = 0,8."
+    },
+    {
+      "question": "Eine Regel hat einen Lift von genau 1. Was bedeutet das?",
+      "options": [
+        "X und Y treten statistisch unabhängig voneinander auf",
+        "Wer X kauft, kauft immer Y",
+        "Die Regel kommt in jedem Warenkorb vor",
+        "Die Konfidenz ist 100 %"
+      ],
+      "correctIndex": 0,
+      "explanation": "Lift = 1 heißt: Y kommt bei X-Käufen genauso oft vor wie insgesamt. X verrät also nichts über Y."
+    },
+    {
+      "question": "k-Means mit k = 2 und den Startzentren 1 und 2. Welche Zentren gibt es nach der ersten Runde?",
+      "code": "Werte: 1, 2, 9, 10",
+      "options": [
+        "1 und 2",
+        "1,5 und 9,5",
+        "1 und 7",
+        "5,5 und 5,5"
+      ],
+      "correctIndex": 2,
+      "explanation": "Zuordnung: 1 → Zentrum 1; 2, 9 und 10 → Zentrum 2 (näher als 1). Neue Mittelwerte: 1 und (2 + 9 + 10) / 3 = 7."
+    }
+  ]
+}

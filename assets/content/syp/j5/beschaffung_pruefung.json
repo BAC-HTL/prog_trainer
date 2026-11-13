@@ -1,0 +1,117 @@
+{
+ "id": "syp-j5-beschaffung_pruefung",
+ "title": "Abschlussprüfung: Beschaffung, Pflichtenheft & Ausschreibung",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "Was unterscheidet die Kapitalwertmethode von der statischen Amortisationsrechnung?",
+   "options": [
+    "Sie verwendet nur die Anschaffungskosten",
+    "Sie zinst zukünftige Rückflüsse auf heute ab und berücksichtigt so den Zeitwert des Geldes",
+    "Sie ignoriert laufende Kosten",
+    "Sie gilt nur für Hardware"
+   ],
+   "correctIndex": 1,
+   "explanation": "Ein Euro in fünf Jahren ist heute weniger wert. Der Kapitalwert diskontiert jeden Rückfluss mit (1 + Zinssatz)^t."
+  },
+  {
+   "question": "Investition 20 000 €, Rückfluss 12 100 € nach genau 2 Jahren (einmalig), Zinssatz 10 %. Wie hoch ist der Kapitalwert?",
+   "options": [
+    "−10 000 €",
+    "−7 900 €",
+    "2 100 €",
+    "−8 900 €"
+   ],
+   "correctIndex": 0,
+   "explanation": "12 100 / 1,1² = 12 100 / 1,21 = 10 000 €. Kapitalwert: 10 000 − 20 000 = −10 000 €. Die Investition lohnt sich nicht."
+  },
+  {
+   "question": "In der Nutzwertanalyse ergeben die Gewichte 40 % + 30 % + 20 % + 20 %. Was ist das Problem?",
+   "options": [
+    "Kein Problem, solange alle positiv sind",
+    "Der Preis muss immer 50 % haben",
+    "Die Summe ist 110 % – die Gewichtung muss 100 % ergeben",
+    "Es dürfen höchstens drei Kriterien sein"
+   ],
+   "correctIndex": 2,
+   "explanation": "Gewichte müssen 100 % ergeben, sonst sind die Nutzwerte verzerrt und nicht vergleichbar."
+  },
+  {
+   "question": "Angebote kosten 30 000 €, 36 000 € und 24 000 €. Das billigste scheidet wegen eines Muss-Kriteriums aus. Wie viele Preispunkte (10 · billigst / Preis) bekommt das Angebot mit 36 000 €?",
+   "options": [
+    "6,7",
+    "8,0",
+    "10,0",
+    "8,3"
+   ],
+   "correctIndex": 3,
+   "explanation": "Basis ist das billigste gültige Angebot: 30 000 €. 10 · 30 000 / 36 000 ≈ 8,3. Mit dem ausgeschiedenen Angebot als Basis käme fälschlich 6,7 heraus."
+  },
+  {
+   "question": "Welche Aussage über Lasten- und Pflichtenheft ist richtig?",
+   "options": [
+    "Das Lastenheft beschreibt die Anforderungen des Auftraggebers, das Pflichtenheft die Umsetzung durch den Auftragnehmer",
+    "Beide schreibt der Auftragnehmer",
+    "Das Pflichtenheft entsteht vor dem Lastenheft",
+    "Das Lastenheft schreibt eine bestimmte Marke vor"
+   ],
+   "correctIndex": 0,
+   "explanation": "Lastenheft: was und wofür (Auftraggeber). Pflichtenheft: wie (Auftragnehmer). Das Pflichtenheft wird oft Vertragsbestandteil."
+  },
+  {
+   "question": "Warum müssen Zuschlagskriterien und Gewichtung schon in den Ausschreibungsunterlagen stehen?",
+   "options": [
+    "Damit die Bieter weniger Arbeit haben",
+    "Wegen Transparenz und Gleichbehandlung: Alle Bieter sollen wissen, wonach bewertet wird",
+    "Weil sie sonst nicht in die Nutzwertanalyse passen",
+    "Weil man sie nach Öffnung der Angebote ohnehin anpasst"
+   ],
+   "correctIndex": 1,
+   "explanation": "Kriterien vorher bekanntzugeben verhindert, dass die Bewertung nachträglich auf einen Wunschbieter zugeschnitten wird."
+  },
+  {
+   "question": "Eine Beraterin wird für 6 Monate mit 20 Stunden pro Woche zur Unterstützung des IT-Teams beauftragt, ein bestimmtes Ergebnis ist nicht vereinbart. Welche Vertragsart passt am ehesten?",
+   "options": [
+    "Werkvertrag",
+    "Kaufvertrag",
+    "Dienstvertrag (Tätigkeit auf Zeit)",
+    "Lizenzvertrag"
+   ],
+   "correctIndex": 2,
+   "explanation": "Geschuldet ist eine Tätigkeit über einen Zeitraum, kein bestimmter Erfolg – das spricht für einen (freien) Dienstvertrag."
+  },
+  {
+   "question": "Welcher Vertrag regelt Fehlerbehebung, Updates und Hotline nach der Einführung einer Software?",
+   "options": [
+    "Werkvertrag über die Entwicklung",
+    "Wartungs- bzw. Pflegevertrag, meist mit SLA",
+    "Kaufvertrag über die Hardware",
+    "Auftragsverarbeitungsvertrag"
+   ],
+   "correctIndex": 1,
+   "explanation": "Die laufende Betreuung regelt der Wartungs-/Pflegevertrag; Qualität wie Reaktionszeiten steht im SLA. Der AV-Vertrag regelt nur den Umgang mit personenbezogenen Daten."
+  },
+  {
+   "question": "Pönale: 0,5 % pro Tag Verzug, höchstens 5 %, Auftragswert 60 000 €. Es gibt 14 Tage Verzug. Wie hoch ist die Pönale?",
+   "options": [
+    "4 200 €",
+    "420 €",
+    "3 000 €",
+    "6 000 €"
+   ],
+   "correctIndex": 2,
+   "explanation": "14 · 0,5 % = 7 %, gedeckelt auf 5 %: 60 000 · 0,05 = 3 000 €."
+  },
+  {
+   "question": "Was ist das Ergebnis einer Abnahme mit Abnahmetest?",
+   "options": [
+    "Ein Abnahmeprotokoll mit dem Ergebnis und festgestellten Mängeln samt deren Schwere",
+    "Das Lastenheft",
+    "Die Zuschlagsentscheidung",
+    "Die Rechnung des Auftraggebers"
+   ],
+   "correctIndex": 0,
+   "explanation": "Bei der Abnahme wird gegen die vereinbarten Kriterien getestet und das Ergebnis protokolliert. Schwere Mängel verhindern die Abnahme."
+  }
+ ]
+}

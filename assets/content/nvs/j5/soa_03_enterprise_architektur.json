@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j5-soa_03_enterprise_architektur",
+  "title": "Enterprise Application Architecture & Integrationsmuster",
+  "summary": "Wie man viele Unternehmensanwendungen mit Integrationsstilen und Enterprise Integration Patterns verbindet – vom Hub bis zur Choreografie.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Unternehmen – oder eine große Schule mit Verwaltung – betreibt viele Anwendungen: ERP (Warenwirtschaft, Buchhaltung), CRM (Kundenverwaltung), Webshop, Personalverwaltung, Lernplattform. Jede hat eigene Daten, aber die Geschäftsprozesse laufen quer durch alle. Enterprise Application Architecture beschäftigt sich damit, wie solche Anwendungen aufgebaut sind und wie man sie integriert, ohne ein unwartbares Geflecht zu erzeugen.\n\nVerbindet man jede Anwendung direkt mit jeder anderen (Punkt-zu-Punkt), wächst die Zahl der Schnittstellen quadratisch – dieselbe Formel n·(n−1)/2 wie beim vollvermaschten Peer-to-Peer-Netz. Über eine zentrale Drehscheibe (Hub, Broker, Bus) braucht jede Anwendung nur eine Anbindung:"
+    },
+    {
+      "type": "code",
+      "content": "for n in [5, 10, 20]:\n    p2p = n * (n - 1) // 2\n    hub = n\n    print(f\"{n:2} Systeme: {p2p:3} \"\n          f\"direkt, {hub:2} über Hub\")\n\n# Ausgabe:\n#  5 Systeme:  10 direkt,  5 über Hub\n# 10 Systeme:  45 direkt, 10 über Hub\n# 20 Systeme: 190 direkt, 20 über Hub"
+    },
+    {
+      "type": "text",
+      "content": "Das Standardwerk „Enterprise Integration Patterns“ (Hohpe/Woolf) unterscheidet vier Integrationsstile: Dateiaustausch (eine Anwendung exportiert z. B. CSV, die andere importiert nachts), gemeinsame Datenbank, entfernter Prozeduraufruf (RPC, REST, SOAP) und Messaging über einen Broker. In der Praxis kommen alle vier vor; Messaging gilt als der flexibelste, aber aufwendigste Stil."
+    },
+    {
+      "type": "code",
+      "content": "Stil          + Vorteil      - Nachteil\n------------  -------------  -------------\nFile          einfach,       langsam,\nTransfer      jede Sprache   Daten veraltet\nShared        sofort         enge Kopplung\nDatabase      konsistent     ans Schema\nRemote Proc.  wie lokaler    synchron:\nInvocation    Aufruf         beide online\nMessaging     asynchron,     komplexer,\n              entkoppelt     Broker nötig"
+    },
+    {
+      "type": "text",
+      "content": "Für Messaging beschreibt das Buch einen Katalog von Mustern, die heute in Brokern und Integrationsframeworks (z. B. Apache Camel) eingebaut sind. Die wichtigsten: Message Channel (Kanal, über den Nachrichten fließen), Message Translator (wandelt Formate um, z. B. CSV in ein kanonisches Datenmodell), Content-Based Router (wählt den Zielkanal nach dem Inhalt), Splitter und Aggregator (Nachricht zerlegen bzw. wieder zusammenführen), Publish-Subscribe Channel und Dead Letter Channel (Ablage für Nachrichten, die nicht zugestellt oder verarbeitet werden können). Die Bausteine lassen sich zu Pipelines verketten:"
+    },
+    {
+      "type": "code",
+      "content": "# Message Translator: CSV -> kanonisch\ndef translate(zeile):\n    typ, nr, betrag = zeile.split(\";\")\n    return {\"typ\": typ, \"nr\": nr,\n            \"betrag\": float(betrag)}\n\nziele = {\"rechnung\": [], \"gutschrift\": [],\n         \"dead_letter\": []}\n\n# Content-Based Router\ndef route(zeile):\n    try:\n        m = translate(zeile)\n    except ValueError:      # kaputt\n        m = None\n    if m is None or m[\"typ\"] not in \\\n            (\"rechnung\", \"gutschrift\"):\n        ziele[\"dead_letter\"].append(zeile)\n    else:\n        ziele[m[\"typ\"]].append(m[\"nr\"])\n\nfor z in [\"rechnung;R1;120.50\",\n          \"gutschrift;G1;20\",\n          \"mahnung;M1;5\",\n          \"rechnung;R2;abc\"]:\n    route(z)\nfor k, v in ziele.items():\n    print(k, v)\n\n# Ausgabe:\n# rechnung ['R1']\n# gutschrift ['G1']\n# dead_letter ['mahnung;M1;5', 'rechnung;R2;abc']"
+    },
+    {
+      "type": "text",
+      "content": "Bündelt man Routing, Formatumwandlung und Protokollübersetzung in einer zentralen Plattform, spricht man von einem Enterprise Service Bus (ESB). Er arbeitet gern mit einem kanonischen Datenmodell: Jede Anwendung übersetzt nur noch in dieses gemeinsame Format statt in das jeder anderen. Kritik am ESB: Er wird leicht zum Engpass und zum Single Point of Failure, und jede Änderung landet beim zentralen ESB-Team. Darum verlagern Microservice-Architekturen die Logik zurück in die Services."
+    },
+    {
+      "type": "text",
+      "content": "Läuft ein Geschäftsprozess über mehrere Services, gibt es zwei Steuerungsarten. Bei der Orchestrierung ruft ein zentraler Prozess-Service die anderen der Reihe nach auf und kennt den Gesamtablauf – gut nachvollziehbar, aber zentral. Bei der Choreografie gibt es keinen Dirigenten: Services reagieren auf Ereignisse (Events) und veröffentlichen selbst neue – stark entkoppelt, aber der Gesamtablauf steht nirgends an einer Stelle. Schlägt ein Schritt fehl, braucht es in beiden Fällen Ausgleichsaktionen (z. B. Reservierung stornieren), weil es keine gemeinsame Transaktion über alle Services gibt."
+    },
+    {
+      "type": "code",
+      "content": "Orchestrierung:\n        Bestell-Prozess (Dirigent)\n        /        |         \\\n   Lager     Zahlung     Versand\n \"reserv.\"  \"abbuchen\"  \"verschick.\"\n\nChoreografie:\n Shop --BestellungAufgegeben--> Topic\n   Lager   hört zu -> LagerReserviert\n   Zahlung hört zu -> ZahlungErfolgt\n   Versand hört zu -> verschickt"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Punkt-zu-Punkt braucht n·(n−1)/2 Schnittstellen, ein Hub nur n. Die vier Integrationsstile sind Dateiaustausch, gemeinsame Datenbank, RPC und Messaging. Wichtige Muster: Channel, Translator, Content-Based Router, Splitter/Aggregator, Publish-Subscribe und Dead Letter Channel. Ein ESB zentralisiert Integration mit kanonischem Datenmodell, wird aber leicht zum Engpass. Orchestrierung steuert zentral, Choreografie über Events."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Eine Firma hat 12 Anwendungen, die alle miteinander Daten austauschen müssen. Wie viele Schnittstellen braucht man bei Punkt-zu-Punkt-Integration?",
+      "options": [
+        "12",
+        "144",
+        "132",
+        "66"
+      ],
+      "correctIndex": 3,
+      "explanation": "n·(n−1)/2 = 12·11/2 = 66. Über einen Hub wären es nur 12 Anbindungen. 132 wäre n·(n−1) ohne Halbierung – jede Verbindung doppelt gezählt."
+    },
+    {
+      "question": "Welches Integrationsmuster legt eine Nachricht ab, die wegen ungültigen Inhalts nicht verarbeitet werden kann?",
+      "options": [
+        "Dead Letter Channel",
+        "Aggregator",
+        "Message Translator",
+        "Publish-Subscribe Channel"
+      ],
+      "correctIndex": 0,
+      "explanation": "Der Dead Letter Channel sammelt nicht zustellbare oder nicht verarbeitbare Nachrichten, damit sie nicht verloren gehen und später untersucht werden können."
+    },
+    {
+      "question": "Was landet mit dem Router aus der Lektion im Dead Letter Channel?",
+      "code": "route(\"rechnung;R3\")\nroute(\"gutschrift;G2;-5\")",
+      "options": [
+        "Nur „rechnung;R3“",
+        "Nur „gutschrift;G2;-5“",
+        "Beide Zeilen",
+        "Keine der beiden Zeilen"
+      ],
+      "correctIndex": 0,
+      "explanation": "„rechnung;R3“ hat nur zwei Felder, das Entpacken in drei Variablen wirft einen ValueError → Dead Letter. „gutschrift;G2;-5“ ist gültig (−5 ist eine Zahl, der Typ ist bekannt) und landet im Kanal „gutschrift“."
+    },
+    {
+      "question": "Welche Aussage trifft auf Choreografie zu?",
+      "options": [
+        "Ein zentraler Prozess-Service ruft alle Schritte nacheinander auf",
+        "Services reagieren auf Events, ohne zentralen Dirigenten",
+        "Alle Schritte laufen in einer gemeinsamen Datenbanktransaktion",
+        "Sie ist nur mit einem Enterprise Service Bus möglich"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei der Choreografie veröffentlichen Services Events und reagieren auf die Events anderer. Den zentralen Dirigenten gibt es bei der Orchestrierung."
+    }
+  ]
+}

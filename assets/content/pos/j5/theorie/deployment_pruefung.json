@@ -1,0 +1,121 @@
+{
+  "id": "pos-j5-theorie-deployment_pruefung",
+  "title": "Abschlussprüfung: Internationalisierung & Deployment",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was versteht man unter Lokalisierung (l10n)?",
+      "options": [
+        "Software so bauen, dass sie grundsätzlich anpassbar ist",
+        "Die konkrete Anpassung an ein Locale, z. B. Übersetzung und Formate für de-AT",
+        "Die Ermittlung des GPS-Standorts",
+        "Das Speichern aller Texte in UTF-8"
+      ],
+      "correctIndex": 1,
+      "explanation": "Internationalisierung schafft die Voraussetzungen, Lokalisierung ist die Anpassung an eine bestimmte Sprache und Region."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "s = \"Maße\"\nprint(len(s), len(s.encode(\"utf-8\")))",
+      "options": [
+        "4 4",
+        "5 4",
+        "4 6",
+        "4 5"
+      ],
+      "correctIndex": 3,
+      "explanation": "„Maße“ hat 4 Zeichen. In UTF-8 brauchen M, a und e je 1 Byte, ß braucht 2 Bytes – zusammen 5 Bytes."
+    },
+    {
+      "question": "Wie gibt Babel 1234,5 Euro für das Locale de_AT aus?",
+      "options": [
+        "€ 1.234,50",
+        "1,234.50 €",
+        "€1,234.50",
+        "1234.5 EUR"
+      ],
+      "correctIndex": 0,
+      "explanation": "In Österreich steht das Eurozeichen laut CLDR vor dem Betrag, Tausender mit Punkt, Dezimalstellen mit Komma: € 1.234,50."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(\"Straße\".upper())",
+      "options": [
+        "STRASSE",
+        "STRAßE",
+        "Strasse",
+        "straße"
+      ],
+      "correctIndex": 0,
+      "explanation": "Bei der Großschreibung wird ß in Python zu SS. Deshalb ändert sich hier sogar die Länge des Strings."
+    },
+    {
+      "question": "Welche Teststufe führt der Auftraggeber anhand vereinbarter Kriterien durch?",
+      "options": [
+        "Unit-Test",
+        "Integrationstest",
+        "Abnahmetest",
+        "Systemtest"
+      ],
+      "correctIndex": 2,
+      "explanation": "Den Systemtest macht meist das Entwicklungs- oder Testteam, den Abnahmetest der Auftraggeber bzw. die künftigen Benutzer:innen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "e = [\"ok\"] * 18 + [\"gering\"] * 2\nquote = e.count(\"ok\") / len(e)\nprint(quote >= 0.95\n      and \"kritisch\" not in e)",
+      "options": [
+        "True",
+        "False",
+        "0.9",
+        "18"
+      ],
+      "correctIndex": 1,
+      "explanation": "18 von 20 sind 90 % und damit unter 95 %. Die Abnahme scheitert, obwohl kein kritischer Fehler dabei ist."
+    },
+    {
+      "question": "Eine Bibliothek in Version 4.2.7 entfernt eine öffentliche Methode. Welche Version ist nach SemVer richtig?",
+      "options": [
+        "4.2.8",
+        "4.3.0",
+        "5.0.0",
+        "4.3.7"
+      ],
+      "correctIndex": 2,
+      "explanation": "Das Entfernen einer öffentlichen Methode ist eine inkompatible Änderung: MAJOR erhöhen, MINOR und PATCH auf 0."
+    },
+    {
+      "question": "Was ist der Unterschied zwischen Continuous Delivery und Continuous Deployment?",
+      "options": [
+        "Es gibt keinen Unterschied",
+        "Bei Continuous Delivery ist jeder Build auslieferbar, die Freigabe erfolgt manuell; bei Continuous Deployment geht jede erfolgreiche Änderung automatisch in Produktion",
+        "Continuous Deployment verzichtet auf automatische Tests",
+        "Continuous Delivery betrifft nur mobile Apps"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beide setzen auf automatische Builds und Tests. Der Unterschied liegt im letzten Schritt: manuelle Freigabe gegenüber automatischer Auslieferung."
+    },
+    {
+      "question": "Wie oft läuft der Job test in diesem Workflow-Ausschnitt pro Push?",
+      "code": "test:\n  runs-on: ${{ matrix.os }}\n  strategy:\n    matrix:\n      os: [ubuntu-latest,\n           windows-latest]\n      python: [\"3.11\", \"3.12\",\n               \"3.13\"]",
+      "options": [
+        "1-mal",
+        "2-mal",
+        "3-mal",
+        "6-mal"
+      ],
+      "correctIndex": 3,
+      "explanation": "Die Matrix bildet alle Kombinationen: 2 Betriebssysteme × 3 Python-Versionen = 6 Durchläufe."
+    },
+    {
+      "question": "Bei welcher Strategie bekommt zunächst nur ein kleiner Teil der Benutzer:innen die neue Version, bevor alle umgestellt werden?",
+      "options": [
+        "Blue-Green-Deployment",
+        "Canary-Release",
+        "Rollback",
+        "Smoke-Test"
+      ],
+      "correctIndex": 1,
+      "explanation": "Beim Canary-Release testet man die neue Version mit wenigen Benutzer:innen unter echten Bedingungen. Blue-Green schaltet alle auf einmal um, hält aber die alte Umgebung bereit."
+    }
+  ]
+}

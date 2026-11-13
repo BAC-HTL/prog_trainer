@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j5-cloud_03_skalierung_betrieb",
+  "title": "Skalierung, Verfügbarkeit & Kosten nachrechnen",
+  "summary": "Horizontal und vertikal skalieren, Instanzzahlen und Autoscaling berechnen sowie Verfügbarkeit und Kosten einer Cloud-Lösung nachrechnen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Wächst die Last, gibt es zwei Wege. Vertikal skalieren (scale up): eine Instanz bekommt mehr CPU und RAM. Das ist einfach, stößt aber an die Grenze der größten Maschine, verursacht oft einen Neustart und bleibt ein Single Point of Failure. Horizontal skalieren (scale out): mehr gleichartige Instanzen hinter einem Load Balancer – praktisch unbegrenzt und zugleich Redundanz. Voraussetzung: Die Instanzen sind zustandslos. Typischer Fehler: Die Login-Session liegt im Speicher einer Instanz; landet die nächste Anfrage auf einer anderen, ist man plötzlich abgemeldet. Lösung: Zustand in eine gemeinsame Datenbank oder einen Cache auslagern (oder Tokens verwenden)."
+    },
+    {
+      "type": "text",
+      "content": "Wie viele Instanzen braucht man? Man misst, wie viele Anfragen eine Instanz schafft, und plant eine Zielauslastung unter 100 % ein – als Reserve für Spitzen und weil Antwortzeiten bei Volllast stark steigen. Dazu kommt oft N+1: eine Instanz mehr, damit der Ausfall einer einzelnen verkraftet wird."
+    },
+    {
+      "type": "code",
+      "content": "import math\n\nspitze = 1800       # Anfragen/s\nkap = 250           # pro Instanz bei 100 %\nziel = 0.7          # max. 70 % Auslastung\n\nn = math.ceil(spitze / (kap * ziel))\nprint(\"nötig:\", n)\nprint(\"mit N+1:\", n + 1)\n\n# Ausgabe:\n# nötig: 11\n# mit N+1: 12"
+    },
+    {
+      "type": "text",
+      "content": "Statt dauerhaft für die Spitze zu bezahlen, passt Autoscaling die Anzahl automatisch an. Der Horizontal Pod Autoscaler (HPA) von Kubernetes berechnet die gewünschte Replikazahl nach der Formel: gewünscht = aufrunden(aktuelle Replikas · Ist-Wert / Soll-Wert), z. B. mit der CPU-Auslastung als Metrik. Liegt das Verhältnis nahe 1, skaliert er nicht (Toleranz), und Minimum und Maximum begrenzen das Ergebnis. Beim Herunterskalieren wartet er außerdem eine Weile, damit die Anzahl nicht ständig hin- und herspringt."
+    },
+    {
+      "type": "code",
+      "content": "import math\n\ndef hpa(replikas, ist, soll):\n    return math.ceil(replikas * ist / soll)\n\nprint(hpa(4, 90, 60))   # CPU 90 %\nprint(hpa(6, 20, 60))   # CPU 20 %\n\n# Ausgabe:\n# 6\n# 2"
+    },
+    {
+      "type": "text",
+      "content": "Cloud-Anbieter gliedern ihre Rechenzentren in Regionen und darin in Verfügbarkeitszonen (Availability Zones): getrennte Standorte mit eigener Strom- und Netzversorgung. Verteilt man Instanzen über zwei Zonen, sind sie parallel geschaltet; hängen alle von einer Datenbank ab, ist diese seriell davor. Es gelten die Formeln aus dem 4. Jahrgang: seriell multiplizieren, parallel 1 − Produkt der Ausfallwahrscheinlichkeiten:"
+    },
+    {
+      "type": "code",
+      "content": "def seriell(*a):\n    r = 1\n    for x in a:\n        r *= x\n    return r\n\ndef parallel(*a):\n    r = 1\n    for x in a:\n        r *= 1 - x\n    return 1 - r\n\nzone = 0.995                 # App je Zone\napp = parallel(zone, zone)   # 2 Zonen\ndb = 0.9995                  # DB-Dienst\nges = seriell(app, db)\nprint(f\"App: {app:.4%}\")\nprint(f\"Ges: {ges:.4%}\")\nprint(f\"Ausfall/Jahr: \"\n      f\"{(1 - ges) * 8760:.1f} h\")\n\n# Ausgabe:\n# App: 99.9975%\n# Ges: 99.9475%\n# Ausfall/Jahr: 4.6 h"
+    },
+    {
+      "type": "text",
+      "content": "Die zweite Zone hebt das App-Tier von 99,5 % auf fast 99,998 % – jetzt bestimmt die Datenbank die Gesamtverfügbarkeit. Auch Kosten lassen sich nachrechnen. Abgerechnet werden meist Instanzstunden, Speicher und ausgehender Datenverkehr. Ein Vergleich mit Beispielpreis: 12 Instanzen rund um die Uhr gegen Autoscaling mit 12 Instanzen für 8 Stunden Spitze und 3 Instanzen für die restlichen 16 Stunden:"
+    },
+    {
+      "type": "code",
+      "content": "preis = 0.10            # €/Instanz-h (Bsp.)\ntage = 30\n\nfix = 12 * 24 * tage * preis\nauto = (12 * 8 + 3 * 16) * tage * preis\n\nprint(f\"fix 12 Instanzen: {fix:7.2f} €\")\nprint(f\"Autoscaling:      {auto:7.2f} €\")\nprint(f\"Ersparnis: {1 - auto / fix:.0%}\")\n\n# Ausgabe:\n# fix 12 Instanzen:  864.00 €\n# Autoscaling:       432.00 €\n# Ersparnis: 50%"
+    },
+    {
+      "type": "text",
+      "content": "Weitere Hebel: Für dauerhafte Grundlast gibt es Rabatte bei längerer Bindung (reservierte Kapazität), für unterbrechbare Arbeit wie Batch-Jobs sehr günstige, aber jederzeit entziehbare Spot-Instanzen. Zum Betrieb gehören Monitoring mit Alarmen, zentrale Logs, Infrastructure as Code (Infrastruktur als versionierte Dateien, z. B. Kubernetes-YAML oder Terraform) und getestete Backups.\n\nZusammenfassung: Vertikal = größere Maschine, horizontal = mehr Instanzen (nur zustandslos). Instanzen = aufrunden(Spitze / (Kapazität · Zielauslastung)), plus N+1. HPA: aufrunden(Replikas · Ist / Soll). Zonen parallel erhöhen die Verfügbarkeit, seriell abhängige Dienste senken sie. Kosten = Instanzstunden · Preis + Speicher + Traffic; Autoscaling spart bei schwankender Last."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Spitze 2000 Anfragen/s, eine Instanz schafft 300 Anfragen/s, Zielauslastung 80 %. Wie viele Instanzen braucht man mindestens (ohne N+1)?",
+      "options": [
+        "7",
+        "8",
+        "9",
+        "6"
+      ],
+      "correctIndex": 2,
+      "explanation": "300 · 0,8 = 240 Anfragen/s pro Instanz. 2000 / 240 = 8,33 → aufrunden auf 9."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "import math\nprint(math.ceil(10 * 15 / 50))",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "8"
+      ],
+      "correctIndex": 0,
+      "explanation": "10 · 15 / 50 = 3. Bei nur 15 % CPU statt 50 % reichen 3 Replikas – der HPA skaliert herunter."
+    },
+    {
+      "question": "Warum führt horizontale Skalierung bei manchen Webanwendungen dazu, dass Benutzer:innen zufällig abgemeldet werden?",
+      "options": [
+        "Weil der Load Balancer Cookies löscht",
+        "Weil die Sessions im Speicher einzelner Instanzen liegen",
+        "Weil mehr Instanzen die Datenbank verlangsamen",
+        "Weil Container keine Cookies unterstützen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die Instanzen sind nicht zustandslos. Landet eine Anfrage auf einer Instanz ohne die Session, gilt man als abgemeldet. Lösung: Sessions in einen gemeinsamen Speicher auslagern."
+    },
+    {
+      "question": "Ein App-Tier läuft in zwei Zonen mit je 99 % Verfügbarkeit, dahinter eine Datenbank mit 99,9 %. Wie hoch ist die Gesamtverfügbarkeit (gerundet)?",
+      "options": [
+        "99,99 %",
+        "98,90 %",
+        "99,00 %",
+        "99,89 %"
+      ],
+      "correctIndex": 3,
+      "explanation": "Parallel: 1 − 0,01² = 0,9999. Seriell mit DB: 0,9999 · 0,999 ≈ 0,99890 → 99,89 %. Die Datenbank ist jetzt das schwächste Glied."
+    }
+  ]
+}

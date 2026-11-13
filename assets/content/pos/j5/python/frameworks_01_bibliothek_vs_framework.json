@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-python-frameworks_01_bibliothek_vs_framework",
+  "title": "Bibliothek vs. Framework",
+  "summary": "Inversion of Control verstehen und ein kleines Framework mit Dekoratoren und Hooks bauen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Eine Bibliothek ist eine Sammlung von Funktionen und Klassen, die du aufrufst, wann du willst: json.dumps, math.sqrt, csv.reader. Dein Programm behält die Kontrolle über den Ablauf. Bei einem Framework ist es umgekehrt: Das Framework steuert den Ablauf und ruft an den passenden Stellen deinen Code auf. Das nennt man Inversion of Control (IoC) oder das Hollywood-Prinzip: „Don't call us, we call you.“"
+    },
+    {
+      "type": "code",
+      "content": "# Bibliothek: DU rufst auf\nimport json\ntext = json.dumps({\"note\": 1})\n\n# Framework: Flask ruft DICH auf\nfrom flask import Flask\napp = Flask(__name__)\n\n@app.get(\"/hallo\")\ndef hallo():          # nie selbst\n    return \"Servus!\"  # aufgerufen\napp.run()             # Flask übernimmt"
+    },
+    {
+      "type": "text",
+      "content": "Du kennst schon mehrere Frameworks: Flask entscheidet, wann welche Route-Funktion läuft; pytest findet deine test_-Funktionen und führt sie aus; eine GUI-Bibliothek ruft deine Event-Handler. Typische IoC-Mechanismen sind Callbacks (Funktionen übergeben), Dekoratoren zur Registrierung, Vererbung mit Hook-Methoden und Events. Ein Mini-Framework für Kommandozeilen-Befehle mit Dekorator-Registrierung:"
+    },
+    {
+      "type": "code",
+      "content": "class App:\n    def __init__(self):\n        self.befehle = {}\n\n    def befehl(self, name):\n        def deko(func):\n            self.befehle[name] = func\n            return func\n        return deko\n\n    def run(self, eingaben):\n        for zeile in eingaben:\n            name, *args = zeile.split()\n            func = self.befehle.get(name)\n            if func is None:\n                print(\"Unbekannt:\", name)\n            else:\n                print(func(*args))"
+    },
+    {
+      "type": "text",
+      "content": "Der Framework-Teil besitzt die Schleife, zerlegt die Eingabe und behandelt unbekannte Befehle. Der Anwendungscode liefert nur noch das, was sich von Programm zu Programm unterscheidet – die einzelnen Befehle:"
+    },
+    {
+      "type": "code",
+      "content": "app = App()\n\n@app.befehl(\"hallo\")\ndef hallo(name):\n    return f\"Servus, {name}!\"\n\n@app.befehl(\"add\")\ndef add(a, b):\n    return int(a) + int(b)\n\napp.run([\"hallo Lena\", \"add 2 3\", \"xyz\"])\n# Servus, Lena!\n# 5\n# Unbekannt: xyz"
+    },
+    {
+      "type": "text",
+      "content": "Der zweite klassische Weg ist das Template-Method-Muster: Eine Basisklasse legt den Ablauf in einer Methode fest und ruft abstrakte Methoden auf, die Unterklassen füllen müssen. Zusätzlich gibt es Hooks – Methoden mit einer sinnvollen Standard-Implementierung, die man überschreiben kann, aber nicht muss."
+    },
+    {
+      "type": "code",
+      "content": "from abc import ABC, abstractmethod\n\nclass Importer(ABC):\n    def run(self, text):        # fixer Ablauf\n        zeilen = self.lesen(text)\n        ok = [z for z in zeilen\n              if self.pruefen(z)]\n        print(f\"{len(ok)} von {len(zeilen)}\")\n\n    @abstractmethod\n    def lesen(self, text): ...\n\n    def pruefen(self, zeile):   # Hook\n        return True             # Standard\n\nclass CsvImporter(Importer):\n    def lesen(self, text):\n        return text.strip().split(\"\\n\")\n\n    def pruefen(self, zeile):\n        return \";\" in zeile\n\nCsvImporter().run(\"a;1\\nb;2\\nkaputt\")\n# 2 von 3"
+    },
+    {
+      "type": "text",
+      "content": "Wann lohnt sich ein eigenes Framework? Erst, wenn du denselben Ablauf mehrmals gebaut hast (Faustregel „Rule of Three“) – vorher errätst du die Erweiterungspunkte meist falsch. Typische Fehler: zu viel „Magie“, die niemand versteht, und Frameworks, die interne Details preisgeben. Denn jede Hook-Methode ist ein Versprechen: Sobald andere darauf aufbauen, kannst du sie kaum noch ändern."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Eine Bibliothek rufst du auf, ein Framework ruft dich auf (Inversion of Control). Frameworks besitzen den Ablauf und bieten Erweiterungspunkte über Callbacks, Dekoratoren oder Template Methods mit Hooks. Bibliotheken sind flexibler, Frameworks nehmen mehr Arbeit ab, schränken aber auch stärker ein."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "In welchem Fall liegt Inversion of Control vor?",
+      "options": [
+        "Dein Programm ruft csv.reader auf, um eine Datei zu lesen",
+        "Du rufst math.sqrt(16) auf",
+        "pytest findet deine test_-Funktionen und ruft sie auf",
+        "Du rufst json.loads mit einem String auf"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei pytest steuert das Framework den Ablauf: Es sucht die Tests und ruft sie auf. In den anderen Fällen ruft dein Code eine Bibliotheksfunktion auf."
+    },
+    {
+      "question": "Was gibt dieser Code mit dem Mini-Framework aus der Lektion aus?",
+      "code": "app = App()\n\n@app.befehl(\"doppelt\")\ndef d(x):\n    return x * 2\n\napp.run([\"doppelt 21\"])",
+      "options": [
+        "42",
+        "2121",
+        "TypeError",
+        "Unbekannt: doppelt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Das Framework übergibt die Argumente als Strings aus split(). \"21\" * 2 ist Stringwiederholung: \"2121\". Ein gutes Framework würde Typen konvertieren oder dokumentieren, dass Strings kommen."
+    },
+    {
+      "question": "Was gibt dieser Code mit der Importer-Basisklasse aus der Lektion aus?",
+      "code": "class Txt(Importer):\n    def lesen(self, text):\n        return text.split(\",\")\n\nTxt().run(\"a,b,,c\")",
+      "options": [
+        "3 von 4",
+        "4 von 4",
+        "TypeError",
+        "0 von 4"
+      ],
+      "correctIndex": 1,
+      "explanation": "Txt überschreibt nur lesen(). Für pruefen() greift der Hook mit der Standard-Implementierung, die immer True liefert. Auch die leere Zeile zählt: 4 von 4."
+    },
+    {
+      "question": "Was passiert bei class X(Importer): pass und anschließend X()?",
+      "options": [
+        "Es wird ein Objekt erzeugt, run() liefert 0 von 0",
+        "Ein TypeError, weil die abstrakte Methode lesen nicht implementiert ist",
+        "Ein NameError",
+        "Ein AttributeError erst beim Aufruf von run()"
+      ],
+      "correctIndex": 1,
+      "explanation": "Eine Klasse mit nicht implementierten @abstractmethod-Methoden kann nicht instanziert werden. Python meldet das schon beim Erzeugen mit einem TypeError – der Hook pruefen muss dagegen nicht überschrieben werden."
+    }
+  ]
+}

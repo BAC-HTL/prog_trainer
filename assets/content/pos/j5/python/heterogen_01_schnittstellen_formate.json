@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-python-heterogen_01_schnittstellen_formate",
+  "title": "Schnittstellen und Datenformate",
+  "summary": "JSON, XML, CSV, Encoding und Zeitzonen sicher zwischen Systemen austauschen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Ein Webshop-Backend in Java, eine Kassen-App in C#, ein Auswertungsskript in Python: Solche heterogenen Systeme verstehen einander nur über eine gemeinsame Schnittstelle. Sie legt fest, welches Datenformat verwendet wird, wie Felder heißen und welche Typen sie haben. Das häufigste Format ist JSON. Python wandelt mit dem Modul json zwischen Text und dict/list um."
+    },
+    {
+      "type": "code",
+      "content": "import json\n\nmsg = {\"schueler\": \"Lena Gruber\",\n       \"klasse\": \"5AHIF\", \"note\": 1}\ntext = json.dumps(msg, ensure_ascii=False)\nprint(text)\n# {\"schueler\": \"Lena Gruber\", ...}\nback = json.loads(text)\nprint(back[\"note\"] + 1)  # 2\nprint(json.dumps({1: \"a\"}))  # {\"1\": \"a\"}"
+    },
+    {
+      "type": "text",
+      "content": "Achtung: JSON kennt nur Strings, Zahlen, true/false, null, Arrays und Objekte. Schlüssel sind immer Strings – aus 1 wird \"1\". Ein datetime- oder Decimal-Objekt kann json.dumps nicht direkt speichern (TypeError). Ohne ensure_ascii=False wird aus „ä“ die Escape-Folge \\u00e4 – gültig, aber schlecht lesbar."
+    },
+    {
+      "type": "text",
+      "content": "XML ist älter, aber in Behörden, Banken (z. B. SEPA-Überweisungen) und Konfigurationsdateien noch weit verbreitet. Daten stehen in Elementen und Attributen, und mit einem Schema (XSD) kann man streng prüfen, ob ein Dokument gültig ist. Python liest XML mit xml.etree.ElementTree."
+    },
+    {
+      "type": "code",
+      "content": "import xml.etree.ElementTree as ET\n\nxml = \"\"\"<klasse name=\"5AHIF\">\n  <schueler note=\"1\">Lena</schueler>\n  <schueler note=\"3\">Jonas</schueler>\n</klasse>\"\"\"\nroot = ET.fromstring(xml)\nprint(root.get(\"name\"))   # 5AHIF\nfor s in root.findall(\"schueler\"):\n    print(s.text, int(s.get(\"note\")))\n# Lena 1\n# Jonas 3"
+    },
+    {
+      "type": "text",
+      "content": "CSV ist das einfachste Austauschformat, aber voller Fallen: Ein österreichisches Excel verwendet meist den Strichpunkt als Trennzeichen und das Komma als Dezimalzeichen. Texte mit Trennzeichen müssen in Anführungszeichen stehen. Nimm deshalb das Modul csv statt split(). Und gib beim Öffnen immer das Encoding an – sonst wird aus „Jänner“ schnell „JÃ¤nner“."
+    },
+    {
+      "type": "code",
+      "content": "import csv, io\n\ndaten = 'Name;Betrag\\n\"Huber; Anna\";12,50\\n'\nrd = csv.DictReader(io.StringIO(daten),\n                    delimiter=\";\")\nfor row in rd:\n    b = row[\"Betrag\"].replace(\",\", \".\")\n    betrag = float(b)\n    print(row[\"Name\"], betrag)\n# Huber; Anna 12.5\n\nb = \"Jänner\".encode(\"utf-8\")\nprint(b)   # b'J\\xc3\\xa4nner'\nprint(b.decode(\"latin-1\"))  # JÃ¤nner"
+    },
+    {
+      "type": "text",
+      "content": "Zeitangaben sind die nächste Falle: „10:00“ ohne Zeitzone ist mehrdeutig. Tausche Zeitpunkte im Format ISO 8601 mit Offset aus (z. B. 2026-01-15T10:00:00+01:00) und rechne intern in UTC. Die Umrechnung in Wiener Ortszeit samt Sommerzeit erledigt zoneinfo."
+    },
+    {
+      "type": "code",
+      "content": "from datetime import datetime\nfrom zoneinfo import ZoneInfo\n\nt = datetime.fromisoformat(\n    \"2026-07-01T08:30:00+00:00\")\nwien = t.astimezone(ZoneInfo(\"Europe/Vienna\"))\nprint(wien.isoformat())\n# 2026-07-01T10:30:00+02:00\nprint(t == wien)   # True"
+    },
+    {
+      "type": "text",
+      "content": "Binäre Formate wie Protocol Buffers (Protobuf) beschreiben die Daten in einem Schema (.proto) mit Feldnummern; aus dem Schema wird Code für viele Sprachen erzeugt. Das ist kompakter und schneller als JSON, aber nicht mehr menschenlesbar. Für die Versionierung gilt bei allen Formaten: Neue Felder optional hinzufügen, nie die Bedeutung bestehender Felder ändern, und als Empfänger unbekannte Felder ignorieren („Tolerant Reader“).\n\nZusammenfassung: JSON für Web-APIs, XML wo Schemas gefordert sind, CSV nur mit csv-Modul, immer UTF-8 und ISO 8601 mit Zeitzone."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import json\nd = json.loads(json.dumps({1: \"x\"}))\nprint(d)",
+      "options": [
+        "{'1': 'x'}",
+        "{1: 'x'}",
+        "TypeError",
+        "{\"1\": \"x\"}"
+      ],
+      "correctIndex": 0,
+      "explanation": "JSON-Schlüssel sind immer Strings. json.dumps macht aus 1 den String \"1\", json.loads liefert daher ein dict mit dem Schlüssel '1'. print zeigt ein dict mit einfachen Anführungszeichen."
+    },
+    {
+      "question": "Eine CSV-Datei aus einem österreichischen Excel enthält die Zeile \"Huber; Anna\";12,50. Was ist der beste Weg zum Einlesen?",
+      "options": [
+        "line.split(\";\")",
+        "csv.reader mit delimiter=\";\" und Komma in Punkt umwandeln",
+        "json.loads(line)",
+        "line.split(\",\")"
+      ],
+      "correctIndex": 1,
+      "explanation": "split() kennt keine Anführungszeichen und würde \"Huber; Anna\" zerteilen. Das csv-Modul beachtet das Quoting; den Dezimalbeistrich musst du selbst umwandeln."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "b = \"Jänner\".encode(\"utf-8\")\nprint(b.decode(\"latin-1\"))",
+      "options": [
+        "Jänner",
+        "JÃ¤nner",
+        "UnicodeDecodeError",
+        "J?nner"
+      ],
+      "correctIndex": 1,
+      "explanation": "„ä“ ist in UTF-8 zwei Bytes lang (0xC3 0xA4). Liest man diese Bytes als Latin-1, wird jedes Byte zu einem eigenen Zeichen: Ã und ¤. Dieses Zeichensalat-Phänomen heißt Mojibake."
+    },
+    {
+      "question": "Deine API liefert Version 2 einer Antwort mit einem neuen Feld \"email\". Welche Änderung bleibt abwärtskompatibel, wenn alte Clients unbekannte Felder ignorieren?",
+      "options": [
+        "Das Feld \"name\" in \"fullname\" umbenennen",
+        "Den Typ von \"note\" von Zahl auf String ändern",
+        "Das neue optionale Feld \"email\" hinzufügen",
+        "Das Feld \"klasse\" entfernen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Nur das Hinzufügen eines optionalen Feldes bricht alte Clients nicht. Umbenennen, Typ ändern oder Entfernen sind Breaking Changes."
+    }
+  ]
+}

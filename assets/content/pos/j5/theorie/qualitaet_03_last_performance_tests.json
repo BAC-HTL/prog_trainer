@@ -1,0 +1,94 @@
+{
+  "id": "pos-j5-theorie-qualitaet_03_last_performance_tests",
+  "title": "Last- & Performance-Tests",
+  "summary": "Antwortzeiten, Perzentile und Durchsatz messen und verstehen, wie sich ein System unter Last verhält.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Performance-Tests prüfen, ob ein System die Qualitätsziele zur Leistungseffizienz erfüllt – etwa „95 % der Stundenplan-Abrufe in unter 1 s bei 500 gleichzeitigen Benutzer:innen“. Man unterscheidet: Lasttest (erwartete Last), Stresstest (über die Grenze hinaus, bis etwas bricht), Spike-Test (plötzlicher Anstieg, z. B. Notenveröffentlichung um 8:00) und Dauertest (Soak-Test, viele Stunden – findet z. B. Speicherlecks)."
+    },
+    {
+      "type": "code",
+      "content": "Kennzahlen\n\nAntwortzeit  Zeit von Anfrage bis\n             Antwort (ms)\nDurchsatz    erledigte Anfragen pro\n             Sekunde (req/s)\nFehlerquote  Anteil fehlgeschlagener\n             Anfragen\nAuslastung   CPU, RAM, Verbindungen"
+    },
+    {
+      "type": "text",
+      "content": "Bei Antwortzeiten ist der Mittelwert trügerisch: Einige wenige sehr langsame Anfragen verzerren ihn, und er sagt nicht, wie viele Benutzer:innen lange warten. Deshalb arbeitet man mit Perzentilen: p95 = 800 ms bedeutet, 95 % der Anfragen dauerten höchstens 800 ms, 5 % länger. Der Median ist p50. Eine einfache Berechnung ist die Rangmethode (nearest rank): Rang = aufgerundet p/100 · n."
+    },
+    {
+      "type": "code",
+      "content": "import math, statistics\n\nms = [120, 95, 110, 105, 98, 130, 102,\n      99, 101, 2400, 97, 115, 108,\n      103, 100, 96, 125, 104, 450, 107]\n\ndef perzentil(werte, p):\n    s = sorted(werte)\n    rang = math.ceil(p / 100 * len(s))\n    return s[rang - 1]\n\nprint(\"Mittel:\", statistics.mean(ms))\nfor p in (50, 90, 95, 99):\n    print(f\"p{p}:\", perzentil(ms, p))\n# Mittel: 238.25\n# p50: 104\n# p90: 130\n# p95: 450\n# p99: 2400"
+    },
+    {
+      "type": "text",
+      "content": "Deutung: Der Mittelwert von 238 ms trifft keine einzige echte Messung – fast alle Anfragen brauchen um 100 ms, zwei Ausreißer ziehen ihn hoch. Der Median (104 ms) zeigt den typischen Fall, p95 und p99 zeigen die langsamen Fälle, die Benutzer:innen ärgern. Werkzeuge rechnen Perzentile teils mit Interpolation und liefern dann leicht andere Werte; wichtig ist, immer dieselbe Methode zu vergleichen."
+    },
+    {
+      "type": "text",
+      "content": "Durchsatz ist die Anzahl erledigter Anfragen pro Zeiteinheit. Zusammen mit der Antwortzeit gilt Littles Gesetz: Anzahl gleichzeitig bearbeiteter Anfragen N = Durchsatz X · Antwortzeit R. Beispiel: 200 req/s bei 0,25 s Antwortzeit bedeutet, dass im Schnitt 50 Anfragen gleichzeitig im System sind. Steigt die Antwortzeit unter Last auf 1 s, müssten es bei gleichem Durchsatz 200 sein – oft reichen dann Threads oder Datenbankverbindungen nicht mehr."
+    },
+    {
+      "type": "code",
+      "content": "anfragen = 36_000\nsekunden = 180\nx = anfragen / sekunden\nprint(f\"Durchsatz: {x:.0f} req/s\")\n\nr = 0.25          # Antwortzeit in s\nprint(\"gleichzeitig:\", x * r)\n# Durchsatz: 200 req/s\n# gleichzeitig: 50.0"
+    },
+    {
+      "type": "text",
+      "content": "Ein Lastgenerator schickt viele Anfragen parallel und misst jede einzelne. In der Praxis nimmt man Werkzeuge wie Apache JMeter, Locust (Python) oder k6. Das Prinzip zeigt dieses Mini-Beispiel: 20 Anfragen à 0,1 s, 4 parallele Clients."
+    },
+    {
+      "type": "code",
+      "content": "import time\nfrom concurrent.futures import (\n    ThreadPoolExecutor)\n\ndef anfrage(_):\n    t0 = time.perf_counter()\n    time.sleep(0.1)  # Server-Arbeit\n    return time.perf_counter() - t0\n\nstart = time.perf_counter()\nwith ThreadPoolExecutor(4) as pool:\n    zeiten = list(pool.map(\n        anfrage, range(20)))\ndauer = time.perf_counter() - start\nprint(f\"Dauer: {dauer:.1f} s\")\nprint(f\"Durchsatz: {20 / dauer:.0f} req/s\")\n# Dauer: 0.5 s      (5 Runden à 0,1 s)\n# Durchsatz: ca. 40 req/s"
+    },
+    {
+      "type": "text",
+      "content": "Damit Ergebnisse aussagekräftig sind: in einer produktionsnahen Umgebung testen (nicht am Laptop gegen localhost), realistische Daten und Nutzungsmuster verwenden, eine Aufwärmphase abwarten, mehrmals messen und Last schrittweise steigern. Typischer Fehler: Der Lastgenerator selbst ist der Engpass. Performance-Tests gehören regelmäßig in die Pipeline, damit Verschlechterungen früh auffallen.\n\nZusammenfassung: Last-, Stress-, Spike- und Dauertests. Antwortzeiten über Perzentile (p50, p95, p99) statt nur Mittelwert bewerten. Durchsatz = Anfragen / Zeit; Littles Gesetz N = X · R."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "import math\nw = [30, 10, 40, 20]\ns = sorted(w)\nrang = math.ceil(90 / 100 * len(s))\nprint(s[rang - 1])",
+      "options": [
+        "30",
+        "20",
+        "25",
+        "40"
+      ],
+      "correctIndex": 3,
+      "explanation": "Sortiert: 10, 20, 30, 40. Rang = aufgerundet 0,9 · 4 = 3,6 → 4. Der 4. Wert ist 40."
+    },
+    {
+      "question": "Ein Dienst erledigt 9000 Anfragen in 60 Sekunden bei einer mittleren Antwortzeit von 0,2 s. Wie viele Anfragen sind laut Littles Gesetz im Schnitt gleichzeitig in Bearbeitung?",
+      "options": [
+        "30",
+        "150",
+        "1800",
+        "45"
+      ],
+      "correctIndex": 0,
+      "explanation": "Durchsatz X = 9000 / 60 = 150 req/s. N = X · R = 150 · 0,2 = 30."
+    },
+    {
+      "question": "Die Messung ergibt: Mittelwert 300 ms, p50 = 90 ms, p99 = 4000 ms. Was ist die beste Deutung?",
+      "options": [
+        "Alle Anfragen dauern etwa 300 ms",
+        "Die meisten Anfragen sind schnell, aber ein kleiner Teil ist extrem langsam und verzerrt den Mittelwert",
+        "Die Hälfte der Anfragen dauert über 4 s",
+        "Das System ist überall gleichmäßig langsam"
+      ],
+      "correctIndex": 1,
+      "explanation": "Der Median von 90 ms zeigt den typischen Fall. p99 = 4 s heißt: 1 % der Anfragen dauert bis zu 4 s oder länger – diese Ausreißer ziehen den Mittelwert nach oben."
+    },
+    {
+      "question": "Ein Shop läuft 48 Stunden unter normaler Last, um ein vermutetes Speicherleck zu finden. Welche Testart ist das?",
+      "options": [
+        "Spike-Test",
+        "Stresstest",
+        "Dauertest (Soak-Test)",
+        "Smoke-Test"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Dauertest prüft das Verhalten über lange Zeit. Speicherlecks oder volllaufende Logs zeigen sich oft erst nach Stunden."
+    }
+  ]
+}

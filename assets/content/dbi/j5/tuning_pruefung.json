@@ -1,0 +1,117 @@
+{
+  "id": "dbi-j5-tuning_pruefung",
+  "title": "Abschlussprüfung: Administration & Performance-Tuning",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Du setzt mit ALTER SYSTEM einen Parameter, dessen context in pg_settings „postmaster“ ist. Was ist nötig, damit er wirkt?",
+      "options": [
+        "Nichts, er wirkt sofort",
+        "SELECT pg_reload_conf();",
+        "Ein Neustart des Datenbankservers",
+        "Ein ANALYZE"
+      ],
+      "correctIndex": 2,
+      "explanation": "Parameter mit context postmaster (z. B. shared_buffers, max_connections) werden nur beim Serverstart gelesen. Bei context sighup würde ein Reload reichen."
+    },
+    {
+      "question": "Eine Abfrage hängt seit 20 Minuten und blockiert andere. Mit welcher Funktion brichst du nur die laufende Abfrage ab, ohne die Verbindung zu trennen?",
+      "options": [
+        "pg_cancel_backend(pid)",
+        "pg_terminate_backend(pid)",
+        "pg_reload_conf()",
+        "REINDEX"
+      ],
+      "correctIndex": 0,
+      "explanation": "pg_cancel_backend bricht die aktuelle Anweisung ab, die Sitzung bleibt bestehen. pg_terminate_backend beendet den ganzen Backend-Prozess."
+    },
+    {
+      "question": "Welche Aufgabe erledigt VACUUM in PostgreSQL?",
+      "options": [
+        "Es erstellt ein Backup",
+        "Es aktualisiert nur die Statistiken",
+        "Es löscht ungenutzte Indizes",
+        "Es gibt den Platz toter Zeilenversionen frei, die durch UPDATE und DELETE entstanden sind"
+      ],
+      "correctIndex": 3,
+      "explanation": "Wegen MVCC bleiben alte Zeilenversionen zunächst liegen. VACUUM macht den Platz wiederverwendbar; Statistiken aktualisiert ANALYZE (VACUUM ANALYZE macht beides)."
+    },
+    {
+      "question": "Messwerte in ms (sortiert): 8, 9, 9, 10, 10, 11, 12, 13, 40, 300. Wie groß ist das 90. Perzentil nach dem Verfahren „Wert an Position ⌈0,9 · n⌉“?",
+      "options": [
+        "300",
+        "40",
+        "13",
+        "41,2"
+      ],
+      "correctIndex": 1,
+      "explanation": "n = 10, ⌈0,9 · 10⌉ = 9. Der 9. Wert der sortierten Liste ist 40 ms."
+    },
+    {
+      "question": "16 Clients arbeiten pausenlos, der Durchsatz beträgt 4000 TPS. Wie lang ist die mittlere Antwortzeit ungefähr?",
+      "options": [
+        "4 ms",
+        "250 ms",
+        "0,25 ms",
+        "64 ms"
+      ],
+      "correctIndex": 0,
+      "explanation": "Antwortzeit ≈ Clients / TPS = 16 / 4000 s = 0,004 s = 4 ms."
+    },
+    {
+      "question": "Wozu dient die Sicht pg_stats?",
+      "options": [
+        "Sie zeigt laufende Verbindungen",
+        "Sie enthält die Spaltenstatistiken (z. B. häufigste Werte, n_distinct), die der Optimierer zum Schätzen nutzt",
+        "Sie listet alle Konfigurationsparameter",
+        "Sie zeigt die Größe des WAL"
+      ],
+      "correctIndex": 1,
+      "explanation": "pg_stats ist die lesbare Sicht auf die von ANALYZE gesammelten Statistiken pro Spalte."
+    },
+    {
+      "question": "Ein Bericht über 3 Jahre Verkaufsdaten dauert 40 Sekunden und wird 200-mal am Tag aufgerufen; die Zahlen müssen nur tagesaktuell sein. Welche Maßnahme passt am besten?",
+      "options": [
+        "max_connections erhöhen",
+        "Den Bericht nur noch nachts erlauben",
+        "Alle Indizes der Faktentabelle löschen",
+        "Eine Materialized View, die jede Nacht mit REFRESH aktualisiert wird"
+      ],
+      "correctIndex": 3,
+      "explanation": "Das teure Ergebnis wird einmal berechnet und dann schnell gelesen. Die Kosten – Daten bis zum REFRESH veraltet – sind hier akzeptabel."
+    },
+    {
+      "question": "Welche Reihenfolge beim Tuning ist meist am sinnvollsten?",
+      "options": [
+        "Hardware → Konfiguration → Indizes → SQL",
+        "SQL/Anwendung → Indizes → Konfiguration → Hardware",
+        "Konfiguration → Hardware → SQL → Indizes",
+        "Zuerst alle Maßnahmen gleichzeitig, dann messen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Die größten Gewinne liegen meist in besseren Abfragen und passenden Indizes. Hardware ist teuer und behebt schlechte Abfragen nicht."
+    },
+    {
+      "question": "Welche Maßnahme verschlechtert die Schreibleistung einer Tabelle am direktesten?",
+      "options": [
+        "Ein zusätzlicher Index",
+        "ANALYZE",
+        "Ein Connection Pool",
+        "Ein höheres work_mem"
+      ],
+      "correctIndex": 0,
+      "explanation": "Jeder Index muss bei jedem INSERT, UPDATE und DELETE mitgepflegt werden – im Test der Lektion dauerte das Einfügen mit 4 Indizes rund fünfmal so lang."
+    },
+    {
+      "question": "Wie findest du in PostgreSQL am bequemsten heraus, welche Abfrageformen insgesamt die meiste Zeit verbrauchen?",
+      "options": [
+        "Mit \\dt in psql",
+        "Mit pg_stat_user_tables",
+        "Mit der Erweiterung pg_stat_statements",
+        "Mit pg_cancel_backend"
+      ],
+      "correctIndex": 2,
+      "explanation": "pg_stat_statements sammelt pro Abfrageform Aufrufzahl und Gesamtzeit. Sie muss in shared_preload_libraries eingetragen und mit CREATE EXTENSION aktiviert werden."
+    }
+  ]
+}

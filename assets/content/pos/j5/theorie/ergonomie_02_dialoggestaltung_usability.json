@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-theorie-ergonomie_02_dialoggestaltung_usability",
+  "title": "Dialoggestaltung & Usability-Tests",
+  "summary": "Die Grundsätze der Dialoggestaltung nach ISO 9241-110 anwenden und Usability mit Tests messen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Usability (Gebrauchstauglichkeit) ist nach ISO 9241-11 das Ausmaß, in dem bestimmte Benutzer:innen in einem bestimmten Nutzungskontext ihre Ziele effektiv (Ziel erreicht?), effizient (mit welchem Aufwand?) und zufriedenstellend erreichen. Usability ist also immer auf Personen, Aufgaben und Umgebung bezogen – eine App für Lehrkräfte im Unterricht hat andere Anforderungen als eine für Admins im Büro."
+    },
+    {
+      "type": "text",
+      "content": "ISO 9241-110 nennt Grundsätze der Interaktion (Dialoggestaltung). In der überarbeiteten Fassung sind es sieben: Aufgabenangemessenheit, Selbstbeschreibungsfähigkeit, Erwartungskonformität, Erlernbarkeit, Steuerbarkeit, Robustheit gegen Benutzungsfehler und Benutzerbindung. Ältere Fassungen sprachen von Lernförderlichkeit, Fehlertoleranz und Individualisierbarkeit – du wirst beide Begriffe finden."
+    },
+    {
+      "type": "code",
+      "content": "Grundsatz          Beispiel\n------------------ ---------------------\nAufgaben-          nur Felder, die für\n angemessenheit    die Aufgabe nötig\nSelbstbeschrei-    „Schritt 2 von 4“,\n bungsfähigkeit    klare Beschriftung\nErwartungs-        Strg+S speichert,\n konformität       wie überall\nErlernbarkeit      Tipps beim 1. Start\nSteuerbarkeit      Abbrechen, Zurück,\n                   Rückgängig\nRobustheit gegen   Eingabe prüfen,\n Benutzungsfehler  Löschen bestätigen\nBenutzerbindung    angenehm, motivierend,\n                   vertrauenswürdig"
+    },
+    {
+      "type": "text",
+      "content": "Robustheit gegen Benutzungsfehler heißt: Fehler vermeiden, erkennen und leicht beheben. Gute Dialoge akzeptieren verschiedene übliche Schreibweisen, statt die Benutzer:innen zu bevormunden, und erklären bei einem Fehler, was zu tun ist. Typischer Fehler: „Ungültige Eingabe“ ohne Hinweis, was gültig wäre – oder das ganze Formular wird nach einem Fehler geleert."
+    },
+    {
+      "type": "code",
+      "content": "def note_lesen(text):\n    t = text.strip().replace(\",\", \".\")\n    try:\n        n = float(t)\n    except ValueError:\n        return None, \"Bitte eine Zahl \" \\\n            \"von 1 bis 5 eingeben.\"\n    if not 1 <= n <= 5:\n        return None, \"Noten gehen \" \\\n            \"von 1 bis 5.\"\n    return n, \"\"\n\nfor e in [\" 2,5\", \"6\", \"gut\"]:\n    print(note_lesen(e))\n# (2.5, '')\n# (None, 'Noten gehen von 1 bis 5.')\n# (None, 'Bitte eine Zahl von 1 bis 5 eingeben.')"
+    },
+    {
+      "type": "text",
+      "content": "Ob ein Dialog wirklich gebrauchstauglich ist, zeigt erst ein Usability-Test: Echte Vertreter:innen der Zielgruppe lösen typische Aufgaben („Trage für Ben die Note 2 ein“), während man beobachtet. Bei der Methode des lauten Denkens (Thinking Aloud) sprechen sie aus, was sie denken. Man misst z. B. Erfolgsquote, benötigte Zeit und Fehler. Wichtig: nicht helfen und nicht erklären – sonst misst man die eigene Hilfe.\n\nWie viele Testpersonen braucht man? Nach einem bekannten Modell von Nielsen und Landauer findet jede Person im Schnitt rund 31 % der Probleme. Der Anteil gefundener Probleme bei n Personen ist dann 1 − (1 − 0,31)^n. Daraus stammt die Faustregel, lieber mehrmals mit etwa fünf Personen zu testen und dazwischen zu verbessern. Das Modell ist eine Vereinfachung – bei sehr unterschiedlichen Zielgruppen braucht man mehr."
+    },
+    {
+      "type": "code",
+      "content": "L = 0.31\nfor n in (1, 3, 5, 10):\n    print(n, f\"{1 - (1 - L) ** n:.0%}\")\n# 1 31%\n# 3 67%\n# 5 84%\n# 10 98%"
+    },
+    {
+      "type": "text",
+      "content": "Zufriedenheit misst man oft mit der System Usability Scale (SUS): zehn Aussagen, jeweils 1 (stimme gar nicht zu) bis 5 (stimme voll zu). Ungerade Aussagen sind positiv formuliert (Punkte = Antwort − 1), gerade negativ (Punkte = 5 − Antwort). Die Summe mal 2,5 ergibt einen Wert von 0 bis 100. Das ist kein Prozentwert; Werte um 68 gelten als durchschnittlich."
+    },
+    {
+      "type": "code",
+      "content": "def sus(antworten):\n    s = 0\n    for i, a in enumerate(antworten, 1):\n        s += a - 1 if i % 2 else 5 - a\n    return s * 2.5\n\nprint(sus([4, 2, 5, 1, 4, 2, 4, 2, 5, 1]))\n# 85.0"
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Usability = effektiv, effizient, zufriedenstellend im Nutzungskontext. ISO 9241-110 nennt die Grundsätze der Dialoggestaltung, von Aufgabenangemessenheit bis Benutzerbindung. Usability-Tests mit echten Zielgruppenvertreter:innen (lautes Denken, ohne Hilfe) decken Probleme auf – mehrere kleine Runden mit etwa fünf Personen sind effektiv. Die SUS misst die Zufriedenheit auf einer Skala von 0 bis 100."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Ein Assistent zeigt oben „Schritt 2 von 4“ an. Welchen Grundsatz nach ISO 9241-110 unterstützt das vor allem?",
+      "options": [
+        "Selbstbeschreibungsfähigkeit",
+        "Benutzerbindung",
+        "Steuerbarkeit",
+        "Robustheit gegen Benutzungsfehler"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Benutzer:innen sehen jederzeit, wo sie sind und was noch kommt – der Dialog beschreibt sich selbst."
+    },
+    {
+      "question": "Was ergibt der SUS-Wert für diese Antworten?",
+      "code": "a = [5, 1] * 5\ns = 0\nfor i, x in enumerate(a, 1):\n    s += x - 1 if i % 2 else 5 - x\nprint(s * 2.5)",
+      "options": [
+        "50.0",
+        "75.0",
+        "100.0",
+        "25.0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Alle ungeraden Aussagen 5 → je 4 Punkte, alle geraden 1 → je 4 Punkte. 10 · 4 = 40, mal 2,5 = 100.0 – der bestmögliche Wert."
+    },
+    {
+      "question": "Während eines Usability-Tests findet eine Testperson den Speichern-Knopf nicht. Wie verhältst du dich als Testleiter:in?",
+      "options": [
+        "Sofort zeigen, wo der Knopf ist",
+        "Den Test abbrechen, weil die Person ungeeignet ist",
+        "Nicht eingreifen, beobachten und notieren – ggf. nachfragen, was sie gerade erwartet",
+        "Die Aufgabe als erfolgreich werten"
+      ],
+      "correctIndex": 2,
+      "explanation": "Genau solche Stellen sind die gesuchten Usability-Probleme. Hilfe würde das Ergebnis verfälschen."
+    },
+    {
+      "question": "Was gibt dieser Code aus? (Modell nach Nielsen/Landauer)",
+      "code": "L = 0.31\nprint(f\"{1 - (1 - L) ** 2:.0%}\")",
+      "options": [
+        "31%",
+        "62%",
+        "67%",
+        "52%"
+      ],
+      "correctIndex": 3,
+      "explanation": "1 − 0,69² = 1 − 0,4761 = 0,5239, also gerundet 52 %. Zwei Personen finden also nicht 62 %, weil sie teilweise dieselben Probleme entdecken."
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "id": "pos-j5-python-frameworks_pruefung",
+  "title": "Abschlussprüfung: Frameworks entwickeln",
+  "passPercent": 70,
+  "questions": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "class Job:\n    def run(self):\n        self.vorher()\n        print(\"arbeite\")\n        self.nachher()\n\n    def vorher(self):\n        print(\"start\")\n\n    def nachher(self):\n        pass\n\nclass MeinJob(Job):\n    def nachher(self):\n        print(\"fertig\")\n\n    def run(self):\n        print(\"eigen\")\n\nMeinJob().run()",
+      "options": [
+        "start, arbeite, fertig",
+        "eigen",
+        "start, eigen, fertig",
+        "eigen, start, arbeite, fertig"
+      ],
+      "correctIndex": 1,
+      "explanation": "MeinJob überschreibt die Template-Methode run selbst. Damit wird der Ablauf des Frameworks umgangen, und keiner der Hooks wird aufgerufen. Darum sollten Frameworks dokumentieren, welche Methoden überschrieben werden dürfen."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "reg = {}\n\ndef befehl(name):\n    def deko(f):\n        reg[name] = f\n    return deko\n\n@befehl(\"hi\")\ndef hi():\n    return \"Servus\"\n\nprint(reg[\"hi\"](), hi)",
+      "options": [
+        "Servus Servus",
+        "Servus <function hi ...>",
+        "TypeError",
+        "Servus None"
+      ],
+      "correctIndex": 3,
+      "explanation": "deko speichert f in der Registry, gibt aber nichts zurück. Der Dekorator ersetzt den Namen hi durch den Rückgabewert, also None. Über die Registry funktioniert der Aufruf trotzdem. Ein Registrierungs-Dekorator sollte darum immer return f enthalten."
+    },
+    {
+      "question": "Was unterscheidet ein Framework grundlegend von einer Bibliothek?",
+      "options": [
+        "Ein Framework ist immer größer",
+        "Ein Framework steuert den Programmablauf und ruft deinen Code auf",
+        "Eine Bibliothek darf keine Klassen enthalten",
+        "Frameworks gibt es nur für Webanwendungen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Entscheidend ist die Inversion of Control: Bei einer Bibliothek ruft dein Code auf, bei einem Framework ruft das Framework deinen Code an definierten Erweiterungspunkten auf."
+    },
+    {
+      "question": "Welche Version erfüllt die Abhängigkeitsangabe notenlib>=1.4,<2?",
+      "options": [
+        "1.3.9",
+        "2.0.0",
+        "1.10.2",
+        "0.9.0"
+      ],
+      "correctIndex": 2,
+      "explanation": "Versionsnummern werden teilweise einzeln verglichen, nicht als Dezimalzahl: 1.10 ist größer als 1.4 (10 > 4). 1.10.2 liegt also im erlaubten Bereich, 2.0.0 nicht mehr."
+    },
+    {
+      "question": "Deine Bibliothek steht auf Version 0.7.0. Was signalisiert das nach SemVer?",
+      "options": [
+        "Die API ist noch nicht stabil, auch MINOR-Versionen dürfen Breaking Changes enthalten",
+        "Die Bibliothek ist zu 70 % fertig",
+        "Es gibt garantiert keine Breaking Changes mehr",
+        "Nur Fehlerbehebungen sind erlaubt"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mit MAJOR 0 gilt die öffentliche API als in Entwicklung. Erst ab 1.0.0 gelten die strengen Kompatibilitätsregeln."
+    },
+    {
+      "question": "Du willst die Funktion schnitt() durch notenschnitt() ersetzen. Welcher Ablauf entspricht gutem API-Design?",
+      "options": [
+        "schnitt() sofort in einer PATCH-Version löschen",
+        "schnitt() umbenennen und die Version gleich lassen",
+        "notenschnitt() einführen, schnitt() mit DeprecationWarning weiterleiten (MINOR), schnitt() erst in der nächsten MAJOR-Version entfernen",
+        "Beide Funktionen für immer behalten, aber nicht dokumentieren"
+      ],
+      "correctIndex": 2,
+      "explanation": "Neue Funktionen kommen in einer MINOR-Version. Die alte bleibt als veraltet markiert erhalten, damit Nutzer:innen Zeit zum Umstellen haben. Entfernen ist ein Breaking Change und gehört in eine MAJOR-Version."
+    },
+    {
+      "question": "Warum definiert eine Bibliothek eine gemeinsame Basisklasse NotenError für alle ihre Exceptions?",
+      "options": [
+        "Weil Python sonst keine eigenen Exceptions erlaubt",
+        "Damit Exceptions schneller geworfen werden",
+        "Damit keine Fehlermeldung nötig ist",
+        "Damit Nutzer:innen mit einem except NotenError alle Fehler der Bibliothek abfangen können, ohne fremde Fehler zu verschlucken"
+      ],
+      "correctIndex": 3,
+      "explanation": "Eine eigene Hierarchie erlaubt beides: gezielt einzelne Fehler oder pauschal alle Fehler der Bibliothek abfangen – ohne except Exception, das auch Programmierfehler verstecken würde."
+    },
+    {
+      "question": "Was liefert ep.load() für den Entry Point pdf = \"notenpdf:PdfExporter\"?",
+      "options": [
+        "Den String \"notenpdf:PdfExporter\"",
+        "Die Klasse PdfExporter aus dem Modul notenpdf (das Modul wird dabei importiert)",
+        "Eine fertige Instanz von PdfExporter",
+        "Den Pfad zur pyproject.toml"
+      ],
+      "correctIndex": 1,
+      "explanation": "load() importiert das Modul notenpdf und gibt das Objekt nach dem Doppelpunkt zurück – hier die Klasse. Instanzieren muss das Framework selbst."
+    },
+    {
+      "question": "Worin unterscheidet sich eine abstrakte Basisklasse (ABC) von einem typing.Protocol als Plugin-Schnittstelle?",
+      "options": [
+        "Ein Protocol erzwingt die Implementierung zur Laufzeit, eine ABC nicht",
+        "Es gibt keinen Unterschied",
+        "Eine ABC verlangt Vererbung und verhindert das Instanzieren unvollständiger Klassen; ein Protocol prüft die Struktur nur statisch (z. B. mit mypy)",
+        "ABCs können keine Methoden mit Implementierung haben"
+      ],
+      "correctIndex": 2,
+      "explanation": "Bei einer ABC müssen Plugins erben, und fehlende abstrakte Methoden führen beim Erzeugen zu einem TypeError. Ein Protocol funktioniert ohne Vererbung, geprüft wird nur durch Typprüfer."
+    },
+    {
+      "question": "Welcher Vorteil ergibt sich, wenn Zeugnisdienst seinen Versand per Konstruktor bekommt (Dependency Injection)?",
+      "options": [
+        "Im Test kann eine Fake-Funktion übergeben werden, die nur mitschreibt, statt echte Mails zu senden",
+        "Der Code wird automatisch schneller",
+        "Man braucht keine Schnittstelle mehr",
+        "Der Versand kann nie fehlschlagen"
+      ],
+      "correctIndex": 0,
+      "explanation": "DI entkoppelt die Klasse von konkreten Implementierungen. Dadurch lassen sich Abhängigkeiten austauschen – für Tests, andere Umgebungen oder neue Varianten."
+    }
+  ]
+}

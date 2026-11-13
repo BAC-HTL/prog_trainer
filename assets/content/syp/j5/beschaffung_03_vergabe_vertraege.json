@@ -1,0 +1,94 @@
+{
+ "id": "syp-j5-beschaffung_03_vergabe_vertraege",
+ "title": "Vergabe und IT-Verträge",
+ "summary": "Vergabeverfahren, Bestbieterprinzip und IT-Vertragstypen wie Werk-, Dienst- und Wartungsvertrag.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Hinweis vorab: Diese Lektion vermittelt Grundbegriffe für den Unterricht und ist keine Rechtsberatung. Bei echten Vergaben und Verträgen entscheiden der konkrete Vertragstext und die geltende Rechtslage – im Zweifel Jurist:innen fragen. Öffentliche Auftraggeber in Österreich (Bund, Länder, Gemeinden, öffentliche Schulen, viele ausgegliederte Unternehmen) müssen bei Beschaffungen das Bundesvergabegesetz (BVergG) einhalten, das die EU-Vergaberichtlinien umsetzt. Private Unternehmen sind frei, gehen aber oft ähnlich vor."
+  },
+  {
+   "type": "text",
+   "content": "Grundsätze des Vergaberechts sind freier und lauterer Wettbewerb, Gleichbehandlung aller Bieter, Transparenz und Nichtdiskriminierung. Je nach geschätztem Auftragswert gelten unterschiedliche Regeln: Oberhalb der EU-Schwellenwerte wird EU-weit bekanntgemacht, darunter gelten erleichterte Regeln, bei sehr kleinen Aufträgen ist eine Direktvergabe möglich. Die Schwellenwerte werden regelmäßig angepasst – schau bei Bedarf die aktuellen Werte nach. Aufträge dürfen nicht künstlich gestückelt werden, um unter eine Schwelle zu kommen."
+  },
+  {
+   "type": "code",
+   "content": "Verfahrensarten (Auswahl)\nOffenes Verfahren:\n  alle Interessierten dürfen\n  ein Angebot legen\nNicht offenes Verfahren:\n  zuerst Bewerbung, nur\n  geeignete Bieter werden zum\n  Angebot eingeladen\nVerhandlungsverfahren:\n  über den Inhalt der Angebote\n  wird verhandelt\nDirektvergabe:\n  geringer Auftragswert, ohne\n  förmliches Verfahren"
+  },
+  {
+   "type": "text",
+   "content": "Beim Zuschlag unterscheidet man in Österreich das Bestbieterprinzip (Zuschlag an das technisch und wirtschaftlich günstigste Angebot, bewertet über mehrere Zuschlagskriterien – wie in der Nutzwertanalyse) und das Billigstbieterprinzip (Zuschlag an den niedrigsten Preis, nur sinnvoll, wenn die Leistung exakt beschrieben ist und die Qualität feststeht). Vor der Zuschlagserteilung wird den Bietern die Zuschlagsentscheidung mitgeteilt; während einer Stillhaltefrist können unterlegene Bieter sie überprüfen lassen. Öffentliche Stellen kaufen Standardprodukte wie Laptops oft über Rahmenvereinbarungen zentraler Beschaffungsstellen, für den Bund etwa die Bundesbeschaffung GmbH (BBG)."
+  },
+  {
+   "type": "text",
+   "content": "Nach dem Zuschlag folgt der Vertrag. Das ABGB unterscheidet: Beim Werkvertrag wird ein Erfolg geschuldet – ein fertiges Werk, z. B. eine funktionierende Individualsoftware oder ein fertig verkabeltes Netzwerk. Der Auftragnehmer trägt das Risiko, dass es funktioniert, das Werk wird abgenommen, für Mängel gilt Gewährleistung. Beim Dienstvertrag verpflichtet sich jemand, für eine gewisse Zeit Arbeitsleistungen zu erbringen, ohne einen bestimmten Erfolg zu schulden; in persönlicher Abhängigkeit ist das ein Arbeitsverhältnis, ohne diese spricht man vom freien Dienstvertrag. In der IT-Praxis werden Beratung und Unterstützung oft nach Aufwand (Stunden, „Time & Material“) abgerechnet – welcher Vertragstyp vorliegt, hängt vom konkreten Inhalt ab, nicht vom Titel."
+  },
+  {
+   "type": "code",
+   "content": "Vertragstyp  geschuldet   Beispiel\n-----------  -----------  -----------\nKauf         Sache,       Laptops,\n             Eigentum     Server\nWerk         Erfolg       App fertig\n                          entwickeln\nDienst       Tätigkeit    Berater:in\n             auf Zeit     20 h/Woche\nLizenz       Nutzungs-    Office-\n             recht        Lizenzen\nWartung/     laufende     Updates,\nPflege       Betreuung    Hotline"
+  },
+  {
+   "type": "text",
+   "content": "Ein Wartungs- bzw. Pflegevertrag regelt die Betreuung nach der Einführung: Fehlerbehebung, Updates und neue Versionen, Hotline, bei Hardware Reparatur oder Austausch. Seine Qualität wird über ein SLA festgelegt (Servicezeiten, Reaktions- und Lösungszeiten, Verfügbarkeit – kennst du aus dem 4. Jahrgang). Werden personenbezogene Daten im Auftrag verarbeitet, braucht es zusätzlich einen Auftragsverarbeitungsvertrag nach DSGVO. Weitere übliche Punkte: Abnahmeverfahren, Zahlungsplan (z. B. nach Meilensteinen), Laufzeit und Kündigung, Rechte an Quellcode und Daten, Datenrückgabe bei Vertragsende."
+  },
+  {
+   "type": "text",
+   "content": "Bei Werkverträgen werden oft Termine mit einer Pönale (Vertragsstrafe) abgesichert: z. B. 0,2 % des Auftragswerts pro Kalendertag Verzug, höchstens 5 %. So muss man den konkreten Schaden nicht einzeln nachweisen. Beispiel: Auftragswert 80 000 €."
+  },
+  {
+   "type": "code",
+   "content": "auftrag = 80000\nsatz, deckel = 0.002, 0.05\nfor tage in (12, 30):\n    p = min(tage * satz, deckel)\n    print(tage, \"Tage:\",\n          round(auftrag * p), \"€\")\n\n# Ausgabe:\n# 12 Tage: 1920 €\n# 30 Tage: 4000 €"
+  },
+  {
+   "type": "text",
+   "content": "Die Abnahme prüft das Werk gegen die vereinbarten Abnahmekriterien aus Lasten-/Pflichtenheft, meist mit einem Abnahmetest. Ergebnis ist ein Abnahmeprotokoll mit festgestellten Mängeln und deren Schwere; schwere Mängel verhindern die Abnahme. Zusammenfassung: Öffentliche Auftraggeber vergeben nach dem BVergG (Wettbewerb, Gleichbehandlung, Transparenz), meist nach dem Bestbieterprinzip. Werkvertrag = Erfolg, Dienstvertrag = Tätigkeit auf Zeit. Wartungsvertrag und SLA regeln den Betrieb danach, Pönalen sichern Termine ab."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "Eine Firma verpflichtet sich, bis 1. März eine fertige Buchungs-App zu liefern, die die Anforderungen im Pflichtenheft erfüllt. Welcher Vertragstyp liegt am ehesten vor?",
+   "options": [
+    "Dienstvertrag",
+    "Kaufvertrag",
+    "Werkvertrag",
+    "Lizenzvertrag"
+   ],
+   "correctIndex": 2,
+   "explanation": "Geschuldet ist ein Erfolg – eine funktionierende App nach Pflichtenheft. Das ist typisch für einen Werkvertrag mit Abnahme und Gewährleistung."
+  },
+  {
+   "question": "Was gibt der Code aus?",
+   "code": "auftrag = 50000\np = min(40 * 0.001, 0.05)\nprint(\"Pönale:\", round(auftrag * p))",
+   "options": [
+    "Pönale: 1600",
+    "Pönale: 2000",
+    "Pönale: 3200",
+    "Pönale: 1000"
+   ],
+   "correctIndex": 1,
+   "explanation": "40 · 0,1 % = 4 %. Das liegt unter dem Deckel von 5 %, also gilt 4 %: 50 000 · 0,04 = 2 000 €."
+  },
+  {
+   "question": "Was kennzeichnet das Bestbieterprinzip?",
+   "options": [
+    "Der Zuschlag geht an das technisch und wirtschaftlich günstigste Angebot nach mehreren Kriterien",
+    "Der Zuschlag geht immer an den niedrigsten Preis",
+    "Der Zuschlag geht an den Bieter mit den meisten Mitarbeitenden",
+    "Der Zuschlag wird ausgelost"
+   ],
+   "correctIndex": 0,
+   "explanation": "Beim Bestbieterprinzip werden neben dem Preis auch Qualitätskriterien gewichtet bewertet. Nur auf den Preis schaut das Billigstbieterprinzip."
+  },
+  {
+   "question": "Eine Gemeinde teilt einen großen IT-Auftrag absichtlich in viele kleine Aufträge, um jeden direkt vergeben zu können. Wie ist das zu bewerten?",
+   "options": [
+    "Erlaubt, weil kleine Aufträge schneller sind",
+    "Erlaubt, wenn jeder Teil an eine andere Firma geht",
+    "Nur bei Software erlaubt",
+    "Unzulässig, weil Aufträge nicht gestückelt werden dürfen, um Vergaberegeln zu umgehen"
+   ],
+   "correctIndex": 3,
+   "explanation": "Der geschätzte Auftragswert bezieht sich auf den gesamten Bedarf. Künstliches Aufteilen, um unter Schwellenwerte zu kommen, umgeht Wettbewerb und Transparenz."
+  }
+ ]
+}

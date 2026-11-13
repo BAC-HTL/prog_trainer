@@ -1,0 +1,94 @@
+{
+  "id": "nvs-j5-soa_01_serviceorientierung",
+  "title": "Serviceorientierung: Services, Verträge, lose Kopplung",
+  "summary": "Was einen Service ausmacht, warum Verträge und lose Kopplung zentral sind und wie sich SOA von Microservices unterscheidet.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Im 4. Jahrgang hast du Client/Server, Middleware und REST kennengelernt. Stell dir jetzt die IT einer großen Schule oder Firma vor: Notenverwaltung, Stundenplan, Moodle, Mensa-Abrechnung, Buchhaltung. Baut man alles als einen großen Block (Monolith), zieht jede Änderung Tests und Neuinstallation des Ganzen nach sich. Die serviceorientierte Architektur (SOA) zerlegt die Anwendungslandschaft stattdessen in Services: eigenständige Einheiten, die eine fachliche Funktion über eine definierte Schnittstelle im Netz anbieten, z. B. „Schülerdaten abfragen“ oder „Rechnung erstellen“."
+    },
+    {
+      "type": "text",
+      "content": "Typische Prinzipien eines Service: Er hat einen formalen Vertrag (Service Contract), ist lose gekoppelt, versteckt seine Implementierung (Abstraktion), ist wiederverwendbar, autonom (kontrolliert seine eigenen Ressourcen), möglichst zustandslos und auffindbar (z. B. über eine Registry). Entscheidend ist der fachliche Schnitt: Ein Service bildet eine Geschäftsfunktion ab, nicht eine technische Schicht wie „Datenbankzugriff“."
+    },
+    {
+      "type": "text",
+      "content": "Der Vertrag beschreibt alles, was ein Aufrufer (Consumer) wissen muss: Operationen, Datenformate, Fehlerfälle, oft auch Qualitätszusagen wie Antwortzeit oder Verfügbarkeit (Service Level Agreement, SLA). Klassische SOA verwendete dafür WSDL mit SOAP-Webservices (XML). Bei REST-APIs ist heute OpenAPI üblich – eine maschinenlesbare Beschreibung in YAML oder JSON, aus der man Doku und Client-Code erzeugen kann:"
+    },
+    {
+      "type": "code",
+      "content": "openapi: 3.0.3\ninfo:\n  title: Schülerdaten-Service\n  version: 1.2.0\npaths:\n  /schueler/{id}:\n    get:\n      parameters:\n        - name: id\n          in: path\n          required: true\n          schema: {type: integer}\n      responses:\n        \"200\":\n          description: gefunden\n          content:\n            application/json:\n              schema:\n                $ref: \"#/components/schemas/Schueler\"\n        \"404\":\n          description: unbekannte id\ncomponents:\n  schemas:\n    Schueler:\n      type: object\n      required: [id, name, klasse]\n      properties:\n        id: {type: integer}\n        name: {type: string}\n        klasse: {type: string}"
+    },
+    {
+      "type": "text",
+      "content": "Lose Kopplung heißt: Consumer und Provider hängen so wenig wie möglich voneinander ab. Man unterscheidet mehrere Dimensionen: technisch (Sprache und Plattform egal, z. B. C#-Client und Python-Service), zeitlich (bei asynchroner Kommunikation muss der Provider nicht gerade laufen), örtlich (die Adresse kommt aus einer Registry statt fest im Code) und über das Datenformat (nur der Vertrag zählt, nicht interne Klassen). Typischer Fehler: Zwei Services lesen dieselben Datenbanktabellen. Dann ist die Tabelle der eigentliche Vertrag – jede Spaltenänderung bricht beide."
+    },
+    {
+      "type": "text",
+      "content": "Ein guter Consumer ist ein „Tolerant Reader“: Er liest nur die Felder, die er laut Vertrag braucht, und ignoriert unbekannte Felder. Dann darf der Provider neue Felder ergänzen, ohne dass etwas kaputtgeht. Umbenennen oder Entfernen eines Pflichtfelds ist dagegen eine inkompatible (breaking) Änderung:"
+    },
+    {
+      "type": "code",
+      "content": "# Tolerant Reader: nur nutzen,\n# was im Vertrag steht\nantwort_v1 = {\"id\": 7, \"name\": \"Lea\",\n              \"klasse\": \"5AHIF\"}\nantwort_neu = {\"id\": 7, \"name\": \"Lea\",\n               \"klasse\": \"5AHIF\",\n               \"email\": \"lea@schule.at\"}\n\ndef anzeigen(s):\n    return f\"{s['name']} ({s['klasse']})\"\n\nprint(anzeigen(antwort_v1))\nprint(anzeigen(antwort_neu))\n\nkaputt = {\"id\": 7, \"vorname\": \"Lea\",\n          \"klasse\": \"5AHIF\"}\ntry:\n    print(anzeigen(kaputt))\nexcept KeyError as e:\n    print(\"Fehler:\", e)\n\n# Ausgabe:\n# Lea (5AHIF)\n# Lea (5AHIF)\n# Fehler: 'name'"
+    },
+    {
+      "type": "text",
+      "content": "Darum werden Verträge versioniert. Kompatibel sind meist: neues optionales Feld, neue Operation, neuer optionaler Parameter. Breaking sind: Feld umbenennen oder löschen, Datentyp ändern, neues Pflichtfeld in der Anfrage. Für Breaking Changes bietet man eine neue Version an (z. B. /v2/schueler) und betreibt die alte eine Übergangszeit lang weiter, bis alle Consumer umgestellt haben."
+    },
+    {
+      "type": "text",
+      "content": "SOA und Microservices sind beide serviceorientiert, setzen aber anders an. Klassische SOA zielt auf die Integration der ganzen Unternehmens-IT: eher grobe Services, oft über einen zentralen Enterprise Service Bus (ESB), der Nachrichten routet und umwandelt, gemeinsame Datenmodelle, zentrale Steuerung. Microservices sind kleiner geschnitten, gehören je einem Team, haben jeweils eine eigene Datenbank und werden unabhängig deployt. Die Logik steckt in den Services, das Netz transportiert nur („smart endpoints, dumb pipes“). Der Preis: viele Deployments, verteilte Fehlersuche, Datenkonsistenz über Services hinweg ist schwieriger."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: Ein Service bietet eine fachliche Funktion über einen Vertrag an (WSDL/SOAP oder OpenAPI/REST). Lose Kopplung – technisch, zeitlich, örtlich, im Datenformat – macht Services unabhängig änderbar; eine gemeinsame Datenbank zerstört sie. Tolerant Reader und Versionierung erlauben Weiterentwicklung ohne Bruch. SOA integriert grob und zentral (oft mit ESB), Microservices sind feingranular, dezentral und haben eigene Daten."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Zwei Services greifen direkt auf dieselbe Tabelle „schueler“ zu. Welches Problem entsteht vor allem?",
+      "options": [
+        "Enge Kopplung: Jede Schemaänderung kann beide Services brechen",
+        "Die Services können nicht mehr in verschiedenen Sprachen geschrieben werden",
+        "Die Datenbank kann keine Transaktionen mehr ausführen",
+        "Die Services werden automatisch zustandsbehaftet"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die gemeinsame Tabelle wird zum heimlichen Vertrag. Ändert ein Team eine Spalte, bricht der andere Service – genau das will lose Kopplung vermeiden."
+    },
+    {
+      "question": "Welche Änderung am Vertrag eines Schüler-Service ist in der Regel kompatibel (non-breaking)?",
+      "options": [
+        "Das Feld „name“ in „vollerName“ umbenennen",
+        "Den Typ von „id“ von integer auf string ändern",
+        "Ein neues optionales Antwortfeld „email“ ergänzen",
+        "Einen neuen Pflichtparameter in der Anfrage einführen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Ein Tolerant Reader ignoriert unbekannte Felder, daher stört ein zusätzliches optionales Feld niemanden. Umbenennen, Typwechsel und neue Pflichtparameter brechen bestehende Consumer."
+    },
+    {
+      "question": "Was gibt der Code aus?",
+      "code": "antwort = {\"id\": 7, \"klasse\": \"5AHIF\",\n           \"email\": \"lea@schule.at\"}\nprint(antwort[\"klasse\"])",
+      "options": [
+        "Lea",
+        "None",
+        "KeyError: 'name'",
+        "5AHIF"
+      ],
+      "correctIndex": 3,
+      "explanation": "Der Consumer liest nur „klasse“. Dass zusätzlich „email“ geliefert und „name“ entfernt wurde, stört diesen Consumer nicht – er braucht das Feld nicht."
+    },
+    {
+      "question": "Welche Aussage beschreibt Microservices im Unterschied zu klassischer SOA am besten?",
+      "options": [
+        "Alle Services teilen sich eine zentrale Datenbank",
+        "Jeder Service hat eigene Daten und wird unabhängig deployt",
+        "Die gesamte Logik liegt in einem zentralen Enterprise Service Bus",
+        "Microservices verwenden ausschließlich SOAP und WSDL"
+      ],
+      "correctIndex": 1,
+      "explanation": "Microservices setzen auf eigene Datenhaltung pro Service, unabhängige Deployments und „smart endpoints, dumb pipes“. Ein zentraler ESB mit viel Logik ist typisch für klassische SOA."
+    }
+  ]
+}

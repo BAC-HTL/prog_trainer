@@ -1,0 +1,90 @@
+{
+  "id": "dbi-j5-bi_01_data_warehouse",
+  "title": "OLTP, OLAP und das Data Warehouse",
+  "summary": "Warum Auswertungen eine eigene Datenbank bekommen und wie Daten per ETL dorthin gelangen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Bisher hast du vor allem operative Datenbanken gebaut: Die Kasse des Schulbuffets bucht jeden Verkauf, die Notenverwaltung speichert jede Note. Solche Systeme heißen OLTP (Online Transaction Processing). Die Direktion will aber andere Fragen beantworten: „Wie hat sich der Umsatz pro Monat in den letzten drei Jahren entwickelt?“ Das ist OLAP (Online Analytical Processing) – Auswertungen über große, historische Datenmengen."
+    },
+    {
+      "type": "code",
+      "content": "              OLTP          OLAP\n------------  ------------  -------------\nZweck         Tagesgeschäft Analyse\nZugriff       viele kleine  wenige große\n              Transaktionen Abfragen\nOperationen   INSERT,UPDATE fast nur\n              SELECT        SELECT\nDaten         aktuell       historisch\nSchema        normalisiert  Sternschema\n                            (denormal.)\nNutzer:innen  Sachbearb.,   Management,\n              Anwendungen   Analyst:innen"
+    },
+    {
+      "type": "text",
+      "content": "Warum nicht einfach auf der OLTP-Datenbank auswerten? Große Analyseabfragen würden die laufenden Transaktionen bremsen (Sperren, Puffer). Außerdem liegen die Daten oft in mehreren Systemen (Kasse, Lager, Excel-Listen) in unterschiedlichen Formaten, und alte Stände werden im OLTP-System überschrieben. Deshalb baut man ein Data Warehouse (DWH): eine eigene Datenbank nur für Auswertungen."
+    },
+    {
+      "type": "text",
+      "content": "Nach Bill Inmon ist ein Data Warehouse:\n• themenorientiert – nach Themen wie Verkauf oder Personal organisiert, nicht nach Anwendungen,\n• integriert – Daten aus vielen Quellen werden vereinheitlicht (Formate, Schlüssel, Bezeichnungen),\n• zeitbezogen – Daten haben einen Zeitbezug und reichen weit zurück,\n• nicht flüchtig – geladene Daten werden nicht mehr geändert, nur ergänzt."
+    },
+    {
+      "type": "code",
+      "content": "Kasse    Lager    Excel  (Quellen)\n   \\      |      /\n    v     v     v\n   [ Staging Area ]  <- ETL\n          |\n   [ Data Warehouse ]\n     /          \\\n[Data Mart]  [Data Mart]\n     |            |\nBerichte, Dashboards, Ad-hoc-\nAnalysen\n\nData Mart = Ausschnitt für einen\nBereich (z. B. nur Buffet-Umsatz)"
+    },
+    {
+      "type": "text",
+      "content": "Der Weg der Daten heißt ETL:\n• Extract – Daten aus den Quellsystemen lesen (Datenbank, CSV-Export, Schnittstelle), meist in einen Zwischenbereich (Staging Area).\n• Transform – bereinigen und vereinheitlichen: Datumsformate, Schreibweisen, Dubletten, fehlende Werte, Einheiten, Berechnungen.\n• Load – in das DWH laden, meist regelmäßig (z. B. jede Nacht) und nur neue Daten (inkrementell).\nWird erst geladen und dann in der Zieldatenbank transformiert, spricht man von ELT."
+    },
+    {
+      "type": "code",
+      "content": "import csv, io, sqlite3\nfrom datetime import datetime\n\nroh = \"\"\"datum;produkt;menge;preis\n12.01.2026;Leberkässemmel;40;3,50\n12.01.2026;eistee ;30;2,00\n12.01.2026;Eistee;30;2,00\n13.01.2026;Topfengolatsche;;2,00\n\"\"\"\n# Extract\nzeilen = csv.DictReader(\n    io.StringIO(roh), delimiter=\";\")\n\n# Transform\nsauber, gesehen = [], set()\nfor z in zeilen:\n    if not z[\"menge\"]:   # unvollständig\n        continue\n    d = datetime.strptime(\n        z[\"datum\"], \"%d.%m.%Y\").date()\n    p = z[\"produkt\"].strip().capitalize()\n    m = int(z[\"menge\"])\n    pr = float(z[\"preis\"].replace(\",\",\".\"))\n    if (d, p, m) in gesehen:  # doppelt\n        continue\n    gesehen.add((d, p, m))\n    sauber.append(\n        (d.isoformat(), p, m, m * pr))\n\n# Load\ndwh = sqlite3.connect(\":memory:\")\ndwh.execute(\"CREATE TABLE verkauf\"\n  \"(datum, produkt, menge, umsatz)\")\ndwh.executemany(\"INSERT INTO verkauf\"\n  \" VALUES (?,?,?,?)\", sauber)\nfor r in dwh.execute(\n        \"SELECT * FROM verkauf\"):\n    print(r)\n# ('2026-01-12', 'Leberkässemmel',\n#  40, 140.0)\n# ('2026-01-12', 'Eistee', 30, 60.0)"
+    },
+    {
+      "type": "text",
+      "content": "Das Beispiel zeigt typische Transform-Schritte: Das Datum wird von 12.01.2026 auf das ISO-Format 2026-01-12 gebracht, „eistee “ und „Eistee“ werden vereinheitlicht, die doppelt exportierte Zeile fällt weg, die unvollständige Zeile ebenfalls, und das Dezimalkomma wird zum Punkt. In der Praxis protokolliert man aussortierte Zeilen, statt sie stillschweigend zu verwerfen – sonst fehlen später Umsätze, ohne dass es jemand merkt."
+    },
+    {
+      "type": "text",
+      "content": "Typische Fehler: Datenqualität unterschätzen (der Großteil der Arbeit in DWH-Projekten steckt oft im Transform-Schritt), Auswertungen direkt auf dem Produktivsystem fahren oder Daten im DWH nachträglich überschreiben und damit die Historie verlieren.\n\nZusammenfassung: OLTP = viele kleine Transaktionen im Tagesgeschäft, OLAP = große Analyseabfragen. Ein Data Warehouse ist themenorientiert, integriert, zeitbezogen und nicht flüchtig. Daten kommen per ETL (Extract, Transform, Load) aus den Quellsystemen; Data Marts sind fachliche Ausschnitte."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Welche Abfrage ist typisch für OLAP?",
+      "options": [
+        "Eine neue Bestellung im Webshop speichern",
+        "Den Umsatz pro Produktkategorie und Quartal der letzten 5 Jahre berechnen",
+        "Die Adresse eines Kunden ändern",
+        "Den Lagerstand nach einem Verkauf um 1 verringern"
+      ],
+      "correctIndex": 1,
+      "explanation": "OLAP wertet große, historische Datenmengen aus. Die anderen Beispiele sind kurze Schreibtransaktionen des Tagesgeschäfts (OLTP)."
+    },
+    {
+      "question": "Ein DWH speichert Daten auch dann noch, wenn sie im Quellsystem längst überschrieben sind. Welche Eigenschaft nach Inmon beschreibt das am besten?",
+      "options": [
+        "themenorientiert",
+        "integriert",
+        "zeitbezogen und nicht flüchtig",
+        "normalisiert"
+      ],
+      "correctIndex": 2,
+      "explanation": "Daten im DWH haben einen Zeitbezug und werden nach dem Laden nicht mehr verändert – so bleibt die Historie erhalten."
+    },
+    {
+      "question": "In welchem ETL-Schritt wird „01.03.2026“ in „2026-03-01“ umgewandelt?",
+      "options": [
+        "Extract",
+        "Load",
+        "Report",
+        "Transform"
+      ],
+      "correctIndex": 3,
+      "explanation": "Vereinheitlichen von Formaten, Bereinigen und Berechnen gehört zum Transform-Schritt."
+    },
+    {
+      "question": "Wie viele Zeilen landen bei diesen Rohdaten im DWH, wenn das ETL-Skript aus der Lektion verwendet wird?",
+      "code": "12.01.2026;Leberkässemmel;40;3,50\n12.01.2026;eistee ;30;2,00\n12.01.2026;Eistee;30;2,00\n13.01.2026;Topfengolatsche;;2,00",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "1"
+      ],
+      "correctIndex": 0,
+      "explanation": "Die Zeile ohne Menge wird verworfen, „eistee “ wird zu „Eistee“ und ist dann eine Dublette der dritten Zeile. Übrig bleiben 2."
+    }
+  ]
+}

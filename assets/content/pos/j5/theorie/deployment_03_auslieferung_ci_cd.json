@@ -1,0 +1,94 @@
+{
+  "id": "pos-j5-theorie-deployment_03_auslieferung_ci_cd",
+  "title": "Auslieferung: Versionierung, CI/CD, Container & Rollback",
+  "summary": "Software nachvollziehbar versionieren, automatisch bauen und testen, in Containern ausliefern und bei Problemen zurückrollen.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Jede Auslieferung bekommt eine eindeutige Version. Verbreitet ist Semantic Versioning (SemVer): MAJOR.MINOR.PATCH. PATCH erhöhst du bei Fehlerbehebungen, MINOR bei neuen, rückwärtskompatiblen Funktionen, MAJOR bei inkompatiblen Änderungen (z. B. ein API-Feld fällt weg). Erhöht man eine Stelle, werden die rechts davon auf 0 gesetzt: 2.4.1 → 2.5.0 → 3.0.0."
+    },
+    {
+      "type": "code",
+      "content": "a, b = \"1.10.0\", \"1.9.0\"\nprint(a > b)    # Textvergleich!\n\ndef v(s):\n    return tuple(int(x)\n                 for x in s.split(\".\"))\n\nprint(v(a) > v(b))\nprint(max([\"1.9.0\", \"1.10.0\", \"1.2.3\"],\n          key=v))\n# False\n# True\n# 1.10.0"
+    },
+    {
+      "type": "text",
+      "content": "Continuous Integration (CI): Bei jedem Push baut ein Server das Projekt automatisch, führt statische Analyse und Tests aus und meldet Fehler sofort. Continuous Delivery (CD): Jeder erfolgreiche Build erzeugt ein auslieferbares Artefakt; die Freigabe in die Produktion erfolgt per Knopfdruck. Bei Continuous Deployment geht jede erfolgreiche Änderung sogar automatisch in Produktion."
+    },
+    {
+      "type": "code",
+      "content": "Push -> Build -> Lint -> Tests\n          |\n          v\n     Artefakt (Image v2.5.0)\n          |\n          v\n  Testumgebung -> Systemtests\n          |\n          v\n  Freigabe -> Produktion"
+    },
+    {
+      "type": "text",
+      "content": "Bei GitHub Actions liegt die Pipeline als YAML-Datei im Ordner .github/workflows/. on legt fest, wann sie läuft, jobs enthält die Aufgaben, jeder Job läuft auf einem frischen Runner (runs-on) und besteht aus steps: uses bindet eine fertige Action ein, run führt Shell-Befehle aus. needs legt die Reihenfolge der Jobs fest, if eine Bedingung. Die Versionsnummern der Actions (@v4 …) solltest du regelmäßig aktualisieren."
+    },
+    {
+      "type": "code",
+      "content": "name: CI\non:\n  push:\n    branches: [main]\n    tags: [\"v*\"]\n  pull_request:\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    strategy:\n      matrix:\n        python: [\"3.11\", \"3.12\"]\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-python@v5\n        with:\n          python-version: ${{ matrix.python }}\n      - run: pip install -r requirements.txt\n      - run: ruff check .\n      - run: pytest\n\n  image:\n    needs: test\n    if: startsWith(github.ref, 'refs/tags/v')\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - run: docker build -t app:${{ github.ref_name }} ."
+    },
+    {
+      "type": "text",
+      "content": "Der Job test läuft dank Matrix zweimal (je Python-Version). image startet nur, wenn alle Tests grün sind (needs) und ein Tag wie v2.5.0 gepusht wurde (if). Das Image bekommt den Tag-Namen als Version. Ein Container-Image enthält die Anwendung mit allen Abhängigkeiten; aus einem Image startet man beliebig viele Container. Dasselbe Image wandert unverändert von Test- in Produktionsumgebung – „bei mir läuft es“ gibt es dann nicht mehr."
+    },
+    {
+      "type": "code",
+      "content": "# Dockerfile\nFROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir \\\n    -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD [\"python\", \"server.py\"]\n\n# docker build -t app:2.5.0 .\n# docker run -p 8000:8000 app:2.5.0"
+    },
+    {
+      "type": "text",
+      "content": "Geht trotz Tests etwas schief, muss man schnell zurückrollen (Rollback) können: einfach die vorige Version (app:2.4.1) wieder starten. Deshalb Images immer mit Versionsnummer taggen, nicht nur mit latest. Strategien: Blue-Green (neue Version parallel aufbauen, dann umschalten, alte bleibt bereit), Canary (zuerst nur ein kleiner Teil der Benutzer:innen bekommt die neue Version) und Rolling Update (Instanzen nacheinander tauschen). Vorsicht bei Datenbank-Migrationen: Sie sollten so gebaut sein, dass auch die alte Version noch mit dem Schema arbeiten kann."
+    },
+    {
+      "type": "text",
+      "content": "Zusammenfassung: SemVer macht die Art einer Änderung an der Versionsnummer sichtbar. CI baut und testet jeden Push, CD liefert getestete Artefakte aus. GitHub-Actions-Workflows bestehen aus Triggern (on), Jobs und Steps. Container-Images mit fester Version machen Auslieferung reproduzierbar und Rollbacks einfach. Typische Fehler: Passwörter im Workflow statt in Secrets, nur latest als Tag, keine getestete Rollback-Möglichkeit."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Version 2.4.1 bekommt eine neue, rückwärtskompatible Funktion. Welche Version folgt nach SemVer?",
+      "options": [
+        "2.4.2",
+        "3.0.0",
+        "2.5.1",
+        "2.5.0"
+      ],
+      "correctIndex": 3,
+      "explanation": "Neue kompatible Funktion → MINOR erhöhen und PATCH auf 0 setzen: 2.5.0."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "print(max([\"2.2.0\", \"2.10.0\", \"2.9.1\"]))",
+      "options": [
+        "2.10.0",
+        "2.9.1",
+        "2.2.0",
+        "TypeError"
+      ],
+      "correctIndex": 1,
+      "explanation": "max() ohne key vergleicht die Strings Zeichen für Zeichen. Nach „2.“ wird „9“ mit „1“ verglichen, und „9“ ist größer – obwohl 2.10.0 die neuere Version ist."
+    },
+    {
+      "question": "Ein Workflow hat die Jobs test und deploy. deploy soll erst laufen, wenn test erfolgreich war. Was trägst du bei deploy ein?",
+      "options": [
+        "runs-on: test",
+        "uses: test",
+        "needs: test",
+        "on: test"
+      ],
+      "correctIndex": 2,
+      "explanation": "needs legt Abhängigkeiten zwischen Jobs fest. Ohne needs laufen Jobs parallel. uses bindet eine Action ein, runs-on wählt den Runner."
+    },
+    {
+      "question": "Nach dem Update auf app:3.0.0 häufen sich Fehler. Was ermöglicht den schnellsten Rollback?",
+      "options": [
+        "Das unveränderte, versionierte Image app:2.5.0 wieder starten",
+        "Den Fehler sofort in Produktion debuggen",
+        "Die Datenbank löschen und neu aufsetzen",
+        "Ein neues Image mit dem Tag latest bauen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Versionierte Images bleiben verfügbar. Man startet einfach wieder die letzte funktionierende Version. latest sagt nicht, welcher Stand gemeint ist."
+    }
+  ]
+}

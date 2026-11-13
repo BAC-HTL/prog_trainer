@@ -1,0 +1,91 @@
+{
+  "id": "pos-j5-theorie-qualitaet_01_qualitaetsmerkmale_metriken",
+  "title": "Qualitätsmerkmale & Metriken",
+  "summary": "Softwarequalität mit Kennzahlen greifbar machen: zyklomatische Komplexität und Testabdeckung berechnen und richtig deuten.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Was „gute Software“ ist, beschreiben die Qualitätsmerkmale nach ISO/IEC 25010, die du aus dem Architekturmodul kennst: funktionale Eignung, Leistungseffizienz, Kompatibilität, Gebrauchstauglichkeit, Zuverlässigkeit, Sicherheit, Wartbarkeit und Übertragbarkeit. Um Qualität zu steuern, muss man sie messen. Dafür gibt es Metriken: Kennzahlen, die automatisch aus Code, Tests oder Betrieb ermittelt werden."
+    },
+    {
+      "type": "text",
+      "content": "Einfache Metriken sind Codezeilen (LOC), Anzahl der Methoden pro Klasse oder Abhängigkeiten zwischen Modulen (Kopplung). Eine der bekanntesten ist die zyklomatische Komplexität nach McCabe. Sie zählt die linear unabhängigen Pfade durch eine Funktion. Faustregel: Anzahl der Entscheidungen (if, elif, for, while, except, …) plus 1. Im Kontrollflussgraphen gilt M = E − N + 2P (Kanten, Knoten, Anzahl zusammenhängender Teile – bei einer Funktion P = 1)."
+    },
+    {
+      "type": "code",
+      "content": "def f(x):\n    if x > 0:        # (1)\n        y = 1        # (2)\n    else:\n        y = 2        # (3)\n    while y < 5:     # (4)\n        y += 1       # (5)\n    return y         # (6)\n\nKanten: 1-2 1-3 2-4 3-4\n        4-5 5-4 4-6     E = 7\nKnoten:                 N = 6\nM = 7 - 6 + 2 = 3\nEntscheidungen: if, while -> 2 + 1 = 3"
+    },
+    {
+      "type": "text",
+      "content": "Die Komplexität sagt dir auch, wie viele Testfälle du mindestens brauchst, um jeden unabhängigen Pfad einmal zu durchlaufen. Werte bis etwa 10 gelten als gut beherrschbar; deutlich darüber sollte man die Funktion aufteilen. Werkzeuge zählen leicht unterschiedlich – manche zählen auch jedes and/or als Entscheidung. Das Python-Modul ast erlaubt, den Zähler selbst zu bauen:"
+    },
+    {
+      "type": "code",
+      "content": "import ast\n\ncode = \"\"\"\ndef bewerten(p):\n    if p < 0:\n        raise ValueError\n    if p >= 90:\n        return 1\n    elif p >= 80:\n        return 2\n    elif p >= 50:\n        return 4\n    return 5\n\"\"\"\n\nENTSCH = (ast.If, ast.For, ast.While,\n          ast.IfExp, ast.ExceptHandler)\nbaum = ast.parse(code)\nn = sum(isinstance(k, ENTSCH)\n        for k in ast.walk(baum))\nprint(\"Komplexität:\", n + 1)\n# Komplexität: 5"
+    },
+    {
+      "type": "text",
+      "content": "Die zweite wichtige Metrik ist die Testabdeckung (Coverage): Welcher Anteil des Codes wird von den Tests ausgeführt? Anweisungsabdeckung zählt ausgeführte Zeilen, Zweigabdeckung (Branch Coverage) prüft zusätzlich, ob jede Entscheidung in beide Richtungen genommen wurde. In Python misst das coverage.py (pip install coverage), in .NET z. B. Coverlet."
+    },
+    {
+      "type": "code",
+      "content": "# bewerten.py: 13 Anweisungen,\n# 10 Zweigrichtungen; nur 2 Tests\n$ coverage run --branch -m pytest\n$ coverage report -m\nName        Stmts Miss Branch BrPart Cover\nbewerten.py    13    4     10      4   65%\n\nMissing: Zeilen 3, 8, 10, 12"
+    },
+    {
+      "type": "code",
+      "content": "stmts, miss = 13, 4\nbranch, br_teil = 10, 4\n\nzeilen = (stmts - miss) / stmts\nprint(f\"Zeilen: {zeilen:.0%}\")\n\n# coverage.py: getroffene Zeilen\n# plus Zweige, durch die Summe\ngesamt = ((stmts - miss) + (branch - br_teil)) \\\n    / (stmts + branch)\nprint(f\"Mit Zweigen: {gesamt:.0%}\")\n# Zeilen: 69%\n# Mit Zweigen: 65%"
+    },
+    {
+      "type": "text",
+      "content": "Vorsicht beim Deuten: 100 % Abdeckung heißt nur, dass jede Zeile einmal lief – nicht, dass die Ergebnisse geprüft wurden oder die Grenzwerte (genau 90 Punkte?) stimmen. Ein Test ohne assert erhöht die Abdeckung, findet aber keinen Fehler. Wird eine Metrik zum Ziel, wird sie oft „optimiert“ statt die Qualität. Metriken sind Warnsignale und Trends, keine Noten.\n\nZusammenfassung: Metriken machen Qualitätsmerkmale messbar. Zyklomatische Komplexität = Entscheidungen + 1 = E − N + 2. Testabdeckung (Zeilen, Zweige) zeigt ungetesteten Code – aber nicht, ob gut getestet wurde."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Wie groß ist die zyklomatische Komplexität dieser Funktion?",
+      "code": "def zaehle(werte):\n    pos = neg = 0\n    for w in werte:\n        if w > 0:\n            pos += 1\n        elif w < 0:\n            neg += 1\n    return pos, neg",
+      "options": [
+        "3",
+        "4",
+        "2",
+        "5"
+      ],
+      "correctIndex": 1,
+      "explanation": "Entscheidungen: for, if, elif – das sind 3. Plus 1 ergibt 4."
+    },
+    {
+      "question": "Ein Kontrollflussgraph einer Funktion hat 9 Kanten und 8 Knoten. Wie groß ist die zyklomatische Komplexität?",
+      "options": [
+        "1",
+        "17",
+        "3",
+        "2"
+      ],
+      "correctIndex": 2,
+      "explanation": "M = E − N + 2P = 9 − 8 + 2 · 1 = 3."
+    },
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "stmts, miss = 20, 4\nprint(f\"{(stmts - miss) / stmts:.0%}\")",
+      "options": [
+        "50%",
+        "75%",
+        "100%",
+        "80%"
+      ],
+      "correctIndex": 3,
+      "explanation": "16 von 20 Anweisungen wurden ausgeführt: 16 / 20 = 0,8 = 80 %."
+    },
+    {
+      "question": "Ein Projekt hat 100 % Zeilenabdeckung. Was kannst du daraus sicher schließen?",
+      "options": [
+        "Jede Zeile wurde von mindestens einem Test ausgeführt",
+        "Das Programm ist fehlerfrei",
+        "Alle Grenzwerte wurden getestet",
+        "Alle Zweige wurden in beide Richtungen durchlaufen"
+      ],
+      "correctIndex": 0,
+      "explanation": "Abdeckung misst nur, was ausgeführt wurde. Ob Ergebnisse geprüft und Grenzwerte getestet wurden, sagt sie nicht – und Zeilen- ist nicht gleich Zweigabdeckung."
+    }
+  ]
+}

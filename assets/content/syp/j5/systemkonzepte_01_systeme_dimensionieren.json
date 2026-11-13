@@ -1,0 +1,93 @@
+{
+ "id": "syp-j5-systemkonzepte_01_systeme_dimensionieren",
+ "title": "Systeme dimensionieren",
+ "summary": "Speicher, Bandbreite und Benutzerlast aus dem Mengengerüst nachrechnen.",
+ "sections": [
+  {
+   "type": "text",
+   "content": "Bevor ein IT-System gekauft oder in die Cloud gestellt wird, muss man es dimensionieren: Wie viel Speicher, Rechenleistung und Bandbreite braucht es – heute und in ein paar Jahren? Zu klein heißt langsame Antworten und volle Platten, zu groß heißt verschwendetes Budget. Grundlage ist das Mengengerüst (kennst du aus der Anforderungsanalyse): Wie viele Benutzer:innen, wie viele Daten, wie viele Vorgänge pro Zeiteinheit?"
+  },
+  {
+   "type": "text",
+   "content": "Der Speicherbedarf entsteht in vier Schritten: 1. Grundbedarf aus dem Mengengerüst (Anzahl × Datenmenge pro Person oder Datensatz). 2. Wachstum über die geplante Nutzungsdauer, meist als Prozent pro Jahr. 3. Reserve, weil Platten nie bis 100 % gefüllt werden sollen – üblich ist, höchstens etwa 80 % Füllgrad einzuplanen. 4. Erst danach kommt die Redundanz (RAID) dazu. Beispiel: Fileserver einer HTL mit 800 Schüler:innen (Quota 5 GB) und 80 Lehrkräften (Quota 20 GB), 20 % Wachstum pro Jahr, 3 Jahre Nutzung."
+  },
+  {
+   "type": "code",
+   "content": "nutzer = {\"Schüler\": (800, 5),\n          \"Lehrer\": (80, 20)}\nbasis = sum(n * gb\n            for n, gb in nutzer.values())\njahre, wachstum = 3, 0.20\nbedarf = basis * (1 + wachstum) ** jahre\nnetto = bedarf / 0.8   # max. 80 % voll\nprint(basis, \"GB\")\nprint(round(bedarf), \"GB\")\nprint(round(netto), \"GB\")\n\n# Ausgabe:\n# 5600 GB\n# 9677 GB\n# 12096 GB"
+  },
+  {
+   "type": "text",
+   "content": "Die rund 12,1 TB sind nutzbare Kapazität. Wie viele Platten man dafür braucht, hängt vom RAID-Level ab: Bei RAID 1 und RAID 10 ist die Hälfte der Rohkapazität nutzbar, bei RAID 5 gehen eine Platte, bei RAID 6 zwei Platten für Paritätsinformation verloren. Achtung: RAID ist kein Backup! Für die Datensicherung brauchst du zusätzlichen Speicher, je nach Anzahl der aufbewahrten Sicherungen ein Vielfaches des Datenbestands. Und: Hersteller geben TB (10¹² Byte) an, Betriebssysteme zeigen oft TiB (2⁴⁰ Byte) – eine 4-TB-Platte erscheint als rund 3,6 TiB."
+  },
+  {
+   "type": "code",
+   "content": "import math\nplatte = 4      # TB je Platte\nnetto_tb = 12.1\ndaten = math.ceil(netto_tb / platte)\nprint(\"RAID 5: \", daten + 1, \"Platten\")\nprint(\"RAID 6: \", daten + 2, \"Platten\")\nprint(\"RAID 10:\", daten * 2, \"Platten\")\n\n# Ausgabe:\n# RAID 5:  5 Platten\n# RAID 6:  6 Platten\n# RAID 10: 8 Platten"
+  },
+  {
+   "type": "text",
+   "content": "Bei der Bandbreite gilt zuerst: Netzwerke rechnen in Bit pro Sekunde, Dateien in Byte – Faktor 8. Entscheidend ist nicht die Zahl der registrierten Benutzer:innen, sondern wie viele gleichzeitig welche Last erzeugen. Beispiel: In einem EDV-Saal schauen 25 Schüler:innen gleichzeitig ein Lernvideo mit je 5 Mbit/s. Außerdem willst du wissen, wie lange eine 10-GB-Sicherung über eine 100-Mbit/s-Leitung dauert (ohne Protokoll-Overhead, real dauert es etwas länger)."
+  },
+  {
+   "type": "code",
+   "content": "streams = 25\nmbit_je_stream = 5\nprint(streams * mbit_je_stream, \"Mbit/s\")\n\ngb = 10\nmbit = gb * 1000 * 8   # GB -> Mbit\nsek = mbit / 100       # 100 Mbit/s\nprint(round(sek / 60, 1), \"min\")\n\n# Ausgabe:\n# 125 Mbit/s\n# 13.3 min"
+  },
+  {
+   "type": "text",
+   "content": "Für Server und Datenbank zählt die Last: Aus den registrierten Benutzer:innen schätzt man, wie viele in der Spitzenstunde gleichzeitig aktiv sind (z. B. am Sonntagabend vor einer Abgabe auf der Lernplattform), und wie viele Anfragen jede Person pro Minute auslöst. Daraus ergeben sich Anfragen pro Sekunde – die Größe, mit der man Server vergleicht und Lasttests plant. Ein Spitzenfaktor deckt kurze Lastspitzen ab."
+  },
+  {
+   "type": "code",
+   "content": "Lernplattform, Abgabe-Abend\nregistriert:          1 200\ngleichzeitig (25 %):    300\nAnfragen je Person:   4/min\nLast: 300 · 4 / 60 = 20 req/s\nSpitzenfaktor 2:     40 req/s\n-> Lasttest mit 40 req/s"
+  },
+  {
+   "type": "text",
+   "content": "Typische Fehler: Bit und Byte verwechseln; mit allen registrierten statt gleichzeitigen Nutzer:innen rechnen; Wachstum und Füllgrad-Reserve vergessen; RAID-Verlust nicht einrechnen; RAID für ein Backup halten. Zusammenfassung: Vom Mengengerüst zum Grundbedarf, dann Wachstum, dann Reserve, dann Redundanz. Bandbreite = gleichzeitige Nutzer:innen × Datenrate pro Nutzer:in. Jede Annahme gehört dokumentiert, damit man sie später überprüfen kann."
+  }
+ ],
+ "quiz": [
+  {
+   "question": "200 Personen bekommen je 2 GB Quota. Die Platte soll höchstens zu 80 % gefüllt sein (kein Wachstum). Wie viel nutzbaren Speicher planst du ein?",
+   "options": [
+    "480 GB",
+    "500 GB",
+    "400 GB",
+    "320 GB"
+   ],
+   "correctIndex": 1,
+   "explanation": "Grundbedarf 200 · 2 = 400 GB. Bei max. 80 % Füllgrad: 400 / 0,8 = 500 GB. 320 GB wäre 80 % von 400 – genau falsch herum gerechnet."
+  },
+  {
+   "question": "Ein RAID 5 besteht aus 5 Platten zu je 4 TB. Wie viel Kapazität ist nutzbar?",
+   "options": [
+    "20 TB",
+    "12 TB",
+    "16 TB",
+    "10 TB"
+   ],
+   "correctIndex": 2,
+   "explanation": "Bei RAID 5 geht die Kapazität einer Platte für Parität verloren: (5 − 1) · 4 TB = 16 TB. 12 TB wären es bei RAID 6 (zwei Platten Parität), 10 TB bei halber Kapazität wie bei Spiegelung."
+  },
+  {
+   "question": "Wie lange dauert die Übertragung von 1 GB über eine 80-Mbit/s-Leitung (ohne Overhead, 1 GB = 1000 MB)?",
+   "options": [
+    "100 s",
+    "12,5 s",
+    "800 s",
+    "1,25 s"
+   ],
+   "correctIndex": 0,
+   "explanation": "1 GB = 8000 Mbit. 8000 / 80 = 100 s. 12,5 s erhält man, wenn man den Faktor 8 zwischen Byte und Bit vergisst."
+  },
+  {
+   "question": "Warum rechnet man bei der Bandbreite meist nicht mit allen registrierten Benutzer:innen?",
+   "options": [
+    "Weil registrierte Konten keine Daten verbrauchen",
+    "Weil die Bandbreite immer verdoppelt wird",
+    "Weil Server ohnehin unbegrenzt skalieren",
+    "Weil nur ein Teil gleichzeitig aktiv ist und Last erzeugt"
+   ],
+   "correctIndex": 3,
+   "explanation": "Entscheidend ist die gleichzeitige Last in der Spitzenzeit. Man schätzt einen Anteil gleichzeitig aktiver Nutzer:innen und deckt kurze Spitzen mit einem Spitzenfaktor ab."
+  }
+ ]
+}

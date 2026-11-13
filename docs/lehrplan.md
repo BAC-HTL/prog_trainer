@@ -135,23 +135,23 @@ Die Inhalte folgen dem Lehrplan der **Höheren Lehranstalt für Informatik** (HT
 
 | Fach | Modul | Sem. | Stand |
 |---|---|---|---|
-| POS | Softwarearchitekturen & Architekturmuster | 9 | ○ |
-| POS | Kommunikation heterogener Systeme | 9 | ○ |
-| POS | Internationalisierung & Deployment | 9 | ○ |
-| POS | Softwareergonomie & Dialoggestaltung | 10 | ○ |
-| POS | Frameworks entwickeln | 10 | ○ |
-| POS | Softwarequalität & Performance-Tests | 10 | ○ |
-| DBI | Indizes & Anfrageoptimierung | 9 | ○ |
-| DBI | DBMS-Interna & aktuelle Datenmodelle | 9 | ○ |
-| DBI | Data Warehouse & Business Intelligence | 10 | ○ |
-| DBI | Administration & Performance-Tuning | 10 | ○ |
-| NVS | Serviceorientierte Architektur & Middleware | 9 | ○ |
-| NVS | Multi-Tier-Systeme & Cloud Computing | 10 | ○ |
-| NVS | Sicherheitskonzepte | 10 | ○ |
-| SYP | IKT-Systemkonzepte | 9 | ○ |
-| SYP | Beschaffung, Pflichtenheft & Ausschreibung | 9 | ○ |
-| SYP | IT-Sicherheitsstandards & Datenschutz | 10 | ○ |
-| SYP | Recht in der Softwareentwicklung | 10 | ○ |
+| POS | Softwarearchitekturen & Architekturmuster | 9 | ✅ |
+| POS | Kommunikation heterogener Systeme | 9 | ✅ Python, C# |
+| POS | Internationalisierung & Deployment | 9 | ✅ |
+| POS | Softwareergonomie & Dialoggestaltung | 10 | ✅ |
+| POS | Frameworks entwickeln | 10 | ✅ Python, C# |
+| POS | Softwarequalität & Performance-Tests | 10 | ✅ |
+| DBI | Indizes & Anfrageoptimierung | 9 | ✅ |
+| DBI | DBMS-Interna & aktuelle Datenmodelle | 9 | ✅ |
+| DBI | Data Warehouse & Business Intelligence | 10 | ✅ |
+| DBI | Administration & Performance-Tuning | 10 | ✅ |
+| NVS | Serviceorientierte Architektur & Middleware | 9 | ✅ |
+| NVS | Multi-Tier-Systeme & Cloud Computing | 10 | ✅ |
+| NVS | Sicherheitskonzepte | 10 | ✅ |
+| SYP | IKT-Systemkonzepte | 9 | ✅ |
+| SYP | Beschaffung, Pflichtenheft & Ausschreibung | 9 | ✅ |
+| SYP | IT-Sicherheitsstandards & Datenschutz | 10 | ✅ |
+| SYP | Recht in der Softwareentwicklung | 10 | ✅ |
 
 ### Junior
 

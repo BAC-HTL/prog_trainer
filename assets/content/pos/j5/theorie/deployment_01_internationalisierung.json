@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-theorie-deployment_01_internationalisierung",
+  "title": "Internationalisierung & Lokalisierung",
+  "summary": "Software so bauen, dass sie Sprachen, Zahlen-, Datums- und Währungsformate verschiedener Länder richtig behandelt.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Internationalisierung (kurz i18n: 18 Buchstaben zwischen i und n) heißt, Software so zu bauen, dass sie ohne Codeänderung an Sprachen und Regionen angepasst werden kann. Lokalisierung (l10n) ist die eigentliche Anpassung an ein Gebietsschema (Locale): Übersetzung, Formate, ggf. Bilder und rechtliche Texte. Ein Locale besteht aus Sprache und Region, z. B. de-AT (Deutsch, Österreich), de-DE oder en-US.\n\nGrundregel: Kein sichtbarer Text steht fest im Code. Texte liegen in Übersetzungsdateien und werden über einen Schlüssel geholt. Übliche Formate: .po/.mo (gettext, Linux/Python), .resx (.NET), .arb (Flutter), JSON (viele Web-Frameworks). Fehlt eine Übersetzung, greift eine Ausweichsprache (Fallback)."
+    },
+    {
+      "type": "code",
+      "content": "import json\n\n# Inhalt von de.json und en.json\nde = json.loads('{\"gruss\": \"Servus, {name}!\",'\n    '\"abmelden\": \"Abmelden\"}')\nen = json.loads('{\"gruss\": \"Hi, {name}!\"}')\ntexte = {\"de\": de, \"en\": en}\n\ndef t(sprache, key, **werte):\n    s = texte[sprache].get(key)\n    if s is None:\n        s = texte[\"de\"][key]  # Fallback\n    return s.format(**werte)\n\nprint(t(\"en\", \"gruss\", name=\"Mia\"))\nprint(t(\"en\", \"abmelden\"))\n# Hi, Mia!\n# Abmelden"
+    },
+    {
+      "type": "text",
+      "content": "Typischer Fehler: Sätze aus Stücken zusammensetzen, etwa \"Du hast \" + n + \" neue Nachrichten\". Die Wortstellung ist in anderen Sprachen anders, und Plural-Regeln unterscheiden sich: Deutsch und Englisch kennen „eins“ und „andere“, Polnisch oder Arabisch mehr Formen. Verwende ganze Sätze mit Platzhaltern und die Plural-Unterstützung deines Frameworks."
+    },
+    {
+      "type": "code",
+      "content": "texte = {\n  \"one\": \"Du hast {n} neue Nachricht.\",\n  \"other\": \"Du hast {n} neue Nachrichten.\",\n}\n\ndef nachricht(n):\n    form = \"one\" if n == 1 else \"other\"\n    return texte[form].format(n=n)\n\nfor n in (0, 1, 5):\n    print(nachricht(n))\n# Du hast 0 neue Nachrichten.\n# Du hast 1 neue Nachricht.\n# Du hast 5 neue Nachrichten."
+    },
+    {
+      "type": "text",
+      "content": "Zahlen, Datum und Währung werden je Locale anders geschrieben: Österreich verwendet das Komma als Dezimaltrennzeichen und schreibt den Monat „Jänner“, die USA verwenden den Punkt und die Reihenfolge Monat/Tag. In Python übernimmt das die Bibliothek Babel (pip install babel), die auf den Unicode-CLDR-Daten beruht. Die Leerzeichen nach € sind dabei geschützte Leerzeichen."
+    },
+    {
+      "type": "code",
+      "content": "from datetime import date\nfrom babel.numbers import (\n    format_currency, format_decimal)\nfrom babel.dates import format_date\n\nd = date(2026, 1, 15)\nfor loc in (\"de_AT\", \"de_DE\", \"en_US\"):\n    print(loc,\n      format_decimal(1234.5, locale=loc),\n      format_currency(1234.5, \"EUR\",\n                      locale=loc),\n      format_date(d, \"long\", locale=loc))\n# de_AT 1.234,5 € 1.234,50 15. Jänner 2026\n# de_DE 1.234,5 1.234,50 € 15. Januar 2026\n# en_US 1,234.5 €1,234.50 January 15, 2026"
+    },
+    {
+      "type": "text",
+      "content": "In C# steckt das Locale in CultureInfo. Achtung: Auch Parse() hängt von der Kultur ab – \"1,5\" ist in de-AT eineinhalb, in en-US wird das Komma als Tausendertrennzeichen gelesen. Für Dateien und Schnittstellen nimmt man daher immer die invariante Kultur bzw. ISO-Formate (2026-01-15), für die Anzeige die Kultur der Benutzer:innen. Zeitpunkte speichert man in UTC und rechnet erst bei der Anzeige in die lokale Zeitzone um."
+    },
+    {
+      "type": "code",
+      "content": "var at = new CultureInfo(\"de-AT\");\nvar us = new CultureInfo(\"en-US\");\nvar d = new DateTime(2026, 1, 15);\n\n1234.5m.ToString(\"C\", at);\n// € 1.234,50\n1234.5m.ToString(\"C\", us);\n// $1,234.50\nd.ToString(\"D\", at);\n// Donnerstag, 15. Jänner 2026\nd.ToString(\"d\", us);\n// 1/15/2026"
+    },
+    {
+      "type": "text",
+      "content": "Grundlage für alle Schriften ist Unicode, gespeichert meist als UTF-8. Ein Zeichen kann mehrere Bytes belegen, und manche Zeichen lassen sich auf zwei Arten darstellen (é als ein Zeichen oder als e + Akzent) – vor dem Vergleichen normalisiert man (NFC). Großschreibung ist sprachabhängig: Aus ß wird SS. Plane außerdem Platz ein: Übersetzungen sind oft länger als das Original, und Sprachen wie Arabisch oder Hebräisch laufen von rechts nach links."
+    },
+    {
+      "type": "code",
+      "content": "import unicodedata\n\ns = \"Größe\"\nprint(len(s), len(s.encode(\"utf-8\")))\nprint(s.upper())\n\na = \"e\\u0301\"   # e + Akzent\nb = \"é\"\nprint(a == b)\nn = unicodedata.normalize(\"NFC\", a)\nprint(n == b)\n# 5 7\n# GRÖSSE\n# False\n# True"
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Was gibt dieser Code aus?",
+      "code": "texte = {\"de\": {\"hallo\": \"Hallo\"},\n         \"en\": {}}\ndef t(spr, key):\n    s = texte[spr].get(key)\n    return s if s is not None \\\n        else texte[\"de\"][key]\nprint(t(\"en\", \"hallo\"))",
+      "options": [
+        "Hallo",
+        "Hello",
+        "KeyError",
+        "None"
+      ],
+      "correctIndex": 0,
+      "explanation": "Für \"en\" fehlt der Schlüssel \"hallo\", get() liefert None. Dann greift der Fallback auf Deutsch und liefert „Hallo“."
+    },
+    {
+      "question": "Wie viele Bytes belegt der Text „Öl“ in UTF-8?",
+      "code": "print(len(\"Öl\".encode(\"utf-8\")))",
+      "options": [
+        "2",
+        "3",
+        "4",
+        "1"
+      ],
+      "correctIndex": 1,
+      "explanation": "Ö liegt außerhalb von ASCII und braucht in UTF-8 zwei Bytes, l braucht eines. len(\"Öl\") ist 2, len(\"Öl\".encode(\"utf-8\")) ist 3."
+    },
+    {
+      "question": "Warum ist \"Du hast \" + str(n) + \" Dateien\" für die Lokalisierung ungünstig?",
+      "options": [
+        "Python kann Strings nicht mit + verbinden",
+        "Übersetzer:innen können weder Wortstellung noch Plural-Formen der Zielsprache anpassen",
+        "Zahlen dürfen in Texten nie vorkommen",
+        "Es ist langsamer als ein f-String"
+      ],
+      "correctIndex": 1,
+      "explanation": "Zerstückelte Sätze lassen sich nicht sinnvoll übersetzen. Ganze Sätze mit Platzhaltern und Plural-Formen aus der Übersetzungsdatei lösen das."
+    },
+    {
+      "question": "Eine CSV-Exportdatei soll von Programmen in aller Welt gelesen werden. Wie formatierst du darin Datum und Dezimalzahlen?",
+      "options": [
+        "Mit dem Locale des Benutzers, z. B. 15.01.2026 und 3,5",
+        "Immer im US-Format, z. B. 1/15/2026",
+        "Als Text in der Landessprache, z. B. 15. Jänner 2026",
+        "Kulturunabhängig, z. B. ISO-Datum 2026-01-15 und Punkt als Dezimaltrennzeichen"
+      ],
+      "correctIndex": 3,
+      "explanation": "Für Datenaustausch nimmt man ein festes, kulturunabhängiges Format (invariante Kultur, ISO 8601). Locale-Formate sind nur für die Anzeige gedacht."
+    }
+  ]
+}

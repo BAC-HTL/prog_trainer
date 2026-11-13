@@ -1,0 +1,117 @@
+{
+ "id": "syp-j5-systemkonzepte_pruefung",
+ "title": "Abschlussprüfung: IKT-Systemkonzepte",
+ "passPercent": 70,
+ "questions": [
+  {
+   "question": "300 Schüler:innen bekommen je 4 GB, 40 Lehrkräfte je 10 GB. Wie groß ist der Grundbedarf (ohne Wachstum und Reserve)?",
+   "options": [
+    "1 600 GB",
+    "1 240 GB",
+    "1 200 GB",
+    "3 400 GB"
+   ],
+   "correctIndex": 0,
+   "explanation": "300 · 4 = 1 200 GB plus 40 · 10 = 400 GB ergibt 1 600 GB. Wachstum, Reserve und RAID kommen erst danach dazu."
+  },
+  {
+   "question": "Ein Grundbedarf von 1 000 GB wächst 2 Jahre lang um je 10 %. Wie viel ist das am Ende?",
+   "options": [
+    "1 200 GB",
+    "1 210 GB",
+    "1 100 GB",
+    "1 020 GB"
+   ],
+   "correctIndex": 1,
+   "explanation": "Wachstum wirkt wie Zinseszins: 1 000 · 1,1² = 1 210 GB. 1 200 GB erhält man, wenn man 2 · 10 % einfach addiert."
+  },
+  {
+   "question": "Du brauchst 10 TB nutzbar und verwendest 4-TB-Platten in RAID 6. Wie viele Platten brauchst du mindestens?",
+   "options": [
+    "4",
+    "6",
+    "5",
+    "3"
+   ],
+   "correctIndex": 2,
+   "explanation": "10 / 4 = 2,5, also 3 Datenplatten. RAID 6 braucht zusätzlich 2 Platten für Parität: 5 Platten (nutzbar 12 TB)."
+  },
+  {
+   "question": "30 Personen streamen gleichzeitig ein Video mit 4 Mbit/s. Die Leitung hat 100 Mbit/s. Was stimmt?",
+   "options": [
+    "Es reicht, 30 · 4 = 120 MB/s",
+    "Es reicht genau mit 100 Mbit/s Reserve",
+    "Es reicht, weil nur ein Achtel gebraucht wird",
+    "Es reicht nicht: 120 Mbit/s werden gebraucht"
+   ],
+   "correctIndex": 3,
+   "explanation": "30 · 4 Mbit/s = 120 Mbit/s – mehr als die 100 Mbit/s der Leitung. Videos ruckeln oder die Qualität wird reduziert."
+  },
+  {
+   "question": "In welchem Dokumentteil beschreibst du, dass der Stundenplan-Import täglich um 05:00 Uhr per HTTPS im Format JSON erfolgt?",
+   "options": [
+    "Im Betriebshandbuch unter „Start/Stopp“",
+    "Im Business Case",
+    "In der Schnittstellenbeschreibung",
+    "Im Berechtigungskonzept"
+   ],
+   "correctIndex": 2,
+   "explanation": "Partner, Richtung, Protokoll, Format, Häufigkeit, Menge, Sicherheit und Fehlerbehandlung einer technischen Schnittstelle gehören in die Schnittstellenbeschreibung."
+  },
+  {
+   "question": "Welche Aussage zum Betriebskonzept stimmt?",
+   "options": [
+    "Es regelt Servicezeiten, Rollen, Sicherung, Monitoring, Wartungsfenster und Notfälle",
+    "Es wird erst nach dem Go-live geschrieben, wenn Probleme auftauchen",
+    "Es enthält nur die Hardwareliste",
+    "Es ist nur bei Cloud-Systemen nötig"
+   ],
+   "correctIndex": 0,
+   "explanation": "Das Betriebskonzept wird vor dem Go-live erstellt und regelt den gesamten laufenden Betrieb – egal ob lokal oder in der Cloud."
+  },
+  {
+   "question": "Webserver (99 %) und Datenbank (99,5 %) werden beide gebraucht. Wie hoch ist die Gesamtverfügbarkeit etwa?",
+   "options": [
+    "99,75 %",
+    "99,5 %",
+    "98,5 %",
+    "99,0 %"
+   ],
+   "correctIndex": 2,
+   "explanation": "Serienschaltung: 0,99 · 0,995 = 0,98505 ≈ 98,5 %. Die Kette ist schlechter als ihr schwächstes Glied."
+  },
+  {
+   "question": "Ein Server hat bei einem Jahr mit 8 760 Stunden eine Verfügbarkeit von 99 %. Wie viele Stunden Ausfall sind das ungefähr?",
+   "options": [
+    "8,8 h",
+    "88 h",
+    "876 h",
+    "36 h"
+   ],
+   "correctIndex": 1,
+   "explanation": "1 % von 8 760 h = 87,6 h ≈ 88 Stunden, also mehr als 3,5 Tage."
+  },
+  {
+   "question": "Was bedeutet RTO = 4 Stunden für ein System?",
+   "options": [
+    "Es darf höchstens 4 Stunden Datenverlust geben",
+    "Es wird alle 4 Stunden gesichert",
+    "Das Backup ist 4 Stunden lang gültig",
+    "Nach einem Ausfall muss es spätestens nach 4 Stunden wieder laufen"
+   ],
+   "correctIndex": 3,
+   "explanation": "RTO (Recovery Time Objective) ist die maximal tolerierte Wiederherstellungszeit. Den tolerierten Datenverlust beschreibt das RPO."
+  },
+  {
+   "question": "Warum ist ein Betriebssystem nach seinem Support-Ende (End of Life) ein Problem, auch wenn es noch stabil läuft?",
+   "options": [
+    "Weil es keine Sicherheitsupdates mehr bekommt und neue Lücken offen bleiben",
+    "Weil es dann automatisch abschaltet",
+    "Weil die Lizenz ungültig wird und Daten gelöscht werden",
+    "Weil es dann langsamer wird"
+   ],
+   "correctIndex": 0,
+   "explanation": "Nach EOL schließt der Hersteller keine Sicherheitslücken mehr. Die Ablöse muss rechtzeitig geplant werden, inklusive Migration und Datenlöschung."
+  }
+ ]
+}

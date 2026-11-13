@@ -1,0 +1,95 @@
+{
+  "id": "pos-j5-python-frameworks_02_api_design",
+  "title": "Gutes API-Design",
+  "summary": "Namen, Fehlerbehandlung, Semantic Versioning und Abwärtskompatibilität für eigene Bibliotheken.",
+  "sections": [
+    {
+      "type": "text",
+      "content": "Die API (Application Programming Interface) einer Bibliothek ist alles, was andere davon benutzen können: Module, Funktionen, Klassen, Parameter, Exceptions. Gutes API-Design heißt: leicht richtig und schwer falsch zu benutzen. Das beginnt bei Namen: sprechend, konsistent und nach PEP 8 (notenschnitt statt calc, immer dieselben Verben wie get_/load_). Was mit _ beginnt, gilt als intern und gehört nicht zur API."
+    },
+    {
+      "type": "code",
+      "content": "# schlecht: Was ist d? Was heißt True?\ndef calc(d, f=False): ...\ncalc(noten, True)\n\n# besser: sprechend, Option nur per Name\ndef notenschnitt(noten, *, runden=False):\n    ...\nnotenschnitt(noten, runden=True)"
+    },
+    {
+      "type": "text",
+      "content": "Der * in der Parameterliste macht alle folgenden Parameter keyword-only. So kann niemand ein rätselhaftes True an zweiter Stelle übergeben, und du darfst die Reihenfolge der Optionen später ändern. Zur Fehlerbehandlung: Gib bei Fehlern nicht None oder -1 zurück, sondern wirf eine Exception mit klarer Meldung. Für eine Bibliothek lohnt sich eine eigene Exception-Hierarchie mit einer gemeinsamen Basisklasse."
+    },
+    {
+      "type": "code",
+      "content": "class NotenError(Exception):\n    \"\"\"Basis aller Fehler der Bibliothek.\"\"\"\n\nclass UngueltigeNote(NotenError):\n    def __init__(self, note):\n        super().__init__(\n            f\"Note {note} nicht in 1-5\")\n        self.note = note\n\ndef notenschnitt(noten, *, runden=False):\n    if not noten:\n        raise ValueError(\"noten ist leer\")\n    for n in noten:\n        if n not in range(1, 6):\n            raise UngueltigeNote(n)\n    s = sum(noten) / len(noten)\n    return round(s, 1) if runden else s"
+    },
+    {
+      "type": "text",
+      "content": "Benutzer:innen können jetzt gezielt einen Fehler oder mit except NotenError alle Fehler der Bibliothek abfangen. Die Exception trägt zusätzlich Daten (note), mit denen das aufrufende Programm weiterarbeiten kann. Für falsche Argumente, die keine fachlichen Fehler sind (leere Liste), passen die eingebauten Typen wie ValueError oder TypeError."
+    },
+    {
+      "type": "code",
+      "content": "try:\n    notenschnitt([1, 7])\nexcept NotenError as e:\n    print(e, \"|\", e.note)\n# Note 7 nicht in 1-5 | 7"
+    },
+    {
+      "type": "text",
+      "content": "Jede veröffentlichte Version bekommt eine Nummer nach Semantic Versioning (SemVer): MAJOR.MINOR.PATCH. PATCH für Fehlerbehebungen, MINOR für neue, abwärtskompatible Funktionen, MAJOR für Breaking Changes. Versionen 0.x gelten als instabil. Nutzer:innen schreiben dann z. B. notenlib>=1.4,<2 in ihre Abhängigkeiten und bekommen Fixes und Features, aber keine Brüche."
+    },
+    {
+      "type": "text",
+      "content": "Abwärtskompatibel sind: neue Funktionen, neue optionale Parameter mit Standardwert, neue Exception-Unterklassen einer bestehenden Basis. Breaking Changes sind: Umbenennen oder Entfernen, ein neuer Pflichtparameter, geänderte Reihenfolge von Positionsparametern, eine andere Bedeutung von Rückgabewerten. Willst du etwas entfernen, markiere es zuerst als veraltet (deprecated) und entferne es erst in der nächsten MAJOR-Version:"
+    },
+    {
+      "type": "code",
+      "content": "import warnings\n\ndef schnitt(noten):\n    \"\"\"Veraltet seit 1.5, weg in 2.0.\"\"\"\n    warnings.warn(\n        \"schnitt() ist veraltet, \"\n        \"nutze notenschnitt()\",\n        DeprecationWarning, stacklevel=2)\n    return notenschnitt(noten)\n\nprint(schnitt([1, 2]))\n# DeprecationWarning: schnitt() ist\n#   veraltet, nutze notenschnitt()\n# 1.5"
+    },
+    {
+      "type": "text",
+      "content": "stacklevel=2 sorgt dafür, dass die Warnung auf die Zeile des Aufrufers zeigt, nicht in die Bibliothek. Zusammenfassung: Sprechende Namen, keyword-only-Optionen, eigene Exception-Hierarchie, SemVer und ein Deprecation-Zeitraum vor jedem Breaking Change machen eine Bibliothek angenehm und sicher benutzbar."
+    }
+  ],
+  "quiz": [
+    {
+      "question": "Deine Bibliothek ist in Version 2.3.1. Du fügst notenschnitt einen neuen optionalen Parameter gewichte=None hinzu. Welche Version ist nach SemVer richtig?",
+      "options": [
+        "2.3.2",
+        "3.0.0",
+        "2.4.0",
+        "2.3.1-neu"
+      ],
+      "correctIndex": 2,
+      "explanation": "Eine neue, abwärtskompatible Funktionalität erhöht MINOR und setzt PATCH auf 0: 2.4.0. Bestehender Code funktioniert unverändert weiter."
+    },
+    {
+      "question": "Was passiert bei diesem Aufruf der Funktion aus der Lektion?",
+      "code": "notenschnitt([1, 2], True)",
+      "options": [
+        "Es wird 1.5 zurückgegeben",
+        "Es wird 2 zurückgegeben",
+        "Es wird ein TypeError geworfen",
+        "Es wird eine UngueltigeNote-Exception geworfen"
+      ],
+      "correctIndex": 2,
+      "explanation": "Wegen des * ist runden keyword-only. Ein zweites Positionsargument ist nicht erlaubt: TypeError (takes 1 positional argument but 2 were given)."
+    },
+    {
+      "question": "Was gibt dieser Code mit der Bibliothek aus der Lektion aus?",
+      "code": "try:\n    notenschnitt([])\nexcept NotenError:\n    print(\"A\")\nexcept ValueError:\n    print(\"B\")",
+      "options": [
+        "A",
+        "B",
+        "A und B",
+        "Nichts, die Exception wird nicht gefangen"
+      ],
+      "correctIndex": 1,
+      "explanation": "Bei einer leeren Liste wirft notenschnitt einen ValueError. ValueError ist keine Unterklasse von NotenError, deshalb greift erst der zweite except-Block."
+    },
+    {
+      "question": "Welche Änderung an def lade(pfad, encoding=\"utf-8\") ist ein Breaking Change?",
+      "options": [
+        "Ein neuer Parameter def lade(pfad, encoding=\"utf-8\", *, strikt=False)",
+        "Eine neue Funktion speichere()",
+        "Ein Bugfix, der eine falsche Fehlermeldung korrigiert",
+        "Ein neuer Pflichtparameter def lade(pfad, format, encoding=\"utf-8\")"
+      ],
+      "correctIndex": 3,
+      "explanation": "Ein neuer Pflichtparameter lässt alle bestehenden Aufrufe lade(\"x.csv\") scheitern und verschiebt außerdem encoding an Position 3. Das erfordert eine neue MAJOR-Version."
+    }
+  ]
+}
